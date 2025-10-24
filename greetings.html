@@ -85,6 +85,21 @@
     </section>
   </main>
 
+  <!--
+    NocoDB client config (v2 endpoints). This will make the client call the API directly.
+    WARNING: token is public in client JS when served from GitHub Pages. Proceed only if you
+    understand the exposure and NocoDB limits.
+  -->
+  <script>
+    window.NOCODB_CONFIG = {
+      postUrl: 'https://app.nocodb.com/api/v2/tables/mtujnjge9o5j98m/records',
+      getUrl: 'https://app.nocodb.com/api/v2/tables/mtujnjge9o5j98m/records?viewId=vww985w35i0umz1g&limit=25&shuffle=0&offset=0',
+      token: 'CkVTc7ZEub0gRWmWPVxX2MH-DjgAHyGzt6ae5Hru'
+    };
+  </script>
+
+  <!-- Load site theme script so the theme toggle works on this page -->
+  <script type="module" src="/assets/js/site-theme.js" defer></script>
   <script type="module" src="/assets/js/greetings.js"></script>
 </body>
 </html>

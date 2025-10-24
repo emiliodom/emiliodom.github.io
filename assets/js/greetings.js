@@ -18,6 +18,15 @@ function randomCaptcha(){
   return { question: `${a} + ${b} = ?`, answer: a + b };
 }
 
+const PRESET_MESSAGES = [
+  { id: 'm1', text: "Keep pushing, you're doing great!" },
+  { id: 'm2', text: "Proud of your work — keep it up." },
+  { id: 'm3', text: "Inspiration for us all!" },
+  { id: 'm4', text: "Stay curious and keep building." },
+  { id: 'm5', text: "Small steps lead to big changes." },
+  { id: 'm6', text: "Keep the momentum going!" }
+];
+
 async function getIp(){
   try{
     const r = await fetch('https://api.ipify.org?format=json');
@@ -30,22 +39,43 @@ async function getIp(){
   }
 }
 
-function loadWall(){
-  const list = JSON.parse(localStorage.getItem('greetings-list')||'[]');
-  const ul = document.getElementById('greet-list');
-  ul.innerHTML = '';
-  list.slice().reverse().forEach(item=>{
-    const li = document.createElement('li');
-    li.textContent = `${item.message} — ${item.when}`;
-    ul.appendChild(li);
+function renderPagination(list, page=1, perPage=5){
+  const total = list.length;
+  const pages = Math.max(1, Math.ceil(total / perPage));
+  const start = (page-1)*perPage;
+  const pageItems = list.slice().reverse().slice(start, start+perPage);
+  const container = document.getElementById('greet-list');
+  container.innerHTML = '';
+  const grid = document.createElement('div');
+  grid.className = 'greet-grid';
+  pageItems.forEach(item => {
+    const card = document.createElement('article');
+    card.className = 'greet-card';
+    card.tabIndex = 0;
+    card.innerHTML = `<div class="greet-feel">${item.feeling||''}</div><div class="greet-text">${item.message}</div><div class="greet-meta">${item.when}</div>`;
+    grid.appendChild(card);
   });
+  container.appendChild(grid);
+
+  // pager
+  const pager = document.createElement('div');
+  pager.className = 'pager';
+  const prev = document.createElement('button'); prev.textContent = 'Previous';
+  const next = document.createElement('button'); next.textContent = 'Next';
+  prev.disabled = page<=1; next.disabled = page>=pages;
+  prev.addEventListener('click', ()=> renderPagination(list, page-1, perPage));
+  next.addEventListener('click', ()=> renderPagination(list, page+1, perPage));
+  pager.appendChild(prev);
+  pager.appendChild(document.createTextNode(` Page ${page} / ${pages} `));
+  pager.appendChild(next);
+  container.appendChild(pager);
 }
 
-function saveWallEntry(message){
+function saveWallEntry(message, feeling){
   const list = JSON.parse(localStorage.getItem('greetings-list')||'[]');
-  list.push({message, when: new Date().toLocaleString()});
+  list.push({message, feeling, when: new Date().toLocaleString()});
   localStorage.setItem('greetings-list', JSON.stringify(list));
-  loadWall();
+  renderPagination(list, 1, 5);
 }
 
 document.addEventListener('DOMContentLoaded', async ()=>{
@@ -54,16 +84,45 @@ document.addEventListener('DOMContentLoaded', async ()=>{
 
   const badwords = await fetchBadWords();
 
-  loadWall();
+  // render preset cards
+  const cards = document.getElementById('preset-cards');
+  PRESET_MESSAGES.forEach(m=>{
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'preset-card';
+    b.dataset.id = m.id;
+    b.dataset.text = m.text;
+    b.innerHTML = `<div class="card-text">${m.text}</div>`;
+    b.addEventListener('click', ()=>{
+      document.querySelectorAll('.preset-card').forEach(x=>x.classList.remove('selected'));
+      b.classList.add('selected');
+      b.setAttribute('aria-pressed','true');
+    });
+    cards.appendChild(b);
+  });
+
+  // feelings buttons
+  let selectedFeeling = null;
+  document.querySelectorAll('.feeling').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.querySelectorAll('.feeling').forEach(b=>{b.setAttribute('aria-pressed','false'); b.classList.remove('selected');});
+      btn.setAttribute('aria-pressed','true'); btn.classList.add('selected');
+      selectedFeeling = btn.dataset.feel;
+    });
+  });
+
+  const stored = JSON.parse(localStorage.getItem('greetings-list')||'[]');
+  renderPagination(stored, 1, 5);
 
   document.getElementById('greet-form').addEventListener('submit', async (e)=>{
     e.preventDefault();
-    const preset = document.getElementById('preset').value.trim();
+    const sel = document.querySelector('.preset-card.selected');
+    const preset = sel ? sel.dataset.text.trim() : '';
     const answer = parseInt(document.getElementById('captcha-answer').value,10);
     const feedback = document.getElementById('greet-feedback');
     feedback.textContent = '';
 
-    if(!preset){ feedback.textContent = 'Please choose a message.'; return; }
+  if(!preset){ feedback.textContent = 'Please choose a message.'; return; }
     if(answer !== captcha.answer){ feedback.textContent = 'Captcha answer is incorrect.'; return; }
 
     // check badwords
@@ -85,8 +144,8 @@ document.addEventListener('DOMContentLoaded', async ()=>{
       localStorage.setItem(key, JSON.stringify({when: Date.now(), message: preset}));
     }
 
-    // save to local wall
-    saveWallEntry(preset);
+    // save to local wall (client-side)
+    saveWallEntry(preset, selectedFeeling);
     feedback.textContent = 'Thanks — your greeting was added!';
     document.getElementById('greet-form').reset();
     // refresh captcha

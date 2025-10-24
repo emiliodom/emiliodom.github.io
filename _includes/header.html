@@ -1,7 +1,7 @@
 <header class="site-header" role="banner" aria-label="Site header">
   <div class="header-inner">
     <div class="avatar-wrap">
-      <img src="https://i.ibb.co/Kj6SGyGm/IMG-20250207-085923948-HDR-AE.jpg" onerror="this.src='assets/img/avatar-fallback.png'" alt="Emilio D. avatar" class="header-avatar" width="64" height="64">
+      <img src="https://i.ibb.co/Kj6SGyGm/IMG-20250207-085923948-HDR-AE.jpg" onerror="this.src='assets/img/avatar-fallback.svg'" alt="Emilio D. avatar" class="header-avatar" width="64" height="64">
       <div class="header-title">
         <div class="name">Emilio Dominguez</div>
         <div class="subtitle">Developer • Fitness Enthusiast • Lifelong Learner</div>
@@ -22,9 +22,14 @@
         <span class="slider" aria-hidden="true"></span>
       </label>
 
-</select>
-      <div id="google_translate_element" aria-hidden="false" role="region" aria-label="Google translate widget"></div>
+      <label for="lang-select" class="visually-hidden">Language</label>
+      <select id="lang-select" aria-label="Select language">
+        <option value="en">ENG</option>
+        <option value="es">ES</option>
+        <option value="fr">FR</option>
+      </select>
+
+      <div id="google_translate_element" role="region" aria-label="Google translate widget"></div>
     </div>
   </div>
-</header>
 </header>

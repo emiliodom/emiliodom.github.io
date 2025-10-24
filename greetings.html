@@ -7,7 +7,42 @@
   <link rel="stylesheet" href="/assets/css/theme.css">
 </head>
 <body>
-  {% include header.html %}
+  <!-- Header (inlined to support static hosting) -->
+  <header class="site-header" role="banner" aria-label="Site header">
+    <div class="header-inner">
+      <div class="avatar-wrap">
+        <img src="https://i.ibb.co/Kj6SGyGm/IMG-20250207-085923948-HDR-AE.jpg" onerror="this.src='assets/img/avatar-fallback.svg'" alt="Emilio D. avatar" class="header-avatar" width="64" height="64">
+        <div class="header-title">
+          <div class="name">Emilio Dominguez</div>
+          <div class="subtitle">Developer • Fitness Enthusiast • Lifelong Learner</div>
+        </div>
+      </div>
+
+      <div class="header-controls" role="toolbar" aria-label="Header controls">
+        <a class="repo-link" href="https://github.com/emiliodom/emiliodom.github.io" target="_blank" rel="noopener noreferrer" aria-label="Repository on GitHub">Repo</a>
+
+        <div class="font-size-controls" role="group" aria-label="Font size">
+          <button id="font-sm" class="font-btn" aria-label="Smaller text">A-</button>
+          <button id="font-md" class="font-btn" aria-pressed="true" aria-label="Normal text">A</button>
+          <button id="font-lg" class="font-btn" aria-label="Larger text">A+</button>
+        </div>
+
+        <label class="theme-switch" title="Toggle theme" aria-label="Toggle theme">
+          <input id="theme-toggle" type="checkbox" />
+          <span class="slider" aria-hidden="true"></span>
+        </label>
+
+        <label for="lang-select" class="visually-hidden">Language</label>
+        <select id="lang-select" aria-label="Select language">
+          <option value="en">ENG</option>
+          <option value="es">ES</option>
+          <option value="fr">FR</option>
+        </select>
+
+        <div id="google_translate_element" role="region" aria-label="Google translate widget"></div>
+      </div>
+    </div>
+  </header>
 
   <main class="container" role="main">
     <section aria-labelledby="greet-heading" class="greetings-section">
@@ -15,14 +50,21 @@
       <p>Select a pre-written message and sign it. One submission per person (IP check applied).</p>
 
       <form id="greet-form" aria-describedby="greet-help">
-        <label for="preset">Choose a message</label>
-        <select id="preset" required aria-required="true">
-          <option value="">— select —</option>
-          <option value="Keep pushing, you're doing great!">Keep pushing, you're doing great!</option>
-          <option value="Proud of your work — keep it up.">Proud of your work — keep it up.</option>
-          <option value="Inspiration for us all!">Inspiration for us all!</option>
-          <option value="Stay curious and keep building.">Stay curious and keep building.</option>
-        </select>
+        <fieldset>
+          <legend>How are you feeling today?</legend>
+          <div class="feelings" role="radiogroup" aria-label="How are you feeling today">
+            <button type="button" class="feeling" data-feel="😊" aria-pressed="false">😊</button>
+            <button type="button" class="feeling" data-feel="🙂" aria-pressed="false">🙂</button>
+            <button type="button" class="feeling" data-feel="😄" aria-pressed="false">😄</button>
+            <button type="button" class="feeling" data-feel="🤩" aria-pressed="false">🤩</button>
+            <button type="button" class="feeling" data-feel="👏" aria-pressed="false">👏</button>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Choose a message</legend>
+          <div id="preset-cards" class="card-grid" aria-label="Preset messages"></div>
+        </fieldset>
 
         <div id="captcha-wrap" style="margin-top:10px">
           <label id="captcha-label">Captcha: <span id="captcha-question"></span></label>
@@ -30,10 +72,10 @@
         </div>
 
         <div style="margin-top:12px">
-          <button id="greet-submit">Submit greeting</button>
+          <button id="greet-submit" type="submit">Submit greeting</button>
         </div>
 
-        <p id="greet-help">We use an IP check to avoid multiple submissions. No personal data is stored except the message and a timestamp.</p>
+        <p id="greet-help">We use an IP check to avoid multiple submissions. No personal data is stored except the message, feeling and a timestamp. To persist greetings into the repository a server-side endpoint or GitHub API integration is required.</p>
       </form>
 
       <div id="greet-feedback" role="status" aria-live="polite" style="margin-top:12px"></div>

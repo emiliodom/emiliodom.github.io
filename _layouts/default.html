@@ -8,7 +8,41 @@
     <script type="module" src="/assets/js/site-theme.js" defer></script>
   </head>
   <body>
-    {% include header.html %}
+    <header class="site-header" role="banner" aria-label="Site header">
+      <div class="header-inner">
+        <div class="avatar-wrap">
+          <img src="https://i.ibb.co/Kj6SGyGm/IMG-20250207-085923948-HDR-AE.jpg" onerror="this.src='/assets/img/avatar-fallback.svg'" alt="Emilio D. avatar" class="header-avatar" width="64" height="64">
+          <div class="header-title">
+            <div class="name">Emilio Dominguez</div>
+            <div class="subtitle">Developer • Fitness Enthusiast • Lifelong Learner</div>
+          </div>
+        </div>
+
+        <div class="header-controls" role="toolbar" aria-label="Header controls">
+          <a class="repo-link" href="https://github.com/emiliodom/emiliodom.github.io" target="_blank" rel="noopener noreferrer" aria-label="Repository on GitHub">Repo</a>
+
+          <div class="font-size-controls" role="group" aria-label="Font size">
+            <button id="font-sm" class="font-btn" aria-label="Smaller text">A-</button>
+            <button id="font-md" class="font-btn" aria-pressed="true" aria-label="Normal text">A</button>
+            <button id="font-lg" class="font-btn" aria-label="Larger text">A+</button>
+          </div>
+
+          <label class="theme-switch" title="Toggle theme" aria-label="Toggle theme">
+            <input id="theme-toggle" type="checkbox" />
+            <span class="slider" aria-hidden="true"></span>
+          </label>
+
+          <label for="lang-select" class="visually-hidden">Language</label>
+          <select id="lang-select" aria-label="Select language">
+            <option value="en">ENG</option>
+            <option value="es">ES</option>
+            <option value="fr">FR</option>
+          </select>
+
+          <div id="google_translate_element" role="region" aria-label="Google translate widget"></div>
+        </div>
+      </div>
+    </header>
     <main>{{ content }}</main>
   </body>
 </html>

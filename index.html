@@ -60,70 +60,32 @@
       <p>Developer • Fitness Enthusiast • Lifelong Learner</p>
     </section>
 
-    <nav class="links" aria-label="Links">
-      <a href="https://proximaweb.click" class="link-card" target="_blank" rel="noopener noreferrer">
-        <div class="link-icon icon-blog">📄</div>
-        <div class="link-content">
-          <div class="link-title">My CV</div>
-          <div class="link-description">ProximaWeb — CV and professional info</div>
-        </div>
-        <div class="link-arrow">→</div>
-      </a>
-
-      <a href="https://proximaweb.click/blog" class="link-card" target="_blank" rel="noopener noreferrer">
-        <div class="link-icon icon-blog">📝</div>
-        <div class="link-content">
-          <div class="link-title">My Blog</div>
-          <div class="link-description">ProximaWeb Blog</div>
-        </div>
-        <div class="link-arrow">→</div>
-      </a>
-
-      <a href="https://fitfit.pro/guia" class="link-card" target="_blank" rel="noopener noreferrer">
-        <div class="link-icon icon-fitness">💪</div>
-        <div class="link-content">
-          <div class="link-title">FitFit Pro</div>
-          <div class="link-description">Your exercise and fitness companion</div>
-        </div>
-        <div class="link-arrow">→</div>
-      </a>
-
-      <a href="https://edominurl.github.io" class="link-card" target="_blank" rel="noopener noreferrer">
-        <div class="link-icon icon-education">🎓</div>
-        <div class="link-content">
-          <div class="link-title">University Guides</div>
-          <div class="link-description">Educational resources and guides</div>
-        </div>
-        <div class="link-arrow">→</div>
-      </a>
-
-      <a href="https://www.notion.so/React-29679b2c88838072b9e3c8ca3250e3a0" class="link-card" target="_blank" rel="noopener noreferrer">
-        <div class="link-icon icon-react">⚛️</div>
-        <div class="link-content">
-          <div class="link-title">React Notes</div>
-          <div class="link-description">My React development notes on Notion</div>
-        </div>
-        <div class="link-arrow">→</div>
-      </a>
-
-      <a href="https://linkedin.com/in/domingem" class="link-card" target="_blank" rel="noopener noreferrer">
-        <div class="link-icon icon-linkedin">💼</div>
-        <div class="link-content">
-          <div class="link-title">LinkedIn</div>
-          <div class="link-description">Connect with me professionally</div>
-        </div>
-        <div class="link-arrow">→</div>
-      </a>
-
-      <a href="/greetings.html" class="link-card" title="Leave a greeting" aria-label="Leave a greeting" >
-        <div class="link-icon icon-blog">💬</div>
-        <div class="link-content">
-          <div class="link-title">Leave a greeting</div>
-          <div class="link-description">Choose a message and sign it — one per person</div>
-        </div>
-        <div class="link-arrow">→</div>
-      </a>
+    <nav class="links" aria-label="Links" id="links-container">
+      <!-- Link cards are populated from assets/data/link_cards.json -->
     </nav>
+
+    <script>
+      (async function(){
+        try{
+          const r = await fetch('/assets/data/link_cards.json');
+          const data = await r.json();
+          const container = document.getElementById('links-container');
+          data.forEach(item=>{
+            const a = document.createElement('a');
+            a.className = 'link-card';
+            a.href = item.href;
+            if(item.external) { a.target = '_blank'; a.rel = 'noopener noreferrer'; }
+            a.setAttribute('aria-label', item.title);
+            const icon = document.createElement('div'); icon.className = 'link-icon'; icon.innerText = item.icon || '🔗';
+            const content = document.createElement('div'); content.className = 'link-content';
+            content.innerHTML = `<div class="link-title">${item.title}</div><div class="link-description">${item.description}</div>`;
+            const arrow = document.createElement('div'); arrow.className='link-arrow'; arrow.innerText='→';
+            a.appendChild(icon); a.appendChild(content); a.appendChild(arrow);
+            container.appendChild(a);
+          });
+        }catch(e){ console.warn('Could not load link cards', e); }
+      })();
+    </script>
 
     <footer>
       <p>© 2025 Emilio Dominguez</p>

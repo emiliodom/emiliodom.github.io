@@ -34,7 +34,7 @@ function applyFontSize(key){
     localStorage.setItem('site-font-size', key);
     // update aria-pressed on buttons
     ['sm','md','lg'].forEach(k=>{
-        const btn = document.getElementById('font-'+(k==='md'?'md':k));
+        const btn = document.getElementById('font-'+k);
         if(btn) btn.setAttribute('aria-pressed', k===key ? 'true' : 'false');
     });
 }

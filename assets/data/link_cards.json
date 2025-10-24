@@ -1,0 +1,51 @@
+[
+  {
+    "title": "My CV",
+    "description": "ProximaWeb — CV and professional info",
+    "href": "https://proximaweb.click",
+    "icon": "📄",
+    "external": true
+  },
+  {
+    "title": "My Blog",
+    "description": "ProximaWeb Blog",
+    "href": "https://proximaweb.click/blog",
+    "icon": "📝",
+    "external": true
+  },
+  {
+    "title": "FitFit Pro",
+    "description": "Your exercise and fitness companion",
+    "href": "https://fitfit.pro/guia",
+    "icon": "💪",
+    "external": true
+  },
+  {
+    "title": "University Guides",
+    "description": "Educational resources and guides",
+    "href": "https://edominurl.github.io",
+    "icon": "🎓",
+    "external": true
+  },
+  {
+    "title": "React Notes",
+    "description": "My React development notes on Notion",
+    "href": "https://www.notion.so/React-29679b2c88838072b9e3c8ca3250e3a0",
+    "icon": "⚛️",
+    "external": true
+  },
+  {
+    "title": "LinkedIn",
+    "description": "Connect with me professionally",
+    "href": "https://linkedin.com/in/domingem",
+    "icon": "💼",
+    "external": true
+  },
+  {
+    "title": "Leave a greeting",
+    "description": "Choose a message and sign it — one per person",
+    "href": "/greetings.html",
+    "icon": "💬",
+    "external": false
+  }
+]

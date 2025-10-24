@@ -68,11 +68,11 @@
 
         <div id="captcha-wrap" style="margin-top:10px">
           <label id="captcha-label">Captcha: <span id="captcha-question"></span></label>
-          <input id="captcha-answer" type="number" aria-labelledby="captcha-label" required>
+          <div id="captcha-options" role="radiogroup" aria-labelledby="captcha-label" style="margin-top:8px"></div>
         </div>
 
         <div style="margin-top:12px">
-          <button id="greet-submit" type="submit">Submit greeting</button>
+          <button id="greet-submit" class="btn" type="submit">Send greeting</button>
         </div>
 
         <p id="greet-help">We use an IP check to avoid multiple submissions. No personal data is stored except the message, feeling and a timestamp. To persist greetings into the repository a server-side endpoint or GitHub API integration is required.</p>

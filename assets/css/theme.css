@@ -47,7 +47,7 @@ body{
     -moz-osx-font-smoothing:grayscale;
 }
 
-.site-header{width:100%;max-width:680px;margin:20px auto 0;color:var(--text-color);padding:140px 12px}
+.site-header{width:100%;max-width:680px;margin:20px auto 0;color:var(--text-color);padding:40px 12px}
 .header-inner{display:flex;justify-content:space-between;align-items:center;gap:12px;max-width:1040px;margin:0 auto;width:100%}
 .avatar-wrap{display:flex;align-items:center;gap:12px}
 .header-avatar{width:64px;height:64px;border-radius:12px;object-fit:cover;border:3px solid rgba(255,255,255,0.08);box-shadow: var(--shadow)}
@@ -154,6 +154,16 @@ a.link-card:focus{outline:3px solid rgba(120,150,255,0.18);outline-offset:4px}
 .feelings{display:flex;gap:8px}
 .feeling{background:transparent;border:1px solid rgba(0,0,0,0.06);padding:8px;border-radius:8px;cursor:pointer;font-size:20px}
 .feeling.selected{background:rgba(102,126,234,0.08);box-shadow:0 6px 18px rgba(0,0,0,0.08)}
+.captcha-btn{background:transparent;border:1px solid rgba(0,0,0,0.08);padding:8px 12px;border-radius:8px;margin-right:8px;cursor:pointer;font-weight:700}
+.captcha-btn[aria-pressed="true"],.captcha-btn.selected{background:var(--accent-1);color:var(--near-white);border-color:rgba(102,126,234,0.6)}
+
+.btn{display:inline-block;background:var(--accent-1);color:var(--near-white);padding:10px 14px;border-radius:10px;border:none;cursor:pointer;font-weight:700;box-shadow:0 8px 24px rgba(16,24,40,0.08);transition:transform .18s ease,box-shadow .18s ease}
+.btn:active{transform:translateY(1px)}
+.btn.secondary{background:transparent;color:var(--text-color);border:1px solid rgba(0,0,0,0.08)}
+
+.pager button{background:transparent;border:1px solid rgba(0,0,0,0.08);padding:6px 10px;border-radius:8px;cursor:pointer}
+.pager button:hover{background:rgba(0,0,0,0.04);transform:translateY(-2px)}
+.pager button:focus{outline:3px solid rgba(102,126,234,0.12);outline-offset:4px}
 .greet-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
 .greet-card{background:var(--card-bg);padding:12px;border-radius:10px;border:1px solid rgba(0,0,0,0.06);box-shadow:var(--shadow)}
 .greet-card.pending{opacity:0.9;border-style:dashed;border-color:rgba(102,126,234,0.5);box-shadow:0 6px 18px rgba(102,126,234,0.06)}

@@ -4,36 +4,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Emilio Dominguez - Links to my projects and profiles">
   <meta property="og:image" content="https://fitfit.pro/wp-content/uploads/2025/10/IMG_20250207_085923948_HDR_AE.jpg">
+  <meta property="og:image" content="https://i.ibb.co/Kj6SGyGm/IMG-20250207-085923948-HDR-AE.jpg">
   <title>Emilio Dominguez | Links</title>
   <link rel="stylesheet" href="assets/css/theme.css">
 </head>
 <body>
-  <!-- Header: avatar, theme toggle, language selector -->
-  <header class="site-header" role="banner">
-    <div class="header-inner">
-      <div class="avatar-wrap">
-        <img src="https://fitfit.pro/wp-content/uploads/2025/10/IMG_20250207_085923948_HDR_AE.jpg" alt="Emilio D. avatar" class="header-avatar" width="64" height="64">
-        <div class="header-title">
-          <div class="name">Emilio Dominguez</div>
-          <div class="subtitle">Developer • Fitness Enthusiast • Lifelong Learner</div>
-        </div>
-      </div>
-
-      <div class="header-controls">
-        <label class="theme-switch" title="Toggle theme" aria-label="Toggle theme">
-          <input id="theme-toggle" type="checkbox" />
-          <span class="slider"></span>
-        </label>
-
-        <select id="lang-select" aria-label="Select language" title="Translate site">
-          <option value="auto">ENG</option>
-          <option value="es">ES</option>
-          <option value="fr">FR</option>
-        </select>
-      </div>
-    </div>
-    <div id="google_translate_element" aria-hidden="true"></div>
-  </header>
+  <!-- Header: included from _includes/header.html -->
+  {% include header.html %}
 
   <!-- Floating particles for visual effect -->
   <div class="particle" style="left: 10%; width: 10px; height: 10px; animation-delay: 0s;"></div>
@@ -44,7 +21,7 @@
 
   <main class="container">
     <section class="profile" aria-labelledby="profile-heading">
-      <img src="https://fitfit.pro/wp-content/uploads/2025/10/IMG_20250207_085923948_HDR_AE.jpg" alt="Emilio D. avatar" class="profile-image">
+      <img src="https://i.ibb.co/Kj6SGyGm/IMG-20250207-085923948-HDR-AE.jpg" alt="Emilio D. avatar" class="profile-image">
       <h1 id="profile-heading">Emilio Dominguez</h1>
       <p>Developer • Fitness Enthusiast • Lifelong Learner</p>
     </section>
@@ -100,6 +77,15 @@
         <div class="link-content">
           <div class="link-title">LinkedIn</div>
           <div class="link-description">Connect with me professionally</div>
+        </div>
+        <div class="link-arrow">→</div>
+      </a>
+
+      <a href="/greetings.html" class="link-card" title="Leave a greeting" aria-label="Leave a greeting" >
+        <div class="link-icon icon-blog">💬</div>
+        <div class="link-content">
+          <div class="link-title">Leave a greeting</div>
+          <div class="link-description">Choose a message and sign it — one per person</div>
         </div>
         <div class="link-arrow">→</div>
       </a>
@@ -163,7 +149,6 @@
 
     // console message
     console.log('%cHey there! 👋', 'font-size:20px;font-weight:bold;color:#667eea');
-  </script>
 </body>
 </html>
-            flex: 1;
+

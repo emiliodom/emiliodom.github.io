@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Leave a greeting</title>
+  <link rel="stylesheet" href="/assets/css/theme.css">
+</head>
+<body>
+  {% include header.html %}
+
+  <main class="container" role="main">
+    <section aria-labelledby="greet-heading" class="greetings-section">
+      <h2 id="greet-heading">Leave a greeting</h2>
+      <p>Select a pre-written message and sign it. One submission per person (IP check applied).</p>
+
+      <form id="greet-form" aria-describedby="greet-help">
+        <label for="preset">Choose a message</label>
+        <select id="preset" required aria-required="true">
+          <option value="">— select —</option>
+          <option value="Keep pushing, you're doing great!">Keep pushing, you're doing great!</option>
+          <option value="Proud of your work — keep it up.">Proud of your work — keep it up.</option>
+          <option value="Inspiration for us all!">Inspiration for us all!</option>
+          <option value="Stay curious and keep building.">Stay curious and keep building.</option>
+        </select>
+
+        <div id="captcha-wrap" style="margin-top:10px">
+          <label id="captcha-label">Captcha: <span id="captcha-question"></span></label>
+          <input id="captcha-answer" type="number" aria-labelledby="captcha-label" required>
+        </div>
+
+        <div style="margin-top:12px">
+          <button id="greet-submit">Submit greeting</button>
+        </div>
+
+        <p id="greet-help">We use an IP check to avoid multiple submissions. No personal data is stored except the message and a timestamp.</p>
+      </form>
+
+      <div id="greet-feedback" role="status" aria-live="polite" style="margin-top:12px"></div>
+
+      <h3 style="margin-top:18px">Wall of greetings</h3>
+      <ul id="greet-list" aria-live="polite"></ul>
+    </section>
+  </main>
+
+  <script type="module" src="/assets/js/greetings.js"></script>
+</body>
+</html>

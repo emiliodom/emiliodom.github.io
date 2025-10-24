@@ -26,6 +26,30 @@ function initTheme(){
     }
 }
 
+/* Font size handling */
+function applyFontSize(key){
+    const sizes = { sm: '14px', md: '16px', lg: '18px' };
+    const val = sizes[key] || sizes.md;
+    document.documentElement.style.fontSize = val;
+    localStorage.setItem('site-font-size', key);
+    // update aria-pressed on buttons
+    ['sm','md','lg'].forEach(k=>{
+        const btn = document.getElementById('font-'+(k==='md'?'md':k));
+        if(btn) btn.setAttribute('aria-pressed', k===key ? 'true' : 'false');
+    });
+}
+
+function initFontSize(){
+    const saved = localStorage.getItem('site-font-size') || 'md';
+    applyFontSize(saved);
+    const bsm = document.getElementById('font-sm');
+    const bmd = document.getElementById('font-md');
+    const blg = document.getElementById('font-lg');
+    if(bsm) bsm.addEventListener('click', ()=> applyFontSize('sm'));
+    if(bmd) bmd.addEventListener('click', ()=> applyFontSize('md'));
+    if(blg) blg.addEventListener('click', ()=> applyFontSize('lg'));
+}
+
 function setGoogleTranslateCookie(targetLang){
     try{
         // google's widget reads cookie named googtrans with format /<from>/<to>
@@ -79,6 +103,7 @@ function normalizeFitFitLinks(){
 function init(){
     document.addEventListener('DOMContentLoaded', ()=>{
         initTheme();
+            initFontSize();
         bindLangSelector();
         normalizeFitFitLinks();
         initGoogleTranslate();

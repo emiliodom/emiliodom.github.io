@@ -185,6 +185,32 @@ document.addEventListener('DOMContentLoaded', async ()=>{
     });
   });
 
+  // render captcha options as 3 buttons (one correct)
+  function renderCaptchaOptions(cap){
+    const wrap = document.getElementById('captcha-options');
+    wrap.innerHTML = '';
+    const correct = cap.answer;
+    // generate two decoys
+    const decoys = [];
+    while(decoys.length < 2){
+      const n = Math.max(1, Math.floor(Math.random()*18));
+      if(n !== correct && !decoys.includes(n)) decoys.push(n);
+    }
+    const choices = [correct, ...decoys].sort(()=>Math.random() - 0.5);
+    choices.forEach((c,i)=>{
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'captcha-btn'; b.setAttribute('data-val', c);
+      b.textContent = c;
+      b.addEventListener('click', ()=>{
+        document.querySelectorAll('.captcha-btn').forEach(x=>x.setAttribute('aria-pressed','false'));
+        b.setAttribute('aria-pressed','true');
+        b.classList.add('selected');
+      });
+      wrap.appendChild(b);
+    });
+  }
+  renderCaptchaOptions(captcha);
+
   // try to load from NocoDB first (if configured), otherwise from localStorage
   (async ()=>{
     const nocodbList = await fetchFromNocoDB();
@@ -200,12 +226,14 @@ document.addEventListener('DOMContentLoaded', async ()=>{
     e.preventDefault();
     const sel = document.querySelector('.preset-card.selected');
     const preset = sel ? sel.dataset.text.trim() : '';
-    const answer = parseInt(document.getElementById('captcha-answer').value,10);
+  // read selected captcha button value
+  const selCap = document.querySelector('.captcha-btn[aria-pressed="true"]');
+  const answer = selCap ? parseInt(selCap.getAttribute('data-val'),10) : null;
     const feedback = document.getElementById('greet-feedback');
     feedback.textContent = '';
 
   if(!preset){ feedback.textContent = 'Please choose a message.'; return; }
-    if(answer !== captcha.answer){ feedback.textContent = 'Captcha answer is incorrect.'; return; }
+  if(answer !== captcha.answer){ feedback.textContent = 'Captcha answer is incorrect. Please pick the correct number.'; return; }
 
     // check badwords
     const lower = preset.toLowerCase();

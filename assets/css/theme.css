@@ -41,6 +41,7 @@ body{
     color: var(--text-color);
     min-height:100vh;
     display:flex;
+    flex-direction:column;
     justify-content:center;
     align-items:flex-start;
     padding:20px;

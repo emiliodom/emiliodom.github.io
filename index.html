@@ -448,8 +448,10 @@
     <div class="main-content">
         <div class="container">
             <div class="profile">
-                <div class="profile-image">
-                    <img src="https://fitfit.pro/wp-content/uploads/2025/10/IMG_20250207_085923948_HDR_AE.jpg" alt="Emilio D. avatar">
+                <div class="profile-image" id="profileImage">
+                    <img src="https://fitfit.pro/wp-content/uploads/2025/10/IMG_20250207_085923948_HDR_AE.jpg" 
+                         alt="Emilio D. avatar" 
+                         onerror="const parent=document.getElementById('profileImage'); parent.innerHTML='ED'; parent.style.fontSize='48px'; parent.style.color='white'; parent.style.fontWeight='bold';">
                 </div>
                 <h1>Emilio Dominguez</h1>
                 <p>Developer • Fitness Enthusiast • Lifelong Learner</p>
@@ -570,6 +572,25 @@
         // Language selector buttons
         const langButtons = document.querySelectorAll('.lang-selector button');
         
+        // Helper function to get Google Translate select element
+        function getTranslateSelect() {
+            return document.querySelector('.goog-te-combo');
+        }
+        
+        // Helper function to change language with retry logic
+        function changeLanguage(lang, retries = 5) {
+            const selectElement = getTranslateSelect();
+            if (selectElement) {
+                selectElement.value = lang;
+                selectElement.dispatchEvent(new Event('change'));
+                return true;
+            } else if (retries > 0) {
+                setTimeout(() => changeLanguage(lang, retries - 1), 500);
+                return false;
+            }
+            return false;
+        }
+        
         langButtons.forEach(button => {
             button.addEventListener('click', function() {
                 // Remove active class from all buttons
@@ -578,22 +599,7 @@
                 this.classList.add('active');
                 
                 const lang = this.getAttribute('data-lang');
-                
-                // Trigger Google Translate
-                const selectElement = document.querySelector('.goog-te-combo');
-                if (selectElement) {
-                    selectElement.value = lang;
-                    selectElement.dispatchEvent(new Event('change'));
-                } else {
-                    // If Google Translate isn't loaded yet, set it when it loads
-                    setTimeout(() => {
-                        const select = document.querySelector('.goog-te-combo');
-                        if (select) {
-                            select.value = lang;
-                            select.dispatchEvent(new Event('change'));
-                        }
-                    }, 1000);
-                }
+                changeLanguage(lang);
             });
         });
 

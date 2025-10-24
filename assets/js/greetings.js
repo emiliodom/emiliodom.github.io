@@ -27,6 +27,78 @@ const PRESET_MESSAGES = [
   { id: 'm6', text: "Keep the momentum going!" }
 ];
 
+// NocoDB client config (optional). Set window.NOCODB_CONFIG in the page to enable.
+// Support both v3 (`url`) and v2 (`postUrl`/`getUrl`) styles.
+const NOCODB = (typeof window !== 'undefined' && window.NOCODB_CONFIG) ? window.NOCODB_CONFIG : { url: null, postUrl: null, getUrl: null, token: null };
+
+async function fetchFromNocoDB(){
+  const fetchUrl = NOCODB.getUrl || NOCODB.url || NOCODB.postUrl;
+  if(!fetchUrl) return null;
+  try{
+    const r = await fetch(fetchUrl, { headers: { accept: 'application/json', 'xc-token': NOCODB.token } });
+    if(!r.ok) throw new Error('nocodb fetch failed');
+    const j = await r.json();
+    // Expecting array of records; map into local format {message, feeling, when}
+    // Normalize various response shapes
+    const rows = [];
+    if(Array.isArray(j)){
+      rows.push(...j);
+    }else if(j && Array.isArray(j.records)){
+      rows.push(...j.records);
+    }else if(j && Array.isArray(j.list)){
+      rows.push(...j.list);
+    }
+    if(rows.length){
+      return rows.map(rec => {
+        const fields = rec.fields || rec;
+        // For v2 mapping: Message = text, Notes = emoticon
+        const message = fields.Message || fields.message || '';
+        const feeling = fields.Notes || fields.notes || '';
+        const when = fields.CreatedAt || fields.created_at || fields.createdAt || new Date().toLocaleString();
+        return { message, feeling, when };
+      });
+    }
+    return null;
+  }catch(e){
+    console.warn('fetchFromNocoDB failed', e);
+    return null;
+  }
+}
+
+async function postToNocoDB(message, user, notes){
+  const postUrl = NOCODB.postUrl || NOCODB.url;
+  if(!postUrl || !NOCODB.token) throw new Error('NocoDB not configured');
+  try{
+    // For v2 API (tables endpoint) the user-supplied curl posts a flat JSON with fields at root.
+    // We'll detect v2 by presence of postUrl including '/api/v2' or when postUrl is explicitly provided.
+    let body;
+    if(postUrl.includes('/api/v2')){
+      // Send flat JSON as the user requested: Message (text), User (ip), Notes (emoticon)
+      body = { Message: message, User: user, Notes: notes };
+    }else{
+      // Fallback for v3 style: send records wrapper
+      body = { records: [ { fields: { Message: message, User: user, Notes: notes } } ] };
+    }
+
+    const r = await fetch(postUrl, {
+      method: 'POST',
+      headers: {
+        'accept': 'application/json',
+        'Content-Type': 'application/json',
+        'xc-token': NOCODB.token
+      },
+      body: JSON.stringify(body)
+    });
+    if(!r.ok) {
+      const text = await r.text();
+      throw new Error(`NocoDB POST failed: ${r.status} ${text}`);
+    }
+    return await r.json();
+  }catch(e){
+    console.warn('postToNocoDB failed', e);
+    throw e;
+  }
+}
 async function getIp(){
   try{
     const r = await fetch('https://api.ipify.org?format=json');
@@ -51,6 +123,8 @@ function renderPagination(list, page=1, perPage=5){
   pageItems.forEach(item => {
     const card = document.createElement('article');
     card.className = 'greet-card';
+    if(item._pending) card.classList.add('pending');
+    if(item._failed) card.classList.add('failed');
     card.tabIndex = 0;
     card.innerHTML = `<div class="greet-feel">${item.feeling||''}</div><div class="greet-text">${item.message}</div><div class="greet-meta">${item.when}</div>`;
     grid.appendChild(card);
@@ -111,8 +185,16 @@ document.addEventListener('DOMContentLoaded', async ()=>{
     });
   });
 
-  const stored = JSON.parse(localStorage.getItem('greetings-list')||'[]');
-  renderPagination(stored, 1, 5);
+  // try to load from NocoDB first (if configured), otherwise from localStorage
+  (async ()=>{
+    const nocodbList = await fetchFromNocoDB();
+    if(nocodbList && nocodbList.length){
+      renderPagination(nocodbList, 1, 5);
+    }else{
+      const stored = JSON.parse(localStorage.getItem('greetings-list')||'[]');
+      renderPagination(stored, 1, 5);
+    }
+  })();
 
   document.getElementById('greet-form').addEventListener('submit', async (e)=>{
     e.preventDefault();
@@ -132,10 +214,25 @@ document.addEventListener('DOMContentLoaded', async ()=>{
 
     // fetch IP
     const ip = await getIp();
+    // compute dedup hash (IP + message) to avoid duplicate identical submissions
+    const dedupInput = (ip || 'web') + '|' + preset;
+    async function hashString(s){
+      if(window.crypto && crypto.subtle){
+        const enc = new TextEncoder().encode(s);
+        const hashBuf = await crypto.subtle.digest('SHA-1', enc);
+        const hashArr = Array.from(new Uint8Array(hashBuf));
+        return hashArr.map(b=>b.toString(16).padStart(2,'0')).join('');
+      }
+      // fallback simple hash
+      let h=0; for(let i=0;i<s.length;i++){ h=((h<<5)-h)+s.charCodeAt(i); h |= 0; } return String(h);
+    }
+    const dedupHash = await hashString(dedupInput);
+    const dedupKey = `greet-submitted-hash-${dedupHash}`;
+    if(localStorage.getItem(dedupKey)){ feedback.textContent = 'Duplicate submission detected (same IP/message).'; return; }
     if(ip){
       const key = `greet-submitted-${ip}`;
       if(localStorage.getItem(key)){ feedback.textContent = 'You have already submitted a greeting from this IP.'; return; }
-      // mark as submitted
+      // mark as submitted per IP
       localStorage.setItem(key, JSON.stringify({when: Date.now(), message: preset}));
     }else{
       // fallback: per-browser submission prevention
@@ -143,10 +240,49 @@ document.addEventListener('DOMContentLoaded', async ()=>{
       if(localStorage.getItem(key)){ feedback.textContent = 'You have already submitted a greeting from this browser.'; return; }
       localStorage.setItem(key, JSON.stringify({when: Date.now(), message: preset}));
     }
+    // Prepare message and notes (notes stores emoticon separately)
+    const messageText = preset;
+    const notesEmoji = selectedFeeling || '';
 
-    // save to local wall (client-side)
-    saveWallEntry(preset, selectedFeeling);
-    feedback.textContent = 'Thanks — your greeting was added!';
+    // Optimistic UI: insert pending card immediately
+    const optimisticEntry = { message: messageText, feeling: notesEmoji, when: 'Sending…', _pending: true };
+    const currentList = JSON.parse(localStorage.getItem('greetings-list')||'[]');
+    // render optimistic at top by temporarily adding to DOM grid
+    renderPagination([...(currentList || []), optimisticEntry], 1, 5);
+
+    // Attempt to send to NocoDB if configured; fall back to local storage
+    try{
+      const userField = ip || 'web';
+      const postUrl = NOCODB.postUrl || NOCODB.url;
+      if(postUrl && NOCODB.token){
+        const resp = await postToNocoDB(messageText, userField, notesEmoji).catch(err=>{ throw err; });
+        // success: mark dedup key and reload authoritative list
+        localStorage.setItem(dedupKey, JSON.stringify({when: Date.now()}));
+        // reload list from NocoDB
+        const nocodbList = await fetchFromNocoDB();
+        if(nocodbList) renderPagination(nocodbList, 1, 5);
+        feedback.textContent = 'Thanks — your greeting was added (saved to NocoDB)!';
+      }else{
+        // save locally: store message and emoticon separately
+        saveWallEntry(messageText, notesEmoji);
+        localStorage.setItem(dedupKey, JSON.stringify({when: Date.now()}));
+        feedback.textContent = 'Thanks — your greeting was added (saved locally)!';
+      }
+    }catch(e){
+      // on failure save locally as fallback and show specific error
+      saveWallEntry(messageText, notesEmoji);
+      // detect error type
+      let msg = 'Saved locally (NocoDB failed).';
+      if(e && e.message){
+        const em = e.message.toLowerCase();
+        if(em.includes('401')||em.includes('unauthor')) msg = 'Unauthorized: invalid API token (401). Entry saved locally.';
+        else if(em.includes('429')||em.includes('rate')) msg = 'Rate limit exceeded. Entry saved locally.';
+        else msg = 'Network or server error. Entry saved locally.';
+      }else{
+        msg = 'Network or CORS error. Entry saved locally.';
+      }
+      feedback.textContent = msg;
+    }
     document.getElementById('greet-form').reset();
     // refresh captcha
     const newCap = randomCaptcha();

@@ -30,7 +30,11 @@ const PRESET_MESSAGES = [
   { id: 'm9', text: "You make a real difference." },
   { id: 'm10', text: "Keep shining bright!" },
   { id: 'm11', text: "Never stop learning and growing." },
-  { id: 'm12', text: "Your work is truly inspiring!" }
+  { id: 'm12', text: "Your work is truly inspiring!" },
+  { id: 'm13', text: "Thanks for sharing your knowledge." },
+  { id: 'm14', text: "Interesting perspective on this." },
+  { id: 'm15', text: "Saw your work, looks solid." },
+  { id: 'm16', text: "Appreciate what you're building here." }
 ];
 
 // NocoDB client config (optional). Set window.NOCODB_CONFIG in the page to enable.
@@ -152,7 +156,11 @@ function renderPagination(list, page=1, perPage=5){
       card.setAttribute('loading','lazy');
       card.style.contentVisibility = 'auto';
     }
-    card.innerHTML = `<div class="greet-feel">${item.feeling||''}</div><div class="greet-text">${item.message}</div><div class="greet-meta">${item.when}</div>`;
+    // Sanitize user content before rendering
+    const sanitizedFeeling = (typeof DOMPurify !== 'undefined') ? DOMPurify.sanitize(item.feeling||'') : (item.feeling||'');
+    const sanitizedMessage = (typeof DOMPurify !== 'undefined') ? DOMPurify.sanitize(item.message) : item.message;
+    const sanitizedWhen = (typeof DOMPurify !== 'undefined') ? DOMPurify.sanitize(item.when) : item.when;
+    card.innerHTML = `<div class="greet-feel">${sanitizedFeeling}</div><div class="greet-text">${sanitizedMessage}</div><div class="greet-meta">${sanitizedWhen}</div>`;
     grid.appendChild(card);
   });
   container.appendChild(grid);
@@ -202,6 +210,17 @@ document.addEventListener('DOMContentLoaded', async ()=>{
     cards.appendChild(b);
   });
 
+  // populate message selector (for desktop and mobile)
+  const messageSelect = document.getElementById('message-select');
+  if(messageSelect){
+    PRESET_MESSAGES.forEach(m=>{
+      const opt = document.createElement('option');
+      opt.value = m.text;
+      opt.textContent = m.text;
+      messageSelect.appendChild(opt);
+    });
+  }
+
   // feelings buttons
   let selectedFeeling = null;
   document.querySelectorAll('.feeling').forEach(btn=>{
@@ -237,7 +256,8 @@ document.addEventListener('DOMContentLoaded', async ()=>{
       b.type = 'button'; b.className = 'captcha-btn'; b.setAttribute('data-val', c);
       b.textContent = c;
       b.addEventListener('click', ()=>{
-        document.querySelectorAll('.captcha-btn').forEach(x=>x.setAttribute('aria-pressed','false'));
+        // remove pressed/selected state from all options, then mark this one
+        document.querySelectorAll('.captcha-btn').forEach(x=>{ x.setAttribute('aria-pressed','false'); x.classList.remove('selected'); });
         b.setAttribute('aria-pressed','true');
         b.classList.add('selected');
       });
@@ -269,7 +289,8 @@ document.addEventListener('DOMContentLoaded', async ()=>{
   document.getElementById('greet-form').addEventListener('submit', async (e)=>{
     e.preventDefault();
     const sel = document.querySelector('.preset-card.selected');
-    const preset = sel ? sel.dataset.text.trim() : '';
+    const messageSelectEl = document.getElementById('message-select');
+    const preset = sel ? sel.dataset.text.trim() : (messageSelectEl && messageSelectEl.value ? messageSelectEl.value.trim() : '');
   // read selected captcha button value
   const selCap = document.querySelector('.captcha-btn[aria-pressed="true"]');
   const answer = selCap ? parseInt(selCap.getAttribute('data-val'),10) : null;
@@ -413,7 +434,14 @@ document.addEventListener('DOMContentLoaded', async ()=>{
       }
       feedback.textContent = msg;
     }
+    // reset UI selections and form
     document.getElementById('greet-form').reset();
+    // clear selected classes and aria-pressed from preset cards, feelings and captcha
+    document.querySelectorAll('.preset-card.selected').forEach(x=>{ x.classList.remove('selected'); x.setAttribute('aria-pressed','false'); });
+    document.querySelectorAll('.feeling.selected').forEach(x=>{ x.classList.remove('selected'); x.setAttribute('aria-pressed','false'); });
+    document.querySelectorAll('.captcha-btn.selected').forEach(x=>{ x.classList.remove('selected'); x.setAttribute('aria-pressed','false'); });
+    selectedFeeling = null;
+    if(messageSelectEl) messageSelectEl.selectedIndex = 0;
     // refresh captcha
     const newCap = randomCaptcha();
     captcha.answer = newCap.answer;

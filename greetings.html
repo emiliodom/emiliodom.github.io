@@ -13,16 +13,28 @@
   <meta property="og:description" content="Send a quick greeting and sign it. One submission per person.">
   <meta name="twitter:card" content="summary" />
   <link id="dynamic-favicon" rel="icon" href="/assets/img/avatar-fallback.svg">
+  <script src="https://cdn.jsdelivr.net/npm/@twemoji/api@latest/dist/twemoji.min.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.8/dist/purify.min.js"></script>
   <script>
-    // random favicon with 10+ attractive icons related to site topics
+    // random favicon with attractive icons using canvas
     (function(){
       try{
-        const icons = ['�','�','🏋️','�','�','💡','🔥','✨','🌟','⚡','�','📊','🧠','💪'];
+        const icons = ['💻','🚀','🏋️','📚','🎯','💡','🔥','✨','🌟','⚡','🎨','📊','🧠','💪','🌐','📱','⚙️','🔧'];
         const e = icons[Math.floor(Math.random()*icons.length)];
-        const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='64' height='64'><rect fill='%233b6fa6' width='100%' height='100%'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' font-size='36'>${e}</text></svg>`;
-        const url = 'data:image/svg+xml;base64,' + btoa(svg);
+        const canvas = document.createElement('canvas');
+        canvas.width = 64;
+        canvas.height = 64;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#3b6fa6';
+        ctx.fillRect(0,0,64,64);
+        ctx.font = '36px Arial';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(e, 32, 32);
         const link = document.getElementById('dynamic-favicon') || document.createElement('link');
-        link.rel = 'icon'; link.href = url; document.head.appendChild(link);
+        link.rel = 'icon';
+        link.href = canvas.toDataURL();
+        if(!document.getElementById('dynamic-favicon')) document.head.appendChild(link);
       }catch(e){/* ignore */}
     })();
   </script>
@@ -34,7 +46,7 @@
         </a>
         <div class="header-title">
           <a href="/" class="site-link" aria-label="Home"><div class="name">Emilio Dominguez</div></a>
-          <div class="subtitle">Developer • Fitness Enthusiast • Lifelong Learner</div>
+          <div class="subtitle">Software Engineer, IT & English Teacher and Web Enthusiast</div>
         </div>
       </div>
 
@@ -83,6 +95,13 @@
             <button type="button" class="feeling" data-feel="👏" aria-pressed="false">👏</button>
             <button type="button" class="feeling" data-feel="🙌" aria-pressed="false">🙌</button>
             <button type="button" class="feeling" data-feel="💪" aria-pressed="false">💪</button>
+            <button type="button" class="feeling" data-feel="😐" aria-pressed="false">😐</button>
+            <button type="button" class="feeling" data-feel="🤔" aria-pressed="false">🤔</button>
+            <button type="button" class="feeling" data-feel="👍" aria-pressed="false">👍</button>
+            <button type="button" class="feeling" data-feel="🙏" aria-pressed="false">🙏</button>
+            <button type="button" class="feeling" data-feel="🤝" aria-pressed="false">🤝</button>
+            <button type="button" class="feeling" data-feel="🫡" aria-pressed="false">🫡</button>
+            <button type="button" class="feeling" data-feel="✌️" aria-pressed="false">✌️</button>
           </div>
           <select id="feeling-select" class="feeling-select" aria-label="How are you feeling today" style="display:none">
             <option value="">Select a feeling...</option>
@@ -93,11 +112,21 @@
             <option value="👏">👏 Appreciative</option>
             <option value="🙌">🙌 Celebrating</option>
             <option value="💪">💪 Motivated</option>
+            <option value="😐">😐 Neutral</option>
+            <option value="🤔">🤔 Thoughtful</option>
+            <option value="👍">👍 Approving</option>
+            <option value="🙏">🙏 Grateful</option>
+            <option value="🤝">🤝 Respectful</option>
+            <option value="🫡">🫡 Saluting</option>
+            <option value="✌️">✌️ Peaceful</option>
           </select>
         </fieldset>
 
         <fieldset class="greet-fieldset">
           <legend style="font-size:18px;font-weight:600;margin-bottom:10px">2. Leave me a message</legend>
+          <select id="message-select" class="message-select" aria-label="Select a preset message" style="display:none">
+            <option value="">Choose a message...</option>
+          </select>
           <div id="preset-cards" class="card-grid" aria-label="Preset messages"></div>
         </fieldset>
 
@@ -131,7 +160,7 @@
         <h3>Location</h3>
         <p>Guatemala 🇬🇹</p>
         <p>Nuevo San Carlos, Retalhuleu</p>
-        <button id="map-btn" class="footer-btn" aria-label="View map">📍 View Map</button>
+        <button id="map-btn" class="footer-btn" aria-label="View map and photos">📍 View Map & Photos</button>
       </div>
       <div class="footer-section">
         <h3>Contact</h3>
@@ -139,19 +168,26 @@
         <p><a href="mailto:emiliodom@gmail.com">✉️ emiliodom@gmail.com</a></p>
       </div>
     </div>
-    <p class="footer-credits">© 2025 Emilio Dominguez. All rights reserved.</p>
+    <p class="footer-credits">Licensed under MIT License • Created with the help of GitHub Copilot</p>
   </footer>
 
-  <!-- Map modal -->
+  <!-- Map modal with location photos -->
   <div id="map-modal" class="modal" aria-hidden="true">
     <div class="modal-content">
       <button class="modal-close" aria-label="Close modal">&times;</button>
-      <h2>My Location</h2>
+      <h2>My Location - Guatemala 🇬🇹</h2>
+      
+      <div class="location-photos">
+        <img src="https://images.unsplash.com/photo-1604002848738-4d87bd8faa99?w=400&h=300&fit=crop" alt="Nuevo San Carlos Retalhuleu landscape" loading="lazy">
+        <img src="https://images.unsplash.com/photo-1579547621700-28e5d1a5edd9?w=400&h=300&fit=crop" alt="Guatemala scenic view" loading="lazy">
+        <img src="https://images.unsplash.com/photo-1543262101-254a08f5ee7a?w=400&h=300&fit=crop" alt="Guatemala tourist destination" loading="lazy">
+      </div>
+      
       <iframe 
-        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15531.5!2d-91.7333!3d14.5167!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTTCsDMxJzAwLjAiTiA5McKwNDQnMDAuMCJX!5e0!3m2!1sen!2sgt!4v1234567890"
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3857.8!2d-91.6898847619052!3d14.574567657442334!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTTCsDM0JzI4LjQiTiA5McKwNDEnMjMuNiJX!5e0!3m2!1sen!2sgt!4v1234567890"
         width="100%" 
         height="400" 
-        style="border:0;" 
+        style="border:0;margin-top:16px;" 
         allowfullscreen="" 
         loading="lazy">
       </iframe>

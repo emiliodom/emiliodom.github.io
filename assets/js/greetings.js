@@ -213,12 +213,21 @@ document.addEventListener('DOMContentLoaded', async ()=>{
 
   // try to load from NocoDB first (if configured), otherwise from localStorage
   (async ()=>{
-    const nocodbList = await fetchFromNocoDB();
-    if(nocodbList && nocodbList.length){
-      renderPagination(nocodbList, 1, 5);
-    }else{
+    const loader = document.getElementById('greet-loader');
+    if(loader) loader.style.display = 'flex';
+    try{
+      const nocodbList = await fetchFromNocoDB();
+      if(nocodbList && nocodbList.length){
+        renderPagination(nocodbList, 1, 5);
+      }else{
+        const stored = JSON.parse(localStorage.getItem('greetings-list')||'[]');
+        renderPagination(stored, 1, 5);
+      }
+    }catch(e){
       const stored = JSON.parse(localStorage.getItem('greetings-list')||'[]');
       renderPagination(stored, 1, 5);
+    }finally{
+      if(loader) loader.style.display = 'none';
     }
   })();
 

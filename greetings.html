@@ -8,12 +8,39 @@
 </head>
 <body>
   <!-- Header (inlined to support static hosting) -->
+  <meta name="description" content="Leave a greeting for Emilio — choose a preset message and sign it.">
+  <meta property="og:title" content="Leave a greeting - Emilio Dominguez">
+  <meta property="og:description" content="Send a quick greeting and sign it. One submission per person.">
+  <meta name="twitter:card" content="summary" />
+  <link id="dynamic-favicon" rel="icon" href="/assets/img/avatar-fallback.svg">
+  <script>
+    // random favicon (simple emoji SVG) — changes every load
+    (function(){
+      try{
+        const emojis = ['🙂','😄','🚀','🌟','💡','🔥','🎯','✨'];
+        const e = emojis[Math.floor(Math.random()*emojis.length)];
+        const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='64' height='64'><rect fill='%233b6fa6' width='100%' height='100%'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' font-size='36'>${e}</text></svg>`;
+        const url = 'data:image/svg+xml;base64,' + btoa(svg);
+        const link = document.getElementById('dynamic-favicon') || document.createElement('link');
+        link.rel = 'icon'; link.href = url; document.head.appendChild(link);
+      }catch(e){/* ignore */}
+    })();
+  </script>
   <header class="site-header" role="banner" aria-label="Site header">
     <div class="header-inner">
+  <!-- subtle particles background copied from index -->
+  <div class="particle" style="left: 10%; width: 10px; height: 10px; animation-delay: 0s;"></div>
+  <div class="particle" style="left: 20%; width: 15px; height: 15px; animation-delay: 2s;"></div>
+  <div class="particle" style="left: 60%; width: 12px; height: 12px; animation-delay: 4s;"></div>
+  <div class="particle" style="left: 80%; width: 8px; height: 8px; animation-delay: 6s;"></div>
+  <div class="particle" style="left: 40%; width: 20px; height: 20px; animation-delay: 8s;"></div>
+
       <div class="avatar-wrap">
-        <img src="https://i.ibb.co/Kj6SGyGm/IMG-20250207-085923948-HDR-AE.jpg" onerror="this.src='assets/img/avatar-fallback.svg'" alt="Emilio D. avatar" class="header-avatar" width="64" height="64">
+        <a href="/" aria-label="Home">
+          <img src="https://i.ibb.co/Kj6SGyGm/IMG-20250207-085923948-HDR-AE.jpg" onerror="this.src='assets/img/avatar-fallback.svg'" alt="Emilio D. avatar" class="header-avatar" width="64" height="64">
+        </a>
         <div class="header-title">
-          <div class="name">Emilio Dominguez</div>
+          <a href="/" class="site-link" aria-label="Home"><div class="name">Emilio Dominguez</div></a>
           <div class="subtitle">Developer • Fitness Enthusiast • Lifelong Learner</div>
         </div>
       </div>
@@ -80,6 +107,11 @@
 
       <div id="greet-feedback" role="status" aria-live="polite" style="margin-top:12px"></div>
 
+      <!-- loader shown while fetching greetings -->
+      <div id="greet-loader" aria-hidden="true" style="display:none;margin-top:12px">
+        <div class="loader" aria-hidden="true">Loading…</div>
+      </div>
+
       <h3 style="margin-top:18px">Wall of greetings</h3>
       <ul id="greet-list" aria-live="polite"></ul>
     </section>
@@ -101,5 +133,36 @@
   <!-- Load site theme script so the theme toggle works on this page -->
   <script type="module" src="/assets/js/site-theme.js" defer></script>
   <script type="module" src="/assets/js/greetings.js"></script>
+
+  <!-- small mouse-follow subtle dot to add life to the greetings page -->
+  <script>
+    (function(){
+      try{
+        const dot = document.createElement('div');
+        dot.id = 'mouse-follower';
+        dot.setAttribute('aria-hidden','true');
+        Object.assign(dot.style,{
+          position: 'fixed',
+          width: '10px',
+          height: '10px',
+          borderRadius: '50%',
+          pointerEvents: 'none',
+          background: 'rgba(255,255,255,0.12)',
+          mixBlendMode: 'screen',
+          transform: 'translate(-50%,-50%)',
+          transition: 'transform .08s linear, opacity .2s',
+          zIndex: 2
+        });
+        document.body.appendChild(dot);
+        let last = 0;
+        window.addEventListener('mousemove', function(ev){
+          const now = Date.now(); if(now - last < 8) return; last = now;
+          dot.style.left = ev.clientX + 'px'; dot.style.top = ev.clientY + 'px';
+          dot.style.opacity = '1';
+        });
+        window.addEventListener('mouseout', ()=> dot.style.opacity = '0');
+      }catch(e){/* ignore */}
+    })();
+  </script>
 </body>
 </html>

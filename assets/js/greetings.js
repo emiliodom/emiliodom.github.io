@@ -61,7 +61,19 @@ async function fetchFromNocoDB(){
         const message = fields.Message || fields.message || '';
         const feeling = fields.Notes || fields.notes || '';
         const ip = fields.User || fields.user || '';
-        const when = fields.CreatedAt || fields.created_at || fields.createdAt || new Date().toLocaleString();
+        const rawDate = fields.CreatedAt || fields.created_at || fields.createdAt || '';
+        // Format date nicely
+        let when = '';
+        if(rawDate){
+          try{
+            const d = new Date(rawDate);
+            when = d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+          }catch(e){
+            when = rawDate;
+          }
+        }else{
+          when = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+        }
         return { message, feeling, when, ip };
       });
     }
@@ -127,12 +139,19 @@ function renderPagination(list, page=1, perPage=5){
   container.innerHTML = '';
   const grid = document.createElement('div');
   grid.className = 'greet-grid';
-  pageItems.forEach(item => {
+  
+  // Lazy loading for mobile
+  const isMobile = window.innerWidth <= 640;
+  pageItems.forEach((item,idx) => {
     const card = document.createElement('article');
     card.className = 'greet-card';
     if(item._pending) card.classList.add('pending');
     if(item._failed) card.classList.add('failed');
     card.tabIndex = 0;
+    if(isMobile && idx > 2){
+      card.setAttribute('loading','lazy');
+      card.style.contentVisibility = 'auto';
+    }
     card.innerHTML = `<div class="greet-feel">${item.feeling||''}</div><div class="greet-text">${item.message}</div><div class="greet-meta">${item.when}</div>`;
     grid.appendChild(card);
   });
@@ -154,7 +173,8 @@ function renderPagination(list, page=1, perPage=5){
 
 function saveWallEntry(message, feeling){
   const list = JSON.parse(localStorage.getItem('greetings-list')||'[]');
-  list.push({message, feeling, when: new Date().toLocaleString()});
+  const when = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+  list.push({message, feeling, when});
   localStorage.setItem('greetings-list', JSON.stringify(list));
   renderPagination(list, 1, 5);
 }
@@ -191,6 +211,14 @@ document.addEventListener('DOMContentLoaded', async ()=>{
       selectedFeeling = btn.dataset.feel;
     });
   });
+  
+  // mobile feeling select
+  const feelingSelect = document.getElementById('feeling-select');
+  if(feelingSelect){
+    feelingSelect.addEventListener('change', (e)=>{
+      selectedFeeling = e.target.value;
+    });
+  }
 
   // render captcha options as 3 buttons (one correct)
   function renderCaptchaOptions(cap){
@@ -259,19 +287,42 @@ document.addEventListener('DOMContentLoaded', async ()=>{
     // fetch IP
     const ip = await getIp();
     
-    // Check if this IP already submitted by querying NocoDB
+    // Check if this IP already submitted in the last 24 hours (database and local)
+    const now = Date.now();
+    const oneDayMs = 24 * 60 * 60 * 1000;
+    
     if(ip && NOCODB.postUrl && NOCODB.token){
       try{
         const nocodbList = await fetchFromNocoDB();
         if(nocodbList && nocodbList.length){
-          const ipExists = nocodbList.find(entry => entry.ip === ip);
-          if(ipExists){
-            feedback.textContent = 'You have already submitted a greeting from this IP (verified in database).';
+          const recentEntry = nocodbList.find(entry => {
+            if(entry.ip !== ip) return false;
+            // Check if within 24 hours
+            const entryTime = entry.when ? new Date(entry.when).getTime() : 0;
+            return (now - entryTime) < oneDayMs;
+          });
+          if(recentEntry){
+            feedback.textContent = 'You have already submitted a greeting from this IP in the last 24 hours.';
             return;
           }
         }
       }catch(e){
         console.warn('IP verification failed, falling back to local check', e);
+      }
+    }
+    
+    // Local 24-hour check
+    if(ip){
+      const key = `greet-submitted-${ip}`;
+      const stored = localStorage.getItem(key);
+      if(stored){
+        try{
+          const data = JSON.parse(stored);
+          if(data.when && (now - data.when) < oneDayMs){
+            feedback.textContent = 'You have already submitted a greeting from this IP in the last 24 hours.';
+            return;
+          }
+        }catch(e){/* ignore */}
       }
     }
     
@@ -289,17 +340,35 @@ document.addEventListener('DOMContentLoaded', async ()=>{
     }
     const dedupHash = await hashString(dedupInput);
     const dedupKey = `greet-submitted-hash-${dedupHash}`;
-    if(localStorage.getItem(dedupKey)){ feedback.textContent = 'Duplicate submission detected (same IP/message).'; return; }
+    const dedupStored = localStorage.getItem(dedupKey);
+    if(dedupStored){
+      try{
+        const dedupData = JSON.parse(dedupStored);
+        if(dedupData.when && (now - dedupData.when) < oneDayMs){
+          feedback.textContent = 'Duplicate submission detected (same IP/message in last 24 hours).';
+          return;
+        }
+      }catch(e){/* ignore */}
+    }
+    
     if(ip){
       const key = `greet-submitted-${ip}`;
-      if(localStorage.getItem(key)){ feedback.textContent = 'You have already submitted a greeting from this IP.'; return; }
-      // mark as submitted per IP
-      localStorage.setItem(key, JSON.stringify({when: Date.now(), message: preset}));
+      // mark as submitted per IP with timestamp
+      localStorage.setItem(key, JSON.stringify({when: now, message: preset}));
     }else{
       // fallback: per-browser submission prevention
       const key = 'greet-submitted-browserside';
-      if(localStorage.getItem(key)){ feedback.textContent = 'You have already submitted a greeting from this browser.'; return; }
-      localStorage.setItem(key, JSON.stringify({when: Date.now(), message: preset}));
+      const browserStored = localStorage.getItem(key);
+      if(browserStored){
+        try{
+          const browserData = JSON.parse(browserStored);
+          if(browserData.when && (now - browserData.when) < oneDayMs){
+            feedback.textContent = 'You have already submitted a greeting from this browser in the last 24 hours.';
+            return;
+          }
+        }catch(e){/* ignore */}
+      }
+      localStorage.setItem(key, JSON.stringify({when: now, message: preset}));
     }
     // Prepare message and notes (notes stores emoticon separately)
     const messageText = preset;

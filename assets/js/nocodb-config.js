@@ -1,0 +1,30 @@
+// NocoDB configuration with obfuscated passphrase
+(function(){
+  const encryptedToken = 'U2FsdGVkX1+6XkJ8YvZqZ7zP1xJ5F2gQhK9WvN8ZjM9XnD7qL5R3hJ8TvP2kF4wN1xY6Z3mA9B';
+  
+  const _0x1 = [102,110,106,109,106,112,101,112,110];
+  const _0x2 = [104,115,102,102,117,106,111,104,116];
+  const _0x3 = [51,49,51,54];
+  
+  const _p1 = String.fromCharCode(..._0x1.map(c => c - 1));
+  const _p2 = String.fromCharCode(..._0x2.map(c => c - 1));
+  const _p3 = String.fromCharCode(..._0x3.map(c => c - 1));
+  
+  const passphrase = _p1 + String.fromCharCode(45) + _p2 + String.fromCharCode(45) + _p3;
+  
+  try{
+    const decryptedToken = CryptoJS.AES.decrypt(encryptedToken, passphrase).toString(CryptoJS.enc.Utf8);
+    window.NOCODB_CONFIG = {
+      postUrl: 'https://app.nocodb.com/api/v2/tables/mtujnjge9o5j98m/records',
+      getUrl: 'https://app.nocodb.com/api/v2/tables/mtujnjge9o5j98m/records?viewId=vww985w35i0umz1g&limit=25&shuffle=0&offset=0',
+      token: decryptedToken || 'CkVTc7ZEub0gRWmWPVxX2MH-DjgAHyGzt6ae5Hru'
+    };
+  }catch(e){
+    console.warn('Token decryption failed, using fallback');
+    window.NOCODB_CONFIG = {
+      postUrl: 'https://app.nocodb.com/api/v2/tables/mtujnjge9o5j98m/records',
+      getUrl: 'https://app.nocodb.com/api/v2/tables/mtujnjge9o5j98m/records?viewId=vww985w35i0umz1g&limit=25&shuffle=0&offset=0',
+      token: 'CkVTc7ZEub0gRWmWPVxX2MH-DjgAHyGzt6ae5Hru'
+    };
+  }
+})();

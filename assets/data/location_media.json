@@ -1,0 +1,21 @@
+{
+  "video": {
+    "youtube_id": "d5pgNEO1iJo",
+    "title": "Guatemala - Beautiful Destination",
+    "embed_url": "https://www.youtube.com/embed/d5pgNEO1iJo"
+  },
+  "photos": [
+    {
+      "url": "https://i.ibb.co/cXS0j9L6/IMG-20250608-121600548.jpg",
+      "alt": "El Hato, Nuevo San Carlos"
+    },
+    {
+      "url": "https://i.ibb.co/j945kn2L/IMG-20231001-161521206.jpg",
+      "alt": "Canton Granados, Nuevo San Carlos"
+    },
+    {
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/Collage_Retalhuleu_Department.jpg/960px-Collage_Retalhuleu_Department.jpg",
+      "alt": "Retalhuleu Department: Palacio Departamental, Central Park, Xetulul, Takalik Abaj, Xocomil & rubber farms"
+    }
+  ]
+}

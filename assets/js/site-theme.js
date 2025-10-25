@@ -31,6 +31,8 @@ function applyFontSize(key){
     const sizes = { sm: '14px', md: '16px', lg: '18px' };
     const val = sizes[key] || sizes.md;
     document.documentElement.style.fontSize = val;
+    // also apply to body to affect all text including link cards
+    document.body.style.fontSize = val;
     localStorage.setItem('site-font-size', key);
     // update aria-pressed on buttons
     ['sm','md','lg'].forEach(k=>{

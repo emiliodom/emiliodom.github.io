@@ -14,11 +14,11 @@
   <meta name="twitter:card" content="summary" />
   <link id="dynamic-favicon" rel="icon" href="/assets/img/avatar-fallback.svg">
   <script>
-    // random favicon (simple emoji SVG) — changes every load
+    // random favicon with 10+ attractive icons related to site topics
     (function(){
       try{
-        const emojis = ['🙂','😄','🚀','🌟','💡','🔥','🎯','✨'];
-        const e = emojis[Math.floor(Math.random()*emojis.length)];
+        const icons = ['�','�','🏋️','�','�','💡','🔥','✨','🌟','⚡','�','📊','🧠','💪'];
+        const e = icons[Math.floor(Math.random()*icons.length)];
         const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='64' height='64'><rect fill='%233b6fa6' width='100%' height='100%'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' font-size='36'>${e}</text></svg>`;
         const url = 'data:image/svg+xml;base64,' + btoa(svg);
         const link = document.getElementById('dynamic-favicon') || document.createElement('link');
@@ -28,13 +28,6 @@
   </script>
   <header class="site-header" role="banner" aria-label="Site header">
     <div class="header-inner">
-  <!-- subtle particles background copied from index -->
-  <div class="particle" style="left: 10%; width: 10px; height: 10px; animation-delay: 0s;"></div>
-  <div class="particle" style="left: 20%; width: 15px; height: 15px; animation-delay: 2s;"></div>
-  <div class="particle" style="left: 60%; width: 12px; height: 12px; animation-delay: 4s;"></div>
-  <div class="particle" style="left: 80%; width: 8px; height: 8px; animation-delay: 6s;"></div>
-  <div class="particle" style="left: 40%; width: 20px; height: 20px; animation-delay: 8s;"></div>
-
       <div class="avatar-wrap">
         <a href="/" aria-label="Home">
           <img src="https://i.ibb.co/Kj6SGyGm/IMG-20250207-085923948-HDR-AE.jpg" onerror="this.src='assets/img/avatar-fallback.svg'" alt="Emilio D. avatar" class="header-avatar" width="64" height="64">
@@ -54,10 +47,13 @@
           <button id="font-lg" class="font-btn" aria-label="Larger text">A+</button>
         </div>
 
-        <label class="theme-switch" title="Toggle theme" aria-label="Toggle theme">
-          <input id="theme-toggle" type="checkbox" />
-          <span class="slider" aria-hidden="true"></span>
-        </label>
+        <div class="theme-toggle-wrap">
+          <label for="theme-toggle" class="theme-label">Theme</label>
+          <label class="theme-switch" title="Toggle theme" aria-label="Toggle theme">
+            <input id="theme-toggle" type="checkbox" />
+            <span class="slider" aria-hidden="true"></span>
+          </label>
+        </div>
 
         <label for="lang-select" class="visually-hidden">Language</label>
         <select id="lang-select" aria-label="Select language">
@@ -74,35 +70,37 @@
   <main class="container" role="main">
     <section aria-labelledby="greet-heading" class="greetings-section">
       <h2 id="greet-heading">Leave a greeting</h2>
-      <p>Select a pre-written message and sign it. One submission per person (IP check applied).</p>
+      <p>Tell me how you feel, leave a message, and complete the captcha. One submission per person (IP verified).</p>
 
       <form id="greet-form" aria-describedby="greet-help">
-        <fieldset>
-          <legend>How are you feeling today?</legend>
+        <fieldset style="margin-bottom:20px">
+          <legend style="font-size:18px;font-weight:600;margin-bottom:10px">1. Tell me, how are you feeling today?</legend>
           <div class="feelings" role="radiogroup" aria-label="How are you feeling today">
             <button type="button" class="feeling" data-feel="😊" aria-pressed="false">😊</button>
             <button type="button" class="feeling" data-feel="🙂" aria-pressed="false">🙂</button>
             <button type="button" class="feeling" data-feel="😄" aria-pressed="false">😄</button>
             <button type="button" class="feeling" data-feel="🤩" aria-pressed="false">🤩</button>
             <button type="button" class="feeling" data-feel="👏" aria-pressed="false">👏</button>
+            <button type="button" class="feeling" data-feel="🙌" aria-pressed="false">🙌</button>
+            <button type="button" class="feeling" data-feel="💪" aria-pressed="false">💪</button>
           </div>
         </fieldset>
 
-        <fieldset>
-          <legend>Choose a message</legend>
+        <fieldset style="margin-bottom:20px">
+          <legend style="font-size:18px;font-weight:600;margin-bottom:10px">2. Leave me a message</legend>
           <div id="preset-cards" class="card-grid" aria-label="Preset messages"></div>
         </fieldset>
 
-        <div id="captcha-wrap" style="margin-top:10px">
-          <label id="captcha-label">Captcha: <span id="captcha-question"></span></label>
+        <fieldset style="margin-bottom:20px">
+          <legend style="font-size:18px;font-weight:600;margin-bottom:10px" id="captcha-label">3. Complete the captcha: <span id="captcha-question"></span></legend>
           <div id="captcha-options" role="radiogroup" aria-labelledby="captcha-label" style="margin-top:8px"></div>
+        </fieldset>
+
+        <div style="margin-top:16px">
+          <button id="greet-submit" class="btn btn-large" type="submit">Send greeting</button>
         </div>
 
-        <div style="margin-top:12px">
-          <button id="greet-submit" class="btn" type="submit">Send greeting</button>
-        </div>
-
-        <p id="greet-help">We use an IP check to avoid multiple submissions. No personal data is stored except the message, feeling and a timestamp. To persist greetings into the repository a server-side endpoint or GitHub API integration is required.</p>
+        <p id="greet-help" style="font-size:13px;color:var(--muted);margin-top:10px">We verify your IP to prevent multiple submissions. Only your message, feeling, and timestamp are stored.</p>
       </form>
 
       <div id="greet-feedback" role="status" aria-live="polite" style="margin-top:12px"></div>
@@ -128,6 +126,29 @@
       getUrl: 'https://app.nocodb.com/api/v2/tables/mtujnjge9o5j98m/records?viewId=vww985w35i0umz1g&limit=25&shuffle=0&offset=0',
       token: 'CkVTc7ZEub0gRWmWPVxX2MH-DjgAHyGzt6ae5Hru'
     };
+  </script>
+
+  <!-- particles.js background animation library -->
+  <div id="particles-js" style="position:fixed;width:100%;height:100%;top:0;left:0;z-index:0;pointer-events:none"></div>
+  <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+  <script>
+    particlesJS('particles-js', {
+      particles: {
+        number: { value: 60, density: { enable: true, value_area: 800 } },
+        color: { value: '#667eea' },
+        shape: { type: 'circle' },
+        opacity: { value: 0.15, random: true, anim: { enable: true, speed: 0.5, opacity_min: 0.05 } },
+        size: { value: 3, random: true, anim: { enable: true, speed: 2, size_min: 0.5 } },
+        line_linked: { enable: true, distance: 150, color: '#667eea', opacity: 0.08, width: 1 },
+        move: { enable: true, speed: 1.5, direction: 'none', random: true, straight: false, out_mode: 'out', bounce: false }
+      },
+      interactivity: {
+        detect_on: 'canvas',
+        events: { onhover: { enable: true, mode: 'grab' }, onclick: { enable: true, mode: 'push' }, resize: true },
+        modes: { grab: { distance: 140, line_linked: { opacity: 0.25 } }, push: { particles_nb: 2 } }
+      },
+      retina_detect: true
+    });
   </script>
 
   <!-- Load site theme script so the theme toggle works on this page -->

@@ -24,7 +24,13 @@ const PRESET_MESSAGES = [
   { id: 'm3', text: "Inspiration for us all!" },
   { id: 'm4', text: "Stay curious and keep building." },
   { id: 'm5', text: "Small steps lead to big changes." },
-  { id: 'm6', text: "Keep the momentum going!" }
+  { id: 'm6', text: "Keep the momentum going!" },
+  { id: 'm7', text: "Your dedication is truly admirable." },
+  { id: 'm8', text: "Great things are coming your way!" },
+  { id: 'm9', text: "You make a real difference." },
+  { id: 'm10', text: "Keep shining bright!" },
+  { id: 'm11', text: "Never stop learning and growing." },
+  { id: 'm12', text: "Your work is truly inspiring!" }
 ];
 
 // NocoDB client config (optional). Set window.NOCODB_CONFIG in the page to enable.
@@ -38,7 +44,7 @@ async function fetchFromNocoDB(){
     const r = await fetch(fetchUrl, { headers: { accept: 'application/json', 'xc-token': NOCODB.token } });
     if(!r.ok) throw new Error('nocodb fetch failed');
     const j = await r.json();
-    // Expecting array of records; map into local format {message, feeling, when}
+    // Expecting array of records; map into local format {message, feeling, when, ip}
     // Normalize various response shapes
     const rows = [];
     if(Array.isArray(j)){
@@ -51,11 +57,12 @@ async function fetchFromNocoDB(){
     if(rows.length){
       return rows.map(rec => {
         const fields = rec.fields || rec;
-        // For v2 mapping: Message = text, Notes = emoticon
+        // For v2 mapping: Message = text, Notes = emoticon, User = ip
         const message = fields.Message || fields.message || '';
         const feeling = fields.Notes || fields.notes || '';
+        const ip = fields.User || fields.user || '';
         const when = fields.CreatedAt || fields.created_at || fields.createdAt || new Date().toLocaleString();
-        return { message, feeling, when };
+        return { message, feeling, when, ip };
       });
     }
     return null;
@@ -251,6 +258,23 @@ document.addEventListener('DOMContentLoaded', async ()=>{
 
     // fetch IP
     const ip = await getIp();
+    
+    // Check if this IP already submitted by querying NocoDB
+    if(ip && NOCODB.postUrl && NOCODB.token){
+      try{
+        const nocodbList = await fetchFromNocoDB();
+        if(nocodbList && nocodbList.length){
+          const ipExists = nocodbList.find(entry => entry.ip === ip);
+          if(ipExists){
+            feedback.textContent = 'You have already submitted a greeting from this IP (verified in database).';
+            return;
+          }
+        }
+      }catch(e){
+        console.warn('IP verification failed, falling back to local check', e);
+      }
+    }
+    
     // compute dedup hash (IP + message) to avoid duplicate identical submissions
     const dedupInput = (ip || 'web') + '|' + preset;
     async function hashString(s){

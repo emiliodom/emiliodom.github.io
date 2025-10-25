@@ -13,9 +13,11 @@
   <header class="site-header" role="banner" aria-label="Site header">
     <div class="header-inner">
       <div class="avatar-wrap">
-        <img src="https://i.ibb.co/Kj6SGyGm/IMG-20250207-085923948-HDR-AE.jpg" onerror="this.src='assets/img/avatar-fallback.svg'" alt="Emilio D. avatar" class="header-avatar" width="64" height="64">
+        <a href="/" aria-label="Home">
+          <img src="https://i.ibb.co/Kj6SGyGm/IMG-20250207-085923948-HDR-AE.jpg" onerror="this.src='assets/img/avatar-fallback.svg'" alt="Emilio D. avatar" class="header-avatar" width="64" height="64">
+        </a>
         <div class="header-title">
-          <div class="name">Emilio Dominguez</div>
+          <a href="/" class="site-link" aria-label="Home"><div class="name">Emilio Dominguez</div></a>
           <div class="subtitle">Developer • Fitness Enthusiast • Lifelong Learner</div>
         </div>
       </div>
@@ -29,10 +31,13 @@
           <button id="font-lg" class="font-btn" aria-label="Larger text">A+</button>
         </div>
 
-        <label class="theme-switch" title="Toggle theme" aria-label="Toggle theme">
-          <input id="theme-toggle" type="checkbox" />
-          <span class="slider" aria-hidden="true"></span>
-        </label>
+        <div class="theme-toggle-wrap">
+          <label for="theme-toggle" class="theme-label">Theme</label>
+          <label class="theme-switch" title="Toggle theme" aria-label="Toggle theme">
+            <input id="theme-toggle" type="checkbox" />
+            <span class="slider" aria-hidden="true"></span>
+          </label>
+        </div>
 
         <label for="lang-select" class="visually-hidden">Language</label>
         <select id="lang-select" aria-label="Select language">

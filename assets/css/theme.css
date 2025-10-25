@@ -174,3 +174,10 @@ a.link-card:focus{outline:3px solid rgba(120,150,255,0.18);outline-offset:4px}
 .greet-card .greet-meta{font-size:12px;color:var(--muted)}
 .pager{display:flex;gap:8px;align-items:center;justify-content:center;margin-top:12px}
 
+/* loader and subtle mouse follower */
+#greet-loader{display:flex;align-items:center;justify-content:center}
+.loader{background:rgba(0,0,0,0.04);color:var(--muted);padding:8px 12px;border-radius:10px;border:1px solid rgba(0,0,0,0.06)}
+.theme-dark .loader{background:rgba(255,255,255,0.04);color:var(--muted);border-color:rgba(255,255,255,0.04)}
+#mouse-follower{width:10px;height:10px;border-radius:50%;}
+
+

@@ -1,0 +1,9 @@
+name = "nocodb-proxy"
+main = "src/index.js"
+compatibility_date = "2025-01-01"
+
+# Environment variables (non-secret)
+[vars]
+
+# Secrets (set with: wrangler secret put NOCODB_TOKEN)
+# NOCODB_TOKEN = set via CLI, not in this file

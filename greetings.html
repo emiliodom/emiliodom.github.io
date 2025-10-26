@@ -135,7 +135,14 @@
           <button id="greet-submit" class="btn btn-large" type="submit">Send greeting</button>
         </div>
 
-        <p id="greet-help" style="font-size:13px;color:var(--muted);margin-top:10px">We verify your IP to prevent multiple submissions. Only your message, feeling, and timestamp are stored.</p>
+        <div class="ip-disclaimer" style="margin-top:14px;padding:12px;background:rgba(102,126,234,0.12);border-left:4px solid rgba(102,126,234,0.8);border-radius:6px">
+          <p style="font-size:13px;color:var(--text-dark);margin:0;line-height:1.5">
+            🔒 <strong>Privacy Notice:</strong> Your IP address is used only for verification purposes to prevent duplicate submissions. 
+            It is <strong>not shared with any third parties</strong> and is only used as a reference for this feature.
+          </p>
+        </div>
+
+        <p id="greet-help" style="font-size:13px;color:var(--muted);margin-top:10px">Only your message, feeling, and timestamp are stored.</p>
       </form>
 
       <div id="greet-feedback" role="status" aria-live="polite" style="margin-top:12px"></div>

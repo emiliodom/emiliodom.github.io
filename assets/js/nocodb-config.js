@@ -23,17 +23,21 @@
   
   try{
     const decryptedToken = CryptoJS.AES.decrypt(encryptedToken, passphrase).toString(CryptoJS.enc.Utf8);
+    if (!decryptedToken) {
+      throw new Error('Decryption failed');
+    }
     window.NOCODB_CONFIG = {
       postUrl: 'https://app.nocodb.com/api/v2/tables/mtujnjge9o5j98m/records',
       getUrl: 'https://app.nocodb.com/api/v2/tables/mtujnjge9o5j98m/records?viewId=vww985w35i0umz1g&limit=25&shuffle=0&offset=0',
-      token: decryptedToken || 'CkVTc7ZEub0gRWmWPVxX2MH-DjgAHyGzt6ae5Hru'
+      token: decryptedToken
     };
   }catch(e){
-    console.warn('Token decryption failed, using fallback');
+    console.error('Token decryption failed. Please ensure GitHub Actions secrets are configured or use local development token.');
+    // No fallback token - will fail gracefully if decryption doesn't work
     window.NOCODB_CONFIG = {
       postUrl: 'https://app.nocodb.com/api/v2/tables/mtujnjge9o5j98m/records',
       getUrl: 'https://app.nocodb.com/api/v2/tables/mtujnjge9o5j98m/records?viewId=vww985w35i0umz1g&limit=25&shuffle=0&offset=0',
-      token: 'CkVTc7ZEub0gRWmWPVxX2MH-DjgAHyGzt6ae5Hru'
+      token: ''
     };
   }
 })();

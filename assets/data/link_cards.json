@@ -1,51 +1,101 @@
-[
-  {
-    "title": "My CV",
-    "description": "ProximaWeb — CV and professional info",
-    "href": "https://proximaweb.click",
-    "icon": "📄",
-    "external": true
-  },
-  {
-    "title": "My Blog",
-    "description": "ProximaWeb Blog",
-    "href": "https://proximaweb.click/blog",
-    "icon": "📝",
-    "external": true
-  },
-  {
-    "title": "FitFit Pro",
-    "description": "Your exercise and fitness companion",
-    "href": "https://fitfit.pro/guia",
-    "icon": "💪",
-    "external": true
-  },
-  {
-    "title": "University Guides",
-    "description": "Educational resources and guides",
-    "href": "https://edominurl.github.io",
-    "icon": "🎓",
-    "external": true
-  },
-  {
-    "title": "React Notes",
-    "description": "My React development notes on Notion",
-    "href": "https://www.notion.so/React-29679b2c88838072b9e3c8ca3250e3a0",
-    "icon": "⚛️",
-    "external": true
-  },
-  {
-    "title": "LinkedIn",
-    "description": "Connect with me professionally",
-    "href": "https://linkedin.com/in/domingem",
-    "icon": "💼",
-    "external": true
-  },
-  {
-    "title": "Leave a greeting",
-    "description": "Choose a message and sign it — one per person",
-    "href": "/greetings.html",
-    "icon": "💬",
-    "external": false
-  }
-]
+{
+  "categories": [
+    {
+      "name": "Web Development Related",
+      "links": [
+        {
+          "title": "LinkedIn",
+          "description": "Connect with me professionally",
+          "href": "https://linkedin.com/in/domingem",
+          "icon": "💼",
+          "external": true
+        },
+        {
+          "title": "GitHub Profile",
+          "description": "Check out my open source projects",
+          "href": "https://github.com/emiliodom",
+          "icon": "�",
+          "external": true
+        },
+        {
+          "title": "My CV",
+          "description": "ProximaWeb — CV and professional info",
+          "href": "https://proximaweb.click",
+          "icon": "�",
+          "external": true
+        }
+      ]
+    },
+    {
+      "name": "Personal Stuff",
+      "description": "Easier for me to find them here",
+      "links": [
+        {
+          "title": "Study Guides on Notion",
+          "description": "React, programming notes and more",
+          "href": "https://www.notion.so/React-29679b2c88838072b9e3c8ca3250e3a0",
+          "icon": "📚",
+          "external": true
+        },
+        {
+          "title": "My Blog",
+          "description": "ProximaWeb Blog",
+          "href": "https://proximaweb.click/blog",
+          "icon": "�",
+          "external": true
+        },
+        {
+          "title": "University Guides",
+          "description": "Educational resources and guides",
+          "href": "https://edominurl.github.io",
+          "icon": "🎓",
+          "external": true
+        }
+      ]
+    },
+    {
+      "name": "Sports Related",
+      "links": [
+        {
+          "title": "Follow me on Strava",
+          "description": "My running and cycling activities",
+          "href": "https://www.strava.com/athletes/116531391",
+          "icon": null,
+          "customImage": "https://photos.tripsite.com/assets/files/3318/follow_me_on_strava_button.1575x0-is.webp",
+          "external": true
+        },
+        {
+          "title": "Connect with me on Komoot",
+          "description": "Outdoor adventures and routes",
+          "href": "https://www.komoot.com/es-es/user/2693862833285",
+          "icon": null,
+          "customImage": "https://cdn.brandfetch.io/idrdvFc5GY/w/96/h/96/theme/dark/logo.png",
+          "external": true
+        },
+        {
+          "title": "My Exercise Plan",
+          "description": "FitFit Pro — Your fitness companion",
+          "href": "https://fitfit.pro/guia",
+          "icon": "💪",
+          "external": true
+        },
+        {
+          "title": "Local Guide Photos",
+          "description": "My travel photography on Google Maps",
+          "href": "https://www.google.com/maps/contrib/105222552308857925881/photos/@24.9219792,-92.1831197,5z/data=!3m1!4b1!4m3!8m2!3m1!1e1?entry=ttu&g_ep=EgoyMDI1MTAyMi4wIKXMDSoASAFQAw%3D%3D",
+          "icon": "�",
+          "external": true
+        }
+      ]
+    }
+  ],
+  "standalone": [
+    {
+      "title": "Leave a greeting",
+      "description": "Choose a message and sign it — one per person",
+      "href": "/greetings.html",
+      "icon": "💬",
+      "external": false
+    }
+  ]
+}

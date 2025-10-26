@@ -1,5 +1,5 @@
 // greetings.js
-// Handles preset greeting selection, numeric captcha, simple IP-based single submission
+// Handles preset greeting selection, Google reCAPTCHA Enterprise, simple IP-based single submission
 
 async function fetchBadWords() {
     try {
@@ -10,12 +10,6 @@ async function fetchBadWords() {
         console.warn("Could not load badwords list", e);
         return [];
     }
-}
-
-function randomCaptcha() {
-    const a = Math.floor(Math.random() * 9) + 1;
-    const b = Math.floor(Math.random() * 9) + 1;
-    return { question: `${a} + ${b} = ?`, answer: a + b };
 }
 
 const PRESET_MESSAGES = [
@@ -93,7 +87,7 @@ async function fetchFromNocoDB() {
     }
 }
 
-async function postToNocoDB(message, user, notes) {
+async function postToNocoDB(message, user, notes, country) {
     const postUrl = NOCODB.postUrl || NOCODB.url;
     if (!postUrl) throw new Error("NocoDB not configured");
     try {
@@ -101,11 +95,11 @@ async function postToNocoDB(message, user, notes) {
         // We'll detect v2 by presence of postUrl including '/api/v2' or when postUrl is explicitly provided.
         let body;
         if (postUrl.includes("/api/v2") || postUrl.includes("/api/greetings")) {
-            // Send flat JSON as the user requested: Message (text), User (ip), Notes (emoticon)
-            body = { Message: message, User: user, Notes: notes };
+            // Send flat JSON as the user requested: Message (text), User (ip), Notes (emoticon), Country (flag)
+            body = { Message: message, User: user, Notes: notes, Country: country || "🌍" };
         } else {
             // Fallback for v3 style: send records wrapper
-            body = { records: [{ fields: { Message: message, User: user, Notes: notes } }] };
+            body = { records: [{ fields: { Message: message, User: user, Notes: notes, Country: country || "🌍" } }] };
         }
 
         // No xc-token header needed - the proxy handles authentication
@@ -210,8 +204,93 @@ function saveWallEntry(message, feeling) {
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
-    let captcha = randomCaptcha();
-    document.getElementById("captcha-question").textContent = captcha.question;
+    // Check if user has already submitted in last 24 hours on page load
+    const submissionStatusAlert = document.getElementById("submission-status-alert");
+    const now = Date.now();
+    const oneDayMs = 24 * 60 * 60 * 1000;
+    let hasRecentSubmission = false;
+
+    // Check IP-based submission
+    try {
+        const ip = await getIp();
+        if (ip) {
+            const ipKey = `greet-submitted-${ip}`;
+            const stored = localStorage.getItem(ipKey);
+            if (stored) {
+                const data = JSON.parse(stored);
+                if (data.when && now - data.when < oneDayMs) {
+                    hasRecentSubmission = true;
+                    const hoursLeft = Math.ceil((oneDayMs - (now - data.when)) / (1000 * 60 * 60));
+                    if (submissionStatusAlert) {
+                        submissionStatusAlert.className = "submission-status-alert submission-blocked";
+                        submissionStatusAlert.innerHTML = `🚫 You've already submitted a greeting in the last 24 hours. Please wait ${hoursLeft} more hour${
+                            hoursLeft !== 1 ? "s" : ""
+                        } before submitting again.`;
+                        submissionStatusAlert.style.display = "block";
+                    }
+                }
+            }
+        }
+    } catch (e) {
+        console.warn("Could not check IP-based submission status", e);
+    }
+
+    // Fallback: check browser-based submission
+    if (!hasRecentSubmission) {
+        const browserKey = "greet-submitted-browserside";
+        const browserStored = localStorage.getItem(browserKey);
+        if (browserStored) {
+            try {
+                const browserData = JSON.parse(browserStored);
+                if (browserData.when && now - browserData.when < oneDayMs) {
+                    hasRecentSubmission = true;
+                    const hoursLeft = Math.ceil((oneDayMs - (now - browserData.when)) / (1000 * 60 * 60));
+                    if (submissionStatusAlert) {
+                        submissionStatusAlert.className = "submission-status-alert submission-blocked";
+                        submissionStatusAlert.innerHTML = `🚫 You've already submitted a greeting in the last 24 hours. Please wait ${hoursLeft} more hour${
+                            hoursLeft !== 1 ? "s" : ""
+                        } before submitting again.`;
+                        submissionStatusAlert.style.display = "block";
+                    }
+                }
+            } catch (e) {
+                // ignore
+            }
+        }
+    }
+
+    // Show success message if no recent submission
+    if (!hasRecentSubmission && submissionStatusAlert) {
+        submissionStatusAlert.className = "submission-status-alert submission-ready";
+        submissionStatusAlert.innerHTML = "✅ You can submit a greeting! Fill out the form below.";
+        submissionStatusAlert.style.display = "block";
+    }
+
+    // Check connection status on page load and display alert if issues detected
+    const connectionAlert = document.getElementById("connection-alert");
+    try {
+        const testResponse = await fetch(NOCODB.getUrl || NOCODB.postUrl, {
+            method: "HEAD",
+            headers: { accept: "application/json" },
+        }).catch(() => null);
+
+        if (!testResponse || !testResponse.ok) {
+            if (connectionAlert) {
+                connectionAlert.style.display = "block";
+                connectionAlert.textContent =
+                    "⚠️ Connection issue detected. Greetings will be saved locally until connection is restored.";
+            }
+        } else {
+            if (connectionAlert) {
+                connectionAlert.style.display = "none";
+            }
+        }
+    } catch (e) {
+        if (connectionAlert) {
+            connectionAlert.style.display = "block";
+            connectionAlert.textContent = "⚠️ Unable to connect to server. Greetings will be saved locally.";
+        }
+    }
 
     const badwords = await fetchBadWords();
 
@@ -265,43 +344,27 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
     }
 
-    // render captcha options as 3 buttons (one correct)
-    function renderCaptchaOptions(cap) {
-        const wrap = document.getElementById("captcha-options");
-        wrap.innerHTML = "";
-        const correct = cap.answer;
-        // generate two decoys
-        const decoys = [];
-        while (decoys.length < 2) {
-            const n = Math.max(1, Math.floor(Math.random() * 18));
-            if (n !== correct && !decoys.includes(n)) decoys.push(n);
-        }
-        const choices = [correct, ...decoys].sort(() => Math.random() - 0.5);
-        choices.forEach((c, i) => {
-            const b = document.createElement("button");
-            b.type = "button";
-            b.className = "captcha-btn";
-            b.setAttribute("data-val", c);
-            b.textContent = c;
-            b.addEventListener("click", () => {
-                // remove pressed/selected state from all options, then mark this one
-                document.querySelectorAll(".captcha-btn").forEach((x) => {
-                    x.setAttribute("aria-pressed", "false");
-                    x.classList.remove("selected");
-                });
-                b.setAttribute("aria-pressed", "true");
-                b.classList.add("selected");
-
-                // Clear any previous error feedback when user changes captcha selection
-                const feedback = document.getElementById("greet-feedback");
-                if (feedback && feedback.textContent.includes("Captcha")) {
-                    feedback.textContent = "";
-                }
+    // country buttons
+    let selectedCountry = null;
+    document.querySelectorAll(".country").forEach((btn) => {
+        btn.addEventListener("click", () => {
+            document.querySelectorAll(".country").forEach((b) => {
+                b.setAttribute("aria-pressed", "false");
+                b.classList.remove("selected");
             });
-            wrap.appendChild(b);
+            btn.setAttribute("aria-pressed", "true");
+            btn.classList.add("selected");
+            selectedCountry = btn.dataset.country;
+        });
+    });
+
+    // mobile country select
+    const countrySelect = document.getElementById("country-select");
+    if (countrySelect) {
+        countrySelect.addEventListener("change", (e) => {
+            selectedCountry = e.target.value;
         });
     }
-    renderCaptchaOptions(captcha);
 
     // try to load from NocoDB first (if configured), otherwise from localStorage
     (async () => {
@@ -325,6 +388,23 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     document.getElementById("greet-form").addEventListener("submit", async (e) => {
         e.preventDefault();
+
+        const feedback = document.getElementById("greet-feedback");
+        feedback.textContent = "";
+
+        // Execute reCAPTCHA Enterprise
+        let recaptchaToken;
+        try {
+            await grecaptcha.enterprise.ready();
+            recaptchaToken = await grecaptcha.enterprise.execute("6LcF5_crAAAAABBrXkDLdIFnSbQ36AIaDJxXA0P8", {
+                action: "submit_greeting",
+            });
+        } catch (e) {
+            feedback.textContent = "reCAPTCHA verification failed. Please refresh and try again.";
+            console.error("reCAPTCHA error:", e);
+            return;
+        }
+
         const sel = document.querySelector(".preset-card.selected");
         const messageSelectEl = document.getElementById("message-select");
         const preset = sel
@@ -332,18 +412,9 @@ document.addEventListener("DOMContentLoaded", async () => {
             : messageSelectEl && messageSelectEl.value
             ? messageSelectEl.value.trim()
             : "";
-        // read selected captcha button value
-        const selCap = document.querySelector('.captcha-btn[aria-pressed="true"]');
-        const answer = selCap ? parseInt(selCap.getAttribute("data-val"), 10) : null;
-        const feedback = document.getElementById("greet-feedback");
-        feedback.textContent = "";
 
         if (!preset) {
             feedback.textContent = "Please choose a message.";
-            return;
-        }
-        if (answer !== captcha.answer) {
-            feedback.textContent = "Captcha answer is incorrect. Please pick the correct number.";
             return;
         }
 
@@ -458,6 +529,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         // Prepare message and notes (notes stores emoticon separately)
         const messageText = preset;
         const notesEmoji = selectedFeeling || "";
+        const countryFlag = selectedCountry || "🌍";
 
         // Optimistic UI: insert pending card immediately
         const optimisticEntry = { message: messageText, feeling: notesEmoji, when: "Sending…", _pending: true };
@@ -470,7 +542,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             const userField = ip || "web";
             const postUrl = NOCODB.postUrl || NOCODB.url;
             if (postUrl && NOCODB.token) {
-                const resp = await postToNocoDB(messageText, userField, notesEmoji).catch((err) => {
+                const resp = await postToNocoDB(messageText, userField, notesEmoji, countryFlag).catch((err) => {
                     throw err;
                 });
                 // success: mark dedup key and reload authoritative list
@@ -503,7 +575,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
         // reset UI selections and form
         document.getElementById("greet-form").reset();
-        // clear selected classes and aria-pressed from preset cards, feelings and captcha
+        // clear selected classes and aria-pressed from preset cards, feelings, countries and captcha
         document.querySelectorAll(".preset-card.selected").forEach((x) => {
             x.classList.remove("selected");
             x.setAttribute("aria-pressed", "false");
@@ -512,15 +584,12 @@ document.addEventListener("DOMContentLoaded", async () => {
             x.classList.remove("selected");
             x.setAttribute("aria-pressed", "false");
         });
-        document.querySelectorAll(".captcha-btn.selected").forEach((x) => {
+        document.querySelectorAll(".country.selected").forEach((x) => {
             x.classList.remove("selected");
             x.setAttribute("aria-pressed", "false");
         });
         selectedFeeling = null;
+        selectedCountry = null;
         if (messageSelectEl) messageSelectEl.selectedIndex = 0;
-        // refresh captcha
-        const newCap = randomCaptcha();
-        captcha.answer = newCap.answer;
-        document.getElementById("captcha-question").textContent = newCap.question;
     });
 });

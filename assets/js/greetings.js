@@ -12,6 +12,17 @@ async function fetchBadWords() {
     }
 }
 
+async function fetchCountries() {
+    try {
+        const r = await fetch("/assets/data/countries.json");
+        if (!r.ok) return [];
+        return await r.json();
+    } catch (e) {
+        console.warn("Could not load countries list", e);
+        return [];
+    }
+}
+
 const PRESET_MESSAGES = [
     { id: "m1", text: "Keep pushing, you're doing great!" },
     { id: "m2", text: "Proud of your work — keep it up." },
@@ -204,23 +215,43 @@ function saveWallEntry(message, feeling) {
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
-    // Check if user has already submitted in last 24 hours on page load
+    // Check if user has already submitted by querying NocoDB directly
     const submissionStatusAlert = document.getElementById("submission-status-alert");
     const now = Date.now();
     const oneDayMs = 24 * 60 * 60 * 1000;
     let hasRecentSubmission = false;
 
-    // Check IP-based submission
+    // Get user's IP
+    let userIp = null;
     try {
-        const ip = await getIp();
-        if (ip) {
-            const ipKey = `greet-submitted-${ip}`;
-            const stored = localStorage.getItem(ipKey);
-            if (stored) {
-                const data = JSON.parse(stored);
-                if (data.when && now - data.when < oneDayMs) {
+        userIp = await getIp();
+    } catch (e) {
+        console.warn("Could not get IP", e);
+    }
+
+    // Check NocoDB database for existing submission from this IP
+    if (userIp) {
+        try {
+            const nocodbList = await fetchFromNocoDB();
+            if (nocodbList && nocodbList.length) {
+                // Find any submission from this IP in the last 24 hours
+                const recentEntry = nocodbList.find((entry) => {
+                    if (!entry.ip || entry.ip !== userIp) return false;
+                    // Parse the entry's date and check if within 24 hours
+                    try {
+                        const entryDate = new Date(entry.when);
+                        const entryTime = entryDate.getTime();
+                        return now - entryTime < oneDayMs;
+                    } catch (e) {
+                        return false;
+                    }
+                });
+
+                if (recentEntry) {
                     hasRecentSubmission = true;
-                    const hoursLeft = Math.ceil((oneDayMs - (now - data.when)) / (1000 * 60 * 60));
+                    const entryDate = new Date(recentEntry.when);
+                    const entryTime = entryDate.getTime();
+                    const hoursLeft = Math.ceil((oneDayMs - (now - entryTime)) / (1000 * 60 * 60));
                     if (submissionStatusAlert) {
                         submissionStatusAlert.className = "submission-status-alert submission-blocked";
                         submissionStatusAlert.innerHTML = `🚫 You've already submitted a greeting in the last 24 hours. Please wait ${hoursLeft} more hour${
@@ -230,13 +261,33 @@ document.addEventListener("DOMContentLoaded", async () => {
                     }
                 }
             }
+        } catch (e) {
+            console.warn("Could not check NocoDB for existing submissions", e);
         }
-    } catch (e) {
-        console.warn("Could not check IP-based submission status", e);
     }
 
-    // Fallback: check browser-based submission
-    if (!hasRecentSubmission) {
+    // Fallback: check localStorage
+    if (!hasRecentSubmission && userIp) {
+        const ipKey = `greet-submitted-${userIp}`;
+        const stored = localStorage.getItem(ipKey);
+        if (stored) {
+            const data = JSON.parse(stored);
+            if (data.when && now - data.when < oneDayMs) {
+                hasRecentSubmission = true;
+                const hoursLeft = Math.ceil((oneDayMs - (now - data.when)) / (1000 * 60 * 60));
+                if (submissionStatusAlert) {
+                    submissionStatusAlert.className = "submission-status-alert submission-blocked";
+                    submissionStatusAlert.innerHTML = `🚫 You've already submitted a greeting in the last 24 hours. Please wait ${hoursLeft} more hour${
+                        hoursLeft !== 1 ? "s" : ""
+                    } before submitting again.`;
+                    submissionStatusAlert.style.display = "block";
+                }
+            }
+        }
+    }
+
+    // Browser-based fallback if no IP available
+    if (!hasRecentSubmission && !userIp) {
         const browserKey = "greet-submitted-browserside";
         const browserStored = localStorage.getItem(browserKey);
         if (browserStored) {
@@ -266,33 +317,36 @@ document.addEventListener("DOMContentLoaded", async () => {
         submissionStatusAlert.style.display = "block";
     }
 
-    // Check connection status on page load and display alert if issues detected
-    const connectionAlert = document.getElementById("connection-alert");
-    try {
-        const testResponse = await fetch(NOCODB.getUrl || NOCODB.postUrl, {
-            method: "HEAD",
-            headers: { accept: "application/json" },
-        }).catch(() => null);
+    const badwords = await fetchBadWords();
+    const countries = await fetchCountries();
 
-        if (!testResponse || !testResponse.ok) {
-            if (connectionAlert) {
-                connectionAlert.style.display = "block";
-                connectionAlert.textContent =
-                    "⚠️ Connection issue detected. Greetings will be saved locally until connection is restored.";
-            }
-        } else {
-            if (connectionAlert) {
-                connectionAlert.style.display = "none";
-            }
-        }
-    } catch (e) {
-        if (connectionAlert) {
-            connectionAlert.style.display = "block";
-            connectionAlert.textContent = "⚠️ Unable to connect to server. Greetings will be saved locally.";
-        }
+    // Populate country selector
+    const countrySelector = document.getElementById("country-selector");
+    if (countrySelector && countries.length > 0) {
+        countries.forEach((country) => {
+            const opt = document.createElement("option");
+            opt.value = country.flag;
+            opt.textContent = `${country.flag} ${country.name}`;
+            opt.dataset.code = country.code;
+            countrySelector.appendChild(opt);
+        });
     }
 
-    const badwords = await fetchBadWords();
+    // Track selected fields to enable submit button
+    let selectedMessage = null;
+    let selectedFeeling = null;
+    let selectedCountry = null;
+
+    function checkFormValidity() {
+        const submitBtn = document.getElementById("greet-submit");
+        if (submitBtn) {
+            if (selectedMessage && selectedFeeling && selectedCountry) {
+                submitBtn.disabled = false;
+            } else {
+                submitBtn.disabled = true;
+            }
+        }
+    }
 
     // render preset cards
     const cards = document.getElementById("preset-cards");
@@ -307,6 +361,8 @@ document.addEventListener("DOMContentLoaded", async () => {
             document.querySelectorAll(".preset-card").forEach((x) => x.classList.remove("selected"));
             b.classList.add("selected");
             b.setAttribute("aria-pressed", "true");
+            selectedMessage = m.text;
+            checkFormValidity();
         });
         cards.appendChild(b);
     });
@@ -320,10 +376,13 @@ document.addEventListener("DOMContentLoaded", async () => {
             opt.textContent = m.text;
             messageSelect.appendChild(opt);
         });
+        messageSelect.addEventListener("change", (e) => {
+            selectedMessage = e.target.value || null;
+            checkFormValidity();
+        });
     }
 
     // feelings buttons
-    let selectedFeeling = null;
     document.querySelectorAll(".feeling").forEach((btn) => {
         btn.addEventListener("click", () => {
             document.querySelectorAll(".feeling").forEach((b) => {
@@ -333,6 +392,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             btn.setAttribute("aria-pressed", "true");
             btn.classList.add("selected");
             selectedFeeling = btn.dataset.feel;
+            checkFormValidity();
         });
     });
 
@@ -340,29 +400,16 @@ document.addEventListener("DOMContentLoaded", async () => {
     const feelingSelect = document.getElementById("feeling-select");
     if (feelingSelect) {
         feelingSelect.addEventListener("change", (e) => {
-            selectedFeeling = e.target.value;
+            selectedFeeling = e.target.value || null;
+            checkFormValidity();
         });
     }
 
-    // country buttons
-    let selectedCountry = null;
-    document.querySelectorAll(".country").forEach((btn) => {
-        btn.addEventListener("click", () => {
-            document.querySelectorAll(".country").forEach((b) => {
-                b.setAttribute("aria-pressed", "false");
-                b.classList.remove("selected");
-            });
-            btn.setAttribute("aria-pressed", "true");
-            btn.classList.add("selected");
-            selectedCountry = btn.dataset.country;
-        });
-    });
-
-    // mobile country select
-    const countrySelect = document.getElementById("country-select");
-    if (countrySelect) {
-        countrySelect.addEventListener("change", (e) => {
-            selectedCountry = e.target.value;
+    // country selector
+    if (countrySelector) {
+        countrySelector.addEventListener("change", (e) => {
+            selectedCountry = e.target.value || null;
+            checkFormValidity();
         });
     }
 
@@ -395,12 +442,16 @@ document.addEventListener("DOMContentLoaded", async () => {
         // Execute reCAPTCHA Enterprise
         let recaptchaToken;
         try {
+            if (typeof grecaptcha === "undefined" || !grecaptcha.enterprise) {
+                throw new Error("reCAPTCHA not loaded. Please refresh the page.");
+            }
             await grecaptcha.enterprise.ready();
             recaptchaToken = await grecaptcha.enterprise.execute("6LcF5_crAAAAABBrXkDLdIFnSbQ36AIaDJxXA0P8", {
                 action: "submit_greeting",
             });
+            console.log("reCAPTCHA token generated successfully");
         } catch (e) {
-            feedback.textContent = "reCAPTCHA verification failed. Please refresh and try again.";
+            feedback.textContent = "reCAPTCHA verification failed. Please disable Google Translate and refresh the page to try again.";
             console.error("reCAPTCHA error:", e);
             return;
         }
@@ -411,10 +462,20 @@ document.addEventListener("DOMContentLoaded", async () => {
             ? sel.dataset.text.trim()
             : messageSelectEl && messageSelectEl.value
             ? messageSelectEl.value.trim()
-            : "";
+            : selectedMessage || "";
 
         if (!preset) {
             feedback.textContent = "Please choose a message.";
+            return;
+        }
+
+        if (!selectedFeeling) {
+            feedback.textContent = "Please select how you're feeling.";
+            return;
+        }
+
+        if (!selectedCountry) {
+            feedback.textContent = "Please select your country.";
             return;
         }
 
@@ -584,12 +645,11 @@ document.addEventListener("DOMContentLoaded", async () => {
             x.classList.remove("selected");
             x.setAttribute("aria-pressed", "false");
         });
-        document.querySelectorAll(".country.selected").forEach((x) => {
-            x.classList.remove("selected");
-            x.setAttribute("aria-pressed", "false");
-        });
         selectedFeeling = null;
         selectedCountry = null;
+        selectedMessage = null;
         if (messageSelectEl) messageSelectEl.selectedIndex = 0;
+        if (countrySelector) countrySelector.selectedIndex = 0;
+        checkFormValidity(); // Re-disable submit button
     });
 });

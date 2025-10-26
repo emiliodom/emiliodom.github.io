@@ -13,7 +13,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Leave a greeting</title>
   <link rel="stylesheet" href="/assets/css/theme.css">
-  <script src="https://www.google.com/recaptcha/enterprise.js?render=6LcF5_crAAAAABBrXkDLdIFnSbQ36AIaDJxXA0P8"></script>
+  <script src="https://www.google.com/recaptcha/enterprise.js?render=6LcF5_crAAAAABBrXkDLdIFnSbQ36AIaDJxXA0P8" class="notranslate"></script>
 </head>
 <body>
   <!-- Google Tag Manager (noscript) -->
@@ -148,48 +148,14 @@
 
         <fieldset class="greet-fieldset">
           <legend style="font-size:18px;font-weight:600;margin-bottom:10px">3. Where are you from?</legend>
-          <div class="countries" role="radiogroup" aria-label="Select your country">
-            <button type="button" class="country" data-country="🇬🇹" aria-pressed="false" title="Guatemala">🇬🇹</button>
-            <button type="button" class="country" data-country="🇺🇸" aria-pressed="false" title="United States">🇺🇸</button>
-            <button type="button" class="country" data-country="🇲🇽" aria-pressed="false" title="Mexico">🇲🇽</button>
-            <button type="button" class="country" data-country="🇪🇸" aria-pressed="false" title="Spain">🇪🇸</button>
-            <button type="button" class="country" data-country="🇦🇷" aria-pressed="false" title="Argentina">🇦🇷</button>
-            <button type="button" class="country" data-country="🇨🇴" aria-pressed="false" title="Colombia">🇨🇴</button>
-            <button type="button" class="country" data-country="🇨🇱" aria-pressed="false" title="Chile">🇨🇱</button>
-            <button type="button" class="country" data-country="🇵🇪" aria-pressed="false" title="Peru">🇵🇪</button>
-            <button type="button" class="country" data-country="🇻🇪" aria-pressed="false" title="Venezuela">🇻🇪</button>
-            <button type="button" class="country" data-country="🇧🇷" aria-pressed="false" title="Brazil">🇧🇷</button>
-            <button type="button" class="country" data-country="🇨🇦" aria-pressed="false" title="Canada">🇨🇦</button>
-            <button type="button" class="country" data-country="🇬🇧" aria-pressed="false" title="United Kingdom">🇬🇧</button>
-            <button type="button" class="country" data-country="🇫🇷" aria-pressed="false" title="France">🇫🇷</button>
-            <button type="button" class="country" data-country="🇩🇪" aria-pressed="false" title="Germany">🇩🇪</button>
-            <button type="button" class="country" data-country="🇮🇹" aria-pressed="false" title="Italy">🇮🇹</button>
-            <button type="button" class="country" data-country="🌍" aria-pressed="false" title="Other">🌍</button>
-          </div>
-          <select id="country-select" class="country-select" aria-label="Select your country" style="display:none">
+          <select id="country-selector" class="country-selector" aria-label="Select your country">
             <option value="">Select a country...</option>
-            <option value="🇬🇹">🇬🇹 Guatemala</option>
-            <option value="🇺🇸">🇺🇸 United States</option>
-            <option value="🇲🇽">🇲🇽 Mexico</option>
-            <option value="🇪🇸">🇪🇸 Spain</option>
-            <option value="🇦🇷">🇦🇷 Argentina</option>
-            <option value="🇨🇴">🇨🇴 Colombia</option>
-            <option value="🇨🇱">🇨🇱 Chile</option>
-            <option value="🇵🇪">🇵🇪 Peru</option>
-            <option value="🇻🇪">🇻🇪 Venezuela</option>
-            <option value="🇧🇷">🇧🇷 Brazil</option>
-            <option value="🇨🇦">🇨🇦 Canada</option>
-            <option value="🇬🇧">🇬🇧 United Kingdom</option>
-            <option value="🇫🇷">🇫🇷 France</option>
-            <option value="🇩🇪">🇩🇪 Germany</option>
-            <option value="🇮🇹">🇮🇹 Italy</option>
-            <option value="🌍">🌍 Other</option>
           </select>
         </fieldset>
 
         <div style="margin-top:16px">
-          <button id="greet-submit" class="btn btn-large" type="submit">Send greeting</button>
-          <p style="font-size:12px;color:var(--muted);margin-top:8px">This site is protected by reCAPTCHA Enterprise and the Google <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Privacy Policy</a> and <a href="https://policies.google.com/terms" target="_blank" rel="noopener">Terms of Service</a> apply.</p>
+          <button id="greet-submit" class="btn btn-large notranslate" type="submit" disabled>Send greeting</button>
+          <p style="font-size:12px;color:var(--muted);margin-top:8px" class="notranslate">This site is protected by reCAPTCHA Enterprise and the Google <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Privacy Policy</a> and <a href="https://policies.google.com/terms" target="_blank" rel="noopener">Terms of Service</a> apply.</p>
         </div>
 
         <div class="ip-disclaimer" style="margin-top:14px;padding:12px;background:rgba(102,126,234,0.12);border-left:4px solid rgba(102,126,234,0.8);border-radius:6px">

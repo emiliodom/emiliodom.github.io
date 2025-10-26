@@ -26,6 +26,35 @@ jobs:
       # The Cloudflare Worker proxy handles authentication securely
       # The nocodb-config.js file in the repo is already configured to use the worker
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: |
+          npm install --global terser cssnano-cli postcss
+
+      - name: Minify JavaScript
+        run: |
+          find assets/js -name "*.js" ! -name "*.min.js" -type f -exec sh -c '
+            for file do
+              dir=$(dirname "$file")
+              base=$(basename "$file" .js)
+              terser "$file" -c -m -o "$dir/$base.min.js"
+            done
+          ' sh {} +
+
+      - name: Minify CSS
+        run: |
+          find assets/css -name "*.css" ! -name "*.min.css" -type f -exec sh -c '
+            for file do
+              dir=$(dirname "$file")
+              base=$(basename "$file" .css)
+              cssnano "$file" "$dir/$base.min.css"
+            done
+          ' sh {} +
+
       - name: Setup Pages
         uses: actions/configure-pages@v4
 

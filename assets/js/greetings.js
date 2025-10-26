@@ -1,17 +1,6 @@
 // greetings.js
 // Handles preset greeting selection, Google reCAPTCHA Enterprise, simple IP-based single submission
 
-async function fetchBadWords() {
-    try {
-        const r = await fetch("/assets/data/badwords.json");
-        if (!r.ok) return [];
-        return await r.json();
-    } catch (e) {
-        console.warn("Could not load badwords list", e);
-        return [];
-    }
-}
-
 async function fetchCountries() {
     try {
         const r = await fetch("/assets/data/countries.json");
@@ -110,7 +99,9 @@ async function postToNocoDB(message, user, notes, countryCode) {
             body = { Message: message, User: user, Notes: notes, Country: countryCode || "XX" };
         } else {
             // Fallback for v3 style: send records wrapper
-            body = { records: [{ fields: { Message: message, User: user, Notes: notes, Country: countryCode || "XX" } }] };
+            body = {
+                records: [{ fields: { Message: message, User: user, Notes: notes, Country: countryCode || "XX" } }],
+            };
         }
 
         // No xc-token header needed - the proxy handles authentication
@@ -215,6 +206,43 @@ function saveWallEntry(message, feeling) {
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
+    // Check NocoDB availability first
+    let nocodbAvailable = false;
+    try {
+        const testResponse = await fetch(NOCODB.getUrl || NOCODB.postUrl, {
+            method: "HEAD",
+            headers: { accept: "application/json" },
+        });
+        nocodbAvailable = testResponse && testResponse.ok;
+    } catch (e) {
+        nocodbAvailable = false;
+    }
+
+    // If NocoDB is not available, show error and grey out page
+    if (!nocodbAvailable) {
+        const greetingsSection = document.querySelector(".greetings-section");
+        if (greetingsSection) {
+            greetingsSection.style.opacity = "0.3";
+            greetingsSection.style.pointerEvents = "none";
+            greetingsSection.style.filter = "grayscale(1)";
+        }
+
+        const errorDiv = document.createElement("div");
+        errorDiv.style.cssText =
+            "position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(245,87,108,0.95);color:white;padding:32px;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.3);text-align:center;z-index:9999;max-width:500px;";
+        errorDiv.innerHTML = `
+            <h2 style="margin:0 0 16px 0;font-size:24px;">⚠️ Service Temporarily Unavailable</h2>
+            <p style="margin:0;font-size:16px;line-height:1.6;">
+                Please come back later, we are having problems connecting to the database.
+            </p>
+            <p style="margin:16px 0 0 0;font-size:14px;opacity:0.9;">
+                The greetings feature will be back online shortly.
+            </p>
+        `;
+        document.body.appendChild(errorDiv);
+        return; // Stop execution
+    }
+
     // Check if user has already submitted by querying NocoDB directly
     const submissionStatusAlert = document.getElementById("submission-status-alert");
     const now = Date.now();
@@ -317,7 +345,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         submissionStatusAlert.style.display = "block";
     }
 
-    const badwords = await fetchBadWords();
     const countries = await fetchCountries();
 
     // Populate country selector with flag icons
@@ -325,7 +352,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (countrySelector && countries.length > 0) {
         // Sort countries alphabetically by name
         const sortedCountries = countries.sort((a, b) => a.name.localeCompare(b.name));
-        
+
         sortedCountries.forEach((country) => {
             const opt = document.createElement("option");
             opt.value = country.code.toUpperCase(); // Store country code like 'GT'
@@ -340,13 +367,14 @@ document.addEventListener("DOMContentLoaded", async () => {
         const flagDisplay = document.createElement("span");
         flagDisplay.id = "selected-flag";
         flagDisplay.className = "fi fi-xx fis";
-        flagDisplay.style.cssText = "position:absolute;left:12px;top:50%;transform:translateY(-50%);pointer-events:none;font-size:20px;";
+        flagDisplay.style.cssText =
+            "position:absolute;left:12px;top:50%;transform:translateY(-50%);pointer-events:none;font-size:20px;";
         wrapper.style.position = "relative";
         wrapper.insertBefore(flagDisplay, countrySelector);
         countrySelector.style.paddingLeft = "44px";
 
         // Update flag display when country changes
-        countrySelector.addEventListener("change", function() {
+        countrySelector.addEventListener("change", function () {
             const selectedOption = this.options[this.selectedIndex];
             const code = selectedOption.dataset.code;
             if (code) {
@@ -517,14 +545,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         if (!selectedCountry) {
             feedback.textContent = "Please select your country.";
-            return;
-        }
-
-        // check badwords
-        const lower = preset.toLowerCase();
-        const found = badwords.find((b) => lower.includes(b.toLowerCase()));
-        if (found) {
-            feedback.textContent = "The selected message contains disallowed words.";
             return;
         }
 

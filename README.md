@@ -52,9 +52,9 @@ A modern, interactive personal website with dark/light theme support, multi-lang
 - **Numeric Captcha**: Simple 3-choice math verification with improved validation
 - **IP-Based Rate Limiting**: One submission per IP per 24 hours
 - **Privacy Disclaimer**: Clear notice that IP is not shared with third parties
-- **Bad Words Filter**: Client-side profanity detection
 - **Lazy Loading**: Mobile greeting cards use content-visibility for performance
-- **NocoDB Integration**: Cloud-based storage with encrypted API token
+- **NocoDB Integration**: Cloud-based storage with Cloudflare Worker proxy
+- **Error Handling**: Graceful degradation with greyed-out UI when database unavailable
 
 ### 🗺️ Location & Contact
 - **Masonry Media Grid**: YouTube video and location photos in responsive grid layout
@@ -70,20 +70,20 @@ A modern, interactive personal website with dark/light theme support, multi-lang
 ### Technology Stack
 - **Frontend**: Vanilla HTML5, CSS3, JavaScript (ES6+)
 - **Hosting**: GitHub Pages (static hosting, no build step)
-- **Backend**: NocoDB v2 API (public endpoints)
+- **Backend**: NocoDB v2 API with Cloudflare Worker proxy
 - **CDN Libraries**:
   - particles.js v2.0.0 (background animation)
-  - CryptoJS v4.1.1 (AES encryption)
   - Twemoji API (emoji rendering)
   - DOMPurify v3.0.8 (XSS protection)
   - Google Translate Widget (i18n)
+- **Code Quality**: ESLint and Prettier for linting and formatting
 
 ### Design Patterns
 - **Progressive Enhancement**: Core functionality works without JavaScript
 - **Mobile-First**: Responsive design starts with mobile and scales up
 - **Component-Based CSS**: Modular CSS with BEM-like naming
 - **Client-Side Storage**: localStorage for theme, preferences, and fallback data
-- **Security by Obscurity**: Encrypted API token (see Security Considerations)
+- **Proxy Architecture**: Cloudflare Worker secures NocoDB API access
 
 ---
 
@@ -95,12 +95,14 @@ A modern, interactive personal website with dark/light theme support, multi-lang
 | CSS3 (Variables) | Theming & responsive styles | - |
 | JavaScript (ES6+) | Interactivity & API calls | - |
 | particles.js | Animated background | 2.0.0 |
-| CryptoJS | Token encryption (AES) | 4.1.1 |
 | Twemoji | Emoji rendering | latest |
 | DOMPurify | XSS sanitization | 3.0.8 |
 | NocoDB | Database/backend | v2 API |
+| Cloudflare Workers | API proxy | - |
 | Google Translate | Multi-language support | Widget |
 | ipify API | IP detection | - |
+| ESLint | JavaScript linting | latest |
+| Prettier | Code formatting | latest |
 
 ---
 
@@ -112,24 +114,34 @@ emiliodom.github.io/
 ├── greetings.html            # Interactive greetings wall
 ├── LICENSE                   # MIT License
 ├── README.md                 # This file
+├── .eslintrc.json           # ESLint configuration for JavaScript linting
+├── .prettierrc.json         # Prettier configuration for code formatting
+├── .prettierignore          # Files to exclude from Prettier formatting
 ├── _includes/
 │   └── header.html           # Reusable header (Jekyll-compatible)
 ├── _layouts/
 │   └── default.html          # Default layout (Jekyll-compatible)
-├── .github/
-│   └── workflows/
-│       └── deploy.yml        # GitHub Actions workflow for secure deployment
+├── api/
+│   ├── cloudflare/          # Cloudflare Worker proxy
+│   │   ├── wrangler.toml    # Cloudflare Worker configuration
+│   │   └── src/
+│   │       └── index.js     # Worker proxy implementation
+│   ├── deploy-cloudflare.sh # Deployment script for Cloudflare
+│   ├── nocodb-proxy.js      # Proxy logic documentation
+│   ├── PROXY_SETUP.md       # Proxy setup instructions
+│   ├── README.md            # API documentation
+│   └── SECURITY_ARCHITECTURE.md # Security design documentation
 ├── assets/
 │   ├── css/
 │   │   └── theme.css         # Unified stylesheet with theme variables & masonry grid
 │   ├── data/
-│   │   ├── badwords.json     # Client-side profanity filter list
 │   │   ├── link_cards.json   # Categorized link cards with custom images
 │   │   └── location_media.json # Video and photos configuration
 │   ├── img/                  # Image assets (avatars, fallbacks)
 │   └── js/
 │       ├── greetings.js      # Greetings form logic & NocoDB integration
-│       ├── nocodb-config.js  # Separated NocoDB configuration with encryption
+│       ├── greetings-page.js # Page-specific scripts (extracted from inline)
+│       ├── nocodb-config.js  # NocoDB configuration
 │       └── site-theme.js     # Theme toggle & font-size controls
 ```
 
@@ -176,26 +188,35 @@ emiliodom.github.io/
 
 ## ⚙️ Configuration
 
-### GitHub Actions Setup (Recommended for Production)
+### Cloudflare Worker Proxy Setup (Recommended for Production)
 
-For secure token management in production, use GitHub Actions to inject the NocoDB token at build time:
+For secure token management in production, use a Cloudflare Worker as a proxy to NocoDB:
 
-1. **Add Secret to Repository**:
-   - Go to Repository Settings → Secrets and variables → Actions
-   - Click "New repository secret"
-   - Name: `NOCODB_TOKEN`
-   - Value: Your actual NocoDB API token
+1. **Cloudflare Worker Setup**:
+   - Navigate to `api/cloudflare/` directory
+   - Configure `wrangler.toml` with your Worker settings
+   - Add your NocoDB token as a Cloudflare secret:
+     ```bash
+     wrangler secret put NOCODB_TOKEN
+     ```
 
-2. **GitHub Actions Workflow** (`.github/workflows/deploy.yml`):
-   The workflow automatically:
-   - Generates `nocodb-config.js` with the token from GitHub Secrets
-   - Deploys to GitHub Pages
-   - Triggers on push to `main` branch or manual dispatch
+2. **Deploy the Worker**:
+   ```bash
+   cd api/cloudflare
+   wrangler deploy
+   ```
 
-3. **Benefits**:
-   - Token never appears in source code
-   - Only accessible to GitHub Actions runners
-   - Proper security for production environments
+3. **Update Frontend Configuration**:
+   - Edit `assets/js/nocodb-config.js`
+   - Point API calls to your Cloudflare Worker URL instead of direct NocoDB
+
+4. **Benefits**:
+   - Token never exposed to client
+   - Additional security layer with rate limiting
+   - CORS handling
+   - Request validation and sanitization
+
+For detailed setup instructions, see `api/PROXY_SETUP.md` and `api/SECURITY_ARCHITECTURE.md`.
 
 ### NocoDB Setup
 
@@ -210,25 +231,15 @@ The greetings wall uses NocoDB for persistent storage. To configure:
    - `CreatedAt` (DateTime) - Auto-generated timestamp
 
 3. **Get API Credentials**:
-   - Table ID: Found in URL (`mtujnjge9o5j98m`)
-   - View ID: Found in URL (`vww985w35i0umz1g`)
+   - Table ID: Found in URL
+   - View ID: Found in URL
    - API Token: Settings → API Tokens → Create Token
 
-4. **For Local Development** (optional encryption in `assets/js/nocodb-config.js`):
-   ```javascript
-   // In browser console with CryptoJS loaded
-   const token = 'YOUR_NOCODB_TOKEN';
-   const passphrase = 'your-custom-passphrase';
-   const encrypted = CryptoJS.AES.encrypt(token, passphrase).toString();
-   console.log(encrypted);
-   ```
+4. **Configure Worker** (production):
+   Add token as Cloudflare secret (see above)
 
-5. **Update `assets/js/nocodb-config.js`** for local development:
-   ```javascript
-   const encryptedToken = 'YOUR_ENCRYPTED_TOKEN';
-   const passphrase = 'your-custom-passphrase';
-   // Token decryption logic is already in place
-   ```
+5. **For Local Development**:
+   Update `assets/js/nocodb-config.js` to point to your local test endpoint or use the deployed Worker.
 
 ### Link Cards Configuration
 
@@ -310,62 +321,50 @@ Edit CSS variables in `assets/css/theme.css`:
 
 ## 🔒 Security Considerations
 
-### Recommended Security Model (GitHub Actions)
+### Production Security Model: Cloudflare Worker Proxy
 
-✅ **Best Practice**: Use GitHub Actions for production deployments to properly secure your NocoDB token.
+✅ **Best Practice**: Use a Cloudflare Worker as a secure proxy to NocoDB.
 
-#### GitHub Actions Approach:
-1. **Token Storage**: Stored in GitHub Secrets (Settings → Secrets and variables → Actions)
-2. **Build-Time Injection**: Token injected during deployment, never in source code
-3. **Zero Exposure**: Token never appears in repository or client code
-4. **Automatic Deployment**: Workflow runs on push to `main` branch
+#### Cloudflare Worker Approach:
+1. **Token Storage**: Stored as Cloudflare Worker secret (never exposed to client)
+2. **Proxy Layer**: All NocoDB requests go through the Worker
+3. **Zero Exposure**: Token never appears in client code or repository
+4. **Additional Security**:
+   - CORS handling
+   - Rate limiting at edge
+   - Request validation and sanitization
+   - IP-based duplicate prevention
 
-See `.github/workflows/deploy.yml` for implementation details.
-
-### Alternative: Client-Side Encryption (Development Only)
-
-⚠️ **Note**: This approach is **NOT secure for production** but acceptable for development.
+See `api/PROXY_SETUP.md` and `api/SECURITY_ARCHITECTURE.md` for implementation details.
 
 #### What's Protected:
 1. **XSS Prevention**: DOMPurify sanitizes all user-generated content before rendering
-2. **Bad Words Filter**: Client-side filtering of inappropriate language (badwords.json)
-3. **Rate Limiting**: 24-hour IP-based submission window (client + NocoDB verification)
-4. **Token Obfuscation**: NocoDB API token encrypted with CryptoJS AES (local dev only)
+2. **Rate Limiting**: 24-hour IP-based submission window (enforced by Worker)
+3. **Input Validation**: Server-side validation in Cloudflare Worker
+4. **Token Security**: API token never exposed to client
 5. **IP Privacy**: Clear disclaimer that IP addresses are not shared with third parties
+6. **Error Handling**: Graceful degradation when database unavailable
 
 #### Known Limitations:
-1. **Token Exposure** (Client-Side Only): Despite encryption, the passphrase is in client code. Anyone can:
-   - View page source
-   - Decrypt the token
-   - Make direct API calls
-
-2. **Client-Side Validation**: All checks (IP, captcha, bad words) can be bypassed via:
-   - Browser DevTools
-   - Direct API calls
-   - Modified client code
-
-3. **IP Spoofing**: IP detection via ipify.org can be bypassed
-
-#### Recommended Setup:
-- **Production**: Use GitHub Actions (see `.github/workflows/deploy.yml`)
-- **Development**: Use client-side encryption in `assets/js/nocodb-config.js`
-- **Testing**: Use test-greetings.html for validation
+1. **Client-Side Validation**: Captcha can be bypassed (use reCAPTCHA v3 for production)
+2. **IP Spoofing**: IP detection can be bypassed with VPN/proxy
+3. **Rate Limiting**: Per-IP limits can be circumvented with multiple IPs
 
 ### Why This Approach?
 
-For a **personal portfolio site**, the GitHub Actions approach provides:
+For a **personal portfolio site**, the Cloudflare Worker proxy provides:
 - ✅ True security (token never exposed)
 - ✅ Prevents casual misuse
 - ✅ Stops XSS attacks
-- ✅ Filters obvious spam
-- ✅ Works with free GitHub Pages hosting
-- ✅ Automatic deployment on git push
+- ✅ Works with free GitHub Pages + Cloudflare Workers
+- ✅ Edge computing for low latency
+- ✅ Automatic scaling
 
 For more advanced security needs, consider:
-- Server-side API proxy (Cloudflare Workers, Vercel Functions)
 - reCAPTCHA v3 for bot protection
-- Server-side rate limiting
+- Server-side rate limiting with Redis
 - Database-level access controls
+- WAF (Web Application Firewall)
 
 ---
 
@@ -506,6 +505,32 @@ const recentEntry = nocodbList.find(entry => {
 - **HTML**: Semantic HTML5 elements
 - **CSS**: BEM-like naming, mobile-first
 - **JavaScript**: ES6+, async/await, no transpilation
+- **Linting**: ESLint for JavaScript code quality
+- **Formatting**: Prettier for consistent code style
+
+### Code Quality Tools
+
+This project uses ESLint and Prettier to maintain code quality:
+
+**Run ESLint**:
+```bash
+npx eslint assets/js/**/*.js
+```
+
+**Run Prettier**:
+```bash
+npx prettier --write "**/*.{js,css,html,json,md}"
+```
+
+**Check Formatting**:
+```bash
+npx prettier --check "**/*.{js,css,html,json,md}"
+```
+
+Configuration files:
+- `.eslintrc.json` - ESLint rules (browser environment, ES2021, 4-space indent)
+- `.prettierrc.json` - Prettier rules (4-space tabs, 120 char width, double quotes)
+- `.prettierignore` - Files to exclude from formatting
 
 ### Testing Checklist
 
@@ -514,11 +539,12 @@ const recentEntry = nocodbList.find(entry => {
 - [ ] Favicon changes on each page load
 - [ ] Greetings form validates captcha
 - [ ] IP rate limiting prevents duplicate submissions
-- [ ] Bad words filter catches disallowed terms
+- [ ] NocoDB unavailable state shows greyed-out UI with error message
 - [ ] Mobile dropdowns replace button grids
 - [ ] Lazy loading works on mobile greeting cards
 - [ ] Map modal opens and closes properly
 - [ ] Google Translate changes page language
+- [ ] Cloudflare Worker proxy handles all NocoDB requests
 
 ### Browser Support
 

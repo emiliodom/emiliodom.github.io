@@ -32,12 +32,15 @@
       token: decryptedToken
     };
   }catch(e){
-    console.error('Token decryption failed. Please ensure GitHub Actions secrets are configured or use local development token.');
-    // No fallback token - will fail gracefully if decryption doesn't work
+    console.error('Token decryption failed:', e.message);
+    console.warn('For local development, please set your token manually or ensure CryptoJS is loaded.');
+    // For local development, set a placeholder that will show an error
+    // In production, GitHub Actions will replace this entire file
     window.NOCODB_CONFIG = {
       postUrl: 'https://app.nocodb.com/api/v2/tables/mtujnjge9o5j98m/records',
       getUrl: 'https://app.nocodb.com/api/v2/tables/mtujnjge9o5j98m/records?viewId=vww985w35i0umz1g&limit=25&shuffle=0&offset=0',
-      token: ''
+      token: '', // Empty token - will fail, please use test-nocodb.html to set manually
+      _devMode: true
     };
   }
 })();

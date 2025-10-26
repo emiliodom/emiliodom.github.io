@@ -23,6 +23,8 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Generate NocoDB Config with Secret Token
+        env:
+          NOCODB_TOKEN: ${{ secrets.NOCODB_TOKEN }}
         run: |
           cat > assets/js/nocodb-config.js << 'EOF'
           // NocoDB configuration with token from GitHub Secrets
@@ -30,10 +32,13 @@ jobs:
             window.NOCODB_CONFIG = {
               postUrl: 'https://app.nocodb.com/api/v2/tables/mtujnjge9o5j98m/records',
               getUrl: 'https://app.nocodb.com/api/v2/tables/mtujnjge9o5j98m/records?viewId=vww985w35i0umz1g&limit=25&shuffle=0&offset=0',
-              token: '${{ secrets.NOCODB_TOKEN }}'
+              token: 'TOKEN_PLACEHOLDER'
             };
           })();
           EOF
+          # Replace placeholder with actual token
+          sed -i "s/TOKEN_PLACEHOLDER/$NOCODB_TOKEN/g" assets/js/nocodb-config.js
+          echo "✅ Config file generated (token length: ${#NOCODB_TOKEN} chars)"
 
       - name: Setup Pages
         uses: actions/configure-pages@v4

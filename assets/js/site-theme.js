@@ -14,7 +14,8 @@ function applyTheme(isDark){
 function initTheme(){
     const saved = localStorage.getItem('site-theme');
     const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const isDark = saved ? saved === 'dark' : prefersDark;
+    // Default to dark mode if no saved preference
+    const isDark = saved ? saved === 'dark' : (saved === null ? true : prefersDark);
     applyTheme(isDark);
     const toggle = document.getElementById('theme-toggle');
     if(toggle){

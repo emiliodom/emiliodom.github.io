@@ -56,42 +56,78 @@ function initFontSize(){
 function setGoogleTranslateCookie(targetLang){
     try{
         // google's widget reads cookie named googtrans with format /<from>/<to>
-        const val = targetLang === 'auto' ? '/en' : '/' + targetLang;
-        document.cookie = `googtrans=${val};path=/`;
-        // also try domain-less cookie for some setups
-        document.cookie = `googtrans=${val};path=/;domain=${location.hostname}`;
+        const val = targetLang === 'auto' || targetLang === 'en' ? '' : '/en/' + targetLang;
+        if (val) {
+            document.cookie = `googtrans=${val};path=/`;
+            document.cookie = `googtrans=${val};path=/;domain=${location.hostname}`;
+        } else {
+            // Clear translate cookie to reset to English
+            document.cookie = `googtrans=;path=/;max-age=0`;
+            document.cookie = `googtrans=;path=/;domain=${location.hostname};max-age=0`;
+        }
     }catch(e){
         console.warn('Could not set translate cookie', e);
     }
 }
 
+let translateScriptLoaded = false;
+let translateInitialized = false;
+
 function initGoogleTranslate(){
+    if (translateInitialized) return;
+    
     window.googleTranslateElementInit = function(){
         try{
             new google.translate.TranslateElement({
                 pageLanguage: 'en',
                 includedLanguages: 'en,es,fr',
-                layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+                layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+                autoDisplay: false
             }, 'google_translate_element');
+            translateInitialized = true;
         }catch(e){
-            // ignore
+            console.warn('Google Translate init failed', e);
         }
     };
-    const s = document.createElement('script');
-    s.src = 'https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
-    s.async = true;
-    document.head.appendChild(s);
+    
+    if (!translateScriptLoaded) {
+        const s = document.createElement('script');
+        s.src = 'https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
+        s.async = true;
+        s.onerror = () => console.warn('Failed to load Google Translate script');
+        document.head.appendChild(s);
+        translateScriptLoaded = true;
+    }
 }
 
 function bindLangSelector(){
     const sel = document.getElementById('lang-select');
     if(!sel) return;
+    
     sel.addEventListener('change', (e) => {
         const val = e.target.value;
-        const lang = val === 'auto' ? 'en' : val;
-        setGoogleTranslateCookie(lang);
-        // best-effort: reload so translate widget reads cookie
-        setTimeout(()=> window.location.reload(), 300);
+        
+        if (val === 'en') {
+            // Reset to English (no translation)
+            setGoogleTranslateCookie('en');
+            // Remove translate iframes and restore original content
+            const frames = document.querySelectorAll('.goog-te-banner-frame, .skiptranslate');
+            frames.forEach(f => f.remove());
+            setTimeout(()=> window.location.reload(), 100);
+        } else {
+            // Load Google Translate if not already loaded
+            if (!translateScriptLoaded) {
+                initGoogleTranslate();
+                // Wait for script to load before setting language
+                setTimeout(() => {
+                    setGoogleTranslateCookie(val);
+                    window.location.reload();
+                }, 1000);
+            } else {
+                setGoogleTranslateCookie(val);
+                window.location.reload();
+            }
+        }
     });
 }
 
@@ -106,10 +142,11 @@ function normalizeFitFitLinks(){
 function init(){
     document.addEventListener('DOMContentLoaded', ()=>{
         initTheme();
-            initFontSize();
+        initFontSize();
         bindLangSelector();
         normalizeFitFitLinks();
-        initGoogleTranslate();
+        // DO NOT auto-initialize Google Translate
+        // It will be loaded on-demand when user changes language selector
     });
 }
 

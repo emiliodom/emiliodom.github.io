@@ -11,8 +11,10 @@
   
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="google" content="notranslate">
   <title>Leave a greeting</title>
   <link rel="stylesheet" href="/assets/css/theme.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flag-icons@7.2.3/css/flag-icons.min.css">
   <script src="https://www.google.com/recaptcha/enterprise.js?render=6LcF5_crAAAAABBrXkDLdIFnSbQ36AIaDJxXA0P8" class="notranslate"></script>
 </head>
 <body>
@@ -148,9 +150,11 @@
 
         <fieldset class="greet-fieldset">
           <legend style="font-size:18px;font-weight:600;margin-bottom:10px">3. Where are you from?</legend>
-          <select id="country-selector" class="country-selector" aria-label="Select your country">
-            <option value="">Select a country...</option>
-          </select>
+          <div class="country-selector-wrapper">
+            <select id="country-selector" class="country-selector notranslate" aria-label="Select your country">
+              <option value="">🌍 Select your country...</option>
+            </select>
+          </div>
         </fieldset>
 
         <div style="margin-top:16px">

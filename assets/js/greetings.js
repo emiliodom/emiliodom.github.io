@@ -98,7 +98,7 @@ async function fetchFromNocoDB() {
     }
 }
 
-async function postToNocoDB(message, user, notes, country) {
+async function postToNocoDB(message, user, notes, countryCode) {
     const postUrl = NOCODB.postUrl || NOCODB.url;
     if (!postUrl) throw new Error("NocoDB not configured");
     try {
@@ -106,11 +106,11 @@ async function postToNocoDB(message, user, notes, country) {
         // We'll detect v2 by presence of postUrl including '/api/v2' or when postUrl is explicitly provided.
         let body;
         if (postUrl.includes("/api/v2") || postUrl.includes("/api/greetings")) {
-            // Send flat JSON as the user requested: Message (text), User (ip), Notes (emoticon), Country (flag)
-            body = { Message: message, User: user, Notes: notes, Country: country || "🌍" };
+            // Send flat JSON: Message (text), User (ip), Notes (emoticon), Country (code like 'GT')
+            body = { Message: message, User: user, Notes: notes, Country: countryCode || "XX" };
         } else {
             // Fallback for v3 style: send records wrapper
-            body = { records: [{ fields: { Message: message, User: user, Notes: notes, Country: country || "🌍" } }] };
+            body = { records: [{ fields: { Message: message, User: user, Notes: notes, Country: countryCode || "XX" } }] };
         }
 
         // No xc-token header needed - the proxy handles authentication
@@ -320,15 +320,42 @@ document.addEventListener("DOMContentLoaded", async () => {
     const badwords = await fetchBadWords();
     const countries = await fetchCountries();
 
-    // Populate country selector
+    // Populate country selector with flag icons
     const countrySelector = document.getElementById("country-selector");
     if (countrySelector && countries.length > 0) {
-        countries.forEach((country) => {
+        // Sort countries alphabetically by name
+        const sortedCountries = countries.sort((a, b) => a.name.localeCompare(b.name));
+        
+        sortedCountries.forEach((country) => {
             const opt = document.createElement("option");
-            opt.value = country.flag;
-            opt.textContent = `${country.flag} ${country.name}`;
-            opt.dataset.code = country.code;
+            opt.value = country.code.toUpperCase(); // Store country code like 'GT'
+            opt.textContent = country.name;
+            opt.dataset.flag = country.flag;
+            opt.dataset.code = country.code.toLowerCase();
             countrySelector.appendChild(opt);
+        });
+
+        // Add flag icon visualization before selector
+        const wrapper = countrySelector.parentElement;
+        const flagDisplay = document.createElement("span");
+        flagDisplay.id = "selected-flag";
+        flagDisplay.className = "fi fi-xx fis";
+        flagDisplay.style.cssText = "position:absolute;left:12px;top:50%;transform:translateY(-50%);pointer-events:none;font-size:20px;";
+        wrapper.style.position = "relative";
+        wrapper.insertBefore(flagDisplay, countrySelector);
+        countrySelector.style.paddingLeft = "44px";
+
+        // Update flag display when country changes
+        countrySelector.addEventListener("change", function() {
+            const selectedOption = this.options[this.selectedIndex];
+            const code = selectedOption.dataset.code;
+            if (code) {
+                flagDisplay.className = `fi fi-${code} fis`;
+                flagDisplay.style.opacity = "1";
+            } else {
+                flagDisplay.className = "fi fi-xx fis";
+                flagDisplay.style.opacity = "0.3";
+            }
         });
     }
 
@@ -451,8 +478,22 @@ document.addEventListener("DOMContentLoaded", async () => {
             });
             console.log("reCAPTCHA token generated successfully");
         } catch (e) {
-            feedback.textContent = "reCAPTCHA verification failed. Please disable Google Translate and refresh the page to try again.";
             console.error("reCAPTCHA error:", e);
+            feedback.innerHTML = `
+                <strong>reCAPTCHA verification failed.</strong><br>
+                <br>
+                <strong>If you're using Google Translate:</strong><br>
+                1. Switch the language selector above back to "ENG" (English)<br>
+                2. Wait 2 seconds for the page to reset<br>
+                3. Try submitting again<br>
+                <br>
+                Google Translate interferes with reCAPTCHA. Please use English to submit.
+            `;
+            feedback.style.color = "#f5576c";
+            feedback.style.background = "rgba(245, 87, 108, 0.1)";
+            feedback.style.padding = "12px";
+            feedback.style.borderRadius = "8px";
+            feedback.style.marginTop = "12px";
             return;
         }
 
@@ -590,7 +631,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         // Prepare message and notes (notes stores emoticon separately)
         const messageText = preset;
         const notesEmoji = selectedFeeling || "";
-        const countryFlag = selectedCountry || "🌍";
+        const countryCode = selectedCountry || "XX"; // Country code like 'GT', 'US', etc.
 
         // Optimistic UI: insert pending card immediately
         const optimisticEntry = { message: messageText, feeling: notesEmoji, when: "Sending…", _pending: true };
@@ -603,7 +644,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             const userField = ip || "web";
             const postUrl = NOCODB.postUrl || NOCODB.url;
             if (postUrl && NOCODB.token) {
-                const resp = await postToNocoDB(messageText, userField, notesEmoji, countryFlag).catch((err) => {
+                const resp = await postToNocoDB(messageText, userField, notesEmoji, countryCode).catch((err) => {
                     throw err;
                 });
                 // success: mark dedup key and reload authoritative list

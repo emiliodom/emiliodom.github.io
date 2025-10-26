@@ -29,12 +29,18 @@ A modern, interactive personal website with dark/light theme support, multi-lang
 ## ✨ Features
 
 ### 🎨 Core Features
+- **Categorized Link Cards**: Links organized into three categories:
+  - **Web Development Related**: LinkedIn, GitHub Profile, CV
+  - **Personal Stuff**: Study Guides on Notion, Blog, University Guides
+  - **Sports Related**: Strava, Komoot, FitFit Pro, Local Guide Photos
+- **Custom Images Support**: Link cards can display custom images (e.g., Strava button)
 - **Persistent Light/Dark Theme**: CSS variable-based theming with localStorage persistence
 - **Responsive Font Sizing**: Three-level font size controls (A-, A, A+) affecting all text including links
 - **Multi-language Support**: Google Translate widget integration (English, Spanish, French)
 - **Dynamic Favicons**: Random emoji favicons using Twemoji library and canvas rendering
-- **Animated Background**: particles.js for subtle interactive background effects
+- **Animated Background**: particles.js for subtle interactive background effects on both pages
 - **Responsive Design**: Mobile-first design with breakpoints at 640px and 1024px
+- **Masonry Grid Layout**: Photos and video displayed in responsive masonry grid on index page
 
 ### 💬 Greetings Wall
 - **Interactive Form**: Three-step submission process (feeling → message → captcha)
@@ -43,14 +49,17 @@ A modern, interactive personal website with dark/light theme support, multi-lang
 - **Smart UI Adaptation**:
   - Desktop: Button grids for feelings, large styled selector for messages
   - Mobile: Dropdown selectors for both feelings and messages
-- **Numeric Captcha**: Simple 3-choice math verification
+- **Numeric Captcha**: Simple 3-choice math verification with improved validation
 - **IP-Based Rate Limiting**: One submission per IP per 24 hours
+- **Privacy Disclaimer**: Clear notice that IP is not shared with third parties
 - **Bad Words Filter**: Client-side profanity detection
 - **Lazy Loading**: Mobile greeting cards use content-visibility for performance
 - **NocoDB Integration**: Cloud-based storage with encrypted API token
 
 ### 🗺️ Location & Contact
-- **Interactive Map Modal**: Embedded Google Maps with exact coordinates (14.574567657442334, -91.6898847619052)
+- **Masonry Media Grid**: YouTube video and location photos in responsive grid layout
+- **YouTube Video**: "Retalhuleu Nuevo San Carlos Costa Sur con dron" embedded with privacy-enhanced mode
+- **Interactive Map**: Embedded Google Maps with exact coordinates (14.574567657442334, -91.6898847619052)
 - **Location Photos**: Three Guatemala/Retalhuleu destination images
 - **Contact Info**: Phone (+502 56142468) and email (emiliodom@gmail.com)
 
@@ -99,7 +108,7 @@ A modern, interactive personal website with dark/light theme support, multi-lang
 
 ```
 emiliodom.github.io/
-├── index.html                 # Main landing page
+├── index.html                 # Main landing page with categorized links
 ├── greetings.html            # Interactive greetings wall
 ├── LICENSE                   # MIT License
 ├── README.md                 # This file
@@ -107,15 +116,20 @@ emiliodom.github.io/
 │   └── header.html           # Reusable header (Jekyll-compatible)
 ├── _layouts/
 │   └── default.html          # Default layout (Jekyll-compatible)
+├── .github/
+│   └── workflows/
+│       └── deploy.yml        # GitHub Actions workflow for secure deployment
 ├── assets/
 │   ├── css/
-│   │   └── theme.css         # Unified stylesheet with theme variables
+│   │   └── theme.css         # Unified stylesheet with theme variables & masonry grid
 │   ├── data/
 │   │   ├── badwords.json     # Client-side profanity filter list
-│   │   └── link_cards.json   # Externalized link cards data
+│   │   ├── link_cards.json   # Categorized link cards with custom images
+│   │   └── location_media.json # Video and photos configuration
 │   ├── img/                  # Image assets (avatars, fallbacks)
 │   └── js/
 │       ├── greetings.js      # Greetings form logic & NocoDB integration
+│       ├── nocodb-config.js  # Separated NocoDB configuration with encryption
 │       └── site-theme.js     # Theme toggle & font-size controls
 ```
 
@@ -162,6 +176,27 @@ emiliodom.github.io/
 
 ## ⚙️ Configuration
 
+### GitHub Actions Setup (Recommended for Production)
+
+For secure token management in production, use GitHub Actions to inject the NocoDB token at build time:
+
+1. **Add Secret to Repository**:
+   - Go to Repository Settings → Secrets and variables → Actions
+   - Click "New repository secret"
+   - Name: `NOCODB_TOKEN`
+   - Value: Your actual NocoDB API token
+
+2. **GitHub Actions Workflow** (`.github/workflows/deploy.yml`):
+   The workflow automatically:
+   - Generates `nocodb-config.js` with the token from GitHub Secrets
+   - Deploys to GitHub Pages
+   - Triggers on push to `main` branch or manual dispatch
+
+3. **Benefits**:
+   - Token never appears in source code
+   - Only accessible to GitHub Actions runners
+   - Proper security for production environments
+
 ### NocoDB Setup
 
 The greetings wall uses NocoDB for persistent storage. To configure:
@@ -179,7 +214,7 @@ The greetings wall uses NocoDB for persistent storage. To configure:
    - View ID: Found in URL (`vww985w35i0umz1g`)
    - API Token: Settings → API Tokens → Create Token
 
-4. **Encrypt Token** (optional):
+4. **For Local Development** (optional encryption in `assets/js/nocodb-config.js`):
    ```javascript
    // In browser console with CryptoJS loaded
    const token = 'YOUR_NOCODB_TOKEN';
@@ -188,16 +223,68 @@ The greetings wall uses NocoDB for persistent storage. To configure:
    console.log(encrypted);
    ```
 
-5. **Update `greetings.html`** (lines 197-210):
+5. **Update `assets/js/nocodb-config.js`** for local development:
    ```javascript
    const encryptedToken = 'YOUR_ENCRYPTED_TOKEN';
    const passphrase = 'your-custom-passphrase';
-   window.NOCODB_CONFIG = {
-     postUrl: 'https://app.nocodb.com/api/v2/tables/YOUR_TABLE_ID/records',
-     getUrl: 'https://app.nocodb.com/api/v2/tables/YOUR_TABLE_ID/records?viewId=YOUR_VIEW_ID&limit=25',
-     token: decryptedToken
-   };
+   // Token decryption logic is already in place
    ```
+
+### Link Cards Configuration
+
+Edit `assets/data/link_cards.json` to customize your links:
+
+```json
+{
+  "categories": [
+    {
+      "name": "Category Name",
+      "description": "Optional description",
+      "links": [
+        {
+          "title": "Link Title",
+          "description": "Link description",
+          "href": "https://example.com",
+          "icon": "🚀",
+          "customImage": null,
+          "external": true
+        }
+      ]
+    }
+  ],
+  "standalone": [
+    {
+      "title": "Special Link",
+      "description": "Description",
+      "href": "/page.html",
+      "icon": "💬",
+      "external": false
+    }
+  ]
+}
+```
+
+**Custom Images**: For links with custom images (like Strava button), set `icon` to `null` and provide `customImage` URL.
+
+### Location Media Configuration
+
+Edit `assets/data/location_media.json` to update video and photos:
+
+```json
+{
+  "video": {
+    "youtube_id": "d5pgNEO1iJo",
+    "title": "Your Video Title",
+    "embed_url": "https://www.youtube-nocookie.com/embed/d5pgNEO1iJo"
+  },
+  "photos": [
+    {
+      "url": "https://example.com/photo1.jpg",
+      "alt": "Photo description"
+    }
+  ]
+}
+```
 
 ### Theme Customization
 
@@ -219,38 +306,35 @@ Edit CSS variables in `assets/css/theme.css`:
 }
 ```
 
-### Link Cards
-
-Edit `assets/data/link_cards.json`:
-
-```json
-[
-  {
-    "title": "My Project",
-    "description": "Project description",
-    "href": "https://example.com",
-    "icon": "🚀",
-    "external": true
-  }
-]
-```
-
 ---
 
 ## 🔒 Security Considerations
 
-### Current Security Model
+### Recommended Security Model (GitHub Actions)
 
-⚠️ **Important**: This is a **static site** hosted on GitHub Pages with **no server-side logic**. Security is limited to client-side measures.
+✅ **Best Practice**: Use GitHub Actions for production deployments to properly secure your NocoDB token.
+
+#### GitHub Actions Approach:
+1. **Token Storage**: Stored in GitHub Secrets (Settings → Secrets and variables → Actions)
+2. **Build-Time Injection**: Token injected during deployment, never in source code
+3. **Zero Exposure**: Token never appears in repository or client code
+4. **Automatic Deployment**: Workflow runs on push to `main` branch
+
+See `.github/workflows/deploy.yml` for implementation details.
+
+### Alternative: Client-Side Encryption (Development Only)
+
+⚠️ **Note**: This approach is **NOT secure for production** but acceptable for development.
 
 #### What's Protected:
 1. **XSS Prevention**: DOMPurify sanitizes all user-generated content before rendering
 2. **Bad Words Filter**: Client-side filtering of inappropriate language (badwords.json)
 3. **Rate Limiting**: 24-hour IP-based submission window (client + NocoDB verification)
-4. **Token Encryption**: NocoDB API token encrypted with CryptoJS AES
+4. **Token Obfuscation**: NocoDB API token encrypted with CryptoJS AES (local dev only)
+5. **IP Privacy**: Clear disclaimer that IP addresses are not shared with third parties
 
 #### Known Limitations:
-1. **Token Exposure**: Despite encryption, the passphrase is in client code. Anyone can:
+1. **Token Exposure** (Client-Side Only): Despite encryption, the passphrase is in client code. Anyone can:
    - View page source
    - Decrypt the token
    - Make direct API calls
@@ -262,22 +346,26 @@ Edit `assets/data/link_cards.json`:
 
 3. **IP Spoofing**: IP detection via ipify.org can be bypassed
 
-#### Recommended Mitigations (Future):
-- **Server-Side Proxy**: Move NocoDB calls behind an API gateway/serverless function
-- **Rate Limiting**: Implement server-side rate limiting
-- **CAPTCHA**: Use reCAPTCHA v3 for bot protection
-- **API Webhooks**: Use NocoDB webhooks for validation
+#### Recommended Setup:
+- **Production**: Use GitHub Actions (see `.github/workflows/deploy.yml`)
+- **Development**: Use client-side encryption in `assets/js/nocodb-config.js`
+- **Testing**: Use test-greetings.html for validation
 
 ### Why This Approach?
 
-For a **personal portfolio site**, this security model is acceptable because:
+For a **personal portfolio site**, the GitHub Actions approach provides:
+- ✅ True security (token never exposed)
 - ✅ Prevents casual misuse
 - ✅ Stops XSS attacks
 - ✅ Filters obvious spam
-- ✅ Works without backend infrastructure
-- ✅ Free hosting on GitHub Pages
+- ✅ Works with free GitHub Pages hosting
+- ✅ Automatic deployment on git push
 
-For production applications with sensitive data, use proper backend security.
+For more advanced security needs, consider:
+- Server-side API proxy (Cloudflare Workers, Vercel Functions)
+- reCAPTCHA v3 for bot protection
+- Server-side rate limiting
+- Database-level access controls
 
 ---
 

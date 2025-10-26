@@ -188,7 +188,7 @@ function saveWallEntry(message, feeling){
 }
 
 document.addEventListener('DOMContentLoaded', async ()=>{
-  const captcha = randomCaptcha();
+  let captcha = randomCaptcha();
   document.getElementById('captcha-question').textContent = captcha.question;
 
   const badwords = await fetchBadWords();
@@ -260,6 +260,12 @@ document.addEventListener('DOMContentLoaded', async ()=>{
         document.querySelectorAll('.captcha-btn').forEach(x=>{ x.setAttribute('aria-pressed','false'); x.classList.remove('selected'); });
         b.setAttribute('aria-pressed','true');
         b.classList.add('selected');
+        
+        // Clear any previous error feedback when user changes captcha selection
+        const feedback = document.getElementById('greet-feedback');
+        if(feedback && feedback.textContent.includes('Captcha')){
+          feedback.textContent = '';
+        }
       });
       wrap.appendChild(b);
     });

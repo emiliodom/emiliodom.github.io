@@ -40,13 +40,19 @@ const NOCODB =
 
 async function fetchFromNocoDB() {
     const fetchUrl = NOCODB.getUrl || NOCODB.url || NOCODB.postUrl;
-    if (!fetchUrl) return null;
+    if (!fetchUrl) {
+        console.warn("No NocoDB URL configured");
+        return null;
+    }
+    console.log("Fetching from NocoDB:", fetchUrl);
     try {
         // No xc-token header needed - the proxy handles authentication
         const headers = { accept: "application/json" };
         const r = await fetch(fetchUrl, { headers });
-        if (!r.ok) throw new Error("nocodb fetch failed");
+        console.log("NocoDB response status:", r.status, r.ok);
+        if (!r.ok) throw new Error(`nocodb fetch failed with status ${r.status}`);
         const j = await r.json();
+        console.log("NocoDB response data:", j);
         // Expecting array of records; map into local format {message, feeling, when, ip}
         // Normalize various response shapes
         const rows = [];
@@ -206,20 +212,24 @@ function saveWallEntry(message, feeling) {
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
-    // Check NocoDB availability first
+    // Check NocoDB availability first by attempting to fetch data
     let nocodbAvailable = false;
+    let cachedData = null;
+    
     try {
-        const testResponse = await fetch(NOCODB.getUrl || NOCODB.postUrl, {
-            method: "HEAD",
-            headers: { accept: "application/json" },
-        });
-        nocodbAvailable = testResponse && testResponse.ok;
+        const testData = await fetchFromNocoDB();
+        nocodbAvailable = testData !== null && Array.isArray(testData); // fetchFromNocoDB returns null on failure
+        if (nocodbAvailable) {
+            cachedData = testData; // Cache the data so we don't fetch twice
+        }
     } catch (e) {
+        console.warn("NocoDB availability check failed:", e);
         nocodbAvailable = false;
     }
 
     // If NocoDB is not available, show error and grey out page
     if (!nocodbAvailable) {
+        console.error("NocoDB is not available. Showing error message.");
         const greetingsSection = document.querySelector(".greetings-section");
         if (greetingsSection) {
             greetingsSection.style.opacity = "0.3";
@@ -240,8 +250,17 @@ document.addEventListener("DOMContentLoaded", async () => {
             </p>
         `;
         document.body.appendChild(errorDiv);
-        return; // Stop execution
+        
+        // Still try to load and show cached localStorage data
+        const localWall = loadWallEntries();
+        if (localWall && localWall.length > 0) {
+            renderPagination(localWall, 1, 5);
+            console.log("Showing cached localStorage data:", localWall.length, "entries");
+        }
+        return; // Stop execution for form submission
     }
+
+    console.log("NocoDB is available. Proceeding with normal initialization.");
 
     // Check if user has already submitted by querying NocoDB directly
     const submissionStatusAlert = document.getElementById("submission-status-alert");
@@ -260,7 +279,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Check NocoDB database for existing submission from this IP
     if (userIp) {
         try {
-            const nocodbList = await fetchFromNocoDB();
+            // Use cached data if available, otherwise fetch
+            const nocodbList = cachedData || (await fetchFromNocoDB());
             if (nocodbList && nocodbList.length) {
                 // Find any submission from this IP in the last 24 hours
                 const recentEntry = nocodbList.find((entry) => {
@@ -473,7 +493,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         const loader = document.getElementById("greet-loader");
         if (loader) loader.style.display = "flex";
         try {
-            const nocodbList = await fetchFromNocoDB();
+            // Use cached data if available, otherwise fetch
+            const nocodbList = cachedData || (await fetchFromNocoDB());
             if (nocodbList && nocodbList.length) {
                 renderPagination(nocodbList, 1, 5);
             } else {

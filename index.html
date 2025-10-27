@@ -207,7 +207,76 @@
     <footer>
       <p>© 2025 Emilio Dominguez</p>
     </footer>
+
+    <!-- Latest Greeting Section -->
+    <section id="latest-greeting-section" class="latest-greeting-section" style="margin-top:24px;display:none;">
+      <h2 style="text-align:center;margin-bottom:16px">Latest Greeting 💬</h2>
+      <div id="latest-greeting-card" style="max-width:400px;margin:0 auto;"></div>
+      <div style="text-align:center;margin-top:12px;">
+        <a href="/greetings.html" class="btn" style="display:inline-block;padding:10px 20px;text-decoration:none;">View All Greetings</a>
+      </div>
+    </section>
   </main>
+
+  <!-- Configuration and utilities for fetching greetings -->
+  <script src="/assets/js/config.js?v=2"></script>
+  <script src="/assets/js/network-utils.js?v=2"></script>
+  <script src="/assets/js/nocodb-config.js?v=2"></script>
+  
+  <script>
+    // Fetch and display the latest greeting
+    (async function() {
+      try {
+        const NOCODB = typeof window !== "undefined" && window.NOCODB_CONFIG
+          ? window.NOCODB_CONFIG
+          : { url: null, postUrl: null, getUrl: null, token: null };
+        
+        const fetchUrl = NOCODB.getUrl || NOCODB.url || NOCODB.postUrl;
+        if (!fetchUrl) return;
+        
+        const response = await fetch(fetchUrl);
+        if (!response.ok) return;
+        
+        const data = await response.json();
+        const rows = Array.isArray(data) ? data : 
+                     Array.isArray(data.records) ? data.records : 
+                     Array.isArray(data.list) ? data.list : [];
+        
+        if (rows.length === 0) return;
+        
+        // Get the most recent greeting (last item)
+        const latestRaw = rows[rows.length - 1];
+        const fields = latestRaw.fields || latestRaw;
+        const message = fields.Message || fields.message || "";
+        const feeling = fields.Notes || fields.notes || "";
+        const rawDate = fields.CreatedAt || fields.created_at || fields.createdAt || Date.now();
+        
+        const formatter = new Intl.DateTimeFormat("en-US", {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+        });
+        const when = formatter.format(new Date(rawDate));
+        
+        // Render the greeting card
+        const section = document.getElementById('latest-greeting-section');
+        const card = document.getElementById('latest-greeting-card');
+        
+        if (card && message) {
+          card.innerHTML = `
+            <article class="greet-card" style="padding:20px;border-radius:12px;background:var(--bg-secondary);box-shadow:0 2px 8px rgba(0,0,0,0.1);">
+              <div class="greet-feel" style="font-size:32px;text-align:center;margin-bottom:12px;">${feeling || "💬"}</div>
+              <div class="greet-text" style="font-size:16px;text-align:center;margin-bottom:8px;color:var(--text-dark);">${message}</div>
+              <div class="greet-meta" style="font-size:13px;text-align:center;color:var(--text-muted);">${when}</div>
+            </article>
+          `;
+          section.style.display = 'block';
+        }
+      } catch (error) {
+        // Silently fail - greeting is optional
+      }
+    })();
+  </script>
 
   <!-- Site theme script - loads minified in production -->
   <script type="module" src="assets/js/site-theme.js"></script>

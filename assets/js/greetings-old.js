@@ -110,7 +110,6 @@ async function fetchFromNocoDB() {
  * @param {string} user - The user identifier (IP address)
  * @param {string} notes - The emoji/feeling
  * @param {string} countryCode - ISO country code
- * @param {string} hcaptchaToken - hCaptcha verification token
  * @returns {Promise<any>} The API response
  * @throws {Error} If posting fails
  */
@@ -369,16 +368,50 @@ function renderSimplePagination(list, page, grid, pagerContainer) {
  * @returns {Promise<string>} hCaptcha token
  */
 async function validateHcaptcha() {
+    console.log("🔍 Getting hCaptcha response...");
+    console.log("hcaptcha object:", window.hcaptcha);
+    console.log("hcaptchaWidgetId:", window.hcaptchaWidgetId);
+
     if (!window.hcaptcha) {
+        console.error("❌ hCaptcha object not found");
         throw new Error("hCaptcha not loaded. Please refresh the page.");
     }
 
     const response = window.hcaptcha.getResponse(window.hcaptchaWidgetId);
+    console.log("hCaptcha response:", response);
     
     if (!response) {
+        console.warn("⚠️ No hCaptcha response");
         throw new Error("Please complete the hCaptcha challenge");
     }
 
+    console.log("✅ hCaptcha token:", response.substring(0, 20) + "...");
+    return response;
+}
+
+/**
+ * Validates Google reCAPTCHA and returns token
+ * @returns {Promise<string>} reCAPTCHA token
+ */
+async function validateRecaptcha() {
+    console.log("🔍 Getting reCAPTCHA response...");
+    console.log("grecaptcha object:", window.grecaptcha);
+    console.log("recaptchaWidgetId:", window.recaptchaWidgetId);
+
+    if (!window.grecaptcha || !window.grecaptcha.enterprise) {
+        console.error("❌ reCAPTCHA object not found");
+        throw new Error("reCAPTCHA not loaded. Please refresh the page.");
+    }
+
+    const response = window.grecaptcha.enterprise.getResponse(window.recaptchaWidgetId);
+    console.log("reCAPTCHA response:", response);
+    
+    if (!response) {
+        console.warn("⚠️ No reCAPTCHA response");
+        throw new Error("Please complete the reCAPTCHA challenge");
+    }
+
+    console.log("✅ reCAPTCHA token:", response.substring(0, 20) + "...");
     return response;
 }
 
@@ -412,20 +445,28 @@ function setFeedback(feedbackEl, message, type = "error") {
 function updateSubmitButton() {
     const submitButton = document.getElementById("greet-submit");
     if (!submitButton) {
+        console.warn("⚠️ Submit button not found!");
         return;
     }
 
     const hasMessage = !!AppState.selectedMessage;
     const hasFeeling = !!AppState.selectedFeeling;
     const hasCountry = !!AppState.selectedCountry;
-    const hasCaptcha = !!window.hcaptchaCompleted;
 
-    const canSubmit = hasMessage && hasFeeling && hasCountry && hasCaptcha;
+    const canSubmit = hasMessage && hasFeeling && hasCountry;
     submitButton.disabled = !canSubmit;
-}
 
-// Make updateSubmitButton available globally for hCaptcha callback
-window.updateSubmitButton = updateSubmitButton;
+    console.log("🔘 Submit button update:", {
+        message: AppState.selectedMessage || "(empty)",
+        feeling: AppState.selectedFeeling || "(empty)",
+        country: AppState.selectedCountry || "(empty)",
+        hasMessage,
+        hasFeeling,
+        hasCountry,
+        canSubmit,
+        buttonDisabled: submitButton.disabled,
+    });
+}
 
 /**
  * Handles form submission
@@ -433,8 +474,10 @@ window.updateSubmitButton = updateSubmitButton;
  */
 async function handleFormSubmit(e) {
     e.preventDefault();
+    console.log("🚀 Form submit started");
 
     if (AppState.isSubmitting) {
+        console.log("⚠️ Already submitting, ignoring");
         return;
     }
     AppState.isSubmitting = true;
@@ -443,7 +486,9 @@ async function handleFormSubmit(e) {
     const submitButton = e.target.querySelector('button[type="submit"]');
     feedback.innerHTML = "";
 
+    // Helper to reset state before returning
     const resetState = () => {
+        console.log("🔓 Resetting submission state");
         AppState.isSubmitting = false;
         if (submitButton) submitButton.disabled = false;
     };
@@ -455,38 +500,64 @@ async function handleFormSubmit(e) {
         const messageSelectEl = document.getElementById("message-select");
         const preset = sel?.dataset.text.trim() || messageSelectEl?.value.trim() || AppState.selectedMessage || "";
 
+        console.log("📝 Message selected:", preset);
+
         if (!preset) {
+            console.log("❌ No message selected");
             setFeedback(feedback, "⚠️ Please choose a message.", "error");
             resetState();
             return;
         }
 
         if (!AppState.selectedFeeling) {
+            console.log("❌ No feeling selected");
             setFeedback(feedback, "⚠️ Please select how you're feeling.", "error");
             resetState();
             return;
         }
 
         if (!AppState.selectedCountry) {
+            console.log("❌ No country selected");
             setFeedback(feedback, "⚠️ Please select your country.", "error");
             resetState();
             return;
         }
 
+        console.log("✅ All fields validated");
         setFeedback(feedback, "🔐 Verifying you're human...", "info");
 
         let hcaptchaToken;
+        let recaptchaToken;
+        
+        // Try hCaptcha first
         try {
+            console.log("🔐 Validating hCaptcha...");
             hcaptchaToken = await validateHcaptcha();
+            console.log("✅ hCaptcha validated, token:", hcaptchaToken.substring(0, 20) + "...");
         } catch (hcaptchaError) {
+            console.warn("⚠️ hCaptcha validation failed:", hcaptchaError.message);
+        }
+
+        // Try reCAPTCHA as fallback
+        if (!hcaptchaToken) {
+            try {
+                console.log("🔐 Validating reCAPTCHA...");
+                recaptchaToken = await validateRecaptcha();
+                console.log("✅ reCAPTCHA validated, token:", recaptchaToken.substring(0, 20) + "...");
+            } catch (recaptchaError) {
+                console.warn("⚠️ reCAPTCHA validation failed:", recaptchaError.message);
+            }
+        }
+
+        // If neither CAPTCHA is completed, show error
+        if (!hcaptchaToken && !recaptchaToken) {
+            console.error("❌ Both CAPTCHAs failed");
             setFeedback(
                 feedback,
                 `
                 <strong>CAPTCHA verification required.</strong><br>
                 <br>
-                <strong>Error:</strong> ${hcaptchaError.message}<br>
-                <br>
-                Please complete the CAPTCHA challenge above and try again.
+                Please complete at least one of the CAPTCHA challenges above (hCaptcha or reCAPTCHA) and try again.
             `,
                 "error"
             );
@@ -494,11 +565,16 @@ async function handleFormSubmit(e) {
             return;
         }
 
+        console.log("🌐 Getting IP address...");
         const ip = await getIp();
+        console.log("✅ IP retrieved:", ip || "no-ip");
 
+        console.log("🔍 Checking recent submissions...");
         const submissionCheck = await checkRecentSubmission(ip);
+        console.log("Submission check result:", submissionCheck);
 
         if (!submissionCheck.allowed) {
+            console.log("❌ User already submitted recently");
             setFeedback(
                 feedback,
                 "⚠️ You have already submitted a greeting from this IP in the last 24 hours.",
@@ -512,16 +588,25 @@ async function handleFormSubmit(e) {
         const notesEmoji = AppState.selectedFeeling || "";
         const countryCode = AppState.selectedCountry || "XX";
 
+        console.log("📤 Preparing submission:", { messageText, notesEmoji, countryCode, ip });
         setFeedback(feedback, "📤 Sending your greeting...", "info");
 
         try {
             const userField = ip || "web";
             const postUrl = NOCODB.postUrl || NOCODB.url;
 
-            if (postUrl) {
-                await postToNocoDB(messageText, userField, notesEmoji, countryCode, hcaptchaToken);
+            console.log("🔗 POST URL:", postUrl);
 
+            if (postUrl) {
+                console.log("📮 Posting to NocoDB...");
+                // Send whichever CAPTCHA token we got
+                const captchaToken = hcaptchaToken || recaptchaToken;
+                await postToNocoDB(messageText, userField, notesEmoji, countryCode, captchaToken);
+                console.log("✅ Posted successfully to NocoDB!");
+
+                console.log("🔄 Fetching updated greetings list...");
                 const nocodbList = await fetchFromNocoDB();
+                console.log("✅ Fetched greetings:", nocodbList?.length || 0);
 
                 if (Array.isArray(nocodbList)) {
                     AppState.cachedGreetings = nocodbList;
@@ -529,24 +614,13 @@ async function handleFormSubmit(e) {
                 }
 
                 setFeedback(feedback, "✅ Thanks — your greeting was added!", "success");
-
-                // Hide the form and show countdown message
-                const greetForm = document.getElementById("greet-form");
-                const submissionStatusAlert = document.getElementById("submission-status-alert");
-                
-                const newSubmissionCheck = await checkRecentSubmission(ip, nocodbList);
-                if (!newSubmissionCheck.allowed && greetForm) {
-                    showSubmissionBlockedUI(
-                        newSubmissionCheck.hoursLeft,
-                        newSubmissionCheck.minutesLeft,
-                        submissionStatusAlert,
-                        greetForm
-                    );
-                }
+                console.log("🎉 Submission complete!");
             } else {
+                console.error("❌ No POST URL configured");
                 setFeedback(feedback, "❌ Configuration error: No API endpoint configured", "error");
             }
         } catch (error) {
+            console.error("❌ Submission failed:", error);
             setFeedback(feedback, `❌ Failed to save: ${error.message}`, "error");
         }
     } finally {
@@ -558,18 +632,22 @@ async function handleFormSubmit(e) {
  * Initialize the greetings page
  */
 document.addEventListener("DOMContentLoaded", async () => {
+    console.log("🎬 DOMContentLoaded event fired - Starting initialization");
+    console.log("🔐 hCaptcha available:", typeof window.hcaptcha !== "undefined");
+    console.log("🔐 reCAPTCHA available:", typeof window.grecaptcha !== "undefined");
+
     let nocodbAvailable = false;
     let cachedData = null;
 
-    // Show initial loader
-    const loader = document.getElementById("greet-loader");
-    if (loader) loader.style.display = "block";
-
     try {
-        cachedData = await fetchFromNocoDB();
-        nocodbAvailable = Array.isArray(cachedData);
+        console.log("🔍 Testing NocoDB connection...");
+        const testData = await fetchFromNocoDB();
+        console.log("📊 NocoDB test result:", testData);
+        // NocoDB is available if we get an array (even if empty)
+        nocodbAvailable = Array.isArray(testData);
         if (nocodbAvailable) {
-            AppState.cachedGreetings = cachedData;
+            cachedData = testData;
+            AppState.cachedGreetings = testData;
         }
     } catch (error) {
         nocodbAvailable = false;
@@ -596,7 +674,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             </p>
         `;
         document.body.appendChild(errorDiv);
-        if (loader) loader.style.display = "none";
         return;
     }
 
@@ -619,10 +696,12 @@ document.addEventListener("DOMContentLoaded", async () => {
             greetForm
         );
     }
+    // Don't show any message if user CAN submit - redundant
 
     const countries = await fetchCountries();
     const countrySelector = document.getElementById("country-selector");
     if (countrySelector && countries.length > 0) {
+        console.log("🌍 Loading", countries.length, "countries");
         countries.forEach((c) => {
             const opt = document.createElement("option");
             opt.value = c.code;
@@ -630,7 +709,9 @@ document.addEventListener("DOMContentLoaded", async () => {
             countrySelector.appendChild(opt);
         });
         countrySelector.addEventListener("change", (e) => {
+            console.log("🌍 Country changed:", e.target.value);
             AppState.selectedCountry = e.target.value;
+            console.log("✅ selectedCountry set to:", AppState.selectedCountry);
             updateSubmitButton();
         });
     }
@@ -639,6 +720,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const messageSelect = document.getElementById("message-select");
 
     if (presetCards) {
+        console.log("💬 Creating preset message cards");
         PRESET_MESSAGES.forEach((msg) => {
             const card = document.createElement("div");
             card.className = "preset-card";
@@ -649,6 +731,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             card.setAttribute("role", "radio");
             card.setAttribute("aria-checked", "false");
             card.addEventListener("click", function () {
+                console.log("💬 Message card clicked:", this.dataset.text);
                 document.querySelectorAll(".preset-card").forEach((c) => {
                     c.classList.remove("selected");
                     c.setAttribute("aria-checked", "false");
@@ -656,6 +739,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 this.classList.add("selected");
                 this.setAttribute("aria-checked", "true");
                 AppState.selectedMessage = this.dataset.text;
+                console.log("✅ selectedMessage set to:", AppState.selectedMessage);
                 updateSubmitButton();
             });
             presetCards.appendChild(card);
@@ -675,13 +759,22 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
     }
 
+    // Feeling selector (now using dropdown)
     const feelingSelect = document.getElementById("feeling-select");
     if (feelingSelect) {
+        console.log("😊 Feeling selector found");
         feelingSelect.addEventListener("change", (e) => {
+            console.log("🎭 Feeling changed:", e.target.value);
             AppState.selectedFeeling = e.target.value;
+            console.log("✅ selectedFeeling set to:", AppState.selectedFeeling);
             updateSubmitButton();
         });
+    } else {
+        console.error("❌ Feeling selector #feeling-select not found!");
     }
+
+    const loader = document.getElementById("loader");
+    if (loader) loader.style.display = "block";
 
     (async () => {
         try {
@@ -690,6 +783,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 if (nocodbList.length > 0) {
                     renderPagination(nocodbList, 1);
                 } else {
+                    // NocoDB is available but empty - show empty state
                     const container = document.getElementById("greet-list");
                     if (container) {
                         container.innerHTML = `
@@ -703,6 +797,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 }
             }
         } catch (error) {
+            console.error("❌ Failed to load greetings:", error);
             const container = document.getElementById("greet-list");
             if (container) {
                 container.innerHTML = `
@@ -720,8 +815,18 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const greetForm = document.getElementById("greet-form");
     if (greetForm) {
+        console.log("✅ Form found, attaching submit handler");
         greetForm.addEventListener("submit", handleFormSubmit);
+        console.log("✅ Submit handler attached");
+    } else {
+        console.error("❌ Form #greet-form not found!");
     }
 
+    // Check initial button state
+    console.log("🔍 Checking initial AppState:", {
+        selectedMessage: AppState.selectedMessage || "(empty)",
+        selectedFeeling: AppState.selectedFeeling || "(empty)",
+        selectedCountry: AppState.selectedCountry || "(empty)",
+    });
     updateSubmitButton();
 });

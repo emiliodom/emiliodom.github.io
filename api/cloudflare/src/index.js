@@ -90,7 +90,8 @@ export default {
                     body: new URLSearchParams({
                         secret: env.HCAPTCHA_SECRET,
                         response: body.hcaptchaToken,
-                        remoteip: request.headers.get("CF-Connecting-IP") || request.headers.get("X-Forwarded-For") || "",
+                        remoteip:
+                            request.headers.get("CF-Connecting-IP") || request.headers.get("X-Forwarded-For") || "",
                     }),
                 });
 

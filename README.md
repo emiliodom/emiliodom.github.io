@@ -11,12 +11,17 @@ A modern, interactive personal website with dark/light theme support, multi-lang
 
 ## 🆕 Recent Updates (October 2025)
 
-### Latest Improvements (v2.0)
+### Latest Improvements (v2.0) - **Complete Greetings System Overhaul**
 - ✅ **Migrated to hCaptcha** - Replaced Google reCAPTCHA with hCaptcha for better reliability
-- ✅ **Explicit render mode** - Fixed CAPTCHA loading issues with proper async handling
-- ✅ **Enhanced form UX** - Submit button now enables only when hCaptcha is completed
-- ✅ **Improved submission flow** - Form hides after successful submission, shows countdown
+- ✅ **Explicit render mode** - Fixed CAPTCHA loading issues with proper async handling  
+- ✅ **Smart button state** - Submit button enables only when hCaptcha is completed
+- ✅ **Enhanced submission flow** - Form hides after successful submission, shows countdown timer
+- ✅ **Confetti celebration** - 4-second confetti animation on successful greeting submission
+- ✅ **Better UX flow** - Hide greeting header when user already submitted
+- ✅ **Country flags display** - Show flag emoji + country name in all greeting cards
+- ✅ **Improved visual hierarchy** - Greetings wall appears before unavailable message
 - ✅ **Latest greeting on index** - Homepage displays the most recent greeting card
+- ✅ **No form reflow** - Form hidden initially, prevents flash/layout shift
 - ✅ **Code cleanup** - Removed all console.log statements and debugging code
 - ✅ **Better loaders** - Added loading indicators during API calls and data fetching
 
@@ -66,13 +71,15 @@ A modern, interactive personal website with dark/light theme support, multi-lang
 
 ### 💬 Greetings Wall
 - **Interactive Form**: Three-step submission process (feeling → message → country → captcha)
-- **hCaptcha Integration**: Secure bot protection with explicit render mode
+- **hCaptcha Integration**: Secure bot protection with explicit render mode and callback-based enabling
 - **Smart Button State**: Submit button enables only when all fields + CAPTCHA completed
+- **Confetti Celebration**: 4-second confetti animation triggers on successful submission
 - **14 Emoticons**: Balanced mix of positive and neutral feelings (😊, 🙂, 😄, 🤩, 👏, 🙌, 💪, 😐, 🤔, 👍, 🙏, 🤝, 🫡, ✌️)
 - **16 Preset Messages**: Professional and casual greeting options
 - **Country Selection**: Flag-enabled dropdown with 150+ countries
 - **IP-Based Rate Limiting**: One submission per IP per 24 hours
-- **Success Flow**: Form hides after submission, shows countdown message with hours/minutes remaining
+- **Success Flow**: Form and header hide after submission, shows countdown with hours/minutes remaining
+- **Visual Feedback**: Enhanced country flag display (larger emoji + bold country name)
 - **Latest Greeting**: Homepage displays the most recent greeting card
 - **Privacy Disclaimer**: Clear notice that IP is not shared with third parties
 - **Lazy Loading**: Mobile greeting cards use content-visibility for performance
@@ -96,6 +103,7 @@ A modern, interactive personal website with dark/light theme support, multi-lang
 - **Backend**: NocoDB v2 API with Cloudflare Worker proxy
 - **CDN Libraries**:
   - particles.js v2.0.0 (background animation)
+  - confetti-js v0.0.18 (success celebration)
   - Twemoji API (emoji rendering)
   - DOMPurify v3.0.8 (XSS protection)
   - Google Translate Widget (i18n)
@@ -118,6 +126,7 @@ A modern, interactive personal website with dark/light theme support, multi-lang
 | CSS3 (Variables) | Theming & responsive styles | - |
 | JavaScript (ES6+) | Interactivity & API calls | - |
 | particles.js | Animated background | 2.0.0 |
+| confetti-js | Success celebration | 0.0.18 |
 | Twemoji | Emoji rendering | latest |
 | DOMPurify | XSS sanitization | 3.0.8 |
 | hCaptcha | Bot protection | v1 API |

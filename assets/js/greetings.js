@@ -582,24 +582,6 @@ async function handleFormSubmit(e) {
             }
         }
 
-        if (ip) {
-            localStorage.setItem(
-                `greet-submitted-${ip}`,
-                JSON.stringify({
-                    when: Date.now(),
-                    message: preset,
-                })
-            );
-        } else {
-            localStorage.setItem(
-                "greet-submitted-browserside",
-                JSON.stringify({
-                    when: Date.now(),
-                    message: preset,
-                })
-            );
-        }
-
         const messageText = preset;
         const notesEmoji = AppState.selectedFeeling || "";
         const countryCode = AppState.selectedCountry || "XX";
@@ -624,6 +606,26 @@ async function handleFormSubmit(e) {
             const postUrl = NOCODB.postUrl || NOCODB.url;
             if (postUrl) {
                 await postToNocoDB(messageText, userField, notesEmoji, countryCode);
+                
+                // Only set localStorage AFTER successful submission
+                if (ip) {
+                    localStorage.setItem(
+                        `greet-submitted-${ip}`,
+                        JSON.stringify({
+                            when: Date.now(),
+                            message: preset,
+                        })
+                    );
+                } else {
+                    localStorage.setItem(
+                        "greet-submitted-browserside",
+                        JSON.stringify({
+                            when: Date.now(),
+                            message: preset,
+                        })
+                    );
+                }
+                
                 localStorage.setItem(dedupKey, JSON.stringify({ when: Date.now() }));
                 const nocodbList = await fetchFromNocoDB();
                 if (nocodbList) {

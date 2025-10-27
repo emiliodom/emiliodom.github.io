@@ -373,33 +373,52 @@ function renderSimplePagination(list, page, grid, pagerContainer) {
  * @returns {Promise<string>} reCAPTCHA token
  */
 async function validateRecaptcha() {
-    // Simple check - if script loaded synchronously, it should be available
-    if (typeof grecaptcha === "undefined" || typeof grecaptcha.ready !== "function") {
-        throw new Error("reCAPTCHA script failed to load. Please check your internet connection and try again.");
+    console.log("🔍 Checking reCAPTCHA availability...");
+    
+    // Wait for reCAPTCHA to load (max 10 seconds)
+    let attempts = 0;
+    const maxAttempts = 100; // 100 * 100ms = 10 seconds
+    
+    while (!window.recaptchaLoaded && attempts < maxAttempts) {
+        await new Promise(resolve => setTimeout(resolve, 100));
+        attempts++;
     }
+    
+    if (!window.recaptchaLoaded) {
+        console.error("❌ reCAPTCHA failed to load after 10 seconds");
+        throw new Error("Security verification is unavailable. This is usually caused by an ad blocker or privacy extension blocking Google reCAPTCHA. Please disable it and try again.");
+    }
+    
+    console.log("✅ reCAPTCHA loaded flag detected");
+    
+    // Double-check grecaptcha object exists
+    if (typeof grecaptcha === "undefined") {
+        console.error("❌ grecaptcha is undefined despite load flag");
+        throw new Error("Security verification failed to initialize. Please try again.");
+    }
+    
+    console.log("✅ grecaptcha object confirmed");
 
     return new Promise((resolve, reject) => {
-        try {
-            grecaptcha.ready(() => {
-                try {
-                    grecaptcha.enterprise.execute(CONFIG.RECAPTCHA_SITE_KEY, {
-                        action: CONFIG.RECAPTCHA_ACTION,
-                    }).then(token => {
-                        if (!token) {
-                            reject(new Error("Failed to generate reCAPTCHA token"));
-                        } else {
-                            resolve(token);
-                        }
-                    }).catch(error => {
-                        reject(new Error(`reCAPTCHA execution failed: ${error.message}`));
-                    });
-                } catch (error) {
-                    reject(new Error(`reCAPTCHA error: ${error.message}`));
-                }
-            });
-        } catch (error) {
-            reject(new Error(`reCAPTCHA initialization failed: ${error.message}`));
-        }
+        grecaptcha.ready(() => {
+            console.log("✅ grecaptcha.ready() callback fired");
+            grecaptcha.enterprise
+                .execute(CONFIG.RECAPTCHA_SITE_KEY, {
+                    action: CONFIG.RECAPTCHA_ACTION,
+                })
+                .then((token) => {
+                    if (!token) {
+                        reject(new Error("Failed to generate security token"));
+                    } else {
+                        console.log("✅ reCAPTCHA token generated successfully");
+                        resolve(token);
+                    }
+                })
+                .catch((error) => {
+                    console.error("❌ reCAPTCHA execution error:", error);
+                    reject(new Error(`Security verification failed: ${error.message}`));
+                });
+        });
     });
 }
 
@@ -444,15 +463,15 @@ function updateSubmitButton() {
     const canSubmit = hasMessage && hasFeeling && hasCountry;
     submitButton.disabled = !canSubmit;
 
-    console.log("🔘 Submit button update:", { 
+    console.log("🔘 Submit button update:", {
         message: AppState.selectedMessage || "(empty)",
         feeling: AppState.selectedFeeling || "(empty)",
         country: AppState.selectedCountry || "(empty)",
-        hasMessage, 
-        hasFeeling, 
-        hasCountry, 
-        canSubmit, 
-        buttonDisabled: submitButton.disabled 
+        hasMessage,
+        hasFeeling,
+        hasCountry,
+        canSubmit,
+        buttonDisabled: submitButton.disabled,
     });
 }
 
@@ -521,7 +540,9 @@ async function handleFormSubmit(e) {
             console.log("✅ reCAPTCHA validated, token:", recaptchaToken.substring(0, 20) + "...");
         } catch (recaptchaError) {
             console.error("❌ reCAPTCHA failed:", recaptchaError);
-            setFeedback(feedback, `
+            setFeedback(
+                feedback,
+                `
                 <strong>Security verification failed.</strong><br>
                 <br>
                 <strong>Possible causes:</strong><br>
@@ -535,7 +556,9 @@ async function handleFormSubmit(e) {
                 • Try a different browser<br>
                 <br>
                 <strong>Error:</strong> ${recaptchaError.message}
-            `, "error");
+            `,
+                "error"
+            );
             resetState();
             return;
         }
@@ -547,10 +570,14 @@ async function handleFormSubmit(e) {
         console.log("🔍 Checking recent submissions...");
         const submissionCheck = await checkRecentSubmission(ip);
         console.log("Submission check result:", submissionCheck);
-        
+
         if (!submissionCheck.allowed) {
             console.log("❌ User already submitted recently");
-            setFeedback(feedback, "⚠️ You have already submitted a greeting from this IP in the last 24 hours.", "error");
+            setFeedback(
+                feedback,
+                "⚠️ You have already submitted a greeting from this IP in the last 24 hours.",
+                "error"
+            );
             resetState();
             return;
         }
@@ -565,23 +592,23 @@ async function handleFormSubmit(e) {
         try {
             const userField = ip || "web";
             const postUrl = NOCODB.postUrl || NOCODB.url;
-            
+
             console.log("🔗 POST URL:", postUrl);
-            
+
             if (postUrl) {
                 console.log("📮 Posting to NocoDB...");
                 await postToNocoDB(messageText, userField, notesEmoji, countryCode);
                 console.log("✅ Posted successfully to NocoDB!");
-                
+
                 console.log("🔄 Fetching updated greetings list...");
                 const nocodbList = await fetchFromNocoDB();
                 console.log("✅ Fetched greetings:", nocodbList?.length || 0);
-                
+
                 if (Array.isArray(nocodbList)) {
                     AppState.cachedGreetings = nocodbList;
                     renderPagination(nocodbList, 1);
                 }
-                
+
                 setFeedback(feedback, "✅ Thanks — your greeting was added!", "success");
                 console.log("🎉 Submission complete!");
             } else {
@@ -602,6 +629,41 @@ async function handleFormSubmit(e) {
  */
 document.addEventListener("DOMContentLoaded", async () => {
     console.log("🎬 DOMContentLoaded event fired - Starting initialization");
+    
+    // Check reCAPTCHA load status
+    console.log("🔐 Checking reCAPTCHA load status...");
+    console.log("window.recaptchaLoaded:", window.recaptchaLoaded);
+    console.log("typeof grecaptcha:", typeof grecaptcha);
+    
+    if (!window.recaptchaLoaded) {
+        console.warn("⚠️ reCAPTCHA not loaded yet - waiting for onload callback");
+        // Show warning banner
+        const warningDiv = document.createElement("div");
+        warningDiv.id = "recaptcha-warning";
+        warningDiv.style.cssText = "background:#ff9800;color:#000;padding:12px;text-align:center;font-weight:600;position:sticky;top:0;z-index:10000;";
+        warningDiv.innerHTML = "⚠️ Loading security verification... If this message persists, disable your ad blocker.";
+        document.body.insertBefore(warningDiv, document.body.firstChild);
+        
+        // Wait and check again
+        setTimeout(() => {
+            if (window.recaptchaLoaded) {
+                const warning = document.getElementById("recaptcha-warning");
+                if (warning) warning.remove();
+                console.log("✅ reCAPTCHA loaded successfully");
+            } else {
+                console.error("❌ reCAPTCHA failed to load after timeout");
+                const warning = document.getElementById("recaptcha-warning");
+                if (warning) {
+                    warning.style.background = "#f44336";
+                    warning.style.color = "#fff";
+                    warning.innerHTML = "❌ Security verification blocked (ad blocker detected). Form submission will not work.";
+                }
+            }
+        }, 3000);
+    } else {
+        console.log("✅ reCAPTCHA already loaded");
+    }
+    
     let nocodbAvailable = false;
     let cachedData = null;
 
@@ -792,7 +854,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     console.log("🔍 Checking initial AppState:", {
         selectedMessage: AppState.selectedMessage || "(empty)",
         selectedFeeling: AppState.selectedFeeling || "(empty)",
-        selectedCountry: AppState.selectedCountry || "(empty)"
+        selectedCountry: AppState.selectedCountry || "(empty)",
     });
     updateSubmitButton();
 });

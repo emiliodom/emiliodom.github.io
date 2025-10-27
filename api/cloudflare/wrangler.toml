@@ -2,6 +2,13 @@ name = "nocodb-proxy"
 main = "src/index.js"
 compatibility_date = "2025-01-01"
 
+# Enable logging for debugging
+[observability]
+  [observability.logs]
+    enabled = true
+    head_sampling_rate = 1
+    invocation_logs = true
+
 # Environment variables (non-secret)
 [vars]
 

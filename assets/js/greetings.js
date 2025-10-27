@@ -694,6 +694,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         `;
         document.body.appendChild(errorDiv);
 
+        // Still try to load and show cached localStorage data
         const localWall = loadWallEntries();
         if (localWall?.length > 0) {
             renderPagination(localWall, 1);

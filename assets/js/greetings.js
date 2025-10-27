@@ -368,50 +368,38 @@ function renderSimplePagination(list, page, grid, pagerContainer) {
  * @returns {Promise<string>} The reCAPTCHA token
  * @throws {Error} If reCAPTCHA validation fails
  */
+/**
+ * Validates reCAPTCHA and returns token
+ * @returns {Promise<string>} reCAPTCHA token
+ */
 async function validateRecaptcha() {
-    // Wait for grecaptcha to be available (with timeout)
-    const maxWaitTime = 10000; // 10 seconds
-    const checkInterval = 100; // Check every 100ms
-    let waited = 0;
-
-    while (typeof grecaptcha === "undefined" && waited < maxWaitTime) {
-        await new Promise(resolve => setTimeout(resolve, checkInterval));
-        waited += checkInterval;
-    }
-
-    if (typeof grecaptcha === "undefined") {
-        throw new Error("reCAPTCHA script not loaded. Please refresh the page and try again.");
-    }
-
-    // Wait for grecaptcha.ready to be available
-    while (typeof grecaptcha.ready !== "function" && waited < maxWaitTime) {
-        await new Promise(resolve => setTimeout(resolve, checkInterval));
-        waited += checkInterval;
-    }
-
-    if (typeof grecaptcha.ready !== "function") {
-        throw new Error("reCAPTCHA not ready. Please refresh the page and try again.");
-    }
-
-    if (!grecaptcha.enterprise) {
-        throw new Error("reCAPTCHA Enterprise not available. Please refresh the page and try again.");
+    // Simple check - if script loaded synchronously, it should be available
+    if (typeof grecaptcha === "undefined" || typeof grecaptcha.ready !== "function") {
+        throw new Error("reCAPTCHA script failed to load. Please check your internet connection and try again.");
     }
 
     return new Promise((resolve, reject) => {
-        // Use grecaptcha.ready() (not grecaptcha.enterprise.ready())
-        grecaptcha.ready(() => {
-            grecaptcha.enterprise.execute(CONFIG.RECAPTCHA_SITE_KEY, {
-                action: CONFIG.RECAPTCHA_ACTION,
-            }).then(token => {
-                if (!token) {
-                    reject(new Error("Failed to generate reCAPTCHA token"));
-                } else {
-                    resolve(token);
+        try {
+            grecaptcha.ready(() => {
+                try {
+                    grecaptcha.enterprise.execute(CONFIG.RECAPTCHA_SITE_KEY, {
+                        action: CONFIG.RECAPTCHA_ACTION,
+                    }).then(token => {
+                        if (!token) {
+                            reject(new Error("Failed to generate reCAPTCHA token"));
+                        } else {
+                            resolve(token);
+                        }
+                    }).catch(error => {
+                        reject(new Error(`reCAPTCHA execution failed: ${error.message}`));
+                    });
+                } catch (error) {
+                    reject(new Error(`reCAPTCHA error: ${error.message}`));
                 }
-            }).catch(error => {
-                reject(error);
             });
-        });
+        } catch (error) {
+            reject(new Error(`reCAPTCHA initialization failed: ${error.message}`));
+        }
     });
 }
 
@@ -534,14 +522,19 @@ async function handleFormSubmit(e) {
         } catch (recaptchaError) {
             console.error("❌ reCAPTCHA failed:", recaptchaError);
             setFeedback(feedback, `
-                <strong>reCAPTCHA verification failed.</strong><br>
+                <strong>Security verification failed.</strong><br>
                 <br>
                 <strong>Possible causes:</strong><br>
-                • Script still loading - wait a few seconds and try again<br>
-                • Ad blocker or browser extension interfering<br>
-                • Google Translate active (switch to English)<br>
+                • Ad blocker or privacy extension is blocking Google reCAPTCHA<br>
+                • Browser security settings too strict<br>
+                • Network connection issue<br>
                 <br>
-                <strong>Error details:</strong> ${recaptchaError.message}
+                <strong>What to try:</strong><br>
+                • Disable ad blocker temporarily and try again<br>
+                • Check if Google services are accessible<br>
+                • Try a different browser<br>
+                <br>
+                <strong>Error:</strong> ${recaptchaError.message}
             `, "error");
             resetState();
             return;

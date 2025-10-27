@@ -719,27 +719,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         // IP fetch failed, continue without IP
     }
 
-    const submissionCheck = await checkRecentSubmission(userIp, cachedData);
+    // We'll check submission status after greetings are loaded
     const greetForm = document.getElementById("greet-form");
-    
-    if (!submissionCheck.allowed) {
-        showSubmissionBlockedUI(
-            submissionCheck.hoursLeft,
-            submissionCheck.minutesLeft,
-            submissionStatusAlert,
-            greetForm,
-            false // Don't hide greetings on initial page load
-        );
-    } else {
-        // User is allowed to submit, show the form and header
-        const greetingHeader = document.getElementById("greeting-header");
-        if (greetingHeader) {
-            greetingHeader.style.display = "block";
-        }
-        if (greetForm) {
-            greetForm.style.display = "block";
-        }
-    }
 
     const countries = await fetchCountries();
     const countrySelector = document.getElementById("country-selector");
@@ -849,6 +830,28 @@ document.addEventListener("DOMContentLoaded", async () => {
             if (loader) loader.style.display = "none";
         }
     })();
+
+    // Check submission status AFTER greetings are loaded and displayed
+    const submissionCheck = await checkRecentSubmission(userIp, cachedData);
+    
+    if (!submissionCheck.allowed) {
+        showSubmissionBlockedUI(
+            submissionCheck.hoursLeft,
+            submissionCheck.minutesLeft,
+            submissionStatusAlert,
+            greetForm,
+            false // Don't hide greetings on initial page load
+        );
+    } else {
+        // User is allowed to submit, show the form and header
+        const greetingHeader = document.getElementById("greeting-header");
+        if (greetingHeader) {
+            greetingHeader.style.display = "block";
+        }
+        if (greetForm) {
+            greetForm.style.display = "block";
+        }
+    }
 
     if (greetForm) {
         greetForm.addEventListener("submit", handleFormSubmit);

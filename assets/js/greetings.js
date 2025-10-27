@@ -377,20 +377,19 @@ async function validateRecaptcha() {
     }
 
     return new Promise((resolve, reject) => {
-        grecaptcha.enterprise.ready(async () => {
-            try {
-                const token = await grecaptcha.enterprise.execute(CONFIG.RECAPTCHA_SITE_KEY, {
-                    action: CONFIG.RECAPTCHA_ACTION,
-                });
-
+        // Use grecaptcha.ready() (not grecaptcha.enterprise.ready())
+        grecaptcha.ready(() => {
+            grecaptcha.enterprise.execute(CONFIG.RECAPTCHA_SITE_KEY, {
+                action: CONFIG.RECAPTCHA_ACTION,
+            }).then(token => {
                 if (!token) {
                     reject(new Error("Failed to generate reCAPTCHA token"));
                 } else {
                     resolve(token);
                 }
-            } catch (error) {
+            }).catch(error => {
                 reject(error);
-            }
+            });
         });
     });
 }

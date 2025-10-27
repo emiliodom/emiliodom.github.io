@@ -37,9 +37,6 @@
   <!-- Favicon -->
   <link id="dynamic-favicon" rel="icon" href="/assets/img/avatar-fallback.svg">
   
-  <!-- reCAPTCHA Enterprise - Load early and synchronously -->
-  <script src="https://www.google.com/recaptcha/enterprise.js?render=6LcF5_crAAAAABBrXkDLdIFnSbQ36AIaDJxXA0P8" class="notranslate"></script>
-  
   <!-- Sitemap and Robots -->
   <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml">
   
@@ -221,6 +218,20 @@
   
   <!-- NocoDB config now uses Cloudflare Worker proxy - no encryption needed -->
   <script src="/assets/js/nocodb-config.js"></script>
+
+  <!-- reCAPTCHA Enterprise - Load before greetings.js -->
+  <script>
+    // Set a flag when reCAPTCHA loads
+    window.recaptchaLoaded = false;
+  </script>
+  <script src="https://www.google.com/recaptcha/enterprise.js?render=6LcF5_crAAAAABBrXkDLdIFnSbQ36AIaDJxXA0P8&onload=onRecaptchaLoad" class="notranslate"></script>
+  <script>
+    // Callback when reCAPTCHA is ready
+    function onRecaptchaLoad() {
+      window.recaptchaLoaded = true;
+      console.log('✅ reCAPTCHA Enterprise loaded successfully');
+    }
+  </script>
 
   <!-- particles.js background animation library -->
   <div id="particles-js" style="position:fixed;width:100%;height:100%;top:0;left:0;z-index:0;pointer-events:none"></div>

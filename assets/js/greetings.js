@@ -413,6 +413,29 @@ function setFeedback(feedbackEl, message, type = "error") {
 }
 
 /**
+ * Checks if all required fields are filled and enables/disables submit button
+ */
+function updateSubmitButton() {
+    const submitButton = document.getElementById("greet-submit");
+    if (!submitButton) return;
+
+    const hasMessage = !!AppState.selectedMessage;
+    const hasFeeling = !!AppState.selectedFeeling;
+    const hasCountry = !!AppState.selectedCountry;
+
+    const canSubmit = hasMessage && hasFeeling && hasCountry;
+    submitButton.disabled = !canSubmit;
+
+    console.log("🔘 Submit button state:", { 
+        hasMessage, 
+        hasFeeling, 
+        hasCountry, 
+        canSubmit, 
+        disabled: submitButton.disabled 
+    });
+}
+
+/**
  * Handles form submission
  * @param {Event} e - Submit event
  */
@@ -552,11 +575,14 @@ async function handleFormSubmit(e) {
  * Initialize the greetings page
  */
 document.addEventListener("DOMContentLoaded", async () => {
+    console.log("🎬 DOMContentLoaded event fired - Starting initialization");
     let nocodbAvailable = false;
     let cachedData = null;
 
     try {
+        console.log("🔍 Testing NocoDB connection...");
         const testData = await fetchFromNocoDB();
+        console.log("📊 NocoDB test result:", testData);
         // NocoDB is available if we get an array (even if empty)
         nocodbAvailable = Array.isArray(testData);
         if (nocodbAvailable) {
@@ -623,6 +649,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
         countrySelector.addEventListener("change", (e) => {
             AppState.selectedCountry = e.target.value;
+            updateSubmitButton();
         });
     }
 
@@ -647,6 +674,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 this.classList.add("selected");
                 this.setAttribute("aria-checked", "true");
                 AppState.selectedMessage = this.dataset.text;
+                updateSubmitButton();
             });
             presetCards.appendChild(card);
         });
@@ -661,6 +689,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
         messageSelect.addEventListener("change", (e) => {
             AppState.selectedMessage = e.target.value;
+            updateSubmitButton();
         });
     }
 
@@ -674,6 +703,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             this.classList.add("selected");
             this.setAttribute("aria-pressed", "true");
             AppState.selectedFeeling = this.dataset.feel;
+            updateSubmitButton();
         });
     });
 
@@ -719,6 +749,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const greetForm = document.getElementById("greet-form");
     if (greetForm) {
+        console.log("✅ Form found, attaching submit handler");
         greetForm.addEventListener("submit", handleFormSubmit);
+        console.log("✅ Submit handler attached");
+    } else {
+        console.error("❌ Form #greet-form not found!");
     }
 });

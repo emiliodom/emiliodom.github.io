@@ -265,14 +265,27 @@
           try {
             const countriesResponse = await fetch('assets/data/countries.json');
             const countries = await countriesResponse.json();
-            const country = countries.find(c => c.code === countryCode);
+            // Try both lowercase and uppercase
+            const country = countries.find(c => 
+              c.code === countryCode.toLowerCase() || c.code === countryCode.toUpperCase()
+            );
             if (country) {
               countryInfo = { flag: country.flag, name: country.name };
             } else {
-              countryInfo = { flag: "🌍", name: countryCode };
+              // Fallback: convert country code to flag emoji
+              const codePoints = countryCode.toUpperCase()
+                .split('')
+                .map(char => 127397 + char.charCodeAt(0));
+              const flag = String.fromCodePoint(...codePoints);
+              countryInfo = { flag: flag, name: countryCode.toUpperCase() };
             }
           } catch (err) {
-            countryInfo = { flag: "🌍", name: countryCode };
+            // Fallback: convert country code to flag emoji
+            const codePoints = countryCode.toUpperCase()
+              .split('')
+              .map(char => 127397 + char.charCodeAt(0));
+            const flag = String.fromCodePoint(...codePoints);
+            countryInfo = { flag: flag, name: countryCode.toUpperCase() };
           }
         }
         

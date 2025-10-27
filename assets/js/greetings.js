@@ -46,6 +46,36 @@ const AppState = {
 };
 
 /**
+ * Triggers confetti animation on successful submission
+ */
+function triggerConfetti() {
+    if (typeof ConfettiGenerator !== 'undefined') {
+        const confettiSettings = {
+            target: 'confetti-holder',
+            max: 80,
+            size: 1,
+            animate: true,
+            props: ['circle', 'square', 'triangle', 'line'],
+            colors: [[165,104,246],[230,61,135],[0,199,228],[253,214,126]],
+            clock: 25,
+            rotate: false,
+            width: window.innerWidth,
+            height: window.innerHeight,
+            start_from_edge: false,
+            respawn: true
+        };
+        
+        const confetti = new ConfettiGenerator(confettiSettings);
+        confetti.render();
+        
+        // Stop confetti after 4 seconds
+        setTimeout(() => {
+            confetti.clear();
+        }, 4000);
+    }
+}
+
+/**
  * Gets country name and flag from country code
  * @param {string} countryCode - 2-letter ISO country code
  * @returns {{flag: string, name: string}} Country flag and name
@@ -65,12 +95,16 @@ function getCountryInfo(countryCode) {
     
     // Fallback: convert country code to flag emoji
     // Country codes are uppercase, flags are Regional Indicator Symbols
-    const codePoints = countryCode.toUpperCase()
-        .split('')
-        .map(char => 127397 + char.charCodeAt(0));
-    const flag = String.fromCodePoint(...codePoints);
+    if (countryCode.length === 2) {
+        const codePoints = countryCode.toUpperCase()
+            .split('')
+            .map(char => 127397 + char.charCodeAt(0));
+        const flag = String.fromCodePoint(...codePoints);
+        
+        return { flag: flag, name: countryCode.toUpperCase() };
+    }
     
-    return { flag: flag, name: countryCode.toUpperCase() };
+    return { flag: "🌍", name: countryCode };
 }
 
 /**
@@ -236,6 +270,12 @@ async function checkRecentSubmission(userIp, greetingsList = null) {
  * @param {boolean} hideGreetings - Whether to hide the greetings wall
  */
 function showSubmissionBlockedUI(hoursLeft, minutesLeft, alertElement, formElement, hideGreetings = false) {
+    // Hide the greeting header
+    const greetingHeader = document.getElementById("greeting-header");
+    if (greetingHeader) {
+        greetingHeader.style.display = "none";
+    }
+    
     if (formElement) {
         formElement.style.display = "none";
     }
@@ -587,6 +627,9 @@ async function handleFormSubmit(e) {
                 }
 
                 setFeedback(feedback, "✅ Thanks — your greeting was added!", "success");
+                
+                // Trigger confetti celebration!
+                triggerConfetti();
 
                 // Hide the form and show countdown message
                 const greetForm = document.getElementById("greet-form");
@@ -680,7 +723,11 @@ document.addEventListener("DOMContentLoaded", async () => {
             false // Don't hide greetings on initial page load
         );
     } else {
-        // User is allowed to submit, show the form
+        // User is allowed to submit, show the form and header
+        const greetingHeader = document.getElementById("greeting-header");
+        if (greetingHeader) {
+            greetingHeader.style.display = "block";
+        }
         if (greetForm) {
             greetForm.style.display = "block";
         }

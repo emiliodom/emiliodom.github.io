@@ -1,0 +1,15 @@
+# Jekyll configuration for GitHub Pages
+permalink: pretty
+exclude:
+  - README.md
+  - LICENSE
+  - api/
+  - .git/
+  - .gitignore
+
+# Enable clean URLs (removes .html extension)
+plugins:
+  - jekyll-relative-links
+
+# Markdown settings
+markdown: kramdown

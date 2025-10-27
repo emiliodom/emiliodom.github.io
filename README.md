@@ -9,8 +9,23 @@ A modern, interactive personal website with dark/light theme support, multi-lang
 
 ---
 
+## 🆕 Recent Updates (October 2025)
+
+### Major Cleanup & Improvements
+- ✅ **Removed Vercel infrastructure** - Switched to Cloudflare Workers proxy
+- ✅ **Enhanced error handling** - Graceful NocoDB unavailability with greyed-out UI
+- ✅ **Code quality tools** - Added ESLint and Prettier configurations
+- ✅ **Script optimization** - Separated inline scripts to external files
+- ✅ **Minification** - Added JS/CSS minification in GitHub Actions workflow
+- ✅ **Documentation reorganization** - Moved docs to dedicated folder with clear structure
+- ✅ **SEO improvements** - Enhanced meta tags, Open Graph, and Twitter Card support
+- ✅ **Accessibility** - Improved ARIA labels, semantic HTML, and alt attributes
+
+---
+
 ## 📑 Table of Contents
 
+- [Recent Updates](#-recent-updates-october-2025)
 - [Features](#features)
 - [Architecture](#architecture)
 - [Technologies](#technologies)

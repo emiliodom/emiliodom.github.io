@@ -12,26 +12,76 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="google" content="notranslate">
-  <title>Leave a greeting</title>
-  <link rel="stylesheet" href="/assets/css/theme.css">
+  
+  <!-- SEO Meta Tags -->
+  <title>Leave a Greeting | Emilio Dominguez</title>
+  <meta name="description" content="Leave a greeting for Emilio Dominguez. Choose your mood, select a message, and share your thoughts. Interactive greetings wall with IP verification.">
+  <meta name="author" content="Emilio Dominguez">
+  <meta name="keywords" content="greetings, interactive wall, Emilio Dominguez, web developer, Guatemala">
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://emiliodom.github.io/greetings.html">
+  <meta property="og:title" content="Leave a Greeting - Emilio Dominguez">
+  <meta property="og:description" content="Send a quick greeting and sign it. Interactive greetings wall with one submission per person.">
+  <meta property="og:image" content="https://emiliodom.github.io/assets/img/avatar-fallback.svg">
+  <meta property="og:site_name" content="Emilio Dominguez">
+  
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:url" content="https://emiliodom.github.io/greetings.html">
+  <meta name="twitter:title" content="Leave a Greeting - Emilio Dominguez">
+  <meta name="twitter:description" content="Send a quick greeting and sign it. Interactive greetings wall.">
+  <meta name="twitter:image" content="https://emiliodom.github.io/assets/img/avatar-fallback.svg">
+  
+  <!-- Favicon -->
+  <link id="dynamic-favicon" rel="icon" href="/assets/img/avatar-fallback.svg">
+  
+  <!-- Sitemap and Robots -->
+  <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml">
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="/assets/css/theme.css" id="theme-stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flag-icons@7.2.3/css/flag-icons.min.css">
-  <script src="https://www.google.com/recaptcha/enterprise.js?render=6LcF5_crAAAAABBrXkDLdIFnSbQ36AIaDJxXA0P8" class="notranslate"></script>
+  
+  <!-- Scripts -->
+  <script src="https://www.google.com/recaptcha/enterprise.js?render=6LcF5_crAAAAABBrXkDLdIFnSbQ36AIaDJxXA0P8" class="notranslate" async defer></script>
+  <script>
+    // Use minified assets in production (GitHub Pages), regular in development
+    (function() {
+      const isProduction = window.location.hostname === 'emiliodom.github.io';
+      if (isProduction) {
+        // Replace CSS with minified version
+        const themeLink = document.getElementById('theme-stylesheet');
+        if (themeLink) {
+          themeLink.href = themeLink.href.replace('.css', '.min.css');
+        }
+      }
+    })();
+  </script>
 </head>
 <body>
   <!-- Google Tag Manager (noscript) -->
   <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KTTGQDPP"
-  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  height="0" width="0" style="display:none;visibility:hidden" title="Google Tag Manager"></iframe></noscript>
   <!-- End Google Tag Manager (noscript) -->
-  
-  <!-- Header (inlined to support static hosting) -->
-  <meta name="description" content="Leave a greeting for Emilio — choose a preset message and sign it.">
-  <meta property="og:title" content="Leave a greeting - Emilio Dominguez">
-  <meta property="og:description" content="Send a quick greeting and sign it. One submission per person.">
-  <meta name="twitter:card" content="summary" />
-  <link id="dynamic-favicon" rel="icon" href="/assets/img/avatar-fallback.svg">
   <script src="https://cdn.jsdelivr.net/npm/@twemoji/api@latest/dist/twemoji.min.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.8/dist/purify.min.js"></script>
-  <script src="/assets/js/greetings-page.js"></script>
+  <script id="greetings-page-script">
+    (function() {
+      const isProduction = window.location.hostname === 'emiliodom.github.io';
+      const script = document.createElement('script');
+      script.src = isProduction ? '/assets/js/greetings-page.min.js' : '/assets/js/greetings-page.js';
+      script.onerror = () => {
+        if (isProduction) {
+          const fallback = document.createElement('script');
+          fallback.src = '/assets/js/greetings-page.js';
+          document.body.appendChild(fallback);
+        }
+      };
+      document.body.appendChild(script);
+    })();
+  </script>
   <header class="site-header" role="banner" aria-label="Site header">
     <div class="header-inner">
       <div class="avatar-wrap">
@@ -201,14 +251,49 @@
   </div>
 
   <!-- NocoDB config now uses Cloudflare Worker proxy - no encryption needed -->
-  <script src="/assets/js/nocodb-config.js"></script>
+  <script id="nocodb-config-script">
+    (function() {
+      const isProduction = window.location.hostname === 'emiliodom.github.io';
+      const script = document.createElement('script');
+      script.src = isProduction ? '/assets/js/nocodb-config.min.js' : '/assets/js/nocodb-config.js';
+      script.onerror = () => {
+        // Fallback to non-minified if minified doesn't exist
+        if (isProduction) {
+          const fallback = document.createElement('script');
+          fallback.src = '/assets/js/nocodb-config.js';
+          document.head.appendChild(fallback);
+        }
+      };
+      document.head.appendChild(script);
+    })();
+  </script>
 
   <!-- particles.js background animation library -->
   <div id="particles-js" style="position:fixed;width:100%;height:100%;top:0;left:0;z-index:0;pointer-events:none"></div>
   <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
 
   <!-- Load site theme script so the theme toggle works on this page -->
-  <script type="module" src="/assets/js/site-theme.js" defer></script>
-  <script type="module" src="/assets/js/greetings.js"></script>
+  <script type="module" id="site-theme-script">
+    (async function() {
+      const isProduction = window.location.hostname === 'emiliodom.github.io';
+      const scriptSrc = isProduction ? '/assets/js/site-theme.min.js' : '/assets/js/site-theme.js';
+      try {
+        await import(scriptSrc);
+      } catch {
+        if (isProduction) await import('/assets/js/site-theme.js');
+      }
+    })();
+  </script>
+  <script type="module" id="greetings-script">
+    (async function() {
+      const isProduction = window.location.hostname === 'emiliodom.github.io';
+      const scriptSrc = isProduction ? '/assets/js/greetings.min.js' : '/assets/js/greetings.js';
+      try {
+        await import(scriptSrc);
+      } catch {
+        if (isProduction) await import('/assets/js/greetings.js');
+      }
+    })();
+  </script>
 </body>
 </html>

@@ -375,14 +375,21 @@ function renderSimplePagination(list, page, grid, pagerContainer) {
 async function validateHcaptcha() {
     console.log("🔍 Checking hCaptcha response...");
 
+    // Check if hCaptcha is loaded
+    if (typeof window.hcaptcha === "undefined") {
+        console.error("❌ hCaptcha not loaded");
+        throw new Error("CAPTCHA widget not loaded. Please refresh the page and try again.");
+    }
+
     // Get the hCaptcha response token
-    const response = hcaptcha.getResponse();
-    
+    const response = window.hcaptcha.getResponse();
+
     if (!response) {
+        console.warn("⚠️ No hCaptcha response - user didn't complete challenge");
         throw new Error("Please complete the CAPTCHA challenge");
     }
 
-    console.log("✅ hCaptcha token obtained");
+    console.log("✅ hCaptcha token obtained:", response.substring(0, 20) + "...");
     return response;
 }
 
@@ -588,7 +595,30 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Check hCaptcha load status
     console.log("🔐 Checking hCaptcha availability...");
-    console.log("typeof hcaptcha:", typeof hcaptcha);
+    console.log("typeof window.hcaptcha:", typeof window.hcaptcha);
+    
+    // Wait a bit for hCaptcha to load (it's async defer)
+    if (typeof window.hcaptcha === "undefined") {
+        console.log("⏳ hCaptcha not loaded yet, waiting...");
+        let attempts = 0;
+        while (typeof window.hcaptcha === "undefined" && attempts < 50) {
+            await new Promise(resolve => setTimeout(resolve, 100));
+            attempts++;
+        }
+        
+        if (typeof window.hcaptcha !== "undefined") {
+            console.log("✅ hCaptcha loaded after waiting");
+        } else {
+            console.error("❌ hCaptcha failed to load");
+            // Show warning banner
+            const warningDiv = document.createElement("div");
+            warningDiv.style.cssText = "background:#f44336;color:#fff;padding:12px;text-align:center;font-weight:600;position:sticky;top:0;z-index:10000;";
+            warningDiv.innerHTML = "❌ CAPTCHA widget failed to load. Please check your internet connection or disable ad blocker.";
+            document.body.insertBefore(warningDiv, document.body.firstChild);
+        }
+    } else {
+        console.log("✅ hCaptcha already loaded");
+    }
 
     let nocodbAvailable = false;
     let cachedData = null;

@@ -79,7 +79,7 @@ async function fetchFromNocoDB() {
             : [];
 
         if (!rows.length) {
-            return null;
+            return [];
         }
 
         return rows.map((rec) => {
@@ -663,7 +663,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     try {
         const testData = await fetchFromNocoDB();
-        nocodbAvailable = testData !== null && Array.isArray(testData);
+        // NocoDB is available if we get an array (even if empty)
+        nocodbAvailable = Array.isArray(testData);
         if (nocodbAvailable) {
             cachedData = testData;
             AppState.cachedGreetings = testData;
@@ -797,9 +798,24 @@ document.addEventListener("DOMContentLoaded", async () => {
     (async () => {
         try {
             const nocodbList = cachedData || (await fetchFromNocoDB());
-            if (nocodbList && nocodbList.length) {
-                renderPagination(nocodbList, 1);
+            if (Array.isArray(nocodbList)) {
+                if (nocodbList.length > 0) {
+                    renderPagination(nocodbList, 1);
+                } else {
+                    // NocoDB is available but empty - show empty state
+                    const container = document.getElementById("greet-list");
+                    if (container) {
+                        container.innerHTML = `
+                            <div style="text-align: center; padding: 40px 20px; color: var(--text-muted);">
+                                <div style="font-size: 48px; margin-bottom: 16px;">💬</div>
+                                <h3 style="margin: 0 0 8px 0; color: var(--text-dark);">No greetings yet</h3>
+                                <p style="margin: 0;">Be the first to leave a greeting!</p>
+                            </div>
+                        `;
+                    }
+                }
             } else {
+                // Fallback to localStorage if NocoDB didn't return an array
                 const stored = loadWallEntries();
                 if (stored.length) {
                     renderPagination(stored, 1);
@@ -807,7 +823,9 @@ document.addEventListener("DOMContentLoaded", async () => {
             }
         } catch (error) {
             const stored = loadWallEntries();
-            renderPagination(stored, 1);
+            if (stored.length) {
+                renderPagination(stored, 1);
+            }
         } finally {
             if (loader) loader.style.display = "none";
         }

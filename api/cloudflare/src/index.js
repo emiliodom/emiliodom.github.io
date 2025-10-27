@@ -4,7 +4,7 @@
 export default {
     async fetch(request, env) {
         console.log("🚀 Worker invoked:", request.method, request.url);
-        
+
         // CORS headers
         const corsHeaders = {
             "Access-Control-Allow-Origin": "https://emiliodom.github.io",
@@ -71,9 +71,49 @@ export default {
                 const body = await request.json();
                 console.log("📦 Request body:", JSON.stringify(body));
 
+                // Validate hCaptcha token
+                if (!body.hcaptchaToken) {
+                    console.error("❌ Missing hCaptcha token");
+                    return new Response(JSON.stringify({ error: "CAPTCHA verification required" }), {
+                        status: 400,
+                        headers: { ...corsHeaders, "Content-Type": "application/json" },
+                    });
+                }
+
+                // Verify hCaptcha with their API
+                console.log("🔐 Verifying hCaptcha...");
+                const hcaptchaResponse = await fetch("https://api.hcaptcha.com/siteverify", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                    },
+                    body: new URLSearchParams({
+                        secret: env.HCAPTCHA_SECRET,
+                        response: body.hcaptchaToken,
+                        remoteip: request.headers.get("CF-Connecting-IP") || request.headers.get("X-Forwarded-For") || "",
+                    }),
+                });
+
+                const hcaptchaResult = await hcaptchaResponse.json();
+                console.log("🔐 hCaptcha verification result:", JSON.stringify(hcaptchaResult));
+
+                if (!hcaptchaResult.success) {
+                    console.error("❌ hCaptcha verification failed:", hcaptchaResult["error-codes"]);
+                    return new Response(JSON.stringify({ error: "CAPTCHA verification failed. Please try again." }), {
+                        status: 400,
+                        headers: { ...corsHeaders, "Content-Type": "application/json" },
+                    });
+                }
+
+                console.log("✅ hCaptcha verified successfully");
+
                 // Validate required fields
                 if (!body.Message || !body.User || !body.Notes) {
-                    console.error("❌ Missing fields:", { Message: !!body.Message, User: !!body.User, Notes: !!body.Notes });
+                    console.error("❌ Missing fields:", {
+                        Message: !!body.Message,
+                        User: !!body.User,
+                        Notes: !!body.Notes,
+                    });
                     return new Response(JSON.stringify({ error: "Missing required fields" }), {
                         status: 400,
                         headers: { ...corsHeaders, "Content-Type": "application/json" },

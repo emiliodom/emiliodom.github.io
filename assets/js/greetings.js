@@ -113,7 +113,7 @@ async function fetchFromNocoDB() {
  * @returns {Promise<any>} The API response
  * @throws {Error} If posting fails
  */
-async function postToNocoDB(message, user, notes, countryCode) {
+async function postToNocoDB(message, user, notes, countryCode, hcaptchaToken) {
     const postUrl = NOCODB.postUrl || NOCODB.url;
     if (!postUrl) {
         throw new Error("NocoDB not configured");
@@ -121,7 +121,7 @@ async function postToNocoDB(message, user, notes, countryCode) {
 
     const body =
         postUrl.includes("/api/v2") || postUrl.includes("/api/greetings")
-            ? { Message: message, User: user, Notes: notes, Country: countryCode || "XX" }
+            ? { Message: message, User: user, Notes: notes, Country: countryCode || "XX", hcaptchaToken }
             : { records: [{ fields: { Message: message, User: user, Notes: notes, Country: countryCode || "XX" } }] };
 
     const response = await fetchWithRetry(postUrl, {
@@ -369,67 +369,21 @@ function renderSimplePagination(list, page, grid, pagerContainer) {
  * @throws {Error} If reCAPTCHA validation fails
  */
 /**
- * Validates reCAPTCHA and returns token
- * @returns {Promise<string>} reCAPTCHA token
+ * Validates hCaptcha and returns token
+ * @returns {Promise<string>} hCaptcha token
  */
-async function validateRecaptcha() {
-    console.log("🔍 Checking reCAPTCHA availability...");
+async function validateHcaptcha() {
+    console.log("🔍 Checking hCaptcha response...");
 
-    // Wait for reCAPTCHA script to load (max 10 seconds)
-    let attempts = 0;
-    const maxAttempts = 100; // 100 * 100ms = 10 seconds
-
-    while (!window.recaptchaLoaded && attempts < maxAttempts) {
-        await new Promise((resolve) => setTimeout(resolve, 100));
-        attempts++;
+    // Get the hCaptcha response token
+    const response = hcaptcha.getResponse();
+    
+    if (!response) {
+        throw new Error("Please complete the CAPTCHA challenge");
     }
 
-    if (!window.recaptchaLoaded) {
-        console.error("❌ reCAPTCHA failed to load after 10 seconds");
-        throw new Error(
-            "Security verification is unavailable. This is usually caused by an ad blocker or privacy extension blocking Google reCAPTCHA. Please disable it and try again."
-        );
-    }
-
-    console.log("✅ reCAPTCHA loaded flag detected");
-
-    // Wait for grecaptcha.ready function to be available
-    attempts = 0;
-    while (!window.grecaptchaReady && attempts < maxAttempts) {
-        await new Promise((resolve) => setTimeout(resolve, 100));
-        attempts++;
-    }
-
-    if (!window.grecaptchaReady) {
-        console.error("❌ grecaptcha.ready not available after waiting");
-        console.error("grecaptcha object:", grecaptcha);
-        console.error("grecaptcha.ready type:", typeof grecaptcha?.ready);
-        throw new Error("Security verification API not ready. Please try again.");
-    }
-
-    console.log("✅ grecaptcha.ready function confirmed");
-
-    return new Promise((resolve, reject) => {
-        grecaptcha.ready(() => {
-            console.log("✅ grecaptcha.ready() callback fired");
-            grecaptcha.enterprise
-                .execute(CONFIG.RECAPTCHA_SITE_KEY, {
-                    action: CONFIG.RECAPTCHA_ACTION,
-                })
-                .then((token) => {
-                    if (!token) {
-                        reject(new Error("Failed to generate security token"));
-                    } else {
-                        console.log("✅ reCAPTCHA token generated successfully");
-                        resolve(token);
-                    }
-                })
-                .catch((error) => {
-                    console.error("❌ reCAPTCHA execution error:", error);
-                    reject(new Error(`Security verification failed: ${error.message}`));
-                });
-        });
-    });
+    console.log("✅ hCaptcha token obtained");
+    return response;
 }
 
 /**
@@ -543,29 +497,21 @@ async function handleFormSubmit(e) {
         console.log("✅ All fields validated");
         setFeedback(feedback, "🔐 Verifying you're human...", "info");
 
-        let recaptchaToken;
+        let hcaptchaToken;
         try {
-            console.log("🔐 Starting reCAPTCHA validation...");
-            recaptchaToken = await validateRecaptcha();
-            console.log("✅ reCAPTCHA validated, token:", recaptchaToken.substring(0, 20) + "...");
-        } catch (recaptchaError) {
-            console.error("❌ reCAPTCHA failed:", recaptchaError);
+            console.log("🔐 Validating hCaptcha...");
+            hcaptchaToken = await validateHcaptcha();
+            console.log("✅ hCaptcha validated, token:", hcaptchaToken.substring(0, 20) + "...");
+        } catch (hcaptchaError) {
+            console.error("❌ hCaptcha failed:", hcaptchaError);
             setFeedback(
                 feedback,
                 `
-                <strong>Security verification failed.</strong><br>
+                <strong>CAPTCHA verification required.</strong><br>
                 <br>
-                <strong>Possible causes:</strong><br>
-                • Ad blocker or privacy extension is blocking Google reCAPTCHA<br>
-                • Browser security settings too strict<br>
-                • Network connection issue<br>
+                <strong>Error:</strong> ${hcaptchaError.message}<br>
                 <br>
-                <strong>What to try:</strong><br>
-                • Disable ad blocker temporarily and try again<br>
-                • Check if Google services are accessible<br>
-                • Try a different browser<br>
-                <br>
-                <strong>Error:</strong> ${recaptchaError.message}
+                Please complete the CAPTCHA challenge above and try again.
             `,
                 "error"
             );
@@ -607,7 +553,7 @@ async function handleFormSubmit(e) {
 
             if (postUrl) {
                 console.log("📮 Posting to NocoDB...");
-                await postToNocoDB(messageText, userField, notesEmoji, countryCode);
+                await postToNocoDB(messageText, userField, notesEmoji, countryCode, hcaptchaToken);
                 console.log("✅ Posted successfully to NocoDB!");
 
                 console.log("🔄 Fetching updated greetings list...");
@@ -640,42 +586,9 @@ async function handleFormSubmit(e) {
 document.addEventListener("DOMContentLoaded", async () => {
     console.log("🎬 DOMContentLoaded event fired - Starting initialization");
 
-    // Check reCAPTCHA load status
-    console.log("🔐 Checking reCAPTCHA load status...");
-    console.log("window.recaptchaLoaded:", window.recaptchaLoaded);
-    console.log("window.grecaptchaReady:", window.grecaptchaReady);
-    console.log("typeof grecaptcha:", typeof grecaptcha);
-
-    if (!window.grecaptchaReady) {
-        console.warn("⚠️ reCAPTCHA ready function not available yet - waiting");
-        // Show warning banner
-        const warningDiv = document.createElement("div");
-        warningDiv.id = "recaptcha-warning";
-        warningDiv.style.cssText =
-            "background:#ff9800;color:#000;padding:12px;text-align:center;font-weight:600;position:sticky;top:0;z-index:10000;";
-        warningDiv.innerHTML = "⚠️ Loading security verification... If this message persists, disable your ad blocker.";
-        document.body.insertBefore(warningDiv, document.body.firstChild);
-
-        // Wait and check again
-        setTimeout(() => {
-            if (window.grecaptchaReady) {
-                const warning = document.getElementById("recaptcha-warning");
-                if (warning) warning.remove();
-                console.log("✅ reCAPTCHA ready function available");
-            } else {
-                console.error("❌ reCAPTCHA ready function never became available");
-                const warning = document.getElementById("recaptcha-warning");
-                if (warning) {
-                    warning.style.background = "#f44336";
-                    warning.style.color = "#fff";
-                    warning.innerHTML =
-                        "❌ Security verification blocked (ad blocker detected). Form submission will not work.";
-                }
-            }
-        }, 3000);
-    } else {
-        console.log("✅ reCAPTCHA ready function already available");
-    }
+    // Check hCaptcha load status
+    console.log("🔐 Checking hCaptcha availability...");
+    console.log("typeof hcaptcha:", typeof hcaptcha);
 
     let nocodbAvailable = false;
     let cachedData = null;

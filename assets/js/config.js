@@ -24,9 +24,8 @@ const CONFIG = Object.freeze({
         COUNTRIES: "/assets/data/countries.json",
     },
 
-    // reCAPTCHA
-    RECAPTCHA_SITE_KEY: "6LcF5_crAAAAABBrXkDLdIFnSbQ36AIaDJxXA0P8",
-    RECAPTCHA_ACTION: "submit_greeting",
+    // hCaptcha
+    HCAPTCHA_SITE_KEY: "d02ac3f2-4f68-4e2c-bfea-17bce17ebe50",
 
     // Feature flags
     DEBUG: window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1",

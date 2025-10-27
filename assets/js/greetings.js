@@ -49,29 +49,37 @@ const AppState = {
  * Triggers confetti animation on successful submission
  */
 function triggerConfetti() {
-    if (typeof ConfettiGenerator !== 'undefined') {
-        const confettiSettings = {
-            target: 'confetti-holder',
-            max: 80,
-            size: 1,
-            animate: true,
-            props: ['circle', 'square', 'triangle', 'line'],
-            colors: [[165,104,246],[230,61,135],[0,199,228],[253,214,126]],
-            clock: 25,
-            rotate: false,
-            width: window.innerWidth,
-            height: window.innerHeight,
-            start_from_edge: false,
-            respawn: true
-        };
-        
-        const confetti = new ConfettiGenerator(confettiSettings);
-        confetti.render();
-        
-        // Stop confetti after 4 seconds
-        setTimeout(() => {
-            confetti.clear();
-        }, 4000);
+    try {
+        if (typeof ConfettiGenerator !== 'undefined') {
+            const confettiSettings = {
+                target: 'confetti-holder',
+                max: 80,
+                size: 1,
+                animate: true,
+                props: ['circle', 'square', 'triangle', 'line'],
+                colors: [[165,104,246],[230,61,135],[0,199,228],[253,214,126]],
+                clock: 25,
+                rotate: false,
+                width: window.innerWidth,
+                height: window.innerHeight,
+                start_from_edge: false,
+                respawn: true
+            };
+            
+            const confetti = new ConfettiGenerator(confettiSettings);
+            confetti.render();
+            
+            // Stop confetti after 4 seconds
+            setTimeout(() => {
+                try {
+                    confetti.clear();
+                } catch (clearError) {
+                    // Silently handle clear errors
+                }
+            }, 4000);
+        }
+    } catch (error) {
+        // Silently handle confetti errors - celebration is optional
     }
 }
 
@@ -808,26 +816,34 @@ document.addEventListener("DOMContentLoaded", async () => {
                 } else {
                     const container = document.getElementById("greet-list");
                     if (container) {
-                        container.innerHTML = `
-                            <div style="text-align: center; padding: 40px 20px; color: var(--text-muted);">
-                                <div style="font-size: 48px; margin-bottom: 16px;">💬</div>
-                                <h3 style="margin: 0 0 8px 0; color: var(--text-dark);">No greetings yet</h3>
-                                <p style="margin: 0;">Be the first to leave a greeting!</p>
-                            </div>
+                        container.innerHTML = "";
+                        
+                        const emptyState = document.createElement("div");
+                        emptyState.className = "greet-grid";
+                        emptyState.style.cssText = "text-align: center; padding: 40px 20px; color: var(--text-muted);";
+                        emptyState.innerHTML = `
+                            <div style="font-size: 48px; margin-bottom: 16px;">💬</div>
+                            <h3 style="margin: 0 0 8px 0; color: var(--text-dark);">No greetings yet</h3>
+                            <p style="margin: 0;">Be the first to leave a greeting!</p>
                         `;
+                        container.appendChild(emptyState);
                     }
                 }
             }
         } catch (error) {
             const container = document.getElementById("greet-list");
             if (container) {
-                container.innerHTML = `
-                    <div style="text-align: center; padding: 40px 20px; color: var(--text-muted);">
-                        <div style="font-size: 48px; margin-bottom: 16px;">⚠️</div>
-                        <h3 style="margin: 0 0 8px 0; color: var(--text-dark);">Failed to load greetings</h3>
-                        <p style="margin: 0;">Please refresh the page to try again.</p>
-                    </div>
+                container.innerHTML = "";
+                
+                const errorState = document.createElement("div");
+                errorState.className = "greet-grid";
+                errorState.style.cssText = "text-align: center; padding: 40px 20px; color: var(--text-muted);";
+                errorState.innerHTML = `
+                    <div style="font-size: 48px; margin-bottom: 16px;">⚠️</div>
+                    <h3 style="margin: 0 0 8px 0; color: var(--text-dark);">Failed to load greetings</h3>
+                    <p style="margin: 0;">Please refresh the page to try again.</p>
                 `;
+                container.appendChild(errorState);
             }
         } finally {
             if (loader) loader.style.display = "none";

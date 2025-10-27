@@ -369,9 +369,30 @@ function renderSimplePagination(list, page, grid, pagerContainer) {
  * @throws {Error} If reCAPTCHA validation fails
  */
 async function validateRecaptcha() {
+    // Wait for grecaptcha to be available (with timeout)
+    const maxWaitTime = 10000; // 10 seconds
+    const checkInterval = 100; // Check every 100ms
+    let waited = 0;
+
+    while (typeof grecaptcha === "undefined" && waited < maxWaitTime) {
+        await new Promise(resolve => setTimeout(resolve, checkInterval));
+        waited += checkInterval;
+    }
+
     if (typeof grecaptcha === "undefined") {
         throw new Error("reCAPTCHA script not loaded. Please refresh the page and try again.");
     }
+
+    // Wait for grecaptcha.ready to be available
+    while (typeof grecaptcha.ready !== "function" && waited < maxWaitTime) {
+        await new Promise(resolve => setTimeout(resolve, checkInterval));
+        waited += checkInterval;
+    }
+
+    if (typeof grecaptcha.ready !== "function") {
+        throw new Error("reCAPTCHA not ready. Please refresh the page and try again.");
+    }
+
     if (!grecaptcha.enterprise) {
         throw new Error("reCAPTCHA Enterprise not available. Please refresh the page and try again.");
     }

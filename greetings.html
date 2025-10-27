@@ -273,27 +273,7 @@
   <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
 
   <!-- Load site theme script so the theme toggle works on this page -->
-  <script type="module" id="site-theme-script">
-    (async function() {
-      const isProduction = window.location.hostname === 'emiliodom.github.io';
-      const scriptSrc = isProduction ? '/assets/js/site-theme.min.js' : '/assets/js/site-theme.js';
-      try {
-        await import(scriptSrc);
-      } catch {
-        if (isProduction) await import('/assets/js/site-theme.js');
-      }
-    })();
-  </script>
-  <script type="module" id="greetings-script">
-    (async function() {
-      const isProduction = window.location.hostname === 'emiliodom.github.io';
-      const scriptSrc = isProduction ? '/assets/js/greetings.min.js' : '/assets/js/greetings.js';
-      try {
-        await import(scriptSrc);
-      } catch {
-        if (isProduction) await import('/assets/js/greetings.js');
-      }
-    })();
-  </script>
+  <script type="module" src="/assets/js/site-theme.js"></script>
+  <script type="module" src="/assets/js/greetings.js"></script>
 </body>
 </html>

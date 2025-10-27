@@ -55,6 +55,13 @@ jobs:
             done
           ' sh {} +
 
+      - name: Update HTML to use minified assets
+        run: |
+          # Replace .js with .min.js and .css with .min.css in HTML files
+          find . -name "*.html" -type f -exec sed -i 's/\.js"/\.min.js"/g; s/\.css"/\.min.css"/g' {} +
+          # Fix cases where we don't want minification (external CDN links)
+          find . -name "*.html" -type f -exec sed -i 's/\.min\.min\.js/.min.js/g; s/\.min\.min\.css/.min.css/g' {} +
+
       - name: Setup Pages
         uses: actions/configure-pages@v4
 

@@ -106,24 +106,8 @@
       <form id="greet-form" aria-describedby="greet-help">
         <fieldset class="greet-fieldset">
           <legend style="font-size:18px;font-weight:600;margin-bottom:10px">1. Tell me, how are you feeling today?</legend>
-          <div class="feelings" role="radiogroup" aria-label="How are you feeling today">
-            <button type="button" class="feeling" data-feel="😊" aria-pressed="false">😊</button>
-            <button type="button" class="feeling" data-feel="🙂" aria-pressed="false">🙂</button>
-            <button type="button" class="feeling" data-feel="😄" aria-pressed="false">😄</button>
-            <button type="button" class="feeling" data-feel="🤩" aria-pressed="false">🤩</button>
-            <button type="button" class="feeling" data-feel="👏" aria-pressed="false">👏</button>
-            <button type="button" class="feeling" data-feel="🙌" aria-pressed="false">🙌</button>
-            <button type="button" class="feeling" data-feel="💪" aria-pressed="false">💪</button>
-            <button type="button" class="feeling" data-feel="😐" aria-pressed="false">😐</button>
-            <button type="button" class="feeling" data-feel="🤔" aria-pressed="false">🤔</button>
-            <button type="button" class="feeling" data-feel="👍" aria-pressed="false">👍</button>
-            <button type="button" class="feeling" data-feel="🙏" aria-pressed="false">🙏</button>
-            <button type="button" class="feeling" data-feel="🤝" aria-pressed="false">🤝</button>
-            <button type="button" class="feeling" data-feel="🫡" aria-pressed="false">🫡</button>
-            <button type="button" class="feeling" data-feel="✌️" aria-pressed="false">✌️</button>
-          </div>
-          <select id="feeling-select" class="feeling-select" aria-label="How are you feeling today" style="display:none">
-            <option value="">Select a feeling...</option>
+          <select id="feeling-select" class="feeling-select notranslate" aria-label="How are you feeling today" required>
+            <option value="">Select how you're feeling...</option>
             <option value="😊">😊 Happy</option>
             <option value="🙂">🙂 Content</option>
             <option value="😄">😄 Joyful</option>

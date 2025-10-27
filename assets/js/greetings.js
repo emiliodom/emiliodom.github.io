@@ -41,18 +41,26 @@ const NOCODB =
 async function fetchFromNocoDB() {
     const fetchUrl = NOCODB.getUrl || NOCODB.url || NOCODB.postUrl;
     if (!fetchUrl) {
-        console.warn("No NocoDB URL configured");
+        console.error("❌ No NocoDB URL configured - cannot fetch greetings");
         return null;
     }
-    console.log("Fetching from NocoDB:", fetchUrl);
+    console.log("📡 Fetching from NocoDB:", fetchUrl);
     try {
         // No xc-token header needed - the proxy handles authentication
+        // Add cache: 'no-store' to prevent stale data
         const headers = { accept: "application/json" };
-        const r = await fetch(fetchUrl, { headers });
-        console.log("NocoDB response status:", r.status, r.ok);
-        if (!r.ok) throw new Error(`nocodb fetch failed with status ${r.status}`);
+        const r = await fetch(fetchUrl, { 
+            headers,
+            cache: 'no-store' // Force fresh data, no caching
+        });
+        console.log("📊 NocoDB response status:", r.status, r.ok);
+        if (!r.ok) {
+            const errorText = await r.text();
+            console.error(`❌ NocoDB fetch failed with status ${r.status}:`, errorText);
+            throw new Error(`nocodb fetch failed with status ${r.status}: ${errorText}`);
+        }
         const j = await r.json();
-        console.log("NocoDB response data:", j);
+        console.log("✅ NocoDB response data:", j);
         // Expecting array of records; map into local format {message, feeling, when, ip}
         // Normalize various response shapes
         const rows = [];
@@ -64,13 +72,16 @@ async function fetchFromNocoDB() {
             rows.push(...j.list);
         }
         if (rows.length) {
-            return rows.map((rec) => {
+            const mapped = rows.map((rec) => {
                 const fields = rec.fields || rec;
                 // For v2 mapping: Message = text, Notes = emoticon, User = ip
                 const message = fields.Message || fields.message || "";
                 const feeling = fields.Notes || fields.notes || "";
                 const ip = fields.User || fields.user || "";
                 const rawDate = fields.CreatedAt || fields.created_at || fields.createdAt || "";
+                
+                console.log("🔍 Mapping record:", { Message: fields.Message, User: fields.User, Notes: fields.Notes, CreatedAt: fields.CreatedAt });
+                
                 // Format date nicely
                 let when = "";
                 if (rawDate) {
@@ -78,6 +89,7 @@ async function fetchFromNocoDB() {
                         const d = new Date(rawDate);
                         when = d.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
                     } catch (e) {
+                        console.warn("⚠️ Date parsing failed for:", rawDate, e);
                         when = rawDate;
                     }
                 } else {
@@ -85,17 +97,24 @@ async function fetchFromNocoDB() {
                 }
                 return { message, feeling, when, ip };
             });
+            console.log("✅ Mapped", mapped.length, "records. Sample:", mapped[0]);
+            return mapped;
         }
+        console.warn("⚠️ No records found in response");
         return null;
     } catch (e) {
-        console.warn("fetchFromNocoDB failed", e);
+        console.error("❌ fetchFromNocoDB failed:", e);
         return null;
     }
 }
 
 async function postToNocoDB(message, user, notes, countryCode) {
     const postUrl = NOCODB.postUrl || NOCODB.url;
-    if (!postUrl) throw new Error("NocoDB not configured");
+    if (!postUrl) {
+        console.error("❌ NocoDB not configured - cannot post greeting");
+        throw new Error("NocoDB not configured");
+    }
+    console.log("📤 Posting to NocoDB:", { message, user, notes, countryCode });
     try {
         // For v2 API (tables endpoint) the user-supplied curl posts a flat JSON with fields at root.
         // We'll detect v2 by presence of postUrl including '/api/v2' or when postUrl is explicitly provided.
@@ -110,6 +129,8 @@ async function postToNocoDB(message, user, notes, countryCode) {
             };
         }
 
+        console.log("📦 Request body:", body);
+
         // No xc-token header needed - the proxy handles authentication
         const r = await fetch(postUrl, {
             method: "POST",
@@ -118,34 +139,52 @@ async function postToNocoDB(message, user, notes, countryCode) {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify(body),
+            cache: 'no-store'
         });
         if (!r.ok) {
             const text = await r.text();
+            console.error("❌ NocoDB POST failed:", r.status, text);
             throw new Error(`NocoDB POST failed: ${r.status} ${text}`);
         }
-        return await r.json();
+        const result = await r.json();
+        console.log("✅ Successfully posted to NocoDB:", result);
+        return result;
     } catch (e) {
-        console.warn("postToNocoDB failed", e);
+        console.error("❌ postToNocoDB failed:", e);
         throw e;
     }
 }
 async function getIp() {
     try {
+        console.log("🌐 Fetching IP from worker...");
         // Use the worker's IP endpoint first
-        const r = await fetch("https://nocodb-proxy.edomingt.workers.dev/api/ip");
-        if (!r.ok) throw new Error("ip fetch failed");
+        const r = await fetch("https://nocodb-proxy.edomingt.workers.dev/api/ip", {
+            cache: 'no-store' // No caching for IP detection
+        });
+        if (!r.ok) {
+            const errorText = await r.text();
+            console.error("❌ Worker IP fetch failed:", r.status, errorText);
+            throw new Error("ip fetch failed");
+        }
         const j = await r.json();
+        console.log("✅ IP from worker:", j.ip);
         return j.ip;
     } catch (e) {
-        console.warn("Worker IP fetch failed, trying fallback", e);
+        console.warn("⚠️ Worker IP fetch failed, trying fallback", e);
         // Fallback to ipify
         try {
-            const r = await fetch("https://api.ipify.org?format=json");
-            if (!r.ok) throw new Error("ip fetch failed");
+            const r = await fetch("https://api.ipify.org?format=json", {
+                cache: 'no-store'
+            });
+            if (!r.ok) {
+                console.error("❌ Fallback IP fetch failed:", r.status);
+                throw new Error("ip fetch failed");
+            }
             const j = await r.json();
+            console.log("✅ IP from fallback (ipify):", j.ip);
             return j.ip;
         } catch (e2) {
-            console.warn("IP fetch failed completely, falling back to local id", e2);
+            console.error("❌ IP fetch failed completely, falling back to null", e2);
             return null;
         }
     }
@@ -279,18 +318,27 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Check NocoDB database for existing submission from this IP
     if (userIp) {
         try {
+            console.log("🔍 Checking for recent submissions from IP:", userIp);
             // Use cached data if available, otherwise fetch
             const nocodbList = cachedData || (await fetchFromNocoDB());
             if (nocodbList && nocodbList.length) {
+                console.log("📋 Checking", nocodbList.length, "entries for recent submission");
                 // Find any submission from this IP in the last 24 hours
                 const recentEntry = nocodbList.find((entry) => {
-                    if (!entry.ip || entry.ip !== userIp) return false;
+                    if (!entry.ip) {
+                        console.warn("⚠️ Entry missing IP field:", entry);
+                        return false;
+                    }
+                    if (entry.ip !== userIp) return false;
                     // Parse the entry's date and check if within 24 hours
                     try {
                         const entryDate = new Date(entry.when);
                         const entryTime = entryDate.getTime();
-                        return now - entryTime < oneDayMs;
+                        const isRecent = now - entryTime < oneDayMs;
+                        console.log("⏰ Entry time check:", { entryWhen: entry.when, entryTime, now, diff: now - entryTime, isRecent });
+                        return isRecent;
                     } catch (e) {
+                        console.error("❌ Error parsing date:", entry.when, e);
                         return false;
                     }
                 });
@@ -299,18 +347,42 @@ document.addEventListener("DOMContentLoaded", async () => {
                     hasRecentSubmission = true;
                     const entryDate = new Date(recentEntry.when);
                     const entryTime = entryDate.getTime();
-                    const hoursLeft = Math.ceil((oneDayMs - (now - entryTime)) / (1000 * 60 * 60));
+                    const msLeft = oneDayMs - (now - entryTime);
+                    const hoursLeft = Math.ceil(msLeft / (1000 * 60 * 60));
+                    const minutesLeft = Math.ceil((msLeft % (1000 * 60 * 60)) / (1000 * 60));
+                    
+                    console.log("🚫 Recent submission found, hiding form");
+                    
+                    // Hide the form completely
+                    const greetForm = document.getElementById("greet-form");
+                    if (greetForm) {
+                        greetForm.style.display = "none";
+                    }
+                    
+                    // Show friendly countdown message
                     if (submissionStatusAlert) {
-                        submissionStatusAlert.className = "submission-status-alert submission-blocked";
-                        submissionStatusAlert.innerHTML = `🚫 You've already submitted a greeting in the last 24 hours. Please wait ${hoursLeft} more hour${
-                            hoursLeft !== 1 ? "s" : ""
-                        } before submitting again.`;
+                        submissionStatusAlert.className = "submission-status-alert submission-info";
+                        submissionStatusAlert.innerHTML = `
+                            <div style="text-align: center; padding: 20px;">
+                                <div style="font-size: 48px; margin-bottom: 10px;">⏰</div>
+                                <h3 style="margin: 10px 0; color: var(--color-text);">Thank you for your greeting!</h3>
+                                <p style="color: var(--color-text-muted); margin: 10px 0;">
+                                    You can submit another greeting in approximately <strong>${hoursLeft} hour${hoursLeft !== 1 ? "s" : ""}</strong>
+                                    ${minutesLeft > 0 && hoursLeft < 24 ? ` and <strong>${minutesLeft} minute${minutesLeft !== 1 ? "s" : ""}</strong>` : ""}.
+                                </p>
+                                <p style="color: var(--color-text-muted); margin-top: 20px;">
+                                    In the meantime, check out the latest greetings below! 👇
+                                </p>
+                            </div>
+                        `;
                         submissionStatusAlert.style.display = "block";
                     }
+                } else {
+                    console.log("✅ No recent submission found");
                 }
             }
         } catch (e) {
-            console.warn("Could not check NocoDB for existing submissions", e);
+            console.error("❌ Could not check NocoDB for existing submissions:", e);
         }
     }
 
@@ -319,17 +391,43 @@ document.addEventListener("DOMContentLoaded", async () => {
         const ipKey = `greet-submitted-${userIp}`;
         const stored = localStorage.getItem(ipKey);
         if (stored) {
-            const data = JSON.parse(stored);
-            if (data.when && now - data.when < oneDayMs) {
-                hasRecentSubmission = true;
-                const hoursLeft = Math.ceil((oneDayMs - (now - data.when)) / (1000 * 60 * 60));
-                if (submissionStatusAlert) {
-                    submissionStatusAlert.className = "submission-status-alert submission-blocked";
-                    submissionStatusAlert.innerHTML = `🚫 You've already submitted a greeting in the last 24 hours. Please wait ${hoursLeft} more hour${
-                        hoursLeft !== 1 ? "s" : ""
-                    } before submitting again.`;
-                    submissionStatusAlert.style.display = "block";
+            try {
+                const data = JSON.parse(stored);
+                if (data.when && now - data.when < oneDayMs) {
+                    hasRecentSubmission = true;
+                    const msLeft = oneDayMs - (now - data.when);
+                    const hoursLeft = Math.ceil(msLeft / (1000 * 60 * 60));
+                    const minutesLeft = Math.ceil((msLeft % (1000 * 60 * 60)) / (1000 * 60));
+                    
+                    console.log("🚫 Recent submission found in localStorage, hiding form");
+                    
+                    // Hide the form completely
+                    const greetForm = document.getElementById("greet-form");
+                    if (greetForm) {
+                        greetForm.style.display = "none";
+                    }
+                    
+                    // Show friendly countdown message
+                    if (submissionStatusAlert) {
+                        submissionStatusAlert.className = "submission-status-alert submission-info";
+                        submissionStatusAlert.innerHTML = `
+                            <div style="text-align: center; padding: 20px;">
+                                <div style="font-size: 48px; margin-bottom: 10px;">⏰</div>
+                                <h3 style="margin: 10px 0; color: var(--color-text);">Thank you for your greeting!</h3>
+                                <p style="color: var(--color-text-muted); margin: 10px 0;">
+                                    You can submit another greeting in approximately <strong>${hoursLeft} hour${hoursLeft !== 1 ? "s" : ""}</strong>
+                                    ${minutesLeft > 0 && hoursLeft < 24 ? ` and <strong>${minutesLeft} minute${minutesLeft !== 1 ? "s" : ""}</strong>` : ""}.
+                                </p>
+                                <p style="color: var(--color-text-muted); margin-top: 20px;">
+                                    In the meantime, check out the latest greetings below! 👇
+                                </p>
+                            </div>
+                        `;
+                        submissionStatusAlert.style.display = "block";
+                    }
                 }
+            } catch (e) {
+                console.error("❌ Error checking localStorage:", e);
             }
         }
     }
@@ -343,17 +441,36 @@ document.addEventListener("DOMContentLoaded", async () => {
                 const browserData = JSON.parse(browserStored);
                 if (browserData.when && now - browserData.when < oneDayMs) {
                     hasRecentSubmission = true;
-                    const hoursLeft = Math.ceil((oneDayMs - (now - browserData.when)) / (1000 * 60 * 60));
+                    const msLeft = oneDayMs - (now - browserData.when);
+                    const hoursLeft = Math.ceil(msLeft / (1000 * 60 * 60));
+                    const minutesLeft = Math.ceil((msLeft % (1000 * 60 * 60)) / (1000 * 60));
+                    
+                    // Hide the form completely
+                    const greetForm = document.getElementById("greet-form");
+                    if (greetForm) {
+                        greetForm.style.display = "none";
+                    }
+                    
                     if (submissionStatusAlert) {
-                        submissionStatusAlert.className = "submission-status-alert submission-blocked";
-                        submissionStatusAlert.innerHTML = `🚫 You've already submitted a greeting in the last 24 hours. Please wait ${hoursLeft} more hour${
-                            hoursLeft !== 1 ? "s" : ""
-                        } before submitting again.`;
+                        submissionStatusAlert.className = "submission-status-alert submission-info";
+                        submissionStatusAlert.innerHTML = `
+                            <div style="text-align: center; padding: 20px;">
+                                <div style="font-size: 48px; margin-bottom: 10px;">⏰</div>
+                                <h3 style="margin: 10px 0; color: var(--color-text);">Thank you for your greeting!</h3>
+                                <p style="color: var(--color-text-muted); margin: 10px 0;">
+                                    You can submit another greeting in approximately <strong>${hoursLeft} hour${hoursLeft !== 1 ? "s" : ""}</strong>
+                                    ${minutesLeft > 0 && hoursLeft < 24 ? ` and <strong>${minutesLeft} minute${minutesLeft !== 1 ? "s" : ""}</strong>` : ""}.
+                                </p>
+                                <p style="color: var(--color-text-muted); margin-top: 20px;">
+                                    In the meantime, check out the latest greetings below! 👇
+                                </p>
+                            </div>
+                        `;
                         submissionStatusAlert.style.display = "block";
                     }
                 }
             } catch (e) {
-                // ignore
+                console.error("❌ Error checking browser localStorage:", e);
             }
         }
     }
@@ -571,29 +688,46 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         // fetch IP
         const ip = await getIp();
+        console.log("🔍 User IP detected:", ip);
 
         // Check if this IP already submitted in the last 24 hours (database and local)
         const now = Date.now();
         const oneDayMs = 24 * 60 * 60 * 1000;
 
-        if (ip && NOCODB.postUrl && NOCODB.token) {
+        if (ip && NOCODB.postUrl) {
             try {
+                console.log("🔍 Checking if IP already submitted recently...");
                 const nocodbList = await fetchFromNocoDB();
                 if (nocodbList && nocodbList.length) {
+                    console.log("📋 Found", nocodbList.length, "existing entries");
                     const recentEntry = nocodbList.find((entry) => {
+                        console.log("🔍 Checking entry:", { entryIp: entry.ip, userIp: ip, match: entry.ip === ip });
+                        if (!entry.ip) {
+                            console.warn("⚠️ Entry has no IP field:", entry);
+                            return false;
+                        }
                         if (entry.ip !== ip) return false;
                         // Check if within 24 hours
-                        const entryTime = entry.when ? new Date(entry.when).getTime() : 0;
-                        return now - entryTime < oneDayMs;
+                        try {
+                            const entryTime = entry.when ? new Date(entry.when).getTime() : 0;
+                            const withinTimeLimit = now - entryTime < oneDayMs;
+                            console.log("⏰ Time check:", { entryTime, now, diff: now - entryTime, withinLimit: withinTimeLimit });
+                            return withinTimeLimit;
+                        } catch (e) {
+                            console.error("❌ Error parsing entry date:", entry.when, e);
+                            return false;
+                        }
                     });
                     if (recentEntry) {
+                        console.warn("🚫 Recent submission found, blocking:", recentEntry);
                         feedback.textContent =
                             "You have already submitted a greeting from this IP in the last 24 hours.";
                         return;
                     }
+                    console.log("✅ No recent submission found, allowing post");
                 }
             } catch (e) {
-                console.warn("IP verification failed, falling back to local check", e);
+                console.error("❌ IP verification failed, falling back to local check:", e);
             }
         }
 

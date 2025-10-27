@@ -14,14 +14,14 @@
           "title": "GitHub Profile",
           "description": "Check out my open source projects",
           "href": "https://github.com/emiliodom",
-          "icon": "�",
+          "icon": "👨‍💻",
           "external": true
         },
         {
           "title": "My CV",
           "description": "ProximaWeb — CV and professional info",
           "href": "https://proximaweb.click",
-          "icon": "�",
+          "icon": "📄",
           "external": true
         }
       ]
@@ -41,7 +41,7 @@
           "title": "My Blog",
           "description": "ProximaWeb Blog",
           "href": "https://proximaweb.click/blog",
-          "icon": "�",
+          "icon": "✍️",
           "external": true
         },
         {
@@ -83,7 +83,7 @@
           "title": "Local Guide Photos",
           "description": "My travel photography on Google Maps",
           "href": "https://www.google.com/maps/contrib/105222552308857925881/photos/@24.9219792,-92.1831197,5z/data=!3m1!4b1!4m3!8m2!3m1!1e1?entry=ttu&g_ep=EgoyMDI1MTAyMi4wIKXMDSoASAFQAw%3D%3D",
-          "icon": "�",
+          "icon": "📸",
           "external": true
         }
       ]

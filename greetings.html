@@ -223,13 +223,31 @@
   <script>
     // Set a flag when reCAPTCHA loads
     window.recaptchaLoaded = false;
+    window.grecaptchaReady = false;
   </script>
   <script src="https://www.google.com/recaptcha/enterprise.js?render=6LcF5_crAAAAABBrXkDLdIFnSbQ36AIaDJxXA0P8&onload=onRecaptchaLoad" class="notranslate"></script>
   <script>
     // Callback when reCAPTCHA is ready
     function onRecaptchaLoad() {
-      window.recaptchaLoaded = true;
       console.log('✅ reCAPTCHA Enterprise loaded successfully');
+      window.recaptchaLoaded = true;
+      
+      // Wait for grecaptcha.ready to be available
+      const checkReady = setInterval(() => {
+        if (typeof grecaptcha !== 'undefined' && typeof grecaptcha.ready === 'function') {
+          console.log('✅ grecaptcha.ready is now available');
+          window.grecaptchaReady = true;
+          clearInterval(checkReady);
+        }
+      }, 50);
+      
+      // Timeout after 5 seconds
+      setTimeout(() => {
+        clearInterval(checkReady);
+        if (!window.grecaptchaReady) {
+          console.error('❌ grecaptcha.ready never became available');
+        }
+      }, 5000);
     }
   </script>
 

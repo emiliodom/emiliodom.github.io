@@ -374,30 +374,40 @@ function renderSimplePagination(list, page, grid, pagerContainer) {
  */
 async function validateRecaptcha() {
     console.log("🔍 Checking reCAPTCHA availability...");
-    
-    // Wait for reCAPTCHA to load (max 10 seconds)
+
+    // Wait for reCAPTCHA script to load (max 10 seconds)
     let attempts = 0;
     const maxAttempts = 100; // 100 * 100ms = 10 seconds
-    
+
     while (!window.recaptchaLoaded && attempts < maxAttempts) {
-        await new Promise(resolve => setTimeout(resolve, 100));
+        await new Promise((resolve) => setTimeout(resolve, 100));
         attempts++;
     }
-    
+
     if (!window.recaptchaLoaded) {
         console.error("❌ reCAPTCHA failed to load after 10 seconds");
-        throw new Error("Security verification is unavailable. This is usually caused by an ad blocker or privacy extension blocking Google reCAPTCHA. Please disable it and try again.");
+        throw new Error(
+            "Security verification is unavailable. This is usually caused by an ad blocker or privacy extension blocking Google reCAPTCHA. Please disable it and try again."
+        );
     }
-    
+
     console.log("✅ reCAPTCHA loaded flag detected");
-    
-    // Double-check grecaptcha object exists
-    if (typeof grecaptcha === "undefined") {
-        console.error("❌ grecaptcha is undefined despite load flag");
-        throw new Error("Security verification failed to initialize. Please try again.");
+
+    // Wait for grecaptcha.ready function to be available
+    attempts = 0;
+    while (!window.grecaptchaReady && attempts < maxAttempts) {
+        await new Promise((resolve) => setTimeout(resolve, 100));
+        attempts++;
     }
-    
-    console.log("✅ grecaptcha object confirmed");
+
+    if (!window.grecaptchaReady) {
+        console.error("❌ grecaptcha.ready not available after waiting");
+        console.error("grecaptcha object:", grecaptcha);
+        console.error("grecaptcha.ready type:", typeof grecaptcha?.ready);
+        throw new Error("Security verification API not ready. Please try again.");
+    }
+
+    console.log("✅ grecaptcha.ready function confirmed");
 
     return new Promise((resolve, reject) => {
         grecaptcha.ready(() => {
@@ -629,41 +639,44 @@ async function handleFormSubmit(e) {
  */
 document.addEventListener("DOMContentLoaded", async () => {
     console.log("🎬 DOMContentLoaded event fired - Starting initialization");
-    
+
     // Check reCAPTCHA load status
     console.log("🔐 Checking reCAPTCHA load status...");
     console.log("window.recaptchaLoaded:", window.recaptchaLoaded);
+    console.log("window.grecaptchaReady:", window.grecaptchaReady);
     console.log("typeof grecaptcha:", typeof grecaptcha);
-    
-    if (!window.recaptchaLoaded) {
-        console.warn("⚠️ reCAPTCHA not loaded yet - waiting for onload callback");
+
+    if (!window.grecaptchaReady) {
+        console.warn("⚠️ reCAPTCHA ready function not available yet - waiting");
         // Show warning banner
         const warningDiv = document.createElement("div");
         warningDiv.id = "recaptcha-warning";
-        warningDiv.style.cssText = "background:#ff9800;color:#000;padding:12px;text-align:center;font-weight:600;position:sticky;top:0;z-index:10000;";
+        warningDiv.style.cssText =
+            "background:#ff9800;color:#000;padding:12px;text-align:center;font-weight:600;position:sticky;top:0;z-index:10000;";
         warningDiv.innerHTML = "⚠️ Loading security verification... If this message persists, disable your ad blocker.";
         document.body.insertBefore(warningDiv, document.body.firstChild);
-        
+
         // Wait and check again
         setTimeout(() => {
-            if (window.recaptchaLoaded) {
+            if (window.grecaptchaReady) {
                 const warning = document.getElementById("recaptcha-warning");
                 if (warning) warning.remove();
-                console.log("✅ reCAPTCHA loaded successfully");
+                console.log("✅ reCAPTCHA ready function available");
             } else {
-                console.error("❌ reCAPTCHA failed to load after timeout");
+                console.error("❌ reCAPTCHA ready function never became available");
                 const warning = document.getElementById("recaptcha-warning");
                 if (warning) {
                     warning.style.background = "#f44336";
                     warning.style.color = "#fff";
-                    warning.innerHTML = "❌ Security verification blocked (ad blocker detected). Form submission will not work.";
+                    warning.innerHTML =
+                        "❌ Security verification blocked (ad blocker detected). Form submission will not work.";
                 }
             }
         }, 3000);
     } else {
-        console.log("✅ reCAPTCHA already loaded");
+        console.log("✅ reCAPTCHA ready function already available");
     }
-    
+
     let nocodbAvailable = false;
     let cachedData = null;
 

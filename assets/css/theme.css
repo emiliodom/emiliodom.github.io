@@ -39,9 +39,6 @@
     padding: 0;
 }
 body {
-    height: 100%;
-}
-body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
     background: var(--bg-gradient);
     color: var(--text-color);
@@ -1047,8 +1044,13 @@ a.link-card:focus {
 .greet-card .greet-country {
     display: inline-flex;
     align-items: center;
-    gap: 4px;
+    gap: 6px;
     font-weight: 500;
+}
+.greet-card .greet-country img.emoji {
+    width: 20px;
+    height: 20px;
+    vertical-align: middle;
 }
 .pager {
     display: flex;

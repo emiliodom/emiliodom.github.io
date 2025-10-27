@@ -55,13 +55,22 @@ function getCountryInfo(countryCode) {
         return { flag: "🌍", name: "Unknown" };
     }
     
-    const country = AppState.countriesData.find(c => c.code === countryCode);
+    // Try both lowercase and uppercase
+    const country = AppState.countriesData.find(c => 
+        c.code === countryCode.toLowerCase() || c.code === countryCode.toUpperCase()
+    );
     if (country) {
         return { flag: country.flag, name: country.name };
     }
     
-    // Fallback
-    return { flag: "🌍", name: countryCode };
+    // Fallback: convert country code to flag emoji
+    // Country codes are uppercase, flags are Regional Indicator Symbols
+    const codePoints = countryCode.toUpperCase()
+        .split('')
+        .map(char => 127397 + char.charCodeAt(0));
+    const flag = String.fromCodePoint(...codePoints);
+    
+    return { flag: flag, name: countryCode.toUpperCase() };
 }
 
 /**
@@ -224,16 +233,19 @@ async function checkRecentSubmission(userIp, greetingsList = null) {
  * @param {number} minutesLeft - Minutes remaining until next submission
  * @param {HTMLElement} alertElement - The alert element to populate
  * @param {HTMLFormElement} formElement - The form element to hide
+ * @param {boolean} hideGreetings - Whether to hide the greetings wall
  */
-function showSubmissionBlockedUI(hoursLeft, minutesLeft, alertElement, formElement) {
+function showSubmissionBlockedUI(hoursLeft, minutesLeft, alertElement, formElement, hideGreetings = false) {
     if (formElement) {
         formElement.style.display = "none";
     }
 
-    // Hide the greetings wall when user is blocked
-    const greetList = document.getElementById("greet-list");
-    if (greetList) {
-        greetList.style.display = "none";
+    // Only hide greetings wall if explicitly requested (after submission)
+    if (hideGreetings) {
+        const greetList = document.getElementById("greet-list");
+        if (greetList) {
+            greetList.style.display = "none";
+        }
     }
 
     if (alertElement) {
@@ -572,7 +584,8 @@ async function handleFormSubmit(e) {
                         newSubmissionCheck.hoursLeft,
                         newSubmissionCheck.minutesLeft,
                         submissionStatusAlert,
-                        greetForm
+                        greetForm,
+                        true // Hide greetings wall after submission
                     );
                 }
             } else {
@@ -648,7 +661,8 @@ document.addEventListener("DOMContentLoaded", async () => {
             submissionCheck.hoursLeft,
             submissionCheck.minutesLeft,
             submissionStatusAlert,
-            greetForm
+            greetForm,
+            false // Don't hide greetings on initial page load
         );
     }
 

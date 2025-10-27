@@ -11,13 +11,20 @@ A modern, interactive personal website with dark/light theme support, multi-lang
 
 ## 🆕 Recent Updates (October 2025)
 
+### Latest Improvements (v2.0)
+- ✅ **Migrated to hCaptcha** - Replaced Google reCAPTCHA with hCaptcha for better reliability
+- ✅ **Explicit render mode** - Fixed CAPTCHA loading issues with proper async handling
+- ✅ **Enhanced form UX** - Submit button now enables only when hCaptcha is completed
+- ✅ **Improved submission flow** - Form hides after successful submission, shows countdown
+- ✅ **Latest greeting on index** - Homepage displays the most recent greeting card
+- ✅ **Code cleanup** - Removed all console.log statements and debugging code
+- ✅ **Better loaders** - Added loading indicators during API calls and data fetching
+
 ### Major Cleanup & Improvements
 - ✅ **Removed Vercel infrastructure** - Switched to Cloudflare Workers proxy
 - ✅ **Enhanced error handling** - Graceful NocoDB unavailability with greyed-out UI
 - ✅ **Code quality tools** - Added ESLint and Prettier configurations
 - ✅ **Script optimization** - Separated inline scripts to external files
-- ✅ **Minification** - Added JS/CSS minification in GitHub Actions workflow
-- ✅ **Documentation reorganization** - Moved docs to dedicated folder with clear structure
 - ✅ **SEO improvements** - Enhanced meta tags, Open Graph, and Twitter Card support
 - ✅ **Accessibility** - Improved ARIA labels, semantic HTML, and alt attributes
 
@@ -58,14 +65,15 @@ A modern, interactive personal website with dark/light theme support, multi-lang
 - **Masonry Grid Layout**: Photos and video displayed in responsive masonry grid on index page
 
 ### 💬 Greetings Wall
-- **Interactive Form**: Three-step submission process (feeling → message → captcha)
+- **Interactive Form**: Three-step submission process (feeling → message → country → captcha)
+- **hCaptcha Integration**: Secure bot protection with explicit render mode
+- **Smart Button State**: Submit button enables only when all fields + CAPTCHA completed
 - **14 Emoticons**: Balanced mix of positive and neutral feelings (😊, 🙂, 😄, 🤩, 👏, 🙌, 💪, 😐, 🤔, 👍, 🙏, 🤝, 🫡, ✌️)
 - **16 Preset Messages**: Professional and casual greeting options
-- **Smart UI Adaptation**:
-  - Desktop: Button grids for feelings, large styled selector for messages
-  - Mobile: Dropdown selectors for both feelings and messages
-- **Numeric Captcha**: Simple 3-choice math verification with improved validation
+- **Country Selection**: Flag-enabled dropdown with 150+ countries
 - **IP-Based Rate Limiting**: One submission per IP per 24 hours
+- **Success Flow**: Form hides after submission, shows countdown message with hours/minutes remaining
+- **Latest Greeting**: Homepage displays the most recent greeting card
 - **Privacy Disclaimer**: Clear notice that IP is not shared with third parties
 - **Lazy Loading**: Mobile greeting cards use content-visibility for performance
 - **NocoDB Integration**: Cloud-based storage with Cloudflare Worker proxy
@@ -112,6 +120,7 @@ A modern, interactive personal website with dark/light theme support, multi-lang
 | particles.js | Animated background | 2.0.0 |
 | Twemoji | Emoji rendering | latest |
 | DOMPurify | XSS sanitization | 3.0.8 |
+| hCaptcha | Bot protection | v1 API |
 | NocoDB | Database/backend | v2 API |
 | Cloudflare Workers | API proxy | - |
 | Google Translate | Multi-language support | Widget |
@@ -210,23 +219,32 @@ For secure token management in production, use a Cloudflare Worker as a proxy to
 1. **Cloudflare Worker Setup**:
    - Navigate to `api/cloudflare/` directory
    - Configure `wrangler.toml` with your Worker settings
-   - Add your NocoDB token as a Cloudflare secret:
+   - Add secrets as Cloudflare environment variables:
      ```bash
      wrangler secret put NOCODB_TOKEN
+     wrangler secret put HCAPTCHA_SECRET
      ```
 
-2. **Deploy the Worker**:
+2. **hCaptcha Setup**:
+   - Sign up at [hCaptcha.com](https://hcaptcha.com)
+   - Create a new site
+   - Get your site key and secret key
+   - Add site key to `greetings.html` (already configured)
+   - Add secret key to Cloudflare Worker secrets
+
+3. **Deploy the Worker**:
    ```bash
    cd api/cloudflare
    wrangler deploy
    ```
 
-3. **Update Frontend Configuration**:
+4. **Update Frontend Configuration**:
    - Edit `assets/js/nocodb-config.js`
    - Point API calls to your Cloudflare Worker URL instead of direct NocoDB
 
-4. **Benefits**:
-   - Token never exposed to client
+5. **Benefits**:
+   - Tokens never exposed to client
+   - Server-side hCaptcha verification
    - Additional security layer with rate limiting
    - CORS handling
    - Request validation and sanitization
@@ -243,6 +261,7 @@ The greetings wall uses NocoDB for persistent storage. To configure:
    - `Message` (Text) - The greeting message
    - `User` (Text) - IP address
    - `Notes` (Text) - Emoticon/feeling
+   - `Country` (Text) - ISO country code (e.g., "US", "GT")
    - `CreatedAt` (DateTime) - Auto-generated timestamp
 
 3. **Get API Credentials**:
@@ -354,16 +373,18 @@ See `api/PROXY_SETUP.md` and `api/SECURITY_ARCHITECTURE.md` for implementation d
 
 #### What's Protected:
 1. **XSS Prevention**: DOMPurify sanitizes all user-generated content before rendering
-2. **Rate Limiting**: 24-hour IP-based submission window (enforced by Worker)
-3. **Input Validation**: Server-side validation in Cloudflare Worker
-4. **Token Security**: API token never exposed to client
-5. **IP Privacy**: Clear disclaimer that IP addresses are not shared with third parties
-6. **Error Handling**: Graceful degradation when database unavailable
+2. **Bot Protection**: hCaptcha prevents automated submissions
+3. **Rate Limiting**: 24-hour IP-based submission window (enforced by Worker)
+4. **Input Validation**: Server-side validation in Cloudflare Worker
+5. **Token Security**: API tokens never exposed to client
+6. **CAPTCHA Verification**: Server-side hCaptcha validation in Worker
+7. **IP Privacy**: Clear disclaimer that IP addresses are not shared with third parties
+8. **Error Handling**: Graceful degradation when database unavailable
 
 #### Known Limitations:
-1. **Client-Side Validation**: Captcha can be bypassed (use reCAPTCHA v3 for production)
-2. **IP Spoofing**: IP detection can be bypassed with VPN/proxy
-3. **Rate Limiting**: Per-IP limits can be circumvented with multiple IPs
+1. **IP Spoofing**: IP detection can be bypassed with VPN/proxy
+2. **Rate Limiting**: Per-IP limits can be circumvented with multiple IPs
+3. **hCaptcha**: While better than simple captchas, advanced bots may still bypass
 
 ### Why This Approach?
 

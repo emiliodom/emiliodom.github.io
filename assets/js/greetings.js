@@ -329,10 +329,17 @@ function renderPagination(list, page = 1) {
                 const countryInfo = getCountryInfo(item.countryCode);
                 const metaDiv = document.createElement("div");
                 metaDiv.className = "greet-meta";
-                metaDiv.innerHTML = `
-                    <span class="greet-country" style="margin-right: 8px;">${countryInfo.flag} ${countryInfo.name}</span>
-                    <span class="greet-date">${item.when}</span>
-                `;
+                
+                const countrySpan = document.createElement("span");
+                countrySpan.className = "greet-country";
+                countrySpan.innerHTML = `<span style="font-size:16px;">${countryInfo.flag}</span> ${countryInfo.name}`;
+                
+                const dateSpan = document.createElement("span");
+                dateSpan.className = "greet-date";
+                dateSpan.textContent = item.when;
+                
+                metaDiv.appendChild(countrySpan);
+                metaDiv.appendChild(dateSpan);
 
                 card.appendChild(feelDiv);
                 card.appendChild(textDiv);
@@ -383,10 +390,17 @@ function renderSimplePagination(list, page, grid, pagerContainer) {
         const countryInfo = getCountryInfo(item.countryCode);
         const metaDiv = document.createElement("div");
         metaDiv.className = "greet-meta";
-        metaDiv.innerHTML = `
-            <span class="greet-country" style="margin-right: 8px;">${countryInfo.flag} ${countryInfo.name}</span>
-            <span class="greet-date">${item.when}</span>
-        `;
+        
+        const countrySpan = document.createElement("span");
+        countrySpan.className = "greet-country";
+        countrySpan.innerHTML = `<span style="font-size:16px;">${countryInfo.flag}</span> ${countryInfo.name}`;
+        
+        const dateSpan = document.createElement("span");
+        dateSpan.className = "greet-date";
+        dateSpan.textContent = item.when;
+        
+        metaDiv.appendChild(countrySpan);
+        metaDiv.appendChild(dateSpan);
 
         card.appendChild(feelDiv);
         card.appendChild(textDiv);
@@ -655,8 +669,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     const submissionCheck = await checkRecentSubmission(userIp, cachedData);
+    const greetForm = document.getElementById("greet-form");
+    
     if (!submissionCheck.allowed) {
-        const greetForm = document.getElementById("greet-form");
         showSubmissionBlockedUI(
             submissionCheck.hoursLeft,
             submissionCheck.minutesLeft,
@@ -664,6 +679,11 @@ document.addEventListener("DOMContentLoaded", async () => {
             greetForm,
             false // Don't hide greetings on initial page load
         );
+    } else {
+        // User is allowed to submit, show the form
+        if (greetForm) {
+            greetForm.style.display = "block";
+        }
     }
 
     const countries = await fetchCountries();
@@ -767,7 +787,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     })();
 
-    const greetForm = document.getElementById("greet-form");
     if (greetForm) {
         greetForm.addEventListener("submit", handleFormSubmit);
     }

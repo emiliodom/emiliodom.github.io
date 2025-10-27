@@ -364,11 +364,6 @@ function renderSimplePagination(list, page, grid, pagerContainer) {
 }
 
 /**
- * Validates reCAPTCHA and returns token
- * @returns {Promise<string>} The reCAPTCHA token
- * @throws {Error} If reCAPTCHA validation fails
- */
-/**
  * Validates hCaptcha and returns token
  * @returns {Promise<string>} hCaptcha token
  */
@@ -379,19 +374,44 @@ async function validateHcaptcha() {
 
     if (!window.hcaptcha) {
         console.error("❌ hCaptcha object not found");
-        throw new Error("CAPTCHA not loaded. Please refresh the page.");
+        throw new Error("hCaptcha not loaded. Please refresh the page.");
     }
 
-    // Get response using widget ID
     const response = window.hcaptcha.getResponse(window.hcaptchaWidgetId);
-    console.log("Response:", response);
+    console.log("hCaptcha response:", response);
     
     if (!response) {
         console.warn("⚠️ No hCaptcha response");
-        throw new Error("Please complete the CAPTCHA challenge");
+        throw new Error("Please complete the hCaptcha challenge");
     }
 
     console.log("✅ hCaptcha token:", response.substring(0, 20) + "...");
+    return response;
+}
+
+/**
+ * Validates Google reCAPTCHA and returns token
+ * @returns {Promise<string>} reCAPTCHA token
+ */
+async function validateRecaptcha() {
+    console.log("🔍 Getting reCAPTCHA response...");
+    console.log("grecaptcha object:", window.grecaptcha);
+    console.log("recaptchaWidgetId:", window.recaptchaWidgetId);
+
+    if (!window.grecaptcha || !window.grecaptcha.enterprise) {
+        console.error("❌ reCAPTCHA object not found");
+        throw new Error("reCAPTCHA not loaded. Please refresh the page.");
+    }
+
+    const response = window.grecaptcha.enterprise.getResponse(window.recaptchaWidgetId);
+    console.log("reCAPTCHA response:", response);
+    
+    if (!response) {
+        console.warn("⚠️ No reCAPTCHA response");
+        throw new Error("Please complete the reCAPTCHA challenge");
+    }
+
+    console.log("✅ reCAPTCHA token:", response.substring(0, 20) + "...");
     return response;
 }
 
@@ -507,20 +527,37 @@ async function handleFormSubmit(e) {
         setFeedback(feedback, "🔐 Verifying you're human...", "info");
 
         let hcaptchaToken;
+        let recaptchaToken;
+        
+        // Try hCaptcha first
         try {
             console.log("🔐 Validating hCaptcha...");
             hcaptchaToken = await validateHcaptcha();
             console.log("✅ hCaptcha validated, token:", hcaptchaToken.substring(0, 20) + "...");
         } catch (hcaptchaError) {
-            console.error("❌ hCaptcha failed:", hcaptchaError);
+            console.warn("⚠️ hCaptcha validation failed:", hcaptchaError.message);
+        }
+
+        // Try reCAPTCHA as fallback
+        if (!hcaptchaToken) {
+            try {
+                console.log("🔐 Validating reCAPTCHA...");
+                recaptchaToken = await validateRecaptcha();
+                console.log("✅ reCAPTCHA validated, token:", recaptchaToken.substring(0, 20) + "...");
+            } catch (recaptchaError) {
+                console.warn("⚠️ reCAPTCHA validation failed:", recaptchaError.message);
+            }
+        }
+
+        // If neither CAPTCHA is completed, show error
+        if (!hcaptchaToken && !recaptchaToken) {
+            console.error("❌ Both CAPTCHAs failed");
             setFeedback(
                 feedback,
                 `
                 <strong>CAPTCHA verification required.</strong><br>
                 <br>
-                <strong>Error:</strong> ${hcaptchaError.message}<br>
-                <br>
-                Please complete the CAPTCHA challenge above and try again.
+                Please complete at least one of the CAPTCHA challenges above (hCaptcha or reCAPTCHA) and try again.
             `,
                 "error"
             );
@@ -562,7 +599,9 @@ async function handleFormSubmit(e) {
 
             if (postUrl) {
                 console.log("📮 Posting to NocoDB...");
-                await postToNocoDB(messageText, userField, notesEmoji, countryCode, hcaptchaToken);
+                // Send whichever CAPTCHA token we got
+                const captchaToken = hcaptchaToken || recaptchaToken;
+                await postToNocoDB(messageText, userField, notesEmoji, countryCode, captchaToken);
                 console.log("✅ Posted successfully to NocoDB!");
 
                 console.log("🔄 Fetching updated greetings list...");
@@ -595,6 +634,7 @@ async function handleFormSubmit(e) {
 document.addEventListener("DOMContentLoaded", async () => {
     console.log("🎬 DOMContentLoaded event fired - Starting initialization");
     console.log("🔐 hCaptcha available:", typeof window.hcaptcha !== "undefined");
+    console.log("🔐 reCAPTCHA available:", typeof window.grecaptcha !== "undefined");
 
     let nocodbAvailable = false;
     let cachedData = null;

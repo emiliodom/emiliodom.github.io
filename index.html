@@ -221,15 +221,8 @@
     </footer>
   </main>
 
-  <script type="module" id="site-theme-script">
-    // Use minified assets in production
-    const isProduction = window.location.hostname === 'emiliodom.github.io';
-    const scriptSrc = isProduction ? 'assets/js/site-theme.min.js' : 'assets/js/site-theme.js';
-    import(scriptSrc).catch(() => {
-      // Fallback to non-minified if minified doesn't exist
-      if (isProduction) import('assets/js/site-theme.js');
-    });
-  </script>
+  <!-- Site theme script - loads minified in production -->
+  <script type="module" src="assets/js/site-theme.js"></script>
   
   <!-- particles.js background animation library -->
   <div id="particles-js" style="position:fixed;width:100%;height:100%;top:0;left:0;z-index:0;pointer-events:none"></div>

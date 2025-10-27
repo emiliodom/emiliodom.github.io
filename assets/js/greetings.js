@@ -215,7 +215,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Check NocoDB availability first by attempting to fetch data
     let nocodbAvailable = false;
     let cachedData = null;
-    
+
     try {
         const testData = await fetchFromNocoDB();
         nocodbAvailable = testData !== null && Array.isArray(testData); // fetchFromNocoDB returns null on failure
@@ -250,7 +250,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             </p>
         `;
         document.body.appendChild(errorDiv);
-        
+
         // Still try to load and show cached localStorage data
         const localWall = loadWallEntries();
         if (localWall && localWall.length > 0) {

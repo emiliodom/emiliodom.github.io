@@ -142,7 +142,7 @@
 
         <!-- hCaptcha widget -->
         <div style="margin-top:16px">
-          <div class="h-captcha" data-sitekey="d02ac3f2-4f68-4e2c-bfea-17bce17ebe50"></div>
+          <div id="hcaptcha-container"></div>
         </div>
 
         <div style="margin-top:16px">
@@ -224,8 +224,18 @@
   <!-- NocoDB config now uses Cloudflare Worker proxy - no encryption needed -->
   <script src="/assets/js/nocodb-config.js?v=2"></script>
 
-  <!-- hCaptcha - Load synchronously to ensure it's ready -->
-  <script src="https://js.hcaptcha.com/1/api.js"></script>
+  <!-- hCaptcha - Explicit render approach -->
+  <script>
+    var hcaptchaWidgetId;
+    var onHcaptchaLoad = function() {
+      console.log("✅ hCaptcha script loaded, rendering widget...");
+      hcaptchaWidgetId = hcaptcha.render('hcaptcha-container', {
+        sitekey: 'd02ac3f2-4f68-4e2c-bfea-17bce17ebe50'
+      });
+      console.log("✅ hCaptcha widget rendered with ID:", hcaptchaWidgetId);
+    };
+  </script>
+  <script src="https://js.hcaptcha.com/1/api.js?onload=onHcaptchaLoad&render=explicit"></script>
 
   <!-- particles.js background animation library -->
   <div id="particles-js" style="position:fixed;width:100%;height:100%;top:0;left:0;z-index:0;pointer-events:none"></div>

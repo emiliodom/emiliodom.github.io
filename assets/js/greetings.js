@@ -374,25 +374,25 @@ function renderSimplePagination(list, page, grid, pagerContainer) {
  */
 async function validateHcaptcha() {
     console.log("🔍 Getting hCaptcha response...");
+    console.log("hcaptcha object:", window.hcaptcha);
+    console.log("hcaptchaWidgetId:", window.hcaptchaWidgetId);
 
-    // Simple direct access - if hCaptcha loaded, this will work
-    try {
-        const response = window.hcaptcha.getResponse();
-        
-        if (!response) {
-            console.warn("⚠️ No hCaptcha response - user didn't complete challenge");
-            throw new Error("Please complete the CAPTCHA challenge");
-        }
-
-        console.log("✅ hCaptcha token obtained:", response.substring(0, 20) + "...");
-        return response;
-    } catch (error) {
-        console.error("❌ hCaptcha error:", error);
-        if (error.message.includes("complete the CAPTCHA")) {
-            throw error;
-        }
-        throw new Error("CAPTCHA widget not available. Please refresh the page.");
+    if (!window.hcaptcha) {
+        console.error("❌ hCaptcha object not found");
+        throw new Error("CAPTCHA not loaded. Please refresh the page.");
     }
+
+    // Get response using widget ID
+    const response = window.hcaptcha.getResponse(window.hcaptchaWidgetId);
+    console.log("Response:", response);
+    
+    if (!response) {
+        console.warn("⚠️ No hCaptcha response");
+        throw new Error("Please complete the CAPTCHA challenge");
+    }
+
+    console.log("✅ hCaptcha token:", response.substring(0, 20) + "...");
+    return response;
 }
 
 /**

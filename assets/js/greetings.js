@@ -42,7 +42,27 @@ const AppState = {
     selectedCountry: "",
     isSubmitting: false,
     cachedGreetings: null,
+    countriesData: [], // Store countries data for lookups
 };
+
+/**
+ * Gets country name and flag from country code
+ * @param {string} countryCode - 2-letter ISO country code
+ * @returns {{flag: string, name: string}} Country flag and name
+ */
+function getCountryInfo(countryCode) {
+    if (!countryCode || countryCode === "XX") {
+        return { flag: "🌍", name: "Unknown" };
+    }
+    
+    const country = AppState.countriesData.find(c => c.code === countryCode);
+    if (country) {
+        return { flag: country.flag, name: country.name };
+    }
+    
+    // Fallback
+    return { flag: "🌍", name: countryCode };
+}
 
 /**
  * Fetches list of countries from JSON file
@@ -87,6 +107,7 @@ async function fetchFromNocoDB() {
             const message = fields.Message || fields.message || "";
             const feeling = fields.Notes || fields.notes || "";
             const ip = fields.User || fields.user || "";
+            const countryCode = fields.Country || fields.country || "";
             const rawDate = fields.CreatedAt || fields.created_at || fields.createdAt || Date.now();
 
             const timestamp = new Date(rawDate).getTime();
@@ -97,7 +118,7 @@ async function fetchFromNocoDB() {
             });
             const when = formatter.format(new Date(rawDate));
 
-            return { message, feeling, when, whenTimestamp: timestamp, ip };
+            return { message, feeling, when, whenTimestamp: timestamp, ip, countryCode };
         });
     } catch (error) {
         return null;
@@ -209,6 +230,12 @@ function showSubmissionBlockedUI(hoursLeft, minutesLeft, alertElement, formEleme
         formElement.style.display = "none";
     }
 
+    // Hide the greetings wall when user is blocked
+    const greetList = document.getElementById("greet-list");
+    if (greetList) {
+        greetList.style.display = "none";
+    }
+
     if (alertElement) {
         alertElement.className = "submission-status-alert submission-info";
         alertElement.innerHTML = `
@@ -224,9 +251,6 @@ function showSubmissionBlockedUI(hoursLeft, minutesLeft, alertElement, formEleme
                             ? ` and <strong>${minutesLeft} minute${minutesLeft !== 1 ? "s" : ""}</strong>`
                             : ""
                     }.
-                </p>
-                <p style="color: var(--color-text-muted); margin-top: 20px;">
-                    In the meantime, check out the latest greetings below! 👇
                 </p>
             </div>
         `;
@@ -290,9 +314,13 @@ function renderPagination(list, page = 1) {
                 textDiv.className = "greet-text";
                 textDiv.textContent = item.message;
 
+                const countryInfo = getCountryInfo(item.countryCode);
                 const metaDiv = document.createElement("div");
                 metaDiv.className = "greet-meta";
-                metaDiv.textContent = item.when;
+                metaDiv.innerHTML = `
+                    <span class="greet-country" style="margin-right: 8px;">${countryInfo.flag} ${countryInfo.name}</span>
+                    <span class="greet-date">${item.when}</span>
+                `;
 
                 card.appendChild(feelDiv);
                 card.appendChild(textDiv);
@@ -340,9 +368,13 @@ function renderSimplePagination(list, page, grid, pagerContainer) {
         textDiv.className = "greet-text";
         textDiv.textContent = item.message;
 
+        const countryInfo = getCountryInfo(item.countryCode);
         const metaDiv = document.createElement("div");
         metaDiv.className = "greet-meta";
-        metaDiv.textContent = item.when;
+        metaDiv.innerHTML = `
+            <span class="greet-country" style="margin-right: 8px;">${countryInfo.flag} ${countryInfo.name}</span>
+            <span class="greet-date">${item.when}</span>
+        `;
 
         card.appendChild(feelDiv);
         card.appendChild(textDiv);
@@ -623,6 +655,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     const countries = await fetchCountries();
     const countrySelector = document.getElementById("country-selector");
     if (countrySelector && countries.length > 0) {
+        // Store countries data for lookups
+        AppState.countriesData = countries;
+        
         countries.forEach((c) => {
             const opt = document.createElement("option");
             opt.value = c.code;

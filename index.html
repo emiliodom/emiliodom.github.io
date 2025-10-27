@@ -249,6 +249,7 @@
         const fields = latestRaw.fields || latestRaw;
         const message = fields.Message || fields.message || "";
         const feeling = fields.Notes || fields.notes || "";
+        const countryCode = fields.Country || fields.country || "";
         const rawDate = fields.CreatedAt || fields.created_at || fields.createdAt || Date.now();
         
         const formatter = new Intl.DateTimeFormat("en-US", {
@@ -257,6 +258,23 @@
           day: "numeric",
         });
         const when = formatter.format(new Date(rawDate));
+        
+        // Get country info
+        let countryInfo = { flag: "🌍", name: "Unknown" };
+        if (countryCode && countryCode !== "XX") {
+          try {
+            const countriesResponse = await fetch('assets/data/countries.json');
+            const countries = await countriesResponse.json();
+            const country = countries.find(c => c.code === countryCode);
+            if (country) {
+              countryInfo = { flag: country.flag, name: country.name };
+            } else {
+              countryInfo = { flag: "🌍", name: countryCode };
+            }
+          } catch (err) {
+            countryInfo = { flag: "🌍", name: countryCode };
+          }
+        }
         
         // Render the greeting card
         const section = document.getElementById('latest-greeting-section');
@@ -267,7 +285,10 @@
             <article class="greet-card" style="padding:20px;border-radius:12px;background:var(--bg-secondary);box-shadow:0 2px 8px rgba(0,0,0,0.1);">
               <div class="greet-feel" style="font-size:32px;text-align:center;margin-bottom:12px;">${feeling || "💬"}</div>
               <div class="greet-text" style="font-size:16px;text-align:center;margin-bottom:8px;color:var(--text-dark);">${message}</div>
-              <div class="greet-meta" style="font-size:13px;text-align:center;color:var(--text-muted);">${when}</div>
+              <div class="greet-meta" style="font-size:13px;text-align:center;color:var(--text-muted);">
+                <span style="margin-right: 8px;">${countryInfo.flag} ${countryInfo.name}</span>
+                <span>${when}</span>
+              </div>
             </article>
           `;
           section.style.display = 'block';

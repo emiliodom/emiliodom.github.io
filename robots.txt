@@ -1,0 +1,43 @@
+# robots.txt for emiliodom.github.io
+
+# Allow all crawlers
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://emiliodom.github.io/sitemap.xml
+
+# Disallow crawling of development/build artifacts
+Disallow: /node_modules/
+Disallow: /.git/
+Disallow: /.github/
+Disallow: /api/cloudflare/node_modules/
+
+# Disallow crawling of minified files (prefer original sources)
+Disallow: /*.min.js$
+Disallow: /*.min.css$
+
+# Allow crawling of documentation
+Allow: /docs/
+Allow: /README.md
+Allow: /CHANGELOG.md
+
+# Crawl-delay for polite crawling (optional)
+# Crawl-delay: 1
+
+# Specific rules for common bots
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Slurp
+Allow: /
+
+# Block aggressive crawlers (optional - uncomment if needed)
+# User-agent: AhrefsBot
+# Disallow: /
+
+# User-agent: SemrushBot
+# Disallow: /

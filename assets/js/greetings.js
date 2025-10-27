@@ -707,9 +707,15 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const feelings = document.querySelectorAll(".feeling");
     console.log("🎭 Found", feelings.length, "feeling buttons");
-    feelings.forEach((btn) => {
-        btn.addEventListener("click", function () {
-            console.log("🎭 Feeling clicked:", this.dataset.feel);
+    if (feelings.length === 0) {
+        console.error("❌ No feeling buttons found! Selector '.feeling' returned empty NodeList");
+    }
+    feelings.forEach((btn, index) => {
+        console.log(`🎭 Attaching listener to feeling button #${index + 1}, emoji: ${btn.dataset.feel}, has class: ${btn.classList.contains('feeling')}`);
+        btn.addEventListener("click", function (e) {
+            console.log("🎭 Feeling clicked:", this.dataset.feel, "Event:", e);
+            console.log("🎭 Button element:", this);
+            console.log("🎭 Dataset:", this.dataset);
             feelings.forEach((b) => {
                 b.classList.remove("selected");
                 b.setAttribute("aria-pressed", "false");

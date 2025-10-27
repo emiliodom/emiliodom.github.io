@@ -50,25 +50,30 @@ const AppState = {
  */
 function triggerConfetti() {
     try {
-        if (typeof ConfettiGenerator !== 'undefined') {
+        if (typeof ConfettiGenerator !== "undefined") {
             const confettiSettings = {
-                target: 'confetti-holder',
+                target: "confetti-holder",
                 max: 80,
                 size: 1,
                 animate: true,
-                props: ['circle', 'square', 'triangle', 'line'],
-                colors: [[165,104,246],[230,61,135],[0,199,228],[253,214,126]],
+                props: ["circle", "square", "triangle", "line"],
+                colors: [
+                    [165, 104, 246],
+                    [230, 61, 135],
+                    [0, 199, 228],
+                    [253, 214, 126],
+                ],
                 clock: 25,
                 rotate: false,
                 width: window.innerWidth,
                 height: window.innerHeight,
                 start_from_edge: false,
-                respawn: true
+                respawn: true,
             };
-            
+
             const confetti = new ConfettiGenerator(confettiSettings);
             confetti.render();
-            
+
             // Stop confetti after 4 seconds
             setTimeout(() => {
                 try {
@@ -92,26 +97,27 @@ function getCountryInfo(countryCode) {
     if (!countryCode || countryCode === "XX") {
         return { flag: "🌍", name: "Unknown" };
     }
-    
+
     // Try both lowercase and uppercase
-    const country = AppState.countriesData.find(c => 
-        c.code === countryCode.toLowerCase() || c.code === countryCode.toUpperCase()
+    const country = AppState.countriesData.find(
+        (c) => c.code === countryCode.toLowerCase() || c.code === countryCode.toUpperCase()
     );
     if (country) {
         return { flag: country.flag, name: country.name };
     }
-    
+
     // Fallback: convert country code to flag emoji
     // Country codes are uppercase, flags are Regional Indicator Symbols
     if (countryCode.length === 2) {
-        const codePoints = countryCode.toUpperCase()
-            .split('')
-            .map(char => 127397 + char.charCodeAt(0));
+        const codePoints = countryCode
+            .toUpperCase()
+            .split("")
+            .map((char) => 127397 + char.charCodeAt(0));
         const flag = String.fromCodePoint(...codePoints);
-        
+
         return { flag: flag, name: countryCode.toUpperCase() };
     }
-    
+
     return { flag: "🌍", name: countryCode };
 }
 
@@ -283,7 +289,7 @@ function showSubmissionBlockedUI(hoursLeft, minutesLeft, alertElement, formEleme
     if (greetingHeader) {
         greetingHeader.style.display = "none";
     }
-    
+
     if (formElement) {
         formElement.style.display = "none";
     }
@@ -377,7 +383,7 @@ function renderPagination(list, page = 1) {
                 const countryInfo = getCountryInfo(item.countryCode);
                 const metaDiv = document.createElement("div");
                 metaDiv.className = "greet-meta";
-                
+
                 const countrySpan = document.createElement("span");
                 countrySpan.className = "greet-country";
                 const flagSpan = document.createElement("span");
@@ -385,19 +391,19 @@ function renderPagination(list, page = 1) {
                 flagSpan.style.fontSize = "20px";
                 countrySpan.appendChild(flagSpan);
                 countrySpan.appendChild(document.createTextNode(` ${countryInfo.name}`));
-                
+
                 // Apply Twemoji if available
-                if (typeof twemoji !== 'undefined') {
+                if (typeof twemoji !== "undefined") {
                     twemoji.parse(flagSpan, {
-                        folder: 'svg',
-                        ext: '.svg'
+                        folder: "svg",
+                        ext: ".svg",
                     });
                 }
-                
+
                 const dateSpan = document.createElement("span");
                 dateSpan.className = "greet-date";
                 dateSpan.textContent = item.when;
-                
+
                 metaDiv.appendChild(countrySpan);
                 metaDiv.appendChild(dateSpan);
 
@@ -450,7 +456,7 @@ function renderSimplePagination(list, page, grid, pagerContainer) {
         const countryInfo = getCountryInfo(item.countryCode);
         const metaDiv = document.createElement("div");
         metaDiv.className = "greet-meta";
-        
+
         const countrySpan = document.createElement("span");
         countrySpan.className = "greet-country";
         const flagSpan = document.createElement("span");
@@ -458,19 +464,19 @@ function renderSimplePagination(list, page, grid, pagerContainer) {
         flagSpan.style.fontSize = "20px";
         countrySpan.appendChild(flagSpan);
         countrySpan.appendChild(document.createTextNode(` ${countryInfo.name}`));
-        
+
         // Apply Twemoji if available
-        if (typeof twemoji !== 'undefined') {
+        if (typeof twemoji !== "undefined") {
             twemoji.parse(flagSpan, {
-                folder: 'svg',
-                ext: '.svg'
+                folder: "svg",
+                ext: ".svg",
             });
         }
-        
+
         const dateSpan = document.createElement("span");
         dateSpan.className = "greet-date";
         dateSpan.textContent = item.when;
-        
+
         metaDiv.appendChild(countrySpan);
         metaDiv.appendChild(dateSpan);
 
@@ -504,7 +510,7 @@ async function validateHcaptcha() {
     }
 
     const response = window.hcaptcha.getResponse(window.hcaptchaWidgetId);
-    
+
     if (!response) {
         throw new Error("Please complete the hCaptcha challenge");
     }
@@ -652,7 +658,7 @@ async function handleFormSubmit(e) {
                 await postToNocoDB(messageText, userField, notesEmoji, countryCode, hcaptchaToken);
 
                 setFeedback(feedback, "✅ Thanks — your greeting was added!", "success");
-                
+
                 // Trigger confetti celebration!
                 triggerConfetti();
 
@@ -664,18 +670,18 @@ async function handleFormSubmit(e) {
                         AppState.cachedGreetings = nocodbList;
                         // Render from page 1 to show the latest greeting
                         renderPagination(nocodbList, 1);
-                        
+
                         // Scroll to greetings section to show the new greeting
                         const greetingsWall = document.getElementById("greetings-wall");
                         if (greetingsWall) {
-                            greetingsWall.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                            greetingsWall.scrollIntoView({ behavior: "smooth", block: "start" });
                         }
                     }
 
                     // Hide the form and show countdown message
                     const greetForm = document.getElementById("greet-form");
                     const submissionStatusAlert = document.getElementById("submission-status-alert");
-                    
+
                     const newSubmissionCheck = await checkRecentSubmission(ip, nocodbList);
                     if (!newSubmissionCheck.allowed && greetForm) {
                         showSubmissionBlockedUI(
@@ -687,7 +693,6 @@ async function handleFormSubmit(e) {
                         );
                     }
                 }, 1000); // Wait 1 second for confetti effect
-
             } else {
                 setFeedback(feedback, "❌ Configuration error: No API endpoint configured", "error");
             }
@@ -762,7 +767,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (countrySelector && countries.length > 0) {
         // Store countries data for lookups
         AppState.countriesData = countries;
-        
+
         countries.forEach((c) => {
             const opt = document.createElement("option");
             opt.value = c.code;
@@ -833,7 +838,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     const container = document.getElementById("greet-list");
                     if (container) {
                         container.innerHTML = "";
-                        
+
                         const emptyState = document.createElement("div");
                         emptyState.className = "greet-grid";
                         emptyState.style.cssText = "text-align: center; padding: 40px 20px; color: var(--text-muted);";
@@ -850,7 +855,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             const container = document.getElementById("greet-list");
             if (container) {
                 container.innerHTML = "";
-                
+
                 const errorState = document.createElement("div");
                 errorState.className = "greet-grid";
                 errorState.style.cssText = "text-align: center; padding: 40px 20px; color: var(--text-muted);";
@@ -868,7 +873,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Check submission status AFTER greetings are loaded and displayed
     const submissionCheck = await checkRecentSubmission(userIp, cachedData);
-    
+
     if (!submissionCheck.allowed) {
         showSubmissionBlockedUI(
             submissionCheck.hoursLeft,

@@ -93,7 +93,7 @@
     {
       "title": "Leave a greeting",
       "description": "Choose a message and sign it — one per person",
-      "href": "/greetings.html",
+      "href": "/greetings",
       "icon": "💬",
       "external": false,
       "featured": true

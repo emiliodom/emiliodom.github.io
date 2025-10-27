@@ -376,16 +376,23 @@ async function validateRecaptcha() {
         throw new Error("reCAPTCHA Enterprise not available. Please refresh the page and try again.");
     }
 
-    await grecaptcha.enterprise.ready();
-    const token = await grecaptcha.enterprise.execute(CONFIG.RECAPTCHA_SITE_KEY, {
-        action: CONFIG.RECAPTCHA_ACTION,
+    return new Promise((resolve, reject) => {
+        grecaptcha.enterprise.ready(async () => {
+            try {
+                const token = await grecaptcha.enterprise.execute(CONFIG.RECAPTCHA_SITE_KEY, {
+                    action: CONFIG.RECAPTCHA_ACTION,
+                });
+
+                if (!token) {
+                    reject(new Error("Failed to generate reCAPTCHA token"));
+                } else {
+                    resolve(token);
+                }
+            } catch (error) {
+                reject(error);
+            }
+        });
     });
-
-    if (!token) {
-        throw new Error("Failed to generate reCAPTCHA token");
-    }
-
-    return token;
 }
 
 /**

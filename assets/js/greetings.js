@@ -28,9 +28,10 @@ const PRESET_MESSAGES = [
  * NocoDB client configuration
  * @type {{url: string|null, postUrl: string|null, getUrl: string|null, token: string|null}}
  */
-const NOCODB = typeof window !== "undefined" && window.NOCODB_CONFIG
-    ? window.NOCODB_CONFIG
-    : { url: null, postUrl: null, getUrl: null, token: null };
+const NOCODB =
+    typeof window !== "undefined" && window.NOCODB_CONFIG
+        ? window.NOCODB_CONFIG
+        : { url: null, postUrl: null, getUrl: null, token: null };
 
 /**
  * Application state
@@ -40,7 +41,7 @@ const AppState = {
     selectedFeeling: "",
     selectedCountry: "",
     isSubmitting: false,
-    cachedGreetings: null
+    cachedGreetings: null,
 };
 
 /**
@@ -57,7 +58,7 @@ async function fetchCountries() {
 
 /**
  * Fetches greetings data from NocoDB via proxy
- * @returns {Promise<Array<{message: string, feeling: string, when: string, whenTimestamp: number, ip: string}>|null>} 
+ * @returns {Promise<Array<{message: string, feeling: string, when: string, whenTimestamp: number, ip: string}>|null>}
  * Array of greeting objects or null on failure
  */
 async function fetchFromNocoDB() {
@@ -68,30 +69,34 @@ async function fetchFromNocoDB() {
 
     try {
         const data = await fetchJSON(fetchUrl);
-        
-        const rows = Array.isArray(data) ? data : 
-                     Array.isArray(data.records) ? data.records :
-                     Array.isArray(data.list) ? data.list : [];
-        
+
+        const rows = Array.isArray(data)
+            ? data
+            : Array.isArray(data.records)
+            ? data.records
+            : Array.isArray(data.list)
+            ? data.list
+            : [];
+
         if (!rows.length) {
             return null;
         }
 
-        return rows.map(rec => {
+        return rows.map((rec) => {
             const fields = rec.fields || rec;
             const message = fields.Message || fields.message || "";
             const feeling = fields.Notes || fields.notes || "";
             const ip = fields.User || fields.user || "";
             const rawDate = fields.CreatedAt || fields.created_at || fields.createdAt || Date.now();
-            
+
             const timestamp = new Date(rawDate).getTime();
             const formatter = new Intl.DateTimeFormat("en-US", {
                 year: "numeric",
                 month: "short",
-                day: "numeric"
+                day: "numeric",
             });
             const when = formatter.format(new Date(rawDate));
-            
+
             return { message, feeling, when, whenTimestamp: timestamp, ip };
         });
     } catch (error) {
@@ -114,9 +119,10 @@ async function postToNocoDB(message, user, notes, countryCode) {
         throw new Error("NocoDB not configured");
     }
 
-    const body = postUrl.includes("/api/v2") || postUrl.includes("/api/greetings")
-        ? { Message: message, User: user, Notes: notes, Country: countryCode || "XX" }
-        : { records: [{ fields: { Message: message, User: user, Notes: notes, Country: countryCode || "XX" } }] };
+    const body =
+        postUrl.includes("/api/v2") || postUrl.includes("/api/greetings")
+            ? { Message: message, User: user, Notes: notes, Country: countryCode || "XX" }
+            : { records: [{ fields: { Message: message, User: user, Notes: notes, Country: countryCode || "XX" } }] };
 
     const response = await fetchWithRetry(postUrl, {
         method: "POST",
@@ -125,7 +131,7 @@ async function postToNocoDB(message, user, notes, countryCode) {
             "Content-Type": "application/json",
         },
         body: JSON.stringify(body),
-        cache: "no-store"
+        cache: "no-store",
     });
 
     if (!response.ok) {
@@ -162,43 +168,43 @@ async function getIp() {
  */
 async function checkRecentSubmission(userIp, greetingsList = null) {
     const now = Date.now();
-    
+
     if (userIp && NOCODB.postUrl) {
-        const nocodbList = greetingsList || await fetchFromNocoDB();
+        const nocodbList = greetingsList || (await fetchFromNocoDB());
         if (nocodbList?.length) {
-            const recentEntry = nocodbList.find(entry => {
+            const recentEntry = nocodbList.find((entry) => {
                 if (!entry.ip || entry.ip !== userIp) return false;
                 try {
-                    return (now - entry.whenTimestamp) < CONFIG.SUBMISSION_COOLDOWN_MS;
+                    return now - entry.whenTimestamp < CONFIG.SUBMISSION_COOLDOWN_MS;
                 } catch (error) {
                     return false;
                 }
             });
-            
+
             if (recentEntry) {
                 const msLeft = CONFIG.SUBMISSION_COOLDOWN_MS - (now - recentEntry.whenTimestamp);
                 return {
                     allowed: false,
                     hoursLeft: Math.ceil(msLeft / (1000 * 60 * 60)),
                     minutesLeft: Math.ceil((msLeft % (1000 * 60 * 60)) / (1000 * 60)),
-                    entry: recentEntry
+                    entry: recentEntry,
                 };
             }
         }
     }
-    
+
     if (userIp) {
         const stored = localStorage.getItem(`greet-submitted-${userIp}`);
         if (stored) {
             try {
                 const data = JSON.parse(stored);
-                if (data.when && (now - data.when) < CONFIG.SUBMISSION_COOLDOWN_MS) {
+                if (data.when && now - data.when < CONFIG.SUBMISSION_COOLDOWN_MS) {
                     const msLeft = CONFIG.SUBMISSION_COOLDOWN_MS - (now - data.when);
                     return {
                         allowed: false,
                         hoursLeft: Math.ceil(msLeft / (1000 * 60 * 60)),
                         minutesLeft: Math.ceil((msLeft % (1000 * 60 * 60)) / (1000 * 60)),
-                        entry: data
+                        entry: data,
                     };
                 }
             } catch (error) {
@@ -206,19 +212,19 @@ async function checkRecentSubmission(userIp, greetingsList = null) {
             }
         }
     }
-    
+
     if (!userIp) {
         const browserStored = localStorage.getItem("greet-submitted-browserside");
         if (browserStored) {
             try {
                 const browserData = JSON.parse(browserStored);
-                if (browserData.when && (now - browserData.when) < CONFIG.SUBMISSION_COOLDOWN_MS) {
+                if (browserData.when && now - browserData.when < CONFIG.SUBMISSION_COOLDOWN_MS) {
                     const msLeft = CONFIG.SUBMISSION_COOLDOWN_MS - (now - browserData.when);
                     return {
                         allowed: false,
                         hoursLeft: Math.ceil(msLeft / (1000 * 60 * 60)),
                         minutesLeft: Math.ceil((msLeft % (1000 * 60 * 60)) / (1000 * 60)),
-                        entry: browserData
+                        entry: browserData,
                     };
                 }
             } catch (error) {
@@ -226,7 +232,7 @@ async function checkRecentSubmission(userIp, greetingsList = null) {
             }
         }
     }
-    
+
     return { allowed: true, hoursLeft: 0, minutesLeft: 0, entry: null };
 }
 
@@ -241,7 +247,7 @@ function showSubmissionBlockedUI(hoursLeft, minutesLeft, alertElement, formEleme
     if (formElement) {
         formElement.style.display = "none";
     }
-    
+
     if (alertElement) {
         alertElement.className = "submission-status-alert submission-info";
         alertElement.innerHTML = `
@@ -249,8 +255,14 @@ function showSubmissionBlockedUI(hoursLeft, minutesLeft, alertElement, formEleme
                 <div style="font-size: 48px; margin-bottom: 10px;">⏰</div>
                 <h3 style="margin: 10px 0; color: var(--color-text);">Thank you for your greeting!</h3>
                 <p style="color: var(--color-text-muted); margin: 10px 0;">
-                    You can submit another greeting in approximately <strong>${hoursLeft} hour${hoursLeft !== 1 ? "s" : ""}</strong>
-                    ${minutesLeft > 0 && hoursLeft < 24 ? ` and <strong>${minutesLeft} minute${minutesLeft !== 1 ? "s" : ""}</strong>` : ""}.
+                    You can submit another greeting in approximately <strong>${hoursLeft} hour${
+            hoursLeft !== 1 ? "s" : ""
+        }</strong>
+                    ${
+                        minutesLeft > 0 && hoursLeft < 24
+                            ? ` and <strong>${minutesLeft} minute${minutesLeft !== 1 ? "s" : ""}</strong>`
+                            : ""
+                    }.
                 </p>
                 <p style="color: var(--color-text-muted); margin-top: 20px;">
                     In the meantime, check out the latest greetings below! 👇
@@ -269,64 +281,64 @@ function showSubmissionBlockedUI(hoursLeft, minutesLeft, alertElement, formEleme
 function renderPagination(list, page = 1) {
     const container = document.getElementById("greet-list");
     if (!container) return;
-    
+
     container.innerHTML = "";
-    
+
     const grid = document.createElement("div");
     grid.className = "greet-grid";
     grid.id = "greet-grid";
     container.appendChild(grid);
-    
+
     const paginationContainer = document.createElement("div");
     paginationContainer.id = "pagination-container";
     paginationContainer.className = "pager";
     container.appendChild(paginationContainer);
-    
+
     if (typeof pagination === "undefined") {
         renderSimplePagination(list, page, grid, paginationContainer);
         return;
     }
-    
+
     const reversedList = list.slice().reverse();
-    
+
     pagination(paginationContainer, {
         dataSource: reversedList,
         pageSize: CONFIG.ITEMS_PER_PAGE,
         pageNumber: page,
-        callback: function(data, pagination) {
+        callback: function (data, pagination) {
             grid.innerHTML = "";
             const isMobile = window.innerWidth <= CONFIG.MOBILE_BREAKPOINT;
-            
+
             data.forEach((item, idx) => {
                 const card = document.createElement("article");
                 card.className = "greet-card";
                 if (item._pending) card.classList.add("pending");
                 if (item._failed) card.classList.add("failed");
                 card.tabIndex = 0;
-                
+
                 if (isMobile && idx > 2) {
                     card.setAttribute("loading", "lazy");
                     card.style.contentVisibility = "auto";
                 }
-                
+
                 const feelDiv = document.createElement("div");
                 feelDiv.className = "greet-feel";
                 feelDiv.textContent = item.feeling || "";
-                
+
                 const textDiv = document.createElement("div");
                 textDiv.className = "greet-text";
                 textDiv.textContent = item.message;
-                
+
                 const metaDiv = document.createElement("div");
                 metaDiv.className = "greet-meta";
                 metaDiv.textContent = item.when;
-                
+
                 card.appendChild(feelDiv);
                 card.appendChild(textDiv);
                 card.appendChild(metaDiv);
                 grid.appendChild(card);
             });
-        }
+        },
     });
 }
 
@@ -341,8 +353,11 @@ function renderSimplePagination(list, page, grid, pagerContainer) {
     const total = list.length;
     const pages = Math.max(1, Math.ceil(total / CONFIG.ITEMS_PER_PAGE));
     const start = (page - 1) * CONFIG.ITEMS_PER_PAGE;
-    const pageItems = list.slice().reverse().slice(start, start + CONFIG.ITEMS_PER_PAGE);
-    
+    const pageItems = list
+        .slice()
+        .reverse()
+        .slice(start, start + CONFIG.ITEMS_PER_PAGE);
+
     const isMobile = window.innerWidth <= CONFIG.MOBILE_BREAKPOINT;
     pageItems.forEach((item, idx) => {
         const card = document.createElement("article");
@@ -350,30 +365,30 @@ function renderSimplePagination(list, page, grid, pagerContainer) {
         if (item._pending) card.classList.add("pending");
         if (item._failed) card.classList.add("failed");
         card.tabIndex = 0;
-        
+
         if (isMobile && idx > 2) {
             card.setAttribute("loading", "lazy");
             card.style.contentVisibility = "auto";
         }
-        
+
         const feelDiv = document.createElement("div");
         feelDiv.className = "greet-feel";
         feelDiv.textContent = item.feeling || "";
-        
+
         const textDiv = document.createElement("div");
         textDiv.className = "greet-text";
         textDiv.textContent = item.message;
-        
+
         const metaDiv = document.createElement("div");
         metaDiv.className = "greet-meta";
         metaDiv.textContent = item.when;
-        
+
         card.appendChild(feelDiv);
         card.appendChild(textDiv);
         card.appendChild(metaDiv);
         grid.appendChild(card);
     });
-    
+
     pagerContainer.innerHTML = "";
     const prev = document.createElement("button");
     prev.textContent = "Previous";
@@ -398,7 +413,7 @@ function saveWallEntry(message, feeling) {
     const formatter = new Intl.DateTimeFormat("en-US", {
         year: "numeric",
         month: "short",
-        day: "numeric"
+        day: "numeric",
     });
     const when = formatter.format(new Date());
     const whenTimestamp = Date.now();
@@ -431,16 +446,16 @@ async function validateRecaptcha() {
     if (!grecaptcha.enterprise) {
         throw new Error("reCAPTCHA Enterprise not available. Please refresh the page and try again.");
     }
-    
+
     await grecaptcha.enterprise.ready();
     const token = await grecaptcha.enterprise.execute(CONFIG.RECAPTCHA_SITE_KEY, {
         action: CONFIG.RECAPTCHA_ACTION,
     });
-    
+
     if (!token) {
         throw new Error("Failed to generate reCAPTCHA token");
     }
-    
+
     return token;
 }
 
@@ -450,19 +465,19 @@ async function validateRecaptcha() {
  * @param {string} message - Message to display
  * @param {string} type - Message type: 'error', 'info', 'success'
  */
-function setFeedback(feedbackEl, message, type = 'error') {
+function setFeedback(feedbackEl, message, type = "error") {
     feedbackEl.textContent = message;
     feedbackEl.style.padding = "12px";
     feedbackEl.style.borderRadius = "8px";
     feedbackEl.style.marginTop = "12px";
-    
-    if (type === 'error') {
+
+    if (type === "error") {
         feedbackEl.style.color = "#f5576c";
         feedbackEl.style.background = "rgba(245, 87, 108, 0.1)";
-    } else if (type === 'info') {
+    } else if (type === "info") {
         feedbackEl.style.color = "#3b6fa6";
         feedbackEl.style.background = "rgba(59, 111, 166, 0.1)";
-    } else if (type === 'success') {
+    } else if (type === "success") {
         feedbackEl.style.color = "#52c41a";
         feedbackEl.style.background = "rgba(82, 196, 26, 0.1)";
     }
@@ -474,40 +489,38 @@ function setFeedback(feedbackEl, message, type = 'error') {
  */
 async function handleFormSubmit(e) {
     e.preventDefault();
-    
+
     if (AppState.isSubmitting) return;
     AppState.isSubmitting = true;
-    
+
     const feedback = document.getElementById("greet-feedback");
     const submitButton = e.target.querySelector('button[type="submit"]');
     feedback.textContent = "";
-    
+
     try {
         if (submitButton) submitButton.disabled = true;
-        
+
         const sel = document.querySelector(".preset-card.selected");
         const messageSelectEl = document.getElementById("message-select");
-        const preset = sel?.dataset.text.trim() || 
-                       messageSelectEl?.value.trim() || 
-                       AppState.selectedMessage || "";
+        const preset = sel?.dataset.text.trim() || messageSelectEl?.value.trim() || AppState.selectedMessage || "";
 
         if (!preset) {
-            setFeedback(feedback, "Please choose a message.", 'error');
+            setFeedback(feedback, "Please choose a message.", "error");
             return;
         }
 
         if (!AppState.selectedFeeling) {
-            setFeedback(feedback, "Please select how you're feeling.", 'error');
+            setFeedback(feedback, "Please select how you're feeling.", "error");
             return;
         }
 
         if (!AppState.selectedCountry) {
-            setFeedback(feedback, "Please select your country.", 'error');
+            setFeedback(feedback, "Please select your country.", "error");
             return;
         }
 
-        setFeedback(feedback, "🔐 Verifying you're human...", 'info');
-        
+        setFeedback(feedback, "🔐 Verifying you're human...", "info");
+
         let recaptchaToken;
         try {
             recaptchaToken = await validateRecaptcha();
@@ -527,15 +540,15 @@ async function handleFormSubmit(e) {
                 <br>
                 <strong>Error details:</strong> ${recaptchaError.message}
             `;
-            setFeedback(feedback, feedback.innerHTML, 'error');
+            setFeedback(feedback, feedback.innerHTML, "error");
             return;
         }
 
         const ip = await getIp();
-        
+
         const submissionCheck = await checkRecentSubmission(ip);
         if (!submissionCheck.allowed) {
-            setFeedback(feedback, "You have already submitted a greeting from this IP in the last 24 hours.", 'error');
+            setFeedback(feedback, "You have already submitted a greeting from this IP in the last 24 hours.", "error");
             return;
         }
 
@@ -554,14 +567,14 @@ async function handleFormSubmit(e) {
             }
             return String(h);
         })(dedupInput);
-        
+
         const dedupKey = `greet-submitted-hash-${dedupHash}`;
         const dedupStored = localStorage.getItem(dedupKey);
         if (dedupStored) {
             try {
                 const dedupData = JSON.parse(dedupStored);
-                if (dedupData.when && (Date.now() - dedupData.when) < CONFIG.SUBMISSION_COOLDOWN_MS) {
-                    setFeedback(feedback, "Duplicate submission detected (same IP/message in last 24 hours).", 'error');
+                if (dedupData.when && Date.now() - dedupData.when < CONFIG.SUBMISSION_COOLDOWN_MS) {
+                    setFeedback(feedback, "Duplicate submission detected (same IP/message in last 24 hours).", "error");
                     return;
                 }
             } catch (error) {
@@ -570,15 +583,21 @@ async function handleFormSubmit(e) {
         }
 
         if (ip) {
-            localStorage.setItem(`greet-submitted-${ip}`, JSON.stringify({ 
-                when: Date.now(), 
-                message: preset 
-            }));
+            localStorage.setItem(
+                `greet-submitted-${ip}`,
+                JSON.stringify({
+                    when: Date.now(),
+                    message: preset,
+                })
+            );
         } else {
-            localStorage.setItem("greet-submitted-browserside", JSON.stringify({ 
-                when: Date.now(), 
-                message: preset 
-            }));
+            localStorage.setItem(
+                "greet-submitted-browserside",
+                JSON.stringify({
+                    when: Date.now(),
+                    message: preset,
+                })
+            );
         }
 
         const messageText = preset;
@@ -588,14 +607,14 @@ async function handleFormSubmit(e) {
         const formatter = new Intl.DateTimeFormat("en-US", {
             year: "numeric",
             month: "short",
-            day: "numeric"
+            day: "numeric",
         });
-        const optimisticEntry = { 
-            message: messageText, 
-            feeling: notesEmoji, 
+        const optimisticEntry = {
+            message: messageText,
+            feeling: notesEmoji,
             when: "Sending…",
             whenTimestamp: Date.now(),
-            _pending: true 
+            _pending: true,
         };
         const currentList = loadWallEntries();
         renderPagination([...currentList, optimisticEntry], 1);
@@ -611,25 +630,24 @@ async function handleFormSubmit(e) {
                     AppState.cachedGreetings = nocodbList;
                     renderPagination(nocodbList, 1);
                 }
-                setFeedback(feedback, "Thanks — your greeting was added (saved to NocoDB)!", 'success');
+                setFeedback(feedback, "Thanks — your greeting was added (saved to NocoDB)!", "success");
             } else {
                 saveWallEntry(messageText, notesEmoji);
                 localStorage.setItem(dedupKey, JSON.stringify({ when: Date.now() }));
-                setFeedback(feedback, "Thanks — your greeting was saved locally!", 'success');
+                setFeedback(feedback, "Thanks — your greeting was saved locally!", "success");
             }
         } catch (error) {
             const currentListFailed = loadWallEntries();
-            const failedEntry = { 
-                message: messageText, 
-                feeling: notesEmoji, 
+            const failedEntry = {
+                message: messageText,
+                feeling: notesEmoji,
                 when: formatter.format(new Date()),
                 whenTimestamp: Date.now(),
-                _failed: true 
+                _failed: true,
             };
             renderPagination([...currentListFailed, failedEntry], 1);
-            setFeedback(feedback, `Failed to save: ${error.message}`, 'error');
+            setFeedback(feedback, `Failed to save: ${error.message}`, "error");
         }
-        
     } finally {
         AppState.isSubmitting = false;
         if (submitButton) submitButton.disabled = false;
@@ -663,7 +681,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
         const errorDiv = document.createElement("div");
-        errorDiv.style.cssText = "position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(245,87,108,0.95);color:white;padding:32px;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.3);text-align:center;z-index:9999;max-width:500px;";
+        errorDiv.style.cssText =
+            "position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(245,87,108,0.95);color:white;padding:32px;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.3);text-align:center;z-index:9999;max-width:500px;";
         errorDiv.innerHTML = `
             <h2 style="margin:0 0 16px 0;font-size:24px;">⚠️ Service Temporarily Unavailable</h2>
             <p style="margin:0;font-size:16px;line-height:1.6;">
@@ -685,7 +704,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const submissionStatusAlert = document.getElementById("submission-status-alert");
     let userIp = null;
-    
+
     try {
         userIp = await getIp();
     } catch (error) {
@@ -722,6 +741,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     const presetCards = document.getElementById("preset-cards");
+    const messageSelect = document.getElementById("message-select");
+
     if (presetCards) {
         PRESET_MESSAGES.forEach((msg) => {
             const card = document.createElement("div");
@@ -745,6 +766,18 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
     }
 
+    if (messageSelect) {
+        PRESET_MESSAGES.forEach((msg) => {
+            const option = document.createElement("option");
+            option.value = msg.text;
+            option.textContent = msg.text;
+            messageSelect.appendChild(option);
+        });
+        messageSelect.addEventListener("change", (e) => {
+            AppState.selectedMessage = e.target.value;
+        });
+    }
+
     const feelings = document.querySelectorAll(".feeling");
     feelings.forEach((btn) => {
         btn.addEventListener("click", function () {
@@ -763,7 +796,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     (async () => {
         try {
-            const nocodbList = cachedData || await fetchFromNocoDB();
+            const nocodbList = cachedData || (await fetchFromNocoDB());
             if (nocodbList && nocodbList.length) {
                 renderPagination(nocodbList, 1);
             } else {

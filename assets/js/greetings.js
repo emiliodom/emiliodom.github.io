@@ -380,7 +380,19 @@ function renderPagination(list, page = 1) {
                 
                 const countrySpan = document.createElement("span");
                 countrySpan.className = "greet-country";
-                countrySpan.innerHTML = `<span style="font-size:16px;">${countryInfo.flag}</span> ${countryInfo.name}`;
+                const flagSpan = document.createElement("span");
+                flagSpan.textContent = countryInfo.flag;
+                flagSpan.style.fontSize = "20px";
+                countrySpan.appendChild(flagSpan);
+                countrySpan.appendChild(document.createTextNode(` ${countryInfo.name}`));
+                
+                // Apply Twemoji if available
+                if (typeof twemoji !== 'undefined') {
+                    twemoji.parse(flagSpan, {
+                        folder: 'svg',
+                        ext: '.svg'
+                    });
+                }
                 
                 const dateSpan = document.createElement("span");
                 dateSpan.className = "greet-date";
@@ -441,7 +453,19 @@ function renderSimplePagination(list, page, grid, pagerContainer) {
         
         const countrySpan = document.createElement("span");
         countrySpan.className = "greet-country";
-        countrySpan.innerHTML = `<span style="font-size:16px;">${countryInfo.flag}</span> ${countryInfo.name}`;
+        const flagSpan = document.createElement("span");
+        flagSpan.textContent = countryInfo.flag;
+        flagSpan.style.fontSize = "20px";
+        countrySpan.appendChild(flagSpan);
+        countrySpan.appendChild(document.createTextNode(` ${countryInfo.name}`));
+        
+        // Apply Twemoji if available
+        if (typeof twemoji !== 'undefined') {
+            twemoji.parse(flagSpan, {
+                folder: 'svg',
+                ext: '.svg'
+            });
+        }
         
         const dateSpan = document.createElement("span");
         dateSpan.className = "greet-date";
@@ -627,32 +651,43 @@ async function handleFormSubmit(e) {
             if (postUrl) {
                 await postToNocoDB(messageText, userField, notesEmoji, countryCode, hcaptchaToken);
 
-                const nocodbList = await fetchFromNocoDB();
-
-                if (Array.isArray(nocodbList)) {
-                    AppState.cachedGreetings = nocodbList;
-                    renderPagination(nocodbList, 1);
-                }
-
                 setFeedback(feedback, "✅ Thanks — your greeting was added!", "success");
                 
                 // Trigger confetti celebration!
                 triggerConfetti();
 
-                // Hide the form and show countdown message
-                const greetForm = document.getElementById("greet-form");
-                const submissionStatusAlert = document.getElementById("submission-status-alert");
-                
-                const newSubmissionCheck = await checkRecentSubmission(ip, nocodbList);
-                if (!newSubmissionCheck.allowed && greetForm) {
-                    showSubmissionBlockedUI(
-                        newSubmissionCheck.hoursLeft,
-                        newSubmissionCheck.minutesLeft,
-                        submissionStatusAlert,
-                        greetForm,
-                        true // Hide greetings wall after submission
-                    );
-                }
+                // Wait a moment then reload greetings and show the latest
+                setTimeout(async () => {
+                    const nocodbList = await fetchFromNocoDB();
+
+                    if (Array.isArray(nocodbList)) {
+                        AppState.cachedGreetings = nocodbList;
+                        // Render from page 1 to show the latest greeting
+                        renderPagination(nocodbList, 1);
+                        
+                        // Scroll to greetings section to show the new greeting
+                        const greetingsWall = document.getElementById("greetings-wall");
+                        if (greetingsWall) {
+                            greetingsWall.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }
+                    }
+
+                    // Hide the form and show countdown message
+                    const greetForm = document.getElementById("greet-form");
+                    const submissionStatusAlert = document.getElementById("submission-status-alert");
+                    
+                    const newSubmissionCheck = await checkRecentSubmission(ip, nocodbList);
+                    if (!newSubmissionCheck.allowed && greetForm) {
+                        showSubmissionBlockedUI(
+                            newSubmissionCheck.hoursLeft,
+                            newSubmissionCheck.minutesLeft,
+                            submissionStatusAlert,
+                            greetForm,
+                            true // Hide greetings wall after submission
+                        );
+                    }
+                }, 1000); // Wait 1 second for confetti effect
+
             } else {
                 setFeedback(feedback, "❌ Configuration error: No API endpoint configured", "error");
             }

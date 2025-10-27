@@ -642,7 +642,7 @@ async function handleFormSubmit(e) {
 document.addEventListener("DOMContentLoaded", async () => {
     let nocodbAvailable = false;
     let cachedData = null;
-    
+
     try {
         const testData = await fetchFromNocoDB();
         nocodbAvailable = testData !== null && Array.isArray(testData);
@@ -674,7 +674,8 @@ document.addEventListener("DOMContentLoaded", async () => {
             </p>
         `;
         document.body.appendChild(errorDiv);
-        
+
+        // Still try to load and show cached localStorage data
         const localWall = loadWallEntries();
         if (localWall?.length > 0) {
             renderPagination(localWall, 1);

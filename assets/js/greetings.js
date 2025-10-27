@@ -705,28 +705,19 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
     }
 
-    const feelings = document.querySelectorAll(".feeling");
-    console.log("🎭 Found", feelings.length, "feeling buttons");
-    if (feelings.length === 0) {
-        console.error("❌ No feeling buttons found! Selector '.feeling' returned empty NodeList");
-    }
-    feelings.forEach((btn, index) => {
-        console.log(`🎭 Attaching listener to feeling button #${index + 1}, emoji: ${btn.dataset.feel}, has class: ${btn.classList.contains('feeling')}`);
-        btn.addEventListener("click", function (e) {
-            console.log("🎭 Feeling clicked:", this.dataset.feel, "Event:", e);
-            console.log("🎭 Button element:", this);
-            console.log("🎭 Dataset:", this.dataset);
-            feelings.forEach((b) => {
-                b.classList.remove("selected");
-                b.setAttribute("aria-pressed", "false");
-            });
-            this.classList.add("selected");
-            this.setAttribute("aria-pressed", "true");
-            AppState.selectedFeeling = this.dataset.feel;
+    // Feeling selector (now using dropdown)
+    const feelingSelect = document.getElementById("feeling-select");
+    if (feelingSelect) {
+        console.log("😊 Feeling selector found");
+        feelingSelect.addEventListener("change", (e) => {
+            console.log("🎭 Feeling changed:", e.target.value);
+            AppState.selectedFeeling = e.target.value;
             console.log("✅ selectedFeeling set to:", AppState.selectedFeeling);
             updateSubmitButton();
         });
-    });
+    } else {
+        console.error("❌ Feeling selector #feeling-select not found!");
+    }
 
     const loader = document.getElementById("loader");
     if (loader) loader.style.display = "block";

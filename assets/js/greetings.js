@@ -417,7 +417,10 @@ function setFeedback(feedbackEl, message, type = "error") {
  */
 function updateSubmitButton() {
     const submitButton = document.getElementById("greet-submit");
-    if (!submitButton) return;
+    if (!submitButton) {
+        console.warn("⚠️ Submit button not found!");
+        return;
+    }
 
     const hasMessage = !!AppState.selectedMessage;
     const hasFeeling = !!AppState.selectedFeeling;
@@ -426,12 +429,15 @@ function updateSubmitButton() {
     const canSubmit = hasMessage && hasFeeling && hasCountry;
     submitButton.disabled = !canSubmit;
 
-    console.log("🔘 Submit button state:", { 
+    console.log("🔘 Submit button update:", { 
+        message: AppState.selectedMessage || "(empty)",
+        feeling: AppState.selectedFeeling || "(empty)",
+        country: AppState.selectedCountry || "(empty)",
         hasMessage, 
         hasFeeling, 
         hasCountry, 
         canSubmit, 
-        disabled: submitButton.disabled 
+        buttonDisabled: submitButton.disabled 
     });
 }
 
@@ -641,6 +647,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const countries = await fetchCountries();
     const countrySelector = document.getElementById("country-selector");
     if (countrySelector && countries.length > 0) {
+        console.log("🌍 Loading", countries.length, "countries");
         countries.forEach((c) => {
             const opt = document.createElement("option");
             opt.value = c.code;
@@ -648,7 +655,9 @@ document.addEventListener("DOMContentLoaded", async () => {
             countrySelector.appendChild(opt);
         });
         countrySelector.addEventListener("change", (e) => {
+            console.log("🌍 Country changed:", e.target.value);
             AppState.selectedCountry = e.target.value;
+            console.log("✅ selectedCountry set to:", AppState.selectedCountry);
             updateSubmitButton();
         });
     }
@@ -657,6 +666,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const messageSelect = document.getElementById("message-select");
 
     if (presetCards) {
+        console.log("💬 Creating preset message cards");
         PRESET_MESSAGES.forEach((msg) => {
             const card = document.createElement("div");
             card.className = "preset-card";
@@ -667,6 +677,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             card.setAttribute("role", "radio");
             card.setAttribute("aria-checked", "false");
             card.addEventListener("click", function () {
+                console.log("💬 Message card clicked:", this.dataset.text);
                 document.querySelectorAll(".preset-card").forEach((c) => {
                     c.classList.remove("selected");
                     c.setAttribute("aria-checked", "false");
@@ -674,6 +685,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 this.classList.add("selected");
                 this.setAttribute("aria-checked", "true");
                 AppState.selectedMessage = this.dataset.text;
+                console.log("✅ selectedMessage set to:", AppState.selectedMessage);
                 updateSubmitButton();
             });
             presetCards.appendChild(card);
@@ -694,8 +706,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     const feelings = document.querySelectorAll(".feeling");
+    console.log("🎭 Found", feelings.length, "feeling buttons");
     feelings.forEach((btn) => {
         btn.addEventListener("click", function () {
+            console.log("🎭 Feeling clicked:", this.dataset.feel);
             feelings.forEach((b) => {
                 b.classList.remove("selected");
                 b.setAttribute("aria-pressed", "false");
@@ -703,6 +717,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             this.classList.add("selected");
             this.setAttribute("aria-pressed", "true");
             AppState.selectedFeeling = this.dataset.feel;
+            console.log("✅ selectedFeeling set to:", AppState.selectedFeeling);
             updateSubmitButton();
         });
     });
@@ -755,4 +770,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     } else {
         console.error("❌ Form #greet-form not found!");
     }
+
+    // Check initial button state
+    console.log("🔍 Checking initial AppState:", {
+        selectedMessage: AppState.selectedMessage || "(empty)",
+        selectedFeeling: AppState.selectedFeeling || "(empty)",
+        selectedCountry: AppState.selectedCountry || "(empty)"
+    });
+    updateSubmitButton();
 });

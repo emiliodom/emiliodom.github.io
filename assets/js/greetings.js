@@ -161,7 +161,7 @@ async function getIp() {
 }
 
 /**
- * Checks if a user has recently submitted a greeting
+ * Checks if a user has recently submitted a greeting (NocoDB only, no localStorage)
  * @param {string|null} userIp - The user's IP address
  * @param {Array} greetingsList - Current list of greetings from database
  * @returns {Promise<{allowed: boolean, hoursLeft: number, minutesLeft: number, entry: object|null}>}
@@ -171,7 +171,7 @@ async function checkRecentSubmission(userIp, greetingsList = null) {
 
     if (userIp && NOCODB.postUrl) {
         const nocodbList = greetingsList || (await fetchFromNocoDB());
-        if (nocodbList?.length) {
+        if (Array.isArray(nocodbList) && nocodbList.length > 0) {
             const recentEntry = nocodbList.find((entry) => {
                 if (!entry.ip || entry.ip !== userIp) return false;
                 try {
@@ -189,46 +189,6 @@ async function checkRecentSubmission(userIp, greetingsList = null) {
                     minutesLeft: Math.ceil((msLeft % (1000 * 60 * 60)) / (1000 * 60)),
                     entry: recentEntry,
                 };
-            }
-        }
-    }
-
-    if (userIp) {
-        const stored = localStorage.getItem(`greet-submitted-${userIp}`);
-        if (stored) {
-            try {
-                const data = JSON.parse(stored);
-                if (data.when && now - data.when < CONFIG.SUBMISSION_COOLDOWN_MS) {
-                    const msLeft = CONFIG.SUBMISSION_COOLDOWN_MS - (now - data.when);
-                    return {
-                        allowed: false,
-                        hoursLeft: Math.ceil(msLeft / (1000 * 60 * 60)),
-                        minutesLeft: Math.ceil((msLeft % (1000 * 60 * 60)) / (1000 * 60)),
-                        entry: data,
-                    };
-                }
-            } catch (error) {
-                // Invalid localStorage data, allow submission
-            }
-        }
-    }
-
-    if (!userIp) {
-        const browserStored = localStorage.getItem("greet-submitted-browserside");
-        if (browserStored) {
-            try {
-                const browserData = JSON.parse(browserStored);
-                if (browserData.when && now - browserData.when < CONFIG.SUBMISSION_COOLDOWN_MS) {
-                    const msLeft = CONFIG.SUBMISSION_COOLDOWN_MS - (now - browserData.when);
-                    return {
-                        allowed: false,
-                        hoursLeft: Math.ceil(msLeft / (1000 * 60 * 60)),
-                        minutesLeft: Math.ceil((msLeft % (1000 * 60 * 60)) / (1000 * 60)),
-                        entry: browserData,
-                    };
-                }
-            } catch (error) {
-                // Invalid localStorage data, allow submission
             }
         }
     }
@@ -404,37 +364,6 @@ function renderSimplePagination(list, page, grid, pagerContainer) {
 }
 
 /**
- * Saves a greeting entry to localStorage
- * @param {string} message - The greeting message
- * @param {string} feeling - The emoji/feeling
- */
-function saveWallEntry(message, feeling) {
-    const list = JSON.parse(localStorage.getItem("greetings-list") || "[]");
-    const formatter = new Intl.DateTimeFormat("en-US", {
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-    });
-    const when = formatter.format(new Date());
-    const whenTimestamp = Date.now();
-    list.push({ message, feeling, when, whenTimestamp });
-    localStorage.setItem("greetings-list", JSON.stringify(list));
-    renderPagination(list, 1);
-}
-
-/**
- * Loads greeting entries from localStorage
- * @returns {Array} Array of greeting objects from localStorage
- */
-function loadWallEntries() {
-    try {
-        return JSON.parse(localStorage.getItem("greetings-list") || "[]");
-    } catch (error) {
-        return [];
-    }
-}
-
-/**
  * Validates reCAPTCHA and returns token
  * @returns {Promise<string>} The reCAPTCHA token
  * @throws {Error} If reCAPTCHA validation fails
@@ -489,13 +418,24 @@ function setFeedback(feedbackEl, message, type = "error") {
  */
 async function handleFormSubmit(e) {
     e.preventDefault();
+    console.log("🚀 Form submit started");
 
-    if (AppState.isSubmitting) return;
+    if (AppState.isSubmitting) {
+        console.log("⚠️ Already submitting, ignoring");
+        return;
+    }
     AppState.isSubmitting = true;
 
     const feedback = document.getElementById("greet-feedback");
     const submitButton = e.target.querySelector('button[type="submit"]');
-    feedback.textContent = "";
+    feedback.innerHTML = "";
+
+    // Helper to reset state before returning
+    const resetState = () => {
+        console.log("🔓 Resetting submission state");
+        AppState.isSubmitting = false;
+        if (submitButton) submitButton.disabled = false;
+    };
 
     try {
         if (submitButton) submitButton.disabled = true;
@@ -504,28 +444,40 @@ async function handleFormSubmit(e) {
         const messageSelectEl = document.getElementById("message-select");
         const preset = sel?.dataset.text.trim() || messageSelectEl?.value.trim() || AppState.selectedMessage || "";
 
+        console.log("📝 Message selected:", preset);
+
         if (!preset) {
-            setFeedback(feedback, "Please choose a message.", "error");
+            console.log("❌ No message selected");
+            setFeedback(feedback, "⚠️ Please choose a message.", "error");
+            resetState();
             return;
         }
 
         if (!AppState.selectedFeeling) {
-            setFeedback(feedback, "Please select how you're feeling.", "error");
+            console.log("❌ No feeling selected");
+            setFeedback(feedback, "⚠️ Please select how you're feeling.", "error");
+            resetState();
             return;
         }
 
         if (!AppState.selectedCountry) {
-            setFeedback(feedback, "Please select your country.", "error");
+            console.log("❌ No country selected");
+            setFeedback(feedback, "⚠️ Please select your country.", "error");
+            resetState();
             return;
         }
 
+        console.log("✅ All fields validated");
         setFeedback(feedback, "🔐 Verifying you're human...", "info");
 
         let recaptchaToken;
         try {
+            console.log("🔐 Starting reCAPTCHA validation...");
             recaptchaToken = await validateRecaptcha();
+            console.log("✅ reCAPTCHA validated, token:", recaptchaToken.substring(0, 20) + "...");
         } catch (recaptchaError) {
-            feedback.innerHTML = `
+            console.error("❌ reCAPTCHA failed:", recaptchaError);
+            setFeedback(feedback, `
                 <strong>reCAPTCHA verification failed.</strong><br>
                 <br>
                 <strong>Possible causes:</strong><br>
@@ -533,126 +485,66 @@ async function handleFormSubmit(e) {
                 • Ad blocker or browser extension interfering<br>
                 • Google Translate active (switch to English)<br>
                 <br>
-                <strong>If using Google Translate:</strong><br>
-                1. Switch the language selector above back to "ENG" (English)<br>
-                2. Wait 2 seconds for the page to reset<br>
-                3. Try submitting again<br>
-                <br>
                 <strong>Error details:</strong> ${recaptchaError.message}
-            `;
-            setFeedback(feedback, feedback.innerHTML, "error");
+            `, "error");
+            resetState();
             return;
         }
 
+        console.log("🌐 Getting IP address...");
         const ip = await getIp();
+        console.log("✅ IP retrieved:", ip || "no-ip");
 
+        console.log("🔍 Checking recent submissions...");
         const submissionCheck = await checkRecentSubmission(ip);
+        console.log("Submission check result:", submissionCheck);
+        
         if (!submissionCheck.allowed) {
-            setFeedback(feedback, "You have already submitted a greeting from this IP in the last 24 hours.", "error");
+            console.log("❌ User already submitted recently");
+            setFeedback(feedback, "⚠️ You have already submitted a greeting from this IP in the last 24 hours.", "error");
+            resetState();
             return;
-        }
-
-        const dedupInput = (ip || "web") + "|" + preset;
-        const dedupHash = await (async function hashString(s) {
-            if (window.crypto?.subtle) {
-                const enc = new TextEncoder().encode(s);
-                const hashBuf = await crypto.subtle.digest("SHA-1", enc);
-                const hashArr = Array.from(new Uint8Array(hashBuf));
-                return hashArr.map((b) => b.toString(16).padStart(2, "0")).join("");
-            }
-            let h = 0;
-            for (let i = 0; i < s.length; i++) {
-                h = (h << 5) - h + s.charCodeAt(i);
-                h |= 0;
-            }
-            return String(h);
-        })(dedupInput);
-
-        const dedupKey = `greet-submitted-hash-${dedupHash}`;
-        const dedupStored = localStorage.getItem(dedupKey);
-        if (dedupStored) {
-            try {
-                const dedupData = JSON.parse(dedupStored);
-                if (dedupData.when && Date.now() - dedupData.when < CONFIG.SUBMISSION_COOLDOWN_MS) {
-                    setFeedback(feedback, "Duplicate submission detected (same IP/message in last 24 hours).", "error");
-                    return;
-                }
-            } catch (error) {
-                // Invalid data, allow submission
-            }
         }
 
         const messageText = preset;
         const notesEmoji = AppState.selectedFeeling || "";
         const countryCode = AppState.selectedCountry || "XX";
 
-        const formatter = new Intl.DateTimeFormat("en-US", {
-            year: "numeric",
-            month: "short",
-            day: "numeric",
-        });
-        const optimisticEntry = {
-            message: messageText,
-            feeling: notesEmoji,
-            when: "Sending…",
-            whenTimestamp: Date.now(),
-            _pending: true,
-        };
-        const currentList = loadWallEntries();
-        renderPagination([...currentList, optimisticEntry], 1);
+        console.log("📤 Preparing submission:", { messageText, notesEmoji, countryCode, ip });
+        setFeedback(feedback, "📤 Sending your greeting...", "info");
 
         try {
             const userField = ip || "web";
             const postUrl = NOCODB.postUrl || NOCODB.url;
+            
+            console.log("🔗 POST URL:", postUrl);
+            
             if (postUrl) {
+                console.log("📮 Posting to NocoDB...");
                 await postToNocoDB(messageText, userField, notesEmoji, countryCode);
+                console.log("✅ Posted successfully to NocoDB!");
                 
-                // Only set localStorage AFTER successful submission
-                if (ip) {
-                    localStorage.setItem(
-                        `greet-submitted-${ip}`,
-                        JSON.stringify({
-                            when: Date.now(),
-                            message: preset,
-                        })
-                    );
-                } else {
-                    localStorage.setItem(
-                        "greet-submitted-browserside",
-                        JSON.stringify({
-                            when: Date.now(),
-                            message: preset,
-                        })
-                    );
-                }
-                
-                localStorage.setItem(dedupKey, JSON.stringify({ when: Date.now() }));
+                console.log("🔄 Fetching updated greetings list...");
                 const nocodbList = await fetchFromNocoDB();
-                if (nocodbList) {
+                console.log("✅ Fetched greetings:", nocodbList?.length || 0);
+                
+                if (Array.isArray(nocodbList)) {
                     AppState.cachedGreetings = nocodbList;
                     renderPagination(nocodbList, 1);
                 }
-                setFeedback(feedback, "Thanks — your greeting was added (saved to NocoDB)!", "success");
+                
+                setFeedback(feedback, "✅ Thanks — your greeting was added!", "success");
+                console.log("🎉 Submission complete!");
             } else {
-                saveWallEntry(messageText, notesEmoji);
-                localStorage.setItem(dedupKey, JSON.stringify({ when: Date.now() }));
-                setFeedback(feedback, "Thanks — your greeting was saved locally!", "success");
+                console.error("❌ No POST URL configured");
+                setFeedback(feedback, "❌ Configuration error: No API endpoint configured", "error");
             }
         } catch (error) {
-            const currentListFailed = loadWallEntries();
-            const failedEntry = {
-                message: messageText,
-                feeling: notesEmoji,
-                when: formatter.format(new Date()),
-                whenTimestamp: Date.now(),
-                _failed: true,
-            };
-            renderPagination([...currentListFailed, failedEntry], 1);
-            setFeedback(feedback, `Failed to save: ${error.message}`, "error");
+            console.error("❌ Submission failed:", error);
+            setFeedback(feedback, `❌ Failed to save: ${error.message}`, "error");
         }
     } finally {
-        AppState.isSubmitting = false;
-        if (submitButton) submitButton.disabled = false;
+        resetState();
     }
 }
 
@@ -696,12 +588,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             </p>
         `;
         document.body.appendChild(errorDiv);
-
-        // Still try to load and show cached localStorage data
-        const localWall = loadWallEntries();
-        if (localWall?.length > 0) {
-            renderPagination(localWall, 1);
-        }
         return;
     }
 
@@ -723,11 +609,8 @@ document.addEventListener("DOMContentLoaded", async () => {
             submissionStatusAlert,
             greetForm
         );
-    } else if (submissionStatusAlert) {
-        submissionStatusAlert.className = "submission-status-alert submission-ready";
-        submissionStatusAlert.innerHTML = "✅ You can submit a greeting! Fill out the form below.";
-        submissionStatusAlert.style.display = "block";
     }
+    // Don't show any message if user CAN submit - redundant
 
     const countries = await fetchCountries();
     const countrySelector = document.getElementById("country-selector");
@@ -816,17 +699,18 @@ document.addEventListener("DOMContentLoaded", async () => {
                         `;
                     }
                 }
-            } else {
-                // Fallback to localStorage if NocoDB didn't return an array
-                const stored = loadWallEntries();
-                if (stored.length) {
-                    renderPagination(stored, 1);
-                }
             }
         } catch (error) {
-            const stored = loadWallEntries();
-            if (stored.length) {
-                renderPagination(stored, 1);
+            console.error("❌ Failed to load greetings:", error);
+            const container = document.getElementById("greet-list");
+            if (container) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 40px 20px; color: var(--text-muted);">
+                        <div style="font-size: 48px; margin-bottom: 16px;">⚠️</div>
+                        <h3 style="margin: 0 0 8px 0; color: var(--text-dark);">Failed to load greetings</h3>
+                        <p style="margin: 0;">Please refresh the page to try again.</p>
+                    </div>
+                `;
             }
         } finally {
             if (loader) loader.style.display = "none";

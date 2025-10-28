@@ -148,6 +148,24 @@
                 if(item.external) { a.target = '_blank'; a.rel = 'noopener noreferrer'; }
                 a.setAttribute('aria-label', item.title);
                 
+                // Add tracking data attributes for GTM
+                a.setAttribute('data-link-category', category.name);
+                a.setAttribute('data-link-title', item.title);
+                a.setAttribute('data-link-type', item.external ? 'external' : 'internal');
+                
+                // Add click event for GTM dataLayer
+                a.addEventListener('click', function(e) {
+                  if(typeof window.dataLayer !== 'undefined') {
+                    window.dataLayer.push({
+                      'event': 'link_click',
+                      'link_category': category.name,
+                      'link_title': item.title,
+                      'link_url': item.href,
+                      'link_type': item.external ? 'external' : 'internal'
+                    });
+                  }
+                });
+                
                 // Icon or custom image
                 const icon = document.createElement('div');
                 icon.className = 'link-icon';
@@ -185,6 +203,25 @@
               a.href = item.href;
               if(item.external) { a.target = '_blank'; a.rel = 'noopener noreferrer'; }
               a.setAttribute('aria-label', item.title);
+              
+              // Add tracking data attributes for GTM
+              a.setAttribute('data-link-category', 'Featured');
+              a.setAttribute('data-link-title', item.title);
+              a.setAttribute('data-link-type', item.external ? 'external' : 'internal');
+              
+              // Add click event for GTM dataLayer
+              a.addEventListener('click', function(e) {
+                if(typeof window.dataLayer !== 'undefined') {
+                  window.dataLayer.push({
+                    'event': 'link_click',
+                    'link_category': 'Featured',
+                    'link_title': item.title,
+                    'link_url': item.href,
+                    'link_type': item.external ? 'external' : 'internal'
+                  });
+                }
+              });
+              
               const icon = document.createElement('div');
               icon.className = 'link-icon';
               icon.innerText = item.icon || '🔗';

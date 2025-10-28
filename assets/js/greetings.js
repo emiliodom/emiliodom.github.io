@@ -50,38 +50,41 @@ const AppState = {
  */
 function triggerConfetti() {
     try {
-        if (typeof ConfettiGenerator !== "undefined") {
-            const confettiSettings = {
-                target: "confetti-holder",
-                max: 80,
-                size: 1,
-                animate: true,
-                props: ["circle", "square", "triangle", "line"],
-                colors: [
-                    [165, 104, 246],
-                    [230, 61, 135],
-                    [0, 199, 228],
-                    [253, 214, 126],
-                ],
-                clock: 25,
-                rotate: false,
-                width: window.innerWidth,
-                height: window.innerHeight,
-                start_from_edge: false,
-                respawn: true,
-            };
+        if (typeof confetti !== "undefined") {
+            // Fire confetti from multiple angles for full screen effect
+            const duration = 3000;
+            const end = Date.now() + duration;
 
-            const confetti = new ConfettiGenerator(confettiSettings);
-            confetti.render();
+            const colors = ['#667eea', '#764ba2', '#f093fb', '#f5576c', '#4facfe', '#00f2fe'];
 
-            // Stop confetti after 4 seconds
-            setTimeout(() => {
-                try {
-                    confetti.clear();
-                } catch (clearError) {
-                    // Silently handle clear errors
+            (function frame() {
+                confetti({
+                    particleCount: 3,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0, y: 0.8 },
+                    colors: colors
+                });
+                confetti({
+                    particleCount: 3,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1, y: 0.8 },
+                    colors: colors
+                });
+
+                if (Date.now() < end) {
+                    requestAnimationFrame(frame);
                 }
-            }, 4000);
+            }());
+
+            // Big burst in the center
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 },
+                colors: colors
+            });
         }
     } catch (error) {
         // Silently handle confetti errors - celebration is optional
@@ -689,7 +692,7 @@ async function handleFormSubmit(e) {
                             newSubmissionCheck.minutesLeft,
                             submissionStatusAlert,
                             greetForm,
-                            true // Hide greetings wall after submission
+                            false // Keep greetings wall visible after submission
                         );
                     }
                 }, 1000); // Wait 1 second for confetti effect

@@ -1,17 +1,18 @@
+
 const navLinks = [
-    { href: "/react_guide/index.html", text: "Home" },
-    { href: "/react_guide/module0.html", text: "0. JS Prep" },
-    { href: "/react_guide/module1.html", text: "1. Fundamentals" },
-    { href: "/react_guide/module2.html", text: "2. Hooks & Lifecycle" },
-    { href: "/react_guide/module3.html", text: "3. Routing & API" },
-    { href: "/react_guide/module4.html", text: "4. State & Forms" },
-    { href: "/react_guide/module5.html", text: "5. Advanced Patterns" },
-    { href: "/react_guide/module6.html", text: "6. Global State" },
-    { href: "/react_guide/module7.html", text: "7. Testing" },
-    { href: "/react_guide/module8.html", text: "8. Pro Workflow" },
-    { href: "/react_guide/module9.html", text: "9. Perf & Security" },
-    { href: "/react_guide/capstone.html", text: "Capstone" },
-    { href: "/react_guide/interview_index.html", text: "Interview Index" }
+    { href: "index.html", text: "Home" },
+    { href: "module0.html", text: "0. JS Prep" },
+    { href: "module1.html", text: "1. Fundamentals" },
+    { href: "module2.html", text: "2. Hooks & Lifecycle" },
+    { href: "module3.html", text: "3. Routing & API" },
+    { href: "module4.html", text: "4. State & Forms" },
+    { href: "module5.html", text: "5. Advanced Patterns" },
+    { href: "module6.html", text: "6. Global State" },
+    { href: "module7.html", text: "7. Testing" },
+    { href: "module8.html", text: "8. Pro Workflow" },
+    { href: "module9.html", text: "9. Perf & Security" },
+    { href: "capstone.html", text: "Capstone" },
+    { href: "interview_index.html", text: "Interview Index" }
 ];
 
 function initLayout() {

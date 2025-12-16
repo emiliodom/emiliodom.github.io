@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interview: Final Quiz</title>
+    <style>
+        body { font-family: system-ui, -apple-system, sans-serif; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 20px; color: #333; }
+        h1 { text-align: center; margin-bottom: 40px; }
+        .quiz-container { background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); border: 1px solid #e2e8f0; }
+        
+        .question-card { display: none; }
+        .question-card.active { display: block; animation: fadeIn 0.3s ease; }
+        
+        .question-text { font-size: 1.2em; font-weight: bold; margin-bottom: 20px; color: #1e293b; }
+        
+        .options { display: flex; flex-direction: column; gap: 10px; }
+        .option-btn { 
+            padding: 15px; 
+            border: 2px solid #e2e8f0; 
+            border-radius: 8px; 
+            background: white; 
+            cursor: pointer; 
+            text-align: left; 
+            font-size: 1em; 
+            transition: all 0.2s;
+        }
+        .option-btn:hover { border-color: #3b82f6; background: #f8fafc; }
+        .option-btn.selected { border-color: #3b82f6; background: #eff6ff; }
+        .option-btn.correct { border-color: #22c55e; background: #dcfce7; color: #15803d; }
+        .option-btn.wrong { border-color: #ef4444; background: #fee2e2; color: #b91c1c; }
+
+        .controls { margin-top: 30px; display: flex; justify-content: space-between; align-items: center; }
+        .btn-primary { background: #3b82f6; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .btn-primary:disabled { background: #cbd5e1; cursor: not-allowed; }
+        
+        .score-display { font-weight: bold; color: #64748b; }
+
+        .result-screen { text-align: center; display: none; }
+        .result-score { font-size: 3em; font-weight: bold; color: #3b82f6; margin: 20px 0; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+</head>
+<body>
+    <nav style="margin-bottom: 20px;">
+        <a href="interview_index.html">&larr; Back to Interview Index</a>
+    </nav>
+
+    <h1>Frontend Master Quiz</h1>
+
+    <div id="google_translate_element"></div>
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({pageLanguage: 'en', includedLanguages: 'es'}, 'google_translate_element');
+        }
+    </script>
+    <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+    <div class="quiz-container">
+        <div id="quiz-content">
+            <!-- Questions injected here -->
+        </div>
+        
+        <div class="controls">
+            <div class="score-display">Question <span id="current-q">1</span> / <span id="total-q">10</span></div>
+            <button id="next-btn" class="btn-primary" disabled>Next Question</button>
+        </div>
+    </div>
+
+    <div id="result-screen" class="result-screen">
+        <h2>Quiz Completed!</h2>
+        <p>Your Score:</p>
+        <div class="result-score"><span id="final-score">0</span>%</div>
+        <p id="feedback-text">Great job!</p>
+        <button onclick="location.reload()" class="btn-primary">Try Again</button>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                q: "What is the output of `console.log(1 + '1')` in JavaScript?",
+                options: ["2", "11", "NaN", "TypeError"],
+                correct: 1 // Index of correct answer
+            },
+            {
+                q: "Which hook is used to perform side effects in React?",
+                options: ["useState", "useMemo", "useEffect", "useContext"],
+                correct: 2
+            },
+            {
+                q: "In CSS, which property changes the box model calculation?",
+                options: ["box-sizing", "display", "position", "overflow"],
+                correct: 0
+            },
+            {
+                q: "What does `useMemo` do?",
+                options: ["Memoizes a function definition", "Memoizes a computed value", "Triggers a re-render", "Manages global state"],
+                correct: 1
+            },
+            {
+                q: "Which HTTP status code indicates 'Not Found'?",
+                options: ["200", "500", "403", "404"],
+                correct: 3
+            },
+            {
+                q: "What is the purpose of the `key` prop in React lists?",
+                options: ["Styling", "Accessibility", "Identify items for reconciliation", "Pass data to children"],
+                correct: 2
+            },
+            {
+                q: "Which is NOT a valid HTTP method?",
+                options: ["GET", "POST", "PUSH", "DELETE"],
+                correct: 2
+            },
+            {
+                q: "What is 'Prop Drilling'?",
+                options: ["Passing data through many layers of components", "Using Context API", "Validating props with PropTypes", "Drilling holes in the DOM"],
+                correct: 0
+            },
+            {
+                q: "In TypeScript, what is `any`?",
+                options: ["A specific string type", "A type that disables type checking", "A union type", "An interface"],
+                correct: 1
+            },
+            {
+                q: "What is the default display value of a `div`?",
+                options: ["inline", "flex", "block", "grid"],
+                correct: 2
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        const quizContent = document.getElementById('quiz-content');
+        const nextBtn = document.getElementById('next-btn');
+        const currentQSpan = document.getElementById('current-q');
+        const totalQSpan = document.getElementById('total-q');
+        const resultScreen = document.getElementById('result-screen');
+        const quizContainer = document.querySelector('.quiz-container');
+
+        totalQSpan.textContent = questions.length;
+
+        function renderQuestion() {
+            const q = questions[currentQuestionIndex];
+            quizContent.innerHTML = `
+                <div class="question-card active">
+                    <div class="question-text">${q.q}</div>
+                    <div class="options">
+                        ${q.options.map((opt, i) => `
+                            <button class="option-btn" onclick="selectOption(${i})">${opt}</button>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            currentQSpan.textContent = currentQuestionIndex + 1;
+            nextBtn.disabled = true;
+        }
+
+        function selectOption(selectedIndex) {
+            const buttons = document.querySelectorAll('.option-btn');
+            const correctIndex = questions[currentQuestionIndex].correct;
+
+            buttons.forEach((btn, index) => {
+                btn.disabled = true; // Disable all
+                if (index === correctIndex) {
+                    btn.classList.add('correct');
+                } else if (index === selectedIndex) {
+                    btn.classList.add('wrong');
+                }
+            });
+
+            if (selectedIndex === correctIndex) {
+                score++;
+            }
+
+            nextBtn.disabled = false;
+        }
+
+        nextBtn.addEventListener('click', () => {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questions.length) {
+                renderQuestion();
+            } else {
+                showResults();
+            }
+        });
+
+        function showResults() {
+            quizContainer.style.display = 'none';
+            resultScreen.style.display = 'block';
+            const percentage = (score / questions.length) * 100;
+            document.getElementById('final-score').textContent = percentage;
+            
+            const feedback = document.getElementById('feedback-text');
+            if (percentage === 100) feedback.textContent = "Perfect Score! You're ready.";
+            else if (percentage >= 80) feedback.textContent = "Great job! Just a few tweaks.";
+            else feedback.textContent = "Keep studying! Review the sections again.";
+        }
+
+        // Start
+        renderQuestion();
+    </script>
+</body>
+</html>

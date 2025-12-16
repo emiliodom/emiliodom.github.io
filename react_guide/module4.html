@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 4: State & Forms</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+</head>
+<body>
+    <header>
+        <h1>Module 4: State & Forms</h1>
+        <p>Controlled Components, Validation, and Context API.</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <h2>1. Core Concepts</h2>
+        <p><strong>Controlled Inputs:</strong> In HTML, inputs manage their own state. In React, we hijack that. <code>value={state}</code> and <code>onChange={setState}</code>. The React state becomes the "single source of truth".</p>
+        <p><strong>Context API:</strong> Solves "Prop Drilling" (passing data through 5 layers of components that don't need it).</p>
+        <ul>
+            <li><code>createContext</code>: Creates the data pipe.</li>
+            <li><code>Provider</code>: Puts data into the pipe at the top.</li>
+            <li><code>useContext</code>: Extracts data from the pipe at the bottom.</li>
+        </ul>
+
+        <h3>1.1 Deep Dive: Controlled vs Uncontrolled</h3>
+        <p>While "Controlled" (React state drives input) is the standard, "Uncontrolled" (DOM drives input, React reads it via Ref) is valid for simple forms or integrating with non-React libraries. However, for complex validation, Controlled is king.</p>
+
+        <h3>1.2 Industry Standard: Form Libraries</h3>
+        <p>Building forms from scratch is painful. In the real world, we use libraries like <strong>React Hook Form</strong> or <strong>Formik</strong>. They handle validation, error messages, and "touched" states (knowing if a user has clicked a field) much better than manual state.</p>
+        <p><em>For this module, build it manually to understand the pain. In Module 5, we might use a library.</em></p>
+
+        <details>
+            <summary><strong>📚 Deep Dive (Documentation)</strong></summary>
+            <ul>
+                <li><a href="https://react.dev/reference/react-dom/components/input" target="_blank">Controlled Inputs</a></li>
+                <li><a href="https://react.dev/learn/passing-data-deeply-with-context" target="_blank">Context API</a></li>
+            </ul>
+        </details>
+
+        <div class="jira-ticket">
+            <div class="jira-header">
+                <span class="jira-id">REQ-005</span>
+                <span class="jira-status">To Do</span>
+            </div>
+            <div class="jira-body">
+                <h3 class="jira-title">Implement Authentication Flow</h3>
+                
+                <div class="jira-section">
+                    <span class="jira-label">User Story</span>
+                    <p>As a user, I need to log in to access the dashboard. As a developer, I need a global way to check if a user is logged in.</p>
+                </div>
+
+                <div class="jira-section">
+                    <span class="jira-label">Acceptance Criteria</span>
+                    <ul class="req-list">
+                        <li><strong>Login Form:</strong>
+                            <ul>
+                                <li>Fields: Email, Password.</li>
+                                <li>Validation: Email must have "@", Password > 6 chars.</li>
+                                <li>Disable "Submit" button if invalid.</li>
+                                <li>Show error messages in red.</li>
+                            </ul>
+                        </li>
+                        <li><strong>Auth Context:</strong>
+                            <ul>
+                                <li>Create <code>AuthContext</code> to store user state globally.</li>
+                                <li>Wrap the app in <code>AuthProvider</code>.</li>
+                                <li>On successful login, redirect to Home and show "Welcome, [Name]" in the header.</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="jira-section">
+                    <span class="jira-label">Senior Bonus</span>
+                    <ul class="req-list">
+                        <li><strong>Type Safety:</strong> Define <code>AuthContextType</code>. Do not default to <code>null</code> without handling it.</li>
+                        <li><strong>Custom Hook:</strong> Create <code>useAuth()</code> that throws an error if used outside the provider.</li>
+                        <li><strong>Persistence:</strong> Save the token to <code>localStorage</code> so login persists on refresh.</li>
+                        <li><strong>Protected Route:</strong> Create <code>&lt;RequireAuth&gt;</code> wrapper to protect the Dashboard route.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-jsx.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-tsx.min.js"></script>
+    <script src="layout.js"></script>
+</body>
+</html>

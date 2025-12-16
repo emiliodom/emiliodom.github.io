@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 3: Routing & API</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+</head>
+<body>
+    <header>
+        <h1>Module 3: Routing & API</h1>
+        <p>React Router DOM and Fetching Data.</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <h2>1. Core Concepts</h2>
+        <p><strong>React Router:</strong> React is a "Single Page App" (SPA). We don't reload the browser to change pages; we just swap components.</p>
+        <ul>
+            <li><code>BrowserRouter</code>: The manager. Wraps the app.</li>
+            <li><code>Routes/Route</code>: The map. "If URL is /about, show AboutComponent".</li>
+            <li><code>Link</code>: The anchor tag replacement. Prevents full page reload.</li>
+        </ul>
+        <p><strong>Fetching Data:</strong> Usually done in <code>useEffect</code>. You must handle 3 states: <strong>Loading</strong> (spinner), <strong>Error</strong> (message), and <strong>Data</strong> (content).</p>
+
+        <h3>1.1 Deep Dive: Client-Side Routing vs. Server-Side Routing</h3>
+        <p>Traditional websites request a new HTML file for every page load. React SPAs (Single Page Applications) load one HTML file once. When you click a link, JavaScript intercepts the click, changes the URL in the address bar (using the History API), and swaps the components on the screen. This is instant but requires careful management of browser history and scroll position.</p>
+
+        <h3>1.2 Industry Standard: The Service Layer</h3>
+        <p>Senior developers never call <code>fetch</code> directly inside a component. They create a "Service Layer" or "API Client". This makes code reusable and testable.</p>
+        <pre><code class="language-typescript">// api/userApi.ts
+export const getUser = async (id: string) => {
+  const response = await fetch(`/api/users/${id}`);
+  if (!response.ok) throw new Error('Failed to fetch');
+  return response.json();
+};
+
+// Component
+// import { getUser } from '../api/userApi';
+// ... inside useEffect ...
+getUser(id).then(setData).catch(setError);</code></pre>
+
+        <details>
+            <summary><strong>📚 Deep Dive (Documentation)</strong></summary>
+            <ul>
+                <li><a href="https://reactrouter.com/en/main/start/tutorial" target="_blank">React Router Tutorial</a></li>
+                <li><a href="https://react.dev/learn/synchronizing-with-effects#fetching-data" target="_blank">Fetching Data in Effects</a></li>
+            </ul>
+        </details>
+
+        <h2>2. The Setup Challenge</h2>
+        <div class="task">
+            <h3>Task: Install Router</h3>
+            <p>Install <code>react-router-dom</code>.</p>
+            <p>Refactor your <code>App.tsx</code> to use <code>BrowserRouter</code>, <code>Routes</code>, and <code>Route</code>.</p>
+            <p>Create two pages: <code>Home</code> and <code>Users</code>.</p>
+        </div>
+
+        <div class="jira-ticket">
+            <div class="jira-header">
+                <span class="jira-id">REQ-004</span>
+                <span class="jira-status">To Do</span>
+            </div>
+            <div class="jira-body">
+                <h3 class="jira-title">Build "User Directory" with Dynamic Routing</h3>
+                
+                <div class="jira-section">
+                    <span class="jira-label">User Story</span>
+                    <p>As an admin, I need to browse a list of users and click on any user to view their full profile details.</p>
+                </div>
+
+                <div class="jira-section">
+                    <span class="jira-label">Acceptance Criteria</span>
+                    <ul class="req-list">
+                        <li><strong>Users Page (<code>/users</code>):</strong>
+                            <ul>
+                                <li>Fetch users from <code>https://jsonplaceholder.typicode.com/users</code>.</li>
+                                <li>Show a "Loading..." spinner while fetching.</li>
+                                <li>Display a list of users (Name, Email).</li>
+                                <li>Link each name to <code>/users/:id</code>.</li>
+                            </ul>
+                        </li>
+                        <li><strong>User Detail Page (<code>/users/:id</code>):</strong>
+                            <ul>
+                                <li>Use <code>useParams</code> to extract the ID.</li>
+                                <li>Fetch details for that specific user.</li>
+                                <li>Display full address and company info.</li>
+                                <li>Add a "Back to List" button.</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="jira-section">
+                    <span class="jira-label">Senior Bonus</span>
+                    <ul class="req-list">
+                        <li><strong>Error Handling:</strong> If the API fails (simulate by blocking network), show a friendly "Something went wrong" UI, not a blank screen.</li>
+                        <li><strong>404 Handling:</strong> If the user ID doesn't exist (e.g., ID 999), show a "User Not Found" message.</li>
+                        <li><strong>Service Layer:</strong> Extract all fetch calls into a separate <code>api.ts</code> file.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <h2>3. The Bug Hunt</h2>
+        <div class="bug-hunt">
+            <h3>🐛 Scenario: The Race Condition</h3>
+            <p><strong>The Setup:</strong></p>
+            <p>You click "User 1", then quickly click "User 2". The network is slow. "User 2" data arrives first, then "User 1" data arrives later and overwrites the screen.</p>
+            <p><strong>The Bug:</strong> You are on the URL for User 2, but seeing data for User 1.</p>
+            <p><strong>The Task:</strong></p>
+            <ol>
+                <li>Reproduce this by adding a random delay to your fetch.</li>
+                <li>Fix it using a boolean flag <code>ignore</code> in the <code>useEffect</code> cleanup function.</li>
+            </ol>
+            <pre><code class="language-jsx">useEffect(() => {
+  let ignore = false;
+  fetchUser(id).then(data => {
+    if (!ignore) setUser(data);
+  });
+  return () => { ignore = true; };
+}, [id]);</code></pre>
+        </div>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-jsx.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-tsx.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+    <script src="layout.js"></script>
+</body>
+</html>

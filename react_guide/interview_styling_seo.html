@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interview: Styling, SEO & Context</title>
+    <style>
+        body { font-family: system-ui, -apple-system, sans-serif; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 20px; color: #333; }
+        h2 { border-bottom: 1px solid #ccc; padding-bottom: 10px; margin-top: 40px; }
+        .q-block { background: #f4f4f4; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+        .q-text { font-weight: bold; font-size: 1.1em; color: #38bdf8; background: #0f172a; padding: 5px 10px; border-radius: 4px; display: inline-block; margin-bottom: 10px; }
+        .hint { font-size: 0.9em; color: #666; font-style: italic; margin-bottom: 10px; display: block; }
+        details { margin-top: 10px; }
+        summary { cursor: pointer; color: #0066cc; font-weight: bold; }
+        pre { background: #2d2d2d; color: #f8f8f2; padding: 15px; border-radius: 5px; overflow-x: auto; }
+        code { font-family: monospace; }
+        .answer { margin-top: 15px; border-top: 1px solid #ddd; padding-top: 10px; }
+        nav { margin-bottom: 20px; }
+
+        /* New Code Section Styles */
+        .code-section { margin-top: 15px; border-left: 4px solid #38bdf8; padding-left: 15px; }
+        .code-section h4 { margin: 10px 0 5px; color: #0284c7; font-size: 0.95em; text-transform: uppercase; letter-spacing: 0.5px; }
+        .code-block { background: #1e293b; color: #e2e8f0; padding: 15px; border-radius: 6px; font-family: 'Consolas', 'Monaco', monospace; font-size: 0.9em; overflow-x: auto; white-space: pre-wrap; }
+        .code-comment { color: #94a3b8; }
+        .code-keyword { color: #c084fc; }
+        .code-string { color: #4ade80; }
+        .code-function { color: #60a5fa; }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="interview_index.html">&larr; Back to Interview Index</a>
+    </nav>
+
+    <h1>Styling, SEO & Context API</h1>
+
+    <div id="google_translate_element"></div>
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({pageLanguage: 'en', includedLanguages: 'es'}, 'google_translate_element');
+        }
+    </script>
+    <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+    <h2>1. CSS, SCSS & Tailwind</h2>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is the difference between CSS, SCSS, and Sass?</div>
+        <div class="hint">Syntax and features.</div>
+
+        <div class="code-section">
+            <h4>Basic Implementation: Syntax Comparison</h4>
+            <div class="code-block">
+<span class="code-comment">/* CSS */</span>
+.nav { background: blue; }
+.nav a { color: white; }
+
+<span class="code-comment">/* SCSS (Sassy CSS) - Most Popular */</span>
+.nav {
+  background: blue;
+  a { color: white; } <span class="code-comment">// Nesting</span>
+}
+
+<span class="code-comment">/* Sass (Indented) */</span>
+.nav
+  background: blue
+  a
+    color: white
+            </div>
+
+            <h4>Real World Example: Mixins for Media Queries</h4>
+            <div class="code-block">
+<span class="code-comment">// _mixins.scss</span>
+@mixin mobile {
+  @media (max-width: 768px) { @content; }
+}
+
+<span class="code-comment">// Component.scss</span>
+.container {
+  width: 100%;
+  @include mobile {
+    padding: 10px;
+  }
+}
+            </div>
+        </div>
+
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <ul>
+                    <li><strong>CSS:</strong> Standard styling language. No variables (historically), no nesting.</li>
+                    <li><strong>Sass (Syntactically Awesome Style Sheets):</strong> A preprocessor.
+                        <ul>
+                            <li><strong>.sass:</strong> Indentation-based syntax (no brackets/semicolons).</li>
+                            <li><strong>.scss (Sassy CSS):</strong> Superset of CSS. Uses brackets/semicolons. Valid CSS is valid SCSS.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Features:</strong> Nesting, Variables, Mixins, Functions.</li>
+                </ul>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Why use Tailwind CSS over traditional CSS/SCSS?</div>
+        <div class="hint">Utility-first.</div>
+
+        <div class="code-section">
+            <h4>Basic Implementation: The Utility Approach</h4>
+            <div class="code-block">
+<span class="code-comment">&lt;!-- Traditional CSS --&gt;</span>
+&lt;div class="chat-notification"&gt;
+  &lt;div class="chat-icon"&gt;&lt;/div&gt;
+  &lt;div class="chat-content"&gt;...&lt;/div&gt;
+&lt;/div&gt;
+
+<span class="code-comment">&lt;!-- Tailwind CSS --&gt;</span>
+&lt;div class="p-6 max-w-sm mx-auto bg-white rounded-xl shadow-md flex items-center space-x-4"&gt;
+  &lt;div class="shrink-0"&gt;...&lt;/div&gt;
+  &lt;div&gt;...&lt;/div&gt;
+&lt;/div&gt;
+            </div>
+
+            <h4>Real World Example: Responsive Design</h4>
+            <div class="code-block">
+<span class="code-comment">// No media queries needed in CSS file</span>
+&lt;div class="bg-red-500 md:bg-green-500 lg:bg-blue-500"&gt;
+  I change color based on screen size!
+&lt;/div&gt;
+            </div>
+        </div>
+
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p><strong>Pros:</strong>
+                <br>- <strong>Speed:</strong> No context switching between HTML and CSS files.
+                <br>- <strong>Consistency:</strong> Uses a design system (spacing, colors) out of the box.
+                <br>- <strong>Bundle Size:</strong> Purges unused styles, resulting in tiny CSS files.
+                <br>- <strong>No Naming:</strong> No more struggling to name classes like <code>.wrapper-inner-container</code>.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is the `@apply` directive in Tailwind?</div>
+        <div class="hint">Extracting components.</div>
+
+        <div class="code-section">
+            <h4>Basic Implementation: Extracting Classes</h4>
+            <div class="code-block">
+<span class="code-comment">/* styles.css */</span>
+.btn-primary {
+  @apply bg-blue-500 text-white font-bold py-2 px-4 rounded;
+}
+
+.btn-primary:hover {
+  @apply bg-blue-700;
+}
+            </div>
+
+            <h4>Real World Example: When to use it?</h4>
+            <div class="code-block">
+<span class="code-comment">// Use sparingly!</span>
+Prefer React components for reusability:
+`const Button = ({ children }) => &lt;button className="..."&gt;{children}&lt;/button&gt;`
+
+Only use `@apply` if you are styling 3rd party HTML you can't control (like Markdown content).
+            </div>
+        </div>
+
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>It allows you to inline existing utility classes into your own custom CSS class. Useful when you have a repeating pattern (like a button) and want to clean up the HTML.</p>
+                <pre><code>.btn-primary {
+  @apply bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700;
+}</code></pre>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: How does CSS Specificity work?</div>
+        <div class="hint">The score (0, 0, 0, 0).</div>
+
+        <div class="code-section">
+            <h4>Basic Implementation: The Calculator</h4>
+            <div class="code-block">
+<span class="code-comment">/* Score: 0-0-0-1 (Element) */</span>
+div { color: red; }
+
+<span class="code-comment">/* Score: 0-0-1-0 (Class) */</span>
+.text-blue { color: blue; } <span class="code-comment">// Wins over div</span>
+
+<span class="code-comment">/* Score: 0-1-0-0 (ID) */</span>
+#header { color: green; } <span class="code-comment">// Wins over class</span>
+
+<span class="code-comment">/* Score: 1-0-0-0 (Inline) */</span>
+&lt;div style="color: purple"&gt; <span class="code-comment">// Wins over ID</span>
+            </div>
+
+            <h4>Real World Example: The `!important` Trap</h4>
+            <div class="code-block">
+<span class="code-comment">// Problem:</span>
+.btn { background: red !important; }
+
+<span class="code-comment">// Later...</span>
+.btn-blue { background: blue; } <span class="code-comment">// Fails because !important overrides it.</span>
+
+<span class="code-comment">// Fix:</span>
+Avoid `!important`. Increase specificity naturally:
+.nav .btn-blue { background: blue; }
+            </div>
+        </div>
+
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>It determines which rule applies when multiple rules target the same element.
+                <br>1. <strong>Inline styles:</strong> (1,0,0,0)
+                <br>2. <strong>IDs:</strong> (0,1,0,0)
+                <br>3. <strong>Classes/Attributes/Pseudo-classes:</strong> (0,0,1,0)
+                <br>4. <strong>Elements/Pseudo-elements:</strong> (0,0,0,1)
+                <br><code>!important</code> overrides everything (use sparingly).</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is the "Box Model"?</div>
+        <div class="hint">Content, Padding, Border, Margin.</div>
+
+        <div class="code-section">
+            <h4>Basic Implementation: Box Sizing Reset</h4>
+            <div class="code-block">
+<span class="code-comment">/* The most important CSS snippet */</span>
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+<span class="code-comment">// Why?</span>
+<span class="code-comment">// Without this: width: 100px + padding: 20px = 140px total width.</span>
+<span class="code-comment">// With this: width: 100px includes the padding. Total width stays 100px.</span>
+            </div>
+
+            <h4>Real World Example: Debugging Layouts</h4>
+            <div class="code-block">
+<span class="code-comment">// Debugging Trick:</span>
+* { outline: 1px solid red; }
+
+<span class="code-comment">// Helps visualize the box boundaries of every element on the page.</span>
+            </div>
+        </div>
+
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Every element is a box.
+                <br><strong>Content:</strong> The actual text/image.
+                <br><strong>Padding:</strong> Space between content and border (inside).
+                <br><strong>Border:</strong> The edge of the box.
+                <br><strong>Margin:</strong> Space outside the border (pushes other elements away).</p>
+                <p><strong>Tip:</strong> Always use <code>box-sizing: border-box</code> so padding doesn't increase the element's width.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Flexbox vs. Grid?</div>
+        <div class="hint">1D vs 2D.</div>
+
+        <div class="code-section">
+            <h4>Basic Implementation: Flexbox (1D)</h4>
+            <div class="code-block">
+.navbar {
+  display: flex;
+  justify-content: space-between; <span class="code-comment">// Distribute space</span>
+  align-items: center; <span class="code-comment">// Vertical center</span>
+}
+            </div>
+
+            <h4>Real World Example: Grid (2D)</h4>
+            <div class="code-block">
+.photo-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+}
+<span class="code-comment">// Creates a responsive grid where items are at least 200px wide, filling the row.</span>
+            </div>
+        </div>
+
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <ul>
+                    <li><strong>Flexbox:</strong> One-dimensional (Row OR Column). Best for alignment, distributing space, and small components (Navbars, Cards).</li>
+                    <li><strong>Grid:</strong> Two-dimensional (Rows AND Columns). Best for overall page layout and complex structures.</li>
+                </ul>
+            </div>
+        </details>
+    </div>
+
+    <h2>2. React Component Libraries & Best Practices</h2>
+
+    <div class="q-block">
+        <div class="q-text">Q: Headless UI vs. Styled UI Libraries?</div>
+        <div class="hint">Radix vs MUI.</div>
+
+        <div class="code-section">
+            <h4>Basic Implementation: The Difference</h4>
+            <div class="code-block">
+<span class="code-comment">// Styled (MUI) - Comes with styles</span>
+import Button from '@mui/material/Button';
+&lt;Button variant="contained"&gt;Click Me&lt;/Button&gt;
+
+<span class="code-comment">// Headless (Radix UI) - Unstyled, just logic</span>
+import * as Dialog from '@radix-ui/react-dialog';
+&lt;Dialog.Root&gt;
+  &lt;Dialog.Trigger className="my-custom-btn"&gt;Open&lt;/Dialog.Trigger&gt;
+  &lt;Dialog.Content className="my-modal-styles"&gt;...&lt;/Dialog.Content&gt;
+&lt;/Dialog.Root&gt;
+            </div>
+
+            <h4>Real World Example: Building a Design System</h4>
+            <div class="code-block">
+<span class="code-comment">// You want full control over the look (Tailwind) but don't want to write accessibility logic.</span>
+<span class="code-comment">// Use Headless UI + Tailwind:</span>
+
+const MyModal = () => (
+  &lt;Dialog.Content className="bg-white p-6 rounded-lg shadow-xl fixed top-1/2 left-1/2 -translate-x-1/2"&gt;
+    &lt;Dialog.Title className="text-lg font-bold"&gt;Edit Profile&lt;/Dialog.Title&gt;
+    &lt;Dialog.Close className="absolute top-2 right-2"&gt;X&lt;/Dialog.Close&gt;
+  &lt;/Dialog.Content&gt;
+);
+            </div>
+        </div>
+
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <ul>
+                    <li><strong>Styled (MUI, AntD, Chakra):</strong> Come with pre-built styles. Fast to start, but hard to customize to match a unique design system. Heavy bundle size.</li>
+                    <li><strong>Headless (Radix UI, Headless UI, React Aria):</strong> Provide logic and accessibility (keyboard nav, focus management) but <strong>zero styles</strong>. You style them yourself (e.g., with Tailwind). Best for custom design systems.</li>
+                </ul>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is "Tree Shaking" in the context of UI Libraries?</div>
+        <div class="hint">Import cost.</div>
+
+        <div class="code-section">
+            <h4>Basic Implementation: Import Styles</h4>
+            <div class="code-block">
+<span class="code-comment">// BAD: Imports the entire library (huge bundle size)</span>
+import { Button, TextField, Modal } from 'huge-library';
+
+<span class="code-comment">// GOOD: Imports only specific files (Tree Shaking friendly)</span>
+import Button from 'huge-library/Button';
+import TextField from 'huge-library/TextField';
+            </div>
+
+            <h4>Real World Example: Bundle Analysis</h4>
+            <div class="code-block">
+<span class="code-comment">// If tree-shaking fails, your vendor.js file might look like:</span>
+<span class="code-comment">// vendor.js (2.5MB) -> includes DatePicker, Charts, Maps... even if you only used a Button.</span>
+
+<span class="code-comment">// Solution:</span>
+<span class="code-comment">// 1. Use ES Modules (ESM) builds.</span>
+<span class="code-comment">// 2. Check `sideEffects: false` in package.json of the library.</span>
+            </div>
+        </div>
+
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>The ability to include only the code for the components you actually use.
+                <br><strong>Bad:</strong> <code>import { Button } from 'huge-lib';</code> (Might bundle the whole lib if not configured right).
+                <br><strong>Good:</strong> <code>import Button from 'huge-lib/Button';</code> (Direct import).</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: When should you build your own component library?</div>
+        <div class="hint">Build vs Buy.</div>
+
+        <div class="code-section">
+            <h4>Basic Implementation: The Wrapper Pattern</h4>
+            <div class="code-block">
+<span class="code-comment">// Even if you "Buy" (use MUI), wrap it!</span>
+<span class="code-comment">// This allows you to swap the underlying library later without changing every page.</span>
+
+<span class="code-comment">// components/Button.js</span>
+import MuiButton from '@mui/material/Button';
+
+export const Button = ({ children, ...props }) => {
+  return &lt;MuiButton {...props} disableElevation&gt;{children}&lt;/MuiButton&gt;;
+};
+            </div>
+
+            <h4>Real World Example: Decision Matrix</h4>
+            <div class="code-block">
+<span class="code-comment">// Scenario A: Internal Admin Dashboard</span>
+<span class="code-comment">// Priority: Speed. Design doesn't matter.</span>
+<span class="code-comment">// Decision: BUY (MUI, AntD).</span>
+
+<span class="code-comment">// Scenario B: Consumer-facing E-commerce Brand</span>
+<span class="code-comment">// Priority: Pixel-perfect brand identity, Performance.</span>
+<span class="code-comment">// Decision: BUILD (Headless + Tailwind).</span>
+            </div>
+        </div>
+
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p><strong>Build:</strong> When you have a unique design system, need strict control over bundle size, or have specific accessibility needs not met by existing libs.
+                <br><strong>Buy (Use existing):</strong> For internal tools, MVPs, or when speed is more important than unique branding.</p>
+            </div>
+        </details>
+    </div>
+
+    <h2>3. CSS & Performance</h2>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is "Critical CSS"?</div>
+        <div class="hint">Above the fold.</div>
+
+        <div class="code-section">
+            <h4>Basic Implementation: Inlining</h4>
+            <div class="code-block">
+&lt;head&gt;
+  <span class="code-comment">&lt;!-- Critical CSS (Inlined) --&gt;</span>
+  &lt;style&gt;
+    body { margin: 0; font-family: sans-serif; }
+    .hero-section { background: blue; height: 100vh; }
+  &lt;/style&gt;
+
+  <span class="code-comment">&lt;!-- Non-Critical CSS (Loaded async) --&gt;</span>
+  &lt;link rel="stylesheet" href="styles.css" media="print" onload="this.media='all'"&gt;
+&lt;/head&gt;
+            </div>
+
+            <h4>Real World Example: Next.js Automatic Inlining</h4>
+            <div class="code-block">
+<span class="code-comment">// Next.js automatically identifies CSS used on the initial render</span>
+<span class="code-comment">// and inlines it into the HTML &lt;head&gt; for you.</span>
+
+<span class="code-comment">// You don't do this manually in modern frameworks.</span>
+            </div>
+        </div>
+
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>The minimum CSS required to render the top part of the page (above the fold). It should be inlined in the HTML <code>&lt;head&gt;</code> to prevent "Flash of Unstyled Content" (FOUC) and improve First Contentful Paint (FCP).</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is "CLS" (Cumulative Layout Shift) and how does CSS affect it?</div>
+        <div class="hint">Jumping content.</div>
+
+        <div class="code-section">
+            <h4>Basic Implementation: The Problem</h4>
+            <div class="code-block">
+<span class="code-comment">&lt;!-- BAD: Browser doesn't know height until image loads --&gt;</span>
+&lt;img src="hero.jpg" /&gt;
+&lt;p&gt;Text below jumps down when image loads.&lt;/p&gt;
+
+<span class="code-comment">&lt;!-- GOOD: Reserve space --&gt;</span>
+&lt;img src="hero.jpg" width="800" height="400" /&gt;
+            </div>
+
+            <h4>Real World Example: Aspect Ratio Boxes</h4>
+            <div class="code-block">
+<span class="code-comment">/* CSS Aspect Ratio */</span>
+.video-container {
+  aspect-ratio: 16 / 9;
+  background: #eee; <span class="code-comment">/* Placeholder color */</span>
+}
+
+<span class="code-comment">&lt;!-- The box takes up space immediately, even before the video loads --&gt;</span>
+&lt;div class="video-container"&gt;
+  &lt;iframe ... /&gt;
+&lt;/div&gt;
+            </div>
+        </div>
+
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>A metric measuring visual stability. CSS causes it if:
+                <br>- Images don't have <code>width</code> and <code>height</code> attributes (browser doesn't reserve space).
+                <br>- Fonts load late and swap (FOUT), changing text size.
+                <br>- Dynamic content inserts without a reserved container.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: CSS Animations vs. JS Animations?</div>
+        <div class="hint">Performance.</div>
+
+        <div class="code-section">
+            <h4>Basic Implementation: CSS Transition</h4>
+            <div class="code-block">
+.btn {
+  transition: transform 0.2s ease;
+}
+.btn:hover {
+  transform: scale(1.1); <span class="code-comment">/* GPU optimized */</span>
+}
+            </div>
+
+            <h4>Real World Example: Complex Sequencing (JS)</h4>
+            <div class="code-block">
+<span class="code-comment">// Framer Motion (JS based)</span>
+<span class="code-comment">// Use when you need physics (springs) or exit animations</span>
+&lt;motion.div
+  initial={{ opacity: 0 }}
+  animate={{ opacity: 1 }}
+  exit={{ opacity: 0 }}
+&gt;
+  Modal Content
+&lt;/motion.div&gt;
+            </div>
+        </div>
+
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <ul>
+                    <li><strong>CSS (Transitions/Keyframes):</strong> Run on the compositor thread (GPU). Smoother, doesn't block the main thread. Best for simple UI states (hover, modal slide-in).</li>
+                    <li><strong>JS (Framer Motion/GSAP):</strong> Runs on the main thread (mostly). More control, physics-based, complex sequencing. Can cause jank if main thread is busy.</li>
+                </ul>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is the `will-change` property?</div>
+        <div class="hint">Hinting the browser.</div>
+
+        <div class="code-section">
+            <h4>Basic Implementation: Syntax</h4>
+            <div class="code-block">
+.sidebar {
+  will-change: transform;
+}
+<span class="code-comment">/* Tells browser: "I'm gonna move this soon, get ready." */</span>
+            </div>
+
+            <h4>Real World Example: Hover Optimization</h4>
+            <div class="code-block">
+<span class="code-comment">/* Only apply when needed to save memory */</span>
+.card:hover {
+  will-change: transform;
+}
+
+<span class="code-comment">/* Warning: Don't apply to everything (* { will-change... }). It crashes browsers. */</span>
+            </div>
+        </div>
+
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Tells the browser that an element is expected to change (e.g., <code>transform</code>, <code>opacity</code>). The browser can optimize ahead of time (e.g., creating a new layer). Use sparingly; overuse consumes memory.</p>
+            </div>
+        </details>
+    </div>
+
+    <h2>4. SEO (Search Engine Optimization) in React</h2>
+
+    <div class="q-block">
+        <div class="q-text">Q: Why is CSR (Client-Side Rendering) bad for SEO?</div>
+        <div class="hint">Empty HTML.</div>
+
+        <div class="code-section">
+            <h4>Basic Implementation: View Source</h4>
+            <div class="code-block">
+<span class="code-comment">&lt;!-- What Google Bot sees in a CSR app --&gt;</span>
+&lt;body&gt;
+  &lt;div id="root"&gt;&lt;/div&gt;
+  &lt;script src="bundle.js"&gt;&lt;/script&gt;
+&lt;/body&gt;
+<span class="code-comment">&lt;!-- No content, no keywords, no links to follow. --&gt;</span>
+            </div>
+
+            <h4>Real World Example: Social Sharing</h4>
+            <div class="code-block">
+<span class="code-comment">// When you paste a CSR link into Slack/Twitter/Facebook:</span>
+<span class="code-comment">// Preview Card: [Title: React App] [Image: None] [Desc: None]</span>
+
+<span class="code-comment">// Why? Social bots do NOT run JavaScript. They only read the initial HTML.</span>
+            </div>
+        </div>
+
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>In CSR (standard React), the initial HTML is empty (<code>&lt;div id="root"&gt;&lt;/div&gt;</code>). Search engine bots (crawlers) might not execute the JS to see the content, or it takes too long, leading to poor indexing.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: SSR (Server-Side Rendering) vs. SSG (Static Site Generation) for SEO?</div>
+        <div class="hint">Next.js strategies.</div>
+
+        <div class="code-section">
+            <h4>Basic Implementation: Next.js Functions</h4>
+            <div class="code-block">
+<span class="code-comment">// SSR (Dynamic)</span>
+export async function getServerSideProps() {
+  const data = await fetchFromDB();
+  return { props: { data } };
+}
+
+<span class="code-comment">// SSG (Static)</span>
+export async function getStaticProps() {
+  const data = await fetchFromCMS();
+  return { props: { data } };
+}
+            </div>
+
+            <h4>Real World Example: Use Case</h4>
+            <div class="code-block">
+<span class="code-comment">// Product Page (Price changes often, Inventory check)</span>
+-> Use SSR (getServerSideProps)
+
+<span class="code-comment">// Blog Post (Content rarely changes)</span>
+-> Use SSG (getStaticProps) -> Faster, served from CDN.
+            </div>
+        </div>
+
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <ul>
+                    <li><strong>SSR (getServerSideProps):</strong> Generates HTML on every request. Good for dynamic data (e.g., Search Results). Great SEO.</li>
+                    <li><strong>SSG (getStaticProps):</strong> Generates HTML at build time. Extremely fast. Good for blogs, marketing pages. Best SEO and Performance.</li>
+                </ul>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What are Meta Tags and how to manage them in React?</div>
+        <div class="hint">Head management.</div>
+
+        <div class="code-section">
+            <h4>Basic Implementation: HTML Head</h4>
+            <div class="code-block">
+&lt;head&gt;
+  &lt;title&gt;My Page&lt;/title&gt;
+  &lt;meta name="description" content="Best widgets in town" /&gt;
+&lt;/head&gt;
+            </div>
+
+            <h4>Real World Example: Dynamic Metadata (Next.js)</h4>
+            <div class="code-block">
+<span class="code-comment">// app/products/[id]/page.js</span>
+export async function generateMetadata({ params }) {
+  const product = await getProduct(params.id);
+  
+  return {
+    title: product.name,
+    description: product.summary,
+    openGraph: {
+      images: [product.imageUrl],
+    },
+  };
+}
+            </div>
+        </div>
+
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Tags like <code>title</code>, <code>description</code>, and Open Graph (OG) tags for social sharing. In React, use <strong>React Helmet</strong> (or built-in Metadata API in Next.js) to dynamically update these tags for each route.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is `robots.txt` and `sitemap.xml`?</div>
+        <div class="hint">Instructions for bots.</div>
+
+        <div class="code-section">
+            <h4>Basic Implementation: robots.txt</h4>
+            <div class="code-block">
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /private-dashboard
+
+Sitemap: https://mysite.com/sitemap.xml
+            </div>
+
+            <h4>Real World Example: Dynamic Sitemap</h4>
+            <div class="code-block">
+<span class="code-comment">// You don't write sitemap.xml manually for 10,000 products.</span>
+<span class="code-comment">// Use a script or Next.js plugin to generate it during build:</span>
+
+<span class="code-comment">// Output:</span>
+&lt;url&gt;
+  &lt;loc&gt;https://mysite.com/product/1&lt;/loc&gt;
+  &lt;lastmod&gt;2023-10-01&lt;/lastmod&gt;
+&lt;/url&gt;
+...
+            </div>
+        </div>
+
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <ul>
+                    <li><strong>robots.txt:</strong> Tells crawlers which pages they can or cannot access.</li>
+                    <li><strong>sitemap.xml:</strong> A list of all URLs on your site to help crawlers discover content.</li>
+                </ul>
+            </div>
+        </details>
+    </div>
+
+    <h2>5. Context API (Basic to Complex)</h2>
+
+    <div class="q-block">
+        <div class="q-text">Q: Basic: How do you create and consume a Context?</div>
+        <div class="hint">createContext, Provider, useContext.</div>
+
+        <div class="code-section">
+            <h4>Basic Implementation: The Pattern</h4>
+            <div class="code-block">
+const UserContext = createContext(null);
+
+const App = () => (
+  &lt;UserContext.Provider value={{ name: 'Alice' }}&gt;
+    &lt;Profile /&gt;
+  &lt;/UserContext.Provider&gt;
+);
+
+const Profile = () => {
+  const user = useContext(UserContext);
+  return &lt;div&gt;{user.name}&lt;/div&gt;;
+};
+            </div>
+
+            <h4>Real World Example: Custom Hook Wrapper</h4>
+            <div class="code-block">
+<span class="code-comment">// Always create a custom hook to consume context</span>
+<span class="code-comment">// This adds safety (checking if used within provider)</span>
+
+export const useUser = () => {
+  const context = useContext(UserContext);
+  if (!context) {
+    throw new Error('useUser must be used within a UserProvider');
+  }
+  return context;
+};
+            </div>
+        </div>
+
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <pre><code>// 1. Create
+const ThemeContext = createContext('light');
+
+// 2. Provide
+&lt;ThemeContext.Provider value="dark"&gt;
+  &lt;App /&gt;
+&lt;/ThemeContext.Provider&gt;
+
+// 3. Consume
+const theme = useContext(ThemeContext);</code></pre>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Mid: What is the performance pitfall of Context?</div>
+        <div class="hint">Re-rendering everything.</div>
+
+        <div class="code-section">
+            <h4>Basic Implementation: The Mistake</h4>
+            <div class="code-block">
+const App = () => {
+  <span class="code-comment">// This object is recreated on EVERY render of App</span>
+  const value = { theme: 'dark', toggle: () => {} };
+
+  <span class="code-comment">// So all consumers re-render, even if data didn't actually change</span>
+  return &lt;Ctx.Provider value={value}&gt;...&lt;/Ctx.Provider&gt;;
+};
+            </div>
+
+            <h4>Real World Example: Debugging</h4>
+            <div class="code-block">
+<span class="code-comment">// Use React DevTools "Profiler"</span>
+<span class="code-comment">// Check "Highlight updates when components render"</span>
+<span class="code-comment">// If typing in a search box causes the Footer to flash -> Context issue.</span>
+            </div>
+        </div>
+
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>If the <code>value</code> passed to the Provider changes (even a new object reference), <strong>every</strong> component consuming that context will re-render. If you put your entire app state in one context, typing in a text input could re-render the whole app.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Complex: How to optimize Context to prevent unnecessary re-renders?</div>
+        <div class="hint">Split it up.</div>
+
+        <div class="code-section">
+            <h4>Basic Implementation: Memoization</h4>
+            <div class="code-block">
+const value = useMemo(() => ({ theme, toggle }), [theme]);
+return &lt;Ctx.Provider value={value}&gt;...&lt;/Ctx.Provider&gt;;
+            </div>
+
+            <h4>Real World Example: Split Contexts</h4>
+            <div class="code-block">
+<span class="code-comment">// Split State and Dispatch to prevent re-renders</span>
+const StateCtx = createContext();
+const DispatchCtx = createContext();
+
+<span class="code-comment">// Component A only needs to read state</span>
+const state = useContext(StateCtx);
+
+<span class="code-comment">// Component B only needs to update state (won't re-render when state changes)</span>
+const dispatch = useContext(DispatchCtx);
+            </div>
+        </div>
+
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <ol>
+                    <li><strong>Split Contexts:</strong> Separate State and Dispatch.
+                        <br><code>ThemeStateContext</code> (holds "dark") and <code>ThemeDispatchContext</code> (holds <code>setTheme</code>). Components that only need to toggle theme won't re-render when the theme changes.
+                    </li>
+                    <li><strong>Memoize Value:</strong> Wrap the value object in <code>useMemo</code>.
+                        <br><code>const value = useMemo(() => ({ state, dispatch }), [state]);</code>
+                    </li>
+                </ol>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Complex: Context vs. Redux - When to switch?</div>
+        <div class="hint">Frequency and Scope.</div>
+
+        <div class="code-section">
+            <h4>Basic Implementation: Context (Low Frequency)</h4>
+            <div class="code-block">
+<span class="code-comment">// Good for:</span>
+- Theme (Light/Dark)
+- User Auth State (Logged in/out)
+- Language/Locale
+            </div>
+
+            <h4>Real World Example: Redux/Zustand (High Frequency)</h4>
+            <div class="code-block">
+<span class="code-comment">// Good for:</span>
+- Real-time stock ticker
+- Complex dashboard with many widgets dependent on shared data
+- Undo/Redo functionality
+- Caching API responses across screens
+            </div>
+        </div>
+
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p><strong>Context:</strong> Best for low-frequency updates (Theme, User, Locale) or static data.
+                <br><strong>Redux/Zustand:</strong> Best for high-frequency updates (Dashboard, Real-time data) or when you need middleware, time-travel debugging, or to update state outside of React components.</p>
+            </div>
+        </details>
+    </div>
+
+</body>
+</html>

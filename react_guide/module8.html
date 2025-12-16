@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 8: Professional Workflow</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+</head>
+<body>
+    <header>
+        <h1>Module 8: Professional Workflow</h1>
+        <p>Linting, Formatting, CI/CD, and Storybook.</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section class="concept-section">
+            <h2>1. The "Guardrails" of Development</h2>
+            <p>Professional codebases rely on automation to maintain quality. We don't rely on humans to remember to format code or check for unused variables. We use tools.</p>
+            
+            <div class="highlight-box">
+                <h3>The Holy Trinity</h3>
+                <ul>
+                    <li><strong>ESLint:</strong> Finds bugs and logic errors (static analysis).</li>
+                    <li><strong>Prettier:</strong> Enforces consistent style (formatting).</li>
+                    <li><strong>Husky:</strong> Runs these tools automatically before you commit (git hooks).</li>
+                </ul>
+            </div>
+        </section>
+
+        <div class="jira-ticket">
+            <div class="jira-header">
+                <span class="jira-id">WORK-101</span>
+                <span class="jira-status">To Do</span>
+            </div>
+            <div class="jira-body">
+                <h3 class="jira-title">Configure Linting & Formatting</h3>
+                
+                <div class="jira-section">
+                    <span class="jira-label">User Story</span>
+                    <p>As a team lead, I want to enforce a consistent coding style so that code reviews focus on logic, not indentation.</p>
+                </div>
+
+                <div class="jira-section">
+                    <span class="jira-label">Acceptance Criteria</span>
+                    <ul class="req-list">
+                        <li>Install and configure <strong>Prettier</strong>.</li>
+                        <li>Configure <strong>ESLint</strong> to work with Prettier (avoid conflicts).</li>
+                        <li>Add a rule to sort imports alphabetically (using `eslint-plugin-simple-import-sort` or similar).</li>
+                        <li>Add a rule to ban `console.log` in production code.</li>
+                    </ul>
+                </div>
+
+                <div class="jira-section">
+                    <span class="jira-label">Implementation Guide</span>
+                    <pre><code class="language-bash">npm install -D prettier eslint-config-prettier eslint-plugin-prettier</code></pre>
+                    
+                    <p><strong>.eslintrc.cjs (Example):</strong></p>
+                    <pre><code class="language-javascript">module.exports = {
+  extends: [
+    'eslint:recommended',
+    'plugin:@typescript-eslint/recommended',
+    'plugin:react-hooks/recommended',
+    'prettier' // Must be last
+  ],
+  rules: {
+    'no-console': 'warn',
+    'react/react-in-jsx-scope': 'off'
+  }
+}</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="jira-ticket">
+            <div class="jira-header">
+                <span class="jira-id">WORK-102</span>
+                <span class="jira-status">To Do</span>
+            </div>
+            <div class="jira-body">
+                <h3 class="jira-title">Automate Quality Checks (Husky)</h3>
+                
+                <div class="jira-section">
+                    <span class="jira-label">User Story</span>
+                    <p>As a developer, I want to prevent "broken" code from entering the repository.</p>
+                </div>
+
+                <div class="jira-section">
+                    <span class="jira-label">Acceptance Criteria</span>
+                    <ul class="req-list">
+                        <li>Install <strong>Husky</strong> and <strong>lint-staged</strong>.</li>
+                        <li>Configure a `pre-commit` hook.</li>
+                        <li>The hook must run `tsc` (type check) and `lint` only on changed files.</li>
+                    </ul>
+                </div>
+
+                <div class="jira-section">
+                    <span class="jira-label">Implementation Guide</span>
+                    <pre><code class="language-bash">npx husky-init && npm install
+npm install -D lint-staged</code></pre>
+
+                    <p><strong>package.json:</strong></p>
+                    <pre><code class="language-json">"lint-staged": {
+  "*.{ts,tsx}": [
+    "eslint --fix",
+    "prettier --write"
+  ]
+}</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="jira-ticket">
+            <div class="jira-header">
+                <span class="jira-id">WORK-103</span>
+                <span class="jira-status">To Do</span>
+            </div>
+            <div class="jira-body">
+                <h3 class="jira-title">Component Documentation (Storybook)</h3>
+                
+                <div class="jira-section">
+                    <span class="jira-label">User Story</span>
+                    <p>As a UI designer, I want to view and test components in isolation to ensure they handle all edge cases.</p>
+                </div>
+
+                <div class="jira-section">
+                    <span class="jira-label">Acceptance Criteria</span>
+                    <ul class="req-list">
+                        <li>Install <strong>Storybook</strong> (or Ladle for speed).</li>
+                        <li>Create a Story for the `UserCard` component.</li>
+                        <li>Create variants: "Active User", "Inactive User", "Long Name".</li>
+                    </ul>
+                </div>
+
+                <div class="jira-section">
+                    <span class="jira-label">Code Example (UserCard.stories.tsx)</span>
+                    <pre><code class="language-typescript">import type { Meta, StoryObj } from '@storybook/react';
+import UserCard from './UserCard';
+
+const meta: Meta&lt;typeof UserCard&gt; = {
+  component: UserCard,
+};
+
+export default meta;
+type Story = StoryObj&lt;typeof UserCard&gt;;
+
+export const Default: Story = {
+  args: {
+    name: 'John Doe',
+    role: 'Developer',
+    isActive: true,
+  },
+};
+
+export const Inactive: Story = {
+  args: {
+    name: 'Jane Smith',
+    role: 'Manager',
+    isActive: false,
+  },
+};</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <section class="bug-hunt">
+            <h3>🐛 Bug Hunt: The "Works on My Machine"</h3>
+            <p><strong>Scenario:</strong> You push code that works locally, but the CI/CD pipeline fails.</p>
+            <p><strong>Common Causes:</strong></p>
+            <ul>
+                <li>You didn't run `tsc` locally, and there's a type error in a file you didn't open.</li>
+                <li>Case sensitivity issues (Mac/Windows are case-insensitive, Linux is case-sensitive). e.g., importing `./Button` when the file is `./button.tsx`.</li>
+                <li>Missing environment variables in the CI environment.</li>
+            </ul>
+            <p><strong>The Fix:</strong> Always run the full `build` command locally before pushing if you aren't sure.</p>
+        </section>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+    <script src="layout.js"></script>
+    <script>
+        initLayout();
+    </script>
+</body>
+</html>

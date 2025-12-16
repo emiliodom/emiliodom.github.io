@@ -1,0 +1,117 @@
+:root {
+    --bg-color: #ffffff;
+    --text-color: #333333;
+    --header-border: #333333;
+    --nav-bg: #f4f4f4;
+    --link-color: #0066cc;
+    --task-bg: #e2e3e5;
+    --task-border: #383d41;
+    --bug-bg: #f8d7da;
+    --bug-border: #721c24;
+    --code-bg: #f4f4f4;
+    --footer-border: #cccccc;
+    --footer-text: #666666;
+    --card-bg: #ffffff;
+    --card-border: #e2e8f0;
+    --card-shadow: rgba(0, 0, 0, 0.1);
+    --ticket-header-bg: #f1f5f9;
+    --ticket-border: #cbd5e1;
+}
+
+[data-theme="dark"] {
+    --bg-color: #1e293b;
+    --text-color: #e2e8f0;
+    --header-border: #94a3b8;
+    --nav-bg: #334155;
+    --link-color: #60a5fa;
+    --task-bg: #334155;
+    --task-border: #94a3b8;
+    --bug-bg: #450a0a;
+    --bug-border: #f87171;
+    --code-bg: #0f172a;
+    --footer-border: #475569;
+    --footer-text: #94a3b8;
+    --card-bg: #1e293b;
+    --card-border: #475569;
+    --card-shadow: rgba(0, 0, 0, 0.5);
+    --ticket-header-bg: #334155;
+    --ticket-border: #475569;
+}
+
+body { font-family: system-ui, -apple-system, sans-serif; line-height: 1.6; max-width: 900px; margin: 0 auto; padding: 20px; color: var(--text-color); background-color: var(--bg-color); transition: background-color 0.3s, color 0.3s; }
+header { border-bottom: 2px solid var(--header-border); padding-bottom: 20px; margin-bottom: 20px; }
+nav { background: var(--nav-bg); padding: 10px; border-radius: 5px; margin-bottom: 20px; display: flex; flex-wrap: wrap; gap: 10px; }
+nav a { text-decoration: none; color: var(--link-color); font-weight: bold; padding: 5px 10px; border-radius: 4px; transition: background-color 0.2s; }
+nav a:hover { text-decoration: underline; background-color: rgba(0,0,0,0.05); }
+[data-theme="dark"] nav a:hover { background-color: rgba(255,255,255,0.1); }
+
+.task { background: var(--task-bg); border-left: 5px solid var(--task-border); padding: 15px; margin: 20px 0; border-radius: 0 5px 5px 0; }
+.bug-hunt { background: var(--bug-bg); border-left: 5px solid var(--bug-border); padding: 15px; margin: 20px 0; border-radius: 0 5px 5px 0; }
+code { background: var(--code-bg); padding: 2px 5px; border-radius: 3px; font-family: 'Consolas', 'Monaco', monospace; font-size: 0.9em; color: var(--text-color); }
+pre { background: var(--code-bg); padding: 15px; border-radius: 5px; overflow-x: auto; border: 1px solid var(--card-border); }
+pre code { background: transparent; padding: 0; color: inherit; }
+
+footer { margin-top: 50px; border-top: 1px solid var(--footer-border); padding-top: 20px; font-size: 0.9em; color: var(--footer-text); text-align: center; }
+
+/* Jira Ticket Style */
+.jira-ticket {
+    background: var(--card-bg);
+    border: 1px solid var(--ticket-border);
+    border-radius: 8px;
+    margin: 20px 0;
+    box-shadow: 0 2px 4px var(--card-shadow);
+    overflow: hidden;
+}
+.jira-header {
+    background: var(--ticket-header-bg);
+    padding: 10px 15px;
+    border-bottom: 1px solid var(--ticket-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.9em;
+    color: var(--text-color);
+}
+.jira-id { font-weight: bold; color: var(--link-color); }
+.jira-status { 
+    background: #dfe1e6; color: #42526e; 
+    padding: 2px 8px; border-radius: 3px; font-weight: bold; font-size: 0.8em; text-transform: uppercase; 
+}
+[data-theme="dark"] .jira-status { background: #4b5563; color: #e2e8f0; }
+
+.jira-body { padding: 20px; }
+.jira-title { margin-top: 0; font-size: 1.2em; color: var(--text-color); }
+.jira-section { margin-bottom: 15px; }
+.jira-label { font-weight: bold; font-size: 0.85em; color: var(--footer-text); text-transform: uppercase; display: block; margin-bottom: 5px; }
+
+.req-list { list-style: none; padding: 0; }
+.req-list li { margin-bottom: 8px; padding-left: 25px; position: relative; }
+.req-list li::before { content: "☐"; position: absolute; left: 0; color: var(--footer-text); }
+.req-list li.done::before { content: "☑"; color: var(--link-color); }
+
+/* Removed old .ticket-* classes as they are replaced by .jira-* classes */
+
+.concept-section { margin-bottom: 40px; }
+.highlight-box {
+    background: var(--nav-bg);
+    border-left: 4px solid var(--link-color);
+    padding: 15px;
+    margin: 15px 0;
+    border-radius: 0 4px 4px 0;
+}
+
+/* Theme Toggle */
+.theme-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    color: var(--text-color);
+    padding: 8px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    box-shadow: 0 2px 5px var(--card-shadow);
+    z-index: 1000;
+    font-size: 1.2em;
+}

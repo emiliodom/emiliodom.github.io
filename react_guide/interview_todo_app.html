@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interview: Interactive Todo App</title>
+    <style>
+        body { font-family: system-ui, -apple-system, sans-serif; line-height: 1.6; max-width: 900px; margin: 0 auto; padding: 20px; color: #333; }
+        h1, h2, h3 { color: #1e293b; }
+        nav { margin-bottom: 20px; }
+        
+        .container { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 30px; }
+        
+        /* App Styles */
+        .app-container { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+        .input-group { display: flex; gap: 10px; margin-bottom: 20px; }
+        input[type="text"] { flex: 1; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 16px; }
+        button.add-btn { background: #3b82f6; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        button.add-btn:hover { background: #2563eb; }
+        
+        ul { list-style: none; padding: 0; margin: 0; }
+        li { display: flex; align-items: center; justify-content: space-between; padding: 12px; border-bottom: 1px solid #f1f5f9; animation: slideIn 0.2s ease; }
+        li:last-child { border-bottom: none; }
+        li.completed span { text-decoration: line-through; color: #94a3b8; }
+        
+        .actions { display: flex; gap: 8px; }
+        .btn-icon { background: none; border: none; cursor: pointer; font-size: 1.2em; padding: 4px; border-radius: 4px; }
+        .btn-check { color: #22c55e; }
+        .btn-check:hover { background: #dcfce7; }
+        .btn-delete { color: #ef4444; }
+        .btn-delete:hover { background: #fee2e2; }
+
+        /* Explanation Styles */
+        .explanation-container { background: #f8fafc; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; height: fit-content; }
+        .code-block { background: #1e293b; color: #e2e8f0; padding: 15px; border-radius: 6px; font-family: 'Consolas', 'Monaco', monospace; font-size: 0.85em; overflow-x: auto; white-space: pre-wrap; margin-top: 10px; }
+        .highlight { background: #fef3c7; padding: 2px 4px; border-radius: 2px; font-weight: bold; }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            .container { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="interview_index.html">&larr; Back to Interview Index</a>
+    </nav>
+
+    <h1>Interactive Coding Challenge: Todo App</h1>
+    <p>This page demonstrates a common live-coding interview task: "Build a Todo App". The left side is the working app, and the right side explains the modern Vanilla JS techniques used to build it.</p>
+
+    <div id="google_translate_element"></div>
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({pageLanguage: 'en', includedLanguages: 'es'}, 'google_translate_element');
+        }
+    </script>
+    <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+    <div class="container">
+        <!-- The App -->
+        <div class="app-container">
+            <h3>My Tasks</h3>
+            <div class="input-group">
+                <input type="text" id="todoInput" placeholder="Add a new task..." />
+                <button id="addBtn" class="add-btn">Add</button>
+            </div>
+            <ul id="todoList">
+                <!-- Items will be injected here -->
+            </ul>
+            <div style="margin-top: 20px; font-size: 0.9em; color: #64748b;">
+                <span id="itemCount">0</span> items left
+            </div>
+        </div>
+
+        <!-- The Explanation -->
+        <div class="explanation-container">
+            <h3>How it works (Interview Talking Points)</h3>
+            
+            <h4>1. State Management</h4>
+            <p>Instead of reading from the DOM, we keep a "Source of Truth" array.</p>
+            <div class="code-block">
+let todos = [
+  { id: 1, text: 'Learn React', completed: false }
+];
+            </div>
+
+            <h4>2. Render Function</h4>
+            <p>We clear the list and rebuild it whenever state changes. This mimics React's rendering cycle.</p>
+            <div class="code-block">
+function render() {
+  list.innerHTML = '';
+  todos.forEach(todo => {
+    // Create elements...
+  });
+}
+            </div>
+
+            <h4>3. Event Delegation</h4>
+            <p>We don't attach listeners to every delete button. We attach <strong>one</strong> listener to the parent list.</p>
+            <div class="code-block">
+list.addEventListener('click', (e) => {
+  if (e.target.closest('.btn-delete')) {
+    deleteTodo(id);
+  }
+});
+            </div>
+
+            <h4>4. LocalStorage Persistence</h4>
+            <p>Data persists on refresh.</p>
+            <div class="code-block">
+localStorage.setItem('todos', JSON.stringify(todos));
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- State ---
+        let todos = JSON.parse(localStorage.getItem('todos')) || [
+            { id: Date.now(), text: 'Review Interview Questions', completed: false },
+            { id: Date.now() + 1, text: 'Practice Coding', completed: true }
+        ];
+
+        // --- DOM Elements ---
+        const todoInput = document.getElementById('todoInput');
+        const addBtn = document.getElementById('addBtn');
+        const todoList = document.getElementById('todoList');
+        const itemCount = document.getElementById('itemCount');
+
+        // --- Functions ---
+        function save() {
+            localStorage.setItem('todos', JSON.stringify(todos));
+            render();
+        }
+
+        function render() {
+            todoList.innerHTML = '';
+            
+            todos.forEach(todo => {
+                const li = document.createElement('li');
+                if (todo.completed) li.classList.add('completed');
+                
+                li.innerHTML = `
+                    <span>${escapeHtml(todo.text)}</span>
+                    <div class="actions">
+                        <button class="btn-icon btn-check" data-id="${todo.id}" title="Toggle Complete">
+                            ✓
+                        </button>
+                        <button class="btn-icon btn-delete" data-id="${todo.id}" title="Delete">
+                            ✕
+                        </button>
+                    </div>
+                `;
+                todoList.appendChild(li);
+            });
+
+            itemCount.textContent = todos.filter(t => !t.completed).length;
+        }
+
+        function addTodo() {
+            const text = todoInput.value.trim();
+            if (!text) return;
+
+            todos.push({
+                id: Date.now(),
+                text: text,
+                completed: false
+            });
+            
+            todoInput.value = '';
+            save();
+        }
+
+        function toggleTodo(id) {
+            todos = todos.map(t => 
+                t.id === id ? { ...t, completed: !t.completed } : t
+            );
+            save();
+        }
+
+        function deleteTodo(id) {
+            todos = todos.filter(t => t.id !== id);
+            save();
+        }
+
+        // Security: Prevent XSS
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // --- Event Listeners ---
+        addBtn.addEventListener('click', addTodo);
+        
+        todoInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') addTodo();
+        });
+
+        // Event Delegation
+        todoList.addEventListener('click', (e) => {
+            const btn = e.target.closest('button');
+            if (!btn) return;
+
+            const id = Number(btn.dataset.id);
+            
+            if (btn.classList.contains('btn-check')) {
+                toggleTodo(id);
+            } else if (btn.classList.contains('btn-delete')) {
+                deleteTodo(id);
+            }
+        });
+
+        // Initial Render
+        render();
+    </script>
+</body>
+</html>

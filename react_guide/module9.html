@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 9: Performance & Security</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+</head>
+<body>
+    <header>
+        <h1>Module 9: Performance & Security</h1>
+        <p>Optimization, Lazy Loading, and Secure Practices.</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section class="concept-section">
+            <h2>1. The Cost of JavaScript</h2>
+            <p>Performance isn't just about speed; it's about user retention. A 1MB JavaScript bundle blocks the main thread, freezing the UI. We must split our code and optimize rendering.</p>
+            
+            <div class="highlight-box">
+                <h3>Key Techniques</h3>
+                <ul>
+                    <li><strong>Code Splitting (Lazy Loading):</strong> Only load the code needed for the current page.</li>
+                    <li><strong>Virtualization:</strong> Render only the items visible on the screen (essential for long lists).</li>
+                    <li><strong>Memoization:</strong> Prevent unnecessary re-renders using `React.memo`, `useMemo`, and `useCallback`.</li>
+                </ul>
+            </div>
+        </section>
+
+        <div class="jira-ticket">
+            <div class="jira-header">
+                <span class="jira-id">PERF-101</span>
+                <span class="jira-status">To Do</span>
+            </div>
+            <div class="jira-body">
+                <h3 class="jira-title">Implement Code Splitting</h3>
+                
+                <div class="jira-section">
+                    <span class="jira-label">User Story</span>
+                    <p>As a mobile user with a slow connection, I want the initial page load to be fast, even if other pages take longer to load later.</p>
+                </div>
+
+                <div class="jira-section">
+                    <span class="jira-label">Acceptance Criteria</span>
+                    <ul class="req-list">
+                        <li>Identify heavy routes (e.g., Dashboard, Admin).</li>
+                        <li>Replace static imports with <code>React.lazy</code>.</li>
+                        <li>Wrap routes in <code>Suspense</code> with a fallback UI.</li>
+                    </ul>
+                </div>
+
+                <div class="jira-section">
+                    <span class="jira-label">Code Example (App.tsx)</span>
+                    <pre><code class="language-typescript">import { Suspense, lazy } from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import LoadingSpinner from './components/LoadingSpinner';
+
+// Lazy load the component
+const Dashboard = lazy(() => import('./pages/Dashboard'));
+const Settings = lazy(() => import('./pages/Settings'));
+
+function App() {
+  return (
+    &lt;BrowserRouter&gt;
+      {/* Suspense catches the "loading" state */}
+      <Suspense fallback={&lt;LoadingSpinner /&gt;}>
+        &lt;Routes&gt;
+          &lt;Route path="/" element={&lt;Home /&gt;} /&gt;
+          &lt;Route path="/dashboard" element={&lt;Dashboard /&gt;} /&gt;
+          &lt;Route path="/settings" element={&lt;Settings /&gt;} /&gt;
+        &lt;/Routes&gt;
+      &lt;/Suspense&gt;
+    &lt;/BrowserRouter&gt;
+  );
+}</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="jira-ticket">
+            <div class="jira-header">
+                <span class="jira-id">PERF-102</span>
+                <span class="jira-status">To Do</span>
+            </div>
+            <div class="jira-body">
+                <h3 class="jira-title">Virtualize Long Lists</h3>
+                
+                <div class="jira-section">
+                    <span class="jira-label">User Story</span>
+                    <p>As a user, I want to scroll through a list of 10,000 items smoothly without the browser crashing.</p>
+                </div>
+
+                <div class="jira-section">
+                    <span class="jira-label">Acceptance Criteria</span>
+                    <ul class="req-list">
+                        <li>Install <code>react-window</code> or <code>react-virtuoso</code>.</li>
+                        <li>Replace a standard <code>map</code> list with a virtualized list component.</li>
+                        <li>Verify that only ~10-20 DOM nodes exist at any time.</li>
+                    </ul>
+                </div>
+
+                <div class="jira-section">
+                    <span class="jira-label">Code Example (VirtualList.tsx)</span>
+                    <pre><code class="language-typescript">import { FixedSizeList as List } from 'react-window';
+
+const Row = ({ index, style }) => (
+  &lt;div style={style} className="list-item"&gt;
+    Row {index}
+  &lt;/div&gt;
+);
+
+const Example = () => (
+  &lt;List
+    height={400}
+    itemCount={10000}
+    itemSize={35}
+    width={300}
+  &gt;
+    {Row}
+  &lt;/List&gt;
+);</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="jira-ticket">
+            <div class="jira-header">
+                <span class="jira-id">SEC-101</span>
+                <span class="jira-status">To Do</span>
+            </div>
+            <div class="jira-body">
+                <h3 class="jira-title">Prevent XSS Attacks</h3>
+                
+                <div class="jira-section">
+                    <span class="jira-label">User Story</span>
+                    <p>As a security engineer, I want to ensure that user-generated content cannot execute malicious scripts.</p>
+                </div>
+
+                <div class="jira-section">
+                    <span class="jira-label">Acceptance Criteria</span>
+                    <ul class="req-list">
+                        <li>Identify any usage of <code>dangerouslySetInnerHTML</code>.</li>
+                        <li>Install <code>dompurify</code>.</li>
+                        <li>Sanitize HTML content before rendering.</li>
+                    </ul>
+                </div>
+
+                <div class="jira-section">
+                    <span class="jira-label">Code Example (SafeHTML.tsx)</span>
+                    <pre><code class="language-typescript">import DOMPurify from 'dompurify';
+
+interface Props {
+  dirtyContent: string;
+}
+
+const SafeHTML = ({ dirtyContent }: Props) => {
+  // Sanitize the string
+  const cleanContent = DOMPurify.sanitize(dirtyContent);
+
+  return (
+    &lt;div 
+      dangerouslySetInnerHTML={{ __html: cleanContent }} 
+    /&gt;
+  );
+};</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <section class="bug-hunt">
+            <h3>🐛 Bug Hunt: The "Memo" Trap</h3>
+            <p><strong>Scenario:</strong> You wrapped a component in <code>React.memo</code>, but it still re-renders every time the parent renders.</p>
+            <p><strong>Why?</strong> You are likely passing a <strong>new object</strong> or <strong>new function</strong> as a prop.</p>
+            <pre><code class="language-typescript">// ❌ Bad: New object created every render
+&lt;Child options={{ color: 'red' }} /&gt;
+
+// ❌ Bad: New function created every render
+&lt;Child onClick={() => console.log('click')} /&gt;</code></pre>
+            <p><strong>Fix:</strong> Use <code>useMemo</code> for objects and <code>useCallback</code> for functions.</p>
+        </section>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+    <script src="layout.js"></script>
+    <script>
+        initLayout();
+    </script>
+</body>
+</html>

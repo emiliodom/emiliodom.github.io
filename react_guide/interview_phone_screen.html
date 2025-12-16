@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interview: Phone Screen & Verbal Screening</title>
+    <style>
+        body { font-family: system-ui, -apple-system, sans-serif; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 20px; color: #333; }
+        h2 { border-bottom: 1px solid #ccc; padding-bottom: 10px; margin-top: 40px; }
+        .q-block { background: #f4f4f4; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+        .q-text { font-weight: bold; font-size: 1.1em; color: #2c3e50; margin-bottom: 10px; }
+        .hint { font-size: 0.9em; color: #666; font-style: italic; margin-bottom: 10px; }
+        details { margin-top: 10px; }
+        summary { cursor: pointer; color: #0066cc; font-weight: bold; }
+        .answer { margin-top: 15px; border-top: 1px solid #ddd; padding-top: 10px; }
+        nav { margin-bottom: 20px; }
+        .code-section { margin-top: 15px; border-left: 4px solid #007acc; padding-left: 15px; }
+        .code-label { font-size: 0.8em; text-transform: uppercase; color: #666; font-weight: bold; margin-bottom: 5px; display: block; }
+        pre { background: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 4px; overflow-x: auto; font-size: 0.9em; }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="interview_index.html">&larr; Back to Interview Index</a>
+    </nav>
+
+    <h1>Phone Screen & Verbal Screening</h1>
+    <p>These questions are designed to be answered verbally without writing code, but understanding the code behind them is crucial. This stage filters candidates before the technical deep dive.</p>
+
+    <div id="google_translate_element"></div>
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({pageLanguage: 'en', includedLanguages: 'es'}, 'google_translate_element');
+        }
+    </script>
+    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+    <h2>1. General Web Knowledge</h2>
+
+    <div class="q-block">
+        <div class="q-text">Q: What happens when you type a URL into the browser and hit enter?</div>
+        <div class="hint">DNS, IP, Handshake, HTML.</div>
+        
+        <div class="code-section">
+            <span class="code-label">Concept Visualization</span>
+            <pre><code>1. DNS Lookup: google.com -> 142.250.190.46
+2. TCP Handshake (SYN, SYN-ACK, ACK)
+3. HTTP Request (GET /)
+4. Server Response (200 OK, HTML)
+5. Browser Parsing (DOM Tree, CSSOM)
+6. Rendering (Layout, Paint)</code></pre>
+        </div>
+
+        <details>
+            <summary>Show Verbal Answer</summary>
+            <div class="answer">
+                <p>First, the browser checks the cache. If missing, it asks the DNS server for the IP address. It establishes a TCP connection (3-way handshake) with the server. It sends an HTTP GET request. The server responds with HTML. The browser parses the HTML to build the DOM, fetches CSS/JS, builds the Render Tree, calculates layout, and paints pixels to the screen.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Explain the difference between `localStorage`, `sessionStorage`, and `cookies`.</div>
+        <div class="hint">Persistence and Scope.</div>
+
+        <div class="code-section">
+            <span class="code-label">Basic Usage</span>
+            <pre><code>// LocalStorage (Persists forever)
+localStorage.setItem('user', 'Emilio');
+
+// SessionStorage (Persists for tab session)
+sessionStorage.setItem('tempId', '123');
+
+// Cookies (Sent with requests)
+document.cookie = "token=abc; Secure; HttpOnly";</code></pre>
+        </div>
+
+        <details>
+            <summary>Show Verbal Answer</summary>
+            <div class="answer">
+                <p><strong>localStorage:</strong> Stores data with no expiration date. Persists even if the browser is closed.<br>
+                <strong>sessionStorage:</strong> Stores data for one session. Data is lost when the tab is closed.<br>
+                <strong>Cookies:</strong> Small data sent with every HTTP request to the server. Used for authentication/sessions.</p>
+            </div>
+        </details>
+    </div>
+
+    <h2>2. JavaScript & React Verbal Checks</h2>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is the Event Loop?</div>
+        <div class="hint">Call Stack, Callback Queue.</div>
+        
+        <div class="code-section">
+            <span class="code-label">Concept</span>
+            <pre><code>console.log('Start'); // 1. Call Stack
+setTimeout(() => {
+  console.log('Timeout'); // 3. Callback Queue -> Stack
+}, 0);
+console.log('End'); // 2. Call Stack
+
+// Output: Start, End, Timeout</code></pre>
+        </div>
+
+        <details>
+            <summary>Show Verbal Answer</summary>
+            <div class="answer">
+                <p>JS is single-threaded. The Event Loop monitors the Call Stack and the Callback Queue. If the Call Stack is empty, it takes the first event from the Queue and pushes it to the Stack. This allows non-blocking async behavior (like setTimeout or fetch) despite having only one thread.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Why can't you update React state directly (e.g., `this.state.count = 5`)?</div>
+        <div class="hint">Immutability and Re-rendering.</div>
+
+        <div class="code-section">
+            <span class="code-label">Bad vs Good</span>
+            <pre><code>// BAD
+state.count = 5; // React doesn't know it changed
+
+// GOOD
+setState({ count: 5 }); // Triggers reconciliation</code></pre>
+        </div>
+
+        <details>
+            <summary>Show Verbal Answer</summary>
+            <div class="answer">
+                <p>React needs to know when data changes to trigger a re-render and update the DOM. Direct mutation doesn't notify React's reconciliation engine. Using the setter (setState or useState's set function) ensures the component lifecycle runs correctly.</p>
+            </div>
+        </details>
+    </div>
+
+</body>
+</html>

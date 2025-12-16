@@ -1,0 +1,1590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interview: Testing</title>
+    <style>
+        body { font-family: system-ui, -apple-system, sans-serif; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 20px; color: #333; }
+        h2 { border-bottom: 1px solid #ccc; padding-bottom: 10px; margin-top: 40px; }
+        .q-block { background: #f4f4f4; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+        .q-text { font-weight: bold; font-size: 1.1em; color: #2c3e50; margin-bottom: 10px; }
+        .hint { font-size: 0.9em; color: #666; font-style: italic; margin-bottom: 10px; }
+        details { margin-top: 10px; }
+        summary { cursor: pointer; color: #0066cc; font-weight: bold; }
+        pre { background: #2d2d2d; color: #f8f8f2; padding: 15px; border-radius: 5px; overflow-x: auto; }
+        code { font-family: monospace; }
+        .answer { margin-top: 15px; border-top: 1px solid #ddd; padding-top: 10px; }
+        .code-section { margin-top: 15px; border-left: 4px solid #0066cc; padding-left: 15px; }
+        .code-section h4 { margin: 0 0 10px 0; color: #0066cc; font-size: 0.95em; text-transform: uppercase; letter-spacing: 0.5px; }
+        nav { margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="interview_index.html">&larr; Back to Interview Index</a>
+    </nav>
+
+    <h1>Testing (Unit, Integration, E2E)</h1>
+
+    <div id="google_translate_element"></div>
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({pageLanguage: 'en', includedLanguages: 'es'}, 'google_translate_element');
+        }
+    </script>
+    <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+    <h2>1. Core Concepts</h2>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is the difference between Unit, Integration, and E2E testing?</div>
+        <div class="hint">Think about the scope and speed of execution.</div>
+        <div class="code-section">
+            <h4>Basic Implementation</h4>
+            <pre><code>// 1. Unit Test (Testing a pure function)
+test('add', () => {
+  expect(add(1, 2)).toBe(3);
+});
+
+// 2. Integration Test (Testing Component + Child)
+test('renders user list', () => {
+  render(&lt;UserList users={['Alice', 'Bob']} /&gt;);
+  expect(screen.getByText('Alice')).toBeInTheDocument();
+});
+
+// 3. E2E Test (Playwright/Cypress)
+test('login flow', async ({ page }) => {
+  await page.goto('/login');
+  await page.fill('#email', 'user@test.com');
+  await page.click('#submit');
+  await expect(page).toHaveURL('/dashboard');
+});</code></pre>
+            <h4>Real World Example</h4>
+            <pre><code>// In a CI/CD pipeline:
+// - Run Unit Tests on every commit (Fast, &lt; 1min)
+// - Run Integration Tests on PR creation (Medium, ~5min)
+// - Run E2E Tests before merging to main or nightly (Slow, ~30min)</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <ul>
+                    <li><strong>Unit:</strong> Tests a single function or component in isolation. Fast, mocks everything.</li>
+                    <li><strong>Integration:</strong> Tests how multiple units work together (e.g., Parent + Child + Store). Mocks network, but not internal logic.</li>
+                    <li><strong>E2E (End-to-End):</strong> Tests the full application in a real browser. Slow, mocks nothing (usually).</li>
+                </ul>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Why do we prefer `getByRole` over `getByTestId` in React Testing Library?</div>
+        <div class="hint">Think about accessibility and how a real user interacts with the page.</div>
+        <div class="code-section">
+            <h4>Basic Implementation</h4>
+            <pre><code>// ❌ Bad (Implementation detail)
+screen.getByTestId('submit-btn');
+
+// ✅ Good (Accessible role)
+screen.getByRole('button', { name: /submit/i });</code></pre>
+            <h4>Real World Example</h4>
+            <pre><code>// If you change a &lt;button&gt; to a &lt;div onClick&gt; (bad practice),
+// getByRole('button') will fail, alerting you to the accessibility regression.
+// getByTestId would still pass, hiding the bug.
+
+test('button is accessible', () => {
+  render(&lt;CustomButton /&gt;);
+  // Ensures screen readers can find it
+  expect(screen.getByRole('button')).toBeEnabled();
+});</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p><strong>Accessibility First:</strong> RTL philosophy is "The more your tests resemble the way your software is used, the more confidence they can give you."</p>
+                <p><code>getByRole('button', { name: /submit/i })</code> ensures the element is actually accessible as a button to screen readers. <code>getByTestId</code> is an implementation detail that users don't see.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is the difference between `getBy`, `queryBy`, and `findBy`?</div>
+        <div class="hint">Think about error handling and async operations.</div>
+        <div class="code-section">
+            <h4>Basic Implementation</h4>
+            <pre><code>// 1. getBy: Expect it to be there NOW
+const title = screen.getByText('Welcome');
+
+// 2. queryBy: Check if it is NOT there
+const error = screen.queryByText('Error');
+expect(error).toBeNull();
+
+// 3. findBy: Wait for it to appear (Async)
+const data = await screen.findByText('Loaded Data');</code></pre>
+            <h4>Real World Example</h4>
+            <pre><code>test('modal opens and closes', async () => {
+  // Modal is closed initially
+  expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+
+  // Open modal
+  await userEvent.click(screen.getByRole('button', { name: /open/i }));
+  
+  // Wait for animation/render
+  const modal = await screen.findByRole('dialog');
+  expect(modal).toBeVisible();
+});</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <ul>
+                    <li><strong>getBy:</strong> Returns the element or <strong>throws an error</strong> if not found. Use when you expect the element to be there.</li>
+                    <li><strong>queryBy:</strong> Returns the element or <strong>null</strong>. Use to assert that something is <em>NOT</em> there.</li>
+                    <li><strong>findBy:</strong> Returns a <strong>Promise</strong>. Retries until the element is found or times out. Use for async updates (API calls).</li>
+                </ul>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is TDD (Test Driven Development)?</div>
+        <div class="hint">Red, Green, Refactor.</div>
+        <div class="code-section">
+            <h4>Basic Implementation</h4>
+            <pre><code>// 1. RED: Write test for non-existent function
+test('sum', () => {
+  expect(sum(2, 3)).toBe(5); // Fails: sum is not defined
+});
+
+// 2. GREEN: Write minimal code to pass
+const sum = (a, b) => a + b;
+
+// 3. REFACTOR: Improve code (if needed)
+const sum = (a: number, b: number) => a + b;</code></pre>
+            <h4>Real World Example</h4>
+            <pre><code>// TDD is great for utility libraries or complex algorithms.
+// Example: Building a currency formatter.
+// 1. Test: format(1000, 'USD') -> '$1,000.00'
+// 2. Implement basic logic.
+// 3. Test: format(1000, 'EUR') -> '€1,000.00'
+// 4. Update logic to handle locales.</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>A development process where you write the test <strong>before</strong> the code.</p>
+                <ol>
+                    <li><strong>Red:</strong> Write a failing test.</li>
+                    <li><strong>Green:</strong> Write the minimal code to pass the test.</li>
+                    <li><strong>Refactor:</strong> Clean up the code while keeping tests green.</li>
+                </ol>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: How do you test a component that makes an API call in `useEffect`?</div>
+        <div class="hint">You shouldn't hit the real API.</div>
+        <div class="code-section">
+            <h4>Basic Implementation</h4>
+            <pre><code>// Component
+useEffect(() => {
+  fetch('/api/user').then(res => res.json()).then(setData);
+}, []);
+
+// Test
+test('loads user data', async () => {
+  // Mock fetch
+  global.fetch = vi.fn(() => Promise.resolve({
+    json: () => Promise.resolve({ name: 'John' })
+  }));
+
+  render(&lt;UserProfile /&gt;);
+  
+  // Wait for data
+  expect(await screen.findByText('John')).toBeInTheDocument();
+});</code></pre>
+            <h4>Real World Example</h4>
+            <pre><code>// Using MSW (Mock Service Worker) - Preferred
+import { server } from './mocks/server';
+import { rest } from 'msw';
+
+test('handles server error', async () => {
+  server.use(
+    rest.get('/api/user', (req, res, ctx) => {
+      return res(ctx.status(500));
+    })
+  );
+
+  render(&lt;UserProfile /&gt;);
+  expect(await screen.findByText(/error loading/i)).toBeInTheDocument();
+});</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>You must <strong>Mock</strong> the network request.</p>
+                <ol>
+                    <li>Use <strong>MSW (Mock Service Worker)</strong> to intercept the request at the network layer.</li>
+                    <li>Or use <code>vi.spyOn(global, 'fetch')</code> to mock the fetch function.</li>
+                    <li>Use <code>await screen.findByText(...)</code> to wait for the UI to update after the promise resolves.</li>
+                </ol>
+            </div>
+        </details>
+    </div>
+
+    <h2>2. Advanced Scenarios</h2>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is Snapshot Testing and when is it dangerous?</div>
+        <div class="hint">It captures the rendered output.</div>
+        <div class="code-section">
+            <h4>Basic Implementation</h4>
+            <pre><code>test('renders correctly', () => {
+  const { container } = render(&lt;Button label="Click me" /&gt;);
+  expect(container).toMatchSnapshot();
+});
+// Creates a .snap file with the HTML structure</code></pre>
+            <h4>Real World Example</h4>
+            <pre><code>// Dangerous Scenario:
+// You change a class name in a global style.
+// 50 snapshots fail.
+// You run `jest -u` (update snapshots) without looking.
+// You accidentally broke the layout, but the test now passes with the broken layout.
+//
+// Use snapshots for small, stable components (like Icons or UI primitives).</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>It saves a serialized string of your DOM to a file. If the DOM changes, the test fails.</p>
+                <p><strong>Danger:</strong> It's easy to ignore. Developers often just press "u" (update snapshot) without checking if the change was intentional, making the test useless.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: How do you test a custom hook?</div>
+        <div class="hint">You can't call a hook outside a component.</div>
+        <div class="code-section">
+            <h4>Basic Implementation</h4>
+            <pre><code>import { renderHook, act } from '@testing-library/react';
+
+test('useCounter increments', () => {
+  const { result } = renderHook(() => useCounter(0));
+
+  expect(result.current.count).toBe(0);
+
+  act(() => {
+    result.current.increment();
+  });
+
+  expect(result.current.count).toBe(1);
+});</code></pre>
+            <h4>Real World Example</h4>
+            <pre><code>// Testing a hook that depends on Context
+const wrapper = ({ children }) => (
+  &lt;AuthProvider&gt;{children}&lt;/AuthProvider&gt;
+);
+
+const { result } = renderHook(() => useCurrentUser(), { wrapper });
+expect(result.current.isLoggedIn).toBe(false);</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Use <code>renderHook</code> from <code>@testing-library/react</code>.</p>
+                <pre><code>const { result } = renderHook(() => useCounter());
+act(() => {
+  result.current.increment();
+});
+expect(result.current.count).toBe(1);</code></pre>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is the `act()` warning in React testing?</div>
+        <div class="hint">"An update to Component inside a test was not wrapped in act..."</div>
+        <div class="code-section">
+            <h4>Basic Implementation</h4>
+            <pre><code>// ❌ Causes Warning
+fireEvent.click(button); // Triggers async state update
+// Test ends immediately, state updates after test finishes
+
+// ✅ Fix
+await userEvent.click(button); // userEvent wraps interactions in act() automatically
+// OR
+await waitFor(() => expect(screen.getByText('Updated')).toBeInTheDocument());</code></pre>
+            <h4>Real World Example</h4>
+            <pre><code>// Common in useEffect fetching
+useEffect(() => {
+  fetchData().then(setState);
+}, []);
+
+// If you don't wait for the fetch to finish in the test, 
+// React tries to update state after the test tears down the component.
+// Fix:
+await screen.findByText('Data Loaded'); // Waits for the update</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>It means a state update happened (usually async) after your test finished assertions, or outside of React's call stack.</p>
+                <p><strong>Fix:</strong> Use <code>await waitFor(...)</code> or <code>findBy...</code> to ensure the test waits for the update to finish before exiting.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: How do you test a component wrapped in a Context Provider (e.g., Theme, Redux)?</div>
+        <div class="hint">The component will crash if rendered in isolation.</div>
+        <div class="code-section">
+            <h4>Basic Implementation</h4>
+            <pre><code>// ❌ Fails: Could not find "store" in context
+render(&lt;ConnectedComponent /&gt;);
+
+// ✅ Works: Wrap manually
+render(
+  &lt;Provider store={store}&gt;
+    &lt;ConnectedComponent /&gt;
+  &lt;/Provider&gt;
+);</code></pre>
+            <h4>Real World Example</h4>
+            <pre><code>// Create a custom render function (test-utils.js)
+const customRender = (ui, options) =>
+  render(ui, { wrapper: AllTheProviders, ...options });
+
+// In tests:
+import { render } from './test-utils';
+render(&lt;ConnectedComponent /&gt;); // Automatically wrapped</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>You must wrap the component in the test with the same Provider.</p>
+                <p><strong>Best Practice:</strong> Create a custom <code>render</code> function that automatically wraps everything in your global providers.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is "Code Coverage" and is 100% coverage a good goal?</div>
+        <div class="hint">Quality vs Quantity.</div>
+        <div class="code-section">
+            <h4>Basic Implementation</h4>
+            <pre><code>// Running coverage
+npm test -- --coverage
+
+// Output:
+// Statements: 80%
+// Branches:   70%
+// Functions:  90%
+// Lines:      80%</code></pre>
+            <h4>Real World Example</h4>
+            <pre><code>// 100% coverage forces you to test implementation details.
+// Example: Testing a default parameter that is never used in the app.
+//
+// Focus on:
+// 1. Critical Business Logic (Payments, Auth) -> 100%
+// 2. UI Components -> Interaction tests
+// 3. Utils -> Unit tests</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>It measures what percentage of your code lines were executed during tests.</p>
+                <p><strong>Verdict:</strong> 100% is usually a waste of time (diminishing returns). Aim for ~80%, focusing on business logic and critical paths. Don't test simple getters/setters or third-party libraries.</p>
+            </div>
+        </details>
+    </div>
+
+    <h2>3. Tools & Frameworks</h2>
+
+    <div class="q-block">
+        <div class="q-text">Q: Jest vs. Vitest?</div>
+        <div class="hint">Speed and Ecosystem.</div>
+        <div class="code-section">
+            <h4>Basic Implementation</h4>
+            <pre><code>// Jest (jest.config.js)
+module.exports = {
+  testEnvironment: 'jsdom',
+  transform: { '^.+\\.tsx?$': 'ts-jest' }
+};
+
+// Vitest (vite.config.ts)
+export default defineConfig({
+  test: {
+    environment: 'jsdom',
+    globals: true // to use describe/test without import
+  }
+});</code></pre>
+            <h4>Real World Example</h4>
+            <pre><code>// Migration from Jest to Vitest is usually easy.
+// 1. npm install -D vitest
+// 2. Replace `jest` command with `vitest`
+// 3. Vitest supports ESM natively (no more babel-jest headaches).
+// 4. Vitest re-uses the same Vite pipeline as your app (faster).</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <ul>
+                    <li><strong>Jest:</strong> The standard for years. Robust, huge ecosystem. Can be slow.</li>
+                    <li><strong>Vitest:</strong> Newer, built for Vite. Extremely fast (uses Vite's dev server). API compatible with Jest. Recommended for modern projects.</li>
+                </ul>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Cypress vs. Playwright?</div>
+        <div class="hint">E2E Tools.</div>
+        <div class="code-section">
+            <h4>Basic Implementation</h4>
+            <pre><code>// Cypress
+cy.visit('/login');
+cy.get('input[name=user]').type('admin');
+cy.get('button').click();
+
+// Playwright
+await page.goto('/login');
+await page.fill('input[name=user]', 'admin');
+await page.click('button');</code></pre>
+            <h4>Real World Example</h4>
+            <pre><code>// Playwright handles multiple tabs/pages better.
+// Scenario: User clicks "Open in new tab".
+// Cypress: Hard to test (runs in same tab).
+// Playwright:
+const [newPage] = await Promise.all([
+  context.waitForEvent('page'),
+  page.click('a[target="_blank"]')
+]);
+await newPage.waitForLoadState();</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <ul>
+                    <li><strong>Cypress:</strong> Runs inside the browser. Great DX, easy debugging. Historically slower, limited multi-tab support.</li>
+                    <li><strong>Playwright:</strong> Microsoft's tool. Runs outside the browser (via protocol). Faster, supports multiple tabs/pages, parallel execution, and all browsers (WebKit, Firefox, Chromium).</li>
+                </ul>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is MSW (Mock Service Worker)?</div>
+        <div class="hint">Network interception.</div>
+        <div class="code-section">
+            <h4>Basic Implementation</h4>
+            <pre><code>// handlers.js
+export const handlers = [
+  rest.get('/api/user', (req, res, ctx) => {
+    return res(ctx.json({ name: 'John Doe' }));
+  })
+];
+
+// setupTests.js
+server.listen();</code></pre>
+            <h4>Real World Example</h4>
+            <pre><code>// MSW is powerful because it works in the Browser too.
+// You can run your app locally with `npm start` and have MSW mock the backend.
+// Great for frontend development when the backend API isn't ready yet.</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>A library that intercepts network requests at the network level (using Service Workers). It allows you to mock API responses for both browser (development) and node (testing) using the same handlers.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is "Visual Regression Testing"?</div>
+        <div class="hint">Pixel perfect.</div>
+        <div class="code-section">
+            <h4>Basic Implementation</h4>
+            <pre><code>// Playwright
+test('visual comparison', async ({ page }) => {
+  await page.goto('/');
+  await expect(page).toHaveScreenshot(); 
+});
+// First run: Generates baseline image.
+// Subsequent runs: Compares current view to baseline.</code></pre>
+            <h4>Real World Example</h4>
+            <pre><code>// Tools like Percy or Chromatic integrate with CI.
+// 1. Push code.
+// 2. CI builds app.
+// 3. Percy takes screenshots of all components.
+// 4. If pixels changed, PR status is "Pending Approval".
+// 5. Designer reviews changes visually.</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Tools like <strong>Percy</strong>, <strong>Chromatic</strong>, or Playwright's snapshot feature take screenshots of your UI and compare them pixel-by-pixel against a baseline. If pixels differ, the test fails. Catches CSS bugs that functional tests miss.</p>
+            </div>
+        </details>
+    </div>
+
+    <h2>4. Testing Strategies</h2>
+
+    <div class="q-block">
+        <div class="q-text">Q: How to test a form submission?</div>
+        <div class="hint">User Event.</div>
+        <div class="code-section">
+            <h4>Basic Implementation</h4>
+            <pre><code>test('submits form', async () => {
+  const handleSubmit = vi.fn();
+  render(&lt;LoginForm onSubmit={handleSubmit} /&gt;);
+
+  await userEvent.type(screen.getByLabelText(/email/i), 'test@test.com');
+  await userEvent.click(screen.getByRole('button', { name: /login/i }));
+
+  expect(handleSubmit).toHaveBeenCalledWith({ email: 'test@test.com' });
+});</code></pre>
+            <h4>Real World Example</h4>
+            <pre><code>// Testing validation errors
+test('shows error on invalid email', async () => {
+  render(&lt;LoginForm /&gt;);
+  
+  await userEvent.click(screen.getByRole('button', { name: /login/i }));
+  
+  expect(await screen.findByText(/email is required/i)).toBeVisible();
+});</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <pre><code>const user = userEvent.setup();
+render(&lt;Login /&gt;);
+await user.type(screen.getByLabelText(/email/i), 'test@test.com');
+await user.click(screen.getByRole('button', { name: /login/i }));
+expect(handleSubmit).toHaveBeenCalledWith(...);</code></pre>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: `fireEvent` vs `userEvent`?</div>
+        <div class="hint">Low level vs High level.</div>
+        <div class="code-section">
+            <h4>Basic Implementation</h4>
+            <pre><code>// fireEvent (Low Level)
+fireEvent.change(input, { target: { value: 'a' } });
+// Just sets the value. Doesn't trigger focus, keydown, keyup.
+
+// userEvent (High Level)
+await userEvent.type(input, 'a');
+// Triggers: focus -> keydown -> keypress -> input -> keyup</code></pre>
+            <h4>Real World Example</h4>
+            <pre><code>// If you have a form that validates on 'blur' or 'keydown':
+// fireEvent.change() might NOT trigger the validation.
+// userEvent.type() WILL trigger it, matching real user behavior.</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <ul>
+                    <li><strong>fireEvent:</strong> Dispatches a DOM event directly. Fast but unrealistic (e.g., clicking a button doesn't focus it).</li>
+                    <li><strong>userEvent:</strong> Simulates full user interaction. Typing triggers keyDown, keyPress, input, keyUp. <strong>Always prefer userEvent.</strong></li>
+                </ul>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: How to debug a failing test?</div>
+        <div class="hint">screen.debug()</div>
+        <div class="code-section">
+            <h4>Basic Implementation</h4>
+            <pre><code>test('debugging', () => {
+  render(&lt;App /&gt;);
+  screen.debug(); // Prints HTML to console
+  
+  const btn = screen.getByRole('button');
+  screen.debug(btn); // Prints only the button HTML
+});</code></pre>
+            <h4>Real World Example</h4>
+            <pre><code>// Using Testing Playground
+screen.logTestingPlaygroundURL();
+// Generates a URL. Open it in browser to see your DOM 
+// and get suggested queries (e.g., "screen.getByRole('heading')").</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>1. Use <code>screen.debug()</code> to print the current DOM to the console.<br>
+                2. Use <code>screen.logTestingPlaygroundURL()</code> to get a link to an interactive sandbox.<br>
+                3. Run the test in "watch mode" to see changes instantly.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Testing Asynchronous Code?</div>
+        <div class="hint">waitFor / findBy.</div>
+        <div class="code-section">
+            <h4>Basic Implementation</h4>
+            <pre><code>// Option 1: findBy (Preferred for elements)
+const item = await screen.findByText('Loaded Item');
+
+// Option 2: waitFor (For assertions)
+await waitFor(() => {
+  expect(mockFn).toHaveBeenCalled();
+});</code></pre>
+            <h4>Real World Example</h4>
+            <pre><code>// Waiting for an element to disappear
+await waitFor(() => {
+  expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
+});
+// OR
+await waitForElementToBeRemoved(() => screen.queryByText('Loading...'));</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Use <code>await screen.findBy...</code> when waiting for an element to appear. Use <code>await waitFor(() => expect(...))</code> when waiting for an assertion to pass (e.g., a function to be called).</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is "Flaky Test"?</div>
+        <div class="hint">Sometimes passes, sometimes fails.</div>
+        <div class="code-section">
+            <h4>Basic Implementation</h4>
+            <pre><code>// Flaky Test Example:
+test('random fail', async () => {
+  // Relies on network speed being fast
+  await page.click('#submit');
+  // Fails if server takes > 100ms
+  expect(await page.innerText('#status')).toBe('Done'); 
+});</code></pre>
+            <h4>Real World Example</h4>
+            <pre><code>// Fixing Flakiness:
+// 1. Don't use fixed timeouts (wait(1000)).
+// 2. Use assertions that retry (findBy, expect.toBeVisible).
+// 3. Isolate state (reset DB between tests).
+// 4. Mock external services (don't hit real APIs).</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>A test that produces different results with the same code. Causes: Network timing, animations, random data, shared state between tests. They destroy trust in the test suite.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: How to test timers (setTimeout)?</div>
+        <div class="hint">Fake Timers.</div>
+        <div class="code-section">
+            <h4>Basic Implementation</h4>
+            <pre><code>test('auto-logout after 5s', () => {
+  vi.useFakeTimers();
+  render(&lt;App /&gt;);
+  
+  // Fast-forward time
+  act(() => {
+    vi.advanceTimersByTime(5000);
+  });
+
+  expect(screen.getByText('Logged out')).toBeInTheDocument();
+  vi.useRealTimers();
+});</code></pre>
+            <h4>Real World Example</h4>
+            <pre><code>// Debounce testing
+test('search debounces input', () => {
+  vi.useFakeTimers();
+  const onSearch = vi.fn();
+  render(&lt;Search onSearch={onSearch} /&gt;);
+
+  userEvent.type(input, 'react');
+  
+  // Should not call yet
+  expect(onSearch).not.toHaveBeenCalled();
+  
+  // Fast forward debounce time
+  act(() => vi.runAllTimers());
+  
+  expect(onSearch).toHaveBeenCalledWith('react');
+});</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Use Jest/Vitest Fake Timers.
+                <br><code>vi.useFakeTimers();</code>
+                <br><code>vi.advanceTimersByTime(1000);</code>
+                <br>This allows you to fast-forward time instantly instead of waiting real seconds.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Static Analysis vs Testing?</div>
+        <div class="hint">ESLint/TS vs Jest.</div>
+        <div class="code-section">
+            <h4>Basic Implementation</h4>
+            <pre><code>// Static Analysis (TypeScript)
+const add = (a: number, b: number) => a + b;
+add("1", 2); // Error: Argument of type 'string' is not assignable to 'number'.
+// Catches this BEFORE running code.
+
+// Testing (Jest)
+test('add', () => {
+  expect(add(1, 2)).toBe(3);
+});
+// Verifies logic is correct.</code></pre>
+            <h4>Real World Example</h4>
+            <pre><code>// Use both!
+// TypeScript ensures you don't pass null to a function expecting a string.
+// Tests ensure that function returns the correct string format.
+// ESLint ensures you don't leave unused variables or console.logs.</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <ul>
+                    <li><strong>Static Analysis (ESLint, TypeScript):</strong> Checks code <em>without</em> running it. Catches typos, type errors, syntax.</li>
+                    <li><strong>Testing:</strong> Runs the code to verify behavior.</li>
+                    <li>Both are needed.</li>
+                </ul>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is "Mutation Testing"?</div>
+        <div class="hint">Testing your tests.</div>
+        <div class="code-section">
+            <h4>Basic Implementation</h4>
+            <pre><code>// Original Code
+function isPositive(n) {
+  return n > 0;
+}
+
+// Mutant 1 (Generated by Stryker)
+return n >= 0; 
+
+// If your test is: expect(isPositive(1)).toBe(true);
+// It passes for BOTH original and mutant.
+// The mutant "survived". You need a test case for 0.</code></pre>
+            <h4>Real World Example</h4>
+            <pre><code>// StrykerJS is a popular tool.
+// It changes `+` to `-`, `true` to `false`, removes function calls.
+// High mutation score = Robust tests.
+// Low mutation score = Tests might be passing but not checking enough.</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>A technique where a tool (like Stryker) deliberately introduces bugs into your code (mutants) and runs your tests. If your tests still pass, the mutant "survived" (meaning your tests are weak). If a test fails, the mutant was "killed".</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: How to test a custom hook that uses Context?</div>
+        <div class="hint">Wrapper.</div>
+        <div class="code-section">
+            <h4>Basic Implementation</h4>
+            <pre><code>const wrapper = ({ children }) => (
+  &lt;AuthProvider value={{ user: 'Alice' }}&gt;
+    {children}
+  &lt;/AuthProvider&gt;
+);
+
+const { result } = renderHook(() => useAuth(), { wrapper });
+expect(result.current.user).toBe('Alice');</code></pre>
+            <h4>Real World Example</h4>
+            <pre><code>// Testing a Theme Hook
+const { result } = renderHook(() => useTheme(), {
+  wrapper: ({ children }) => &lt;ThemeProvider theme="dark"&gt;{children}&lt;/ThemeProvider&gt;
+});
+
+expect(result.current.mode).toBe('dark');</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <pre><code>const wrapper = ({ children }) => (
+  &lt;AuthProvider&gt;{children}&lt;/AuthProvider&gt;
+);
+const { result } = renderHook(() => useAuth(), { wrapper });</code></pre>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is "Fuzz Testing"?</div>
+        <div class="hint">Random inputs.</div>
+        <div class="code-section">
+            <h4>Basic Implementation</h4>
+            <pre><code>// Property based testing is a form of fuzzing.
+// Generating random strings, huge numbers, emojis, nulls.
+
+test('parser handles garbage', () => {
+  const randomInput = generateRandomString(1000); // "åß∂ƒ©˙∆..."
+  expect(() => parse(randomInput)).not.toThrow();
+});</code></pre>
+            <h4>Real World Example</h4>
+            <pre><code>// Security Fuzzing:
+// Sending malformed JSON or SQL injection strings to an API endpoint
+// to see if it crashes or leaks data.</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Automated software testing technique that involves providing invalid, unexpected, or random data as inputs to a computer program to find crashes or leaks.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Should you test private methods?</div>
+        <div class="hint">Black box.</div>
+        <div class="code-section">
+            <h4>Basic Implementation</h4>
+            <pre><code>// Class
+class Calculator {
+  public add(a, b) { return this.validate(a) + this.validate(b); }
+  private validate(n) { return Number(n); }
+}
+
+// Test
+// ✅ Test public API
+expect(calc.add(1, 2)).toBe(3);
+
+// ❌ Don't test private
+// expect(calc.validate(1)).toBe(1);</code></pre>
+            <h4>Real World Example</h4>
+            <pre><code>// If you test private methods, you lock the implementation.
+// If you later decide to rename `validate` to `parseNumber`,
+// your test fails even though the public behavior (add) is still correct.
+// This increases maintenance burden.</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Generally <strong>No</strong>. Test the public interface (props, user interactions). Private methods are implementation details. If you test them, refactoring becomes hard because you have to update tests even if behavior didn't change.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: How to test responsive design?</div>
+        <div class="hint">Viewport size.</div>
+        <div class="code-section">
+            <h4>Basic Implementation</h4>
+            <pre><code>// Playwright
+test('mobile layout', async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 667 });
+  await expect(page.locator('.hamburger-menu')).toBeVisible();
+});
+
+test('desktop layout', async ({ page }) => {
+  await page.setViewportSize({ width: 1024, height: 768 });
+  await expect(page.locator('.hamburger-menu')).toBeHidden();
+});</code></pre>
+            <h4>Real World Example</h4>
+            <pre><code>// In Unit Tests (Jest/Vitest)
+// You can mock window.matchMedia
+window.matchMedia = vi.fn().mockImplementation(query => ({
+  matches: query === '(max-width: 600px)',
+  // ...
+}));</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>In Cypress/Playwright, you can set the viewport size: <code>cy.viewport('iphone-6')</code>. In Unit tests, it's harder, but you can mock <code>window.matchMedia</code>.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is "Contract Testing"?</div>
+        <div class="hint">API agreements.</div>
+        <div class="code-section">
+            <h4>Basic Implementation</h4>
+            <pre><code>// Consumer (Frontend) defines expectation:
+// "I expect GET /user/1 to return { id: 1, name: string }"
+
+// Provider (Backend) verifies:
+// "Does my endpoint actually return that?"</code></pre>
+            <h4>Real World Example</h4>
+            <pre><code>// Using Pact
+// 1. Frontend runs test, generates a "Pact file" (JSON contract).
+// 2. Pact file is uploaded to a broker.
+// 3. Backend CI downloads the Pact file and replays requests against itself.
+// 4. If Backend changed the API (e.g., renamed 'name' to 'fullName'), the build fails.</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Ensures that the frontend and backend agree on the API structure (Contract). Tools like <strong>Pact</strong> verify that the provider (API) sends what the consumer (Frontend) expects.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Mocking vs. Stubbing vs. Spying?</div>
+        <div class="hint">Test doubles.</div>
+        <div class="code-section">
+            <h4>Basic Implementation</h4>
+            <pre><code>// Stub: Replaces behavior completely
+vi.fn().mockReturnValue(42);
+
+// Spy: Listens to calls, can pass through to original
+const spy = vi.spyOn(console, 'log');
+console.log('hi');
+expect(spy).toHaveBeenCalledWith('hi');
+
+// Mock: Object with expectations
+const mockUser = {
+  getName: vi.fn().mockReturnValue('Bob')
+};</code></pre>
+            <h4>Real World Example</h4>
+            <pre><code>// Spying is useful when you want to verify a side effect
+// without stopping it (or while stopping it).
+// Example: Spy on window.open to ensure a link opens a new tab,
+// but prevent the test runner from actually opening a window.
+vi.spyOn(window, 'open').mockImplementation(() => {});</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <ul>
+                    <li><strong>Stub:</strong> Replaces a function with a fixed return value.</li>
+                    <li><strong>Spy:</strong> Wraps a function to record arguments and calls, but (optionally) executes the real code.</li>
+                    <li><strong>Mock:</strong> A fake object with pre-programmed expectations.</li>
+                </ul>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: How to test LocalStorage?</div>
+        <div class="hint">Mocking window.</div>
+        <div class="code-section">
+            <h4>Basic Implementation</h4>
+            <pre><code>test('saves to local storage', async () => {
+  const setItemSpy = vi.spyOn(Storage.prototype, 'setItem');
+  
+  render(&lt;ThemeSwitcher /&gt;);
+  await userEvent.click(screen.getByText('Dark Mode'));
+  
+  expect(setItemSpy).toHaveBeenCalledWith('theme', 'dark');
+});</code></pre>
+            <h4>Real World Example</h4>
+            <pre><code>// JSDOM implements localStorage, so you can also check values directly:
+expect(localStorage.getItem('theme')).toBe('dark');
+
+// Remember to clear it between tests!
+afterEach(() => {
+  localStorage.clear();
+});</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Since tests run in JSDOM (which supports localStorage), you can just use it. Or, mock the Storage prototype to assert calls.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is "Happy Path" vs "Unhappy Path"?</div>
+        <div class="hint">Success vs Error.</div>
+        <div class="code-section">
+            <h4>Basic Implementation</h4>
+            <pre><code>// Happy Path
+test('login success', () => {
+  mockLogin.mockResolvedValue({ token: '123' });
+  // ... assert redirect to dashboard
+});
+
+// Unhappy Path
+test('login failure', () => {
+  mockLogin.mockRejectedValue(new Error('Invalid credentials'));
+  // ... assert error message is shown
+});</code></pre>
+            <h4>Real World Example</h4>
+            <pre><code>// Developers often forget Unhappy Paths.
+// - Network timeout?
+// - Empty search results?
+// - 500 Server Error?
+// - Invalid file format upload?
+// Testing these ensures your app fails gracefully.</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <ul>
+                    <li><strong>Happy Path:</strong> The default scenario where everything works (User logs in successfully).</li>
+                    <li><strong>Unhappy Path:</strong> Edge cases and errors (Wrong password, Server down, Network timeout). <strong>Crucial to test.</strong></li>
+                </ul>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Testing Accessibility (A11y)?</div>
+        <div class="hint">jest-axe.</div>
+        <div class="code-section">
+            <h4>Basic Implementation</h4>
+            <pre><code>import { axe, toHaveNoViolations } from 'jest-axe';
+expect.extend(toHaveNoViolations);
+
+test('should have no accessibility violations', async () => {
+  const { container } = render(&lt;App /&gt;);
+  const results = await axe(container);
+  expect(results).toHaveNoViolations();
+});</code></pre>
+            <h4>Real World Example</h4>
+            <pre><code>// Catches common errors:
+// - Low color contrast
+// - Missing alt text on images
+// - Missing labels on inputs
+// - Duplicate IDs
+// Does NOT catch everything (e.g., logical tab order), manual testing still needed.</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Use <code>jest-axe</code> to run automated accessibility checks on your rendered DOM.</p>
+                <pre><code>const { container } = render(&lt;App /&gt;);
+const results = await axe(container);
+expect(results).toHaveNoViolations();</code></pre>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: CI/CD Integration?</div>
+        <div class="hint">Automating tests.</div>
+        <div class="code-section">
+            <h4>Basic Implementation</h4>
+            <pre><code># .github/workflows/test.yml
+name: Run Tests
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: npm install
+      - run: npm test
+      - run: npm run e2e</code></pre>
+            <h4>Real World Example</h4>
+            <pre><code>// Block merging if tests fail.
+// Configure GitHub "Branch Protection Rules":
+// "Require status checks to pass before merging" -> Select "test" job.</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Tests should run automatically on every Pull Request (via GitHub Actions, Jenkins). If tests fail, the merge should be blocked.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Snapshot Testing Best Practices?</div>
+        <div class="hint">Small and focused.</div>
+        <div class="code-section">
+            <h4>Basic Implementation</h4>
+            <pre><code>// ❌ Bad: Snapshotting entire App
+render(&lt;App /&gt;);
+expect(container).toMatchSnapshot(); 
+// Result: 5000 line snapshot file. Impossible to review.
+
+// ✅ Good: Snapshotting a specific prop variation
+render(&lt;Card variant="featured" /&gt;);
+expect(container).toMatchSnapshot();
+// Result: 20 line snapshot. Easy to see if class changed.</code></pre>
+            <h4>Real World Example</h4>
+            <pre><code>// Use "Inline Snapshots" for very small outputs.
+expect(generateSlug('Hello World')).toMatchInlineSnapshot(`"hello-world"`);
+// The snapshot is written directly into your test file, making it visible.</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Keep snapshots small. Don't snapshot the whole <code>&lt;App /&gt;</code>. Snapshot small, presentational components. Review snapshot diffs carefully in PRs.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: How to test Drag and Drop?</div>
+        <div class="hint">Complex events.</div>
+        <div class="code-section">
+            <h4>Basic Implementation</h4>
+            <pre><code>// Playwright (E2E) - Recommended
+await page.dragAndDrop('#source', '#target');
+
+// React Testing Library (Unit) - Harder
+fireEvent.dragStart(source);
+fireEvent.dragEnter(target);
+fireEvent.dragOver(target);
+fireEvent.drop(target);
+// Often requires mocking dataTransfer object.</code></pre>
+            <h4>Real World Example</h4>
+            <pre><code>// If using a library like `dnd-kit` or `react-beautiful-dnd`,
+// they often expose specific testing utilities or instructions.
+// E2E is usually more reliable for this interaction.</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Difficult in JSDOM. Libraries like <code>dnd-kit</code> provide testing utilities. Often easier to test in E2E (Playwright) where real mouse events exist.</p>
+            </div>
+        </details>
+    </div>
+
+    <h2>5. Advanced Testing Patterns</h2>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is "Property Based Testing"?</div>
+        <div class="hint">fast-check.</div>
+        <div class="code-section">
+            <h4>Basic Implementation</h4>
+            <pre><code>import fc from 'fast-check';
+
+test('addition is commutative', () => {
+  fc.assert(
+    fc.property(fc.integer(), fc.integer(), (a, b) => {
+      return a + b === b + a;
+    })
+  );
+});</code></pre>
+            <h4>Real World Example</h4>
+            <pre><code>// Testing a sort function:
+// Property: "The output array should have the same length as input"
+// Property: "The output array should be sorted"
+// fast-check will generate empty arrays, arrays with 1 item, arrays with duplicates, etc.</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Instead of testing specific inputs (1 + 1 = 2), you define properties that should always hold true (e.g., for any numbers a and b, a + b = b + a). The tool generates thousands of random inputs to try and break your code.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: How to test WebSockets?</div>
+        <div class="hint">Mocking the server.</div>
+        <div class="code-section">
+            <h4>Basic Implementation</h4>
+            <pre><code>import WS from 'jest-websocket-mock';
+
+test('receives message', async () => {
+  const server = new WS('ws://localhost:1234');
+  const client = new WebSocket('ws://localhost:1234');
+  
+  await server.connected;
+  
+  client.onmessage = (e) => {
+    expect(e.data).toBe('hello');
+  };
+  
+  server.send('hello');
+  server.close();
+});</code></pre>
+            <h4>Real World Example</h4>
+            <pre><code>// Testing a Chat App
+// 1. Connect client.
+// 2. Mock server sending a "New Message" payload.
+// 3. Assert that the message appears in the UI list.</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>You can mock the <code>WebSocket</code> object in the browser environment. Libraries like <code>mock-socket</code> allow you to simulate a server sending messages to your client and verify how the client reacts.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is "Chaos Engineering" in frontend?</div>
+        <div class="hint">Gremlins.js.</div>
+        <div class="code-section">
+            <h4>Basic Implementation</h4>
+            <pre><code>// Gremlins.js
+import gremlins from 'gremlins.js';
+
+gremlins.createHorde().unleash();
+// Randomly clicks, scrolls, touches, types everywhere.</code></pre>
+            <h4>Real World Example</h4>
+            <pre><code>// Run this on a staging environment.
+// Check console for errors.
+// Did the app crash? Did it freeze?
+// Helps find memory leaks or unhandled exceptions in obscure UI states.</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Intentionally injecting failures (network latency, 500 errors, random clicks) into the frontend to see if it recovers gracefully. Tools like Gremlins.js unleash a horde of "gremlins" to click everywhere randomly.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: How to test Canvas / WebGL?</div>
+        <div class="hint">Visuals.</div>
+        <div class="code-section">
+            <h4>Basic Implementation</h4>
+            <pre><code>// Functional testing is hard because Canvas is a black box to DOM.
+// Strategy: Visual Regression.
+
+test('canvas draws circle', async ({ page }) => {
+  await page.goto('/canvas-demo');
+  await expect(page.locator('canvas')).toHaveScreenshot('circle.png');
+});</code></pre>
+            <h4>Real World Example</h4>
+            <pre><code>// Alternatively, test the logic that *drives* the canvas.
+// If you have a `drawCircle(x, y, radius)` function, test that function's math
+// separately from the actual rendering context.</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Since Canvas is just pixels, you can't query elements like DOM. You rely heavily on <strong>Visual Regression Testing</strong> (snapshots of the canvas) or testing the internal state logic that drives the canvas rendering.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is the "Testing Trophy"?</div>
+        <div class="hint">Kent C. Dodds.</div>
+        <div class="code-section">
+            <h4>Basic Implementation</h4>
+            <pre><code>// The Trophy Shape:
+// 🏆
+// E2E (Top, Smallest)
+// Integration (Middle, Largest)
+// Unit (Bottom, Medium)
+// Static (Base, Broad)</code></pre>
+            <h4>Real World Example</h4>
+            <pre><code>// Contrast with "Testing Pyramid" (which emphasizes Unit tests).
+// Modern React apps rely heavily on composition and hooks.
+// Integration tests (testing components together) give the best "Confidence per Dollar".</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>A metaphor prioritizing <strong>Integration Tests</strong>.
+                <br>Top: E2E (Few)
+                <br>Middle: Integration (Many) - "Write tests. Not too many. Mostly integration."
+                <br>Bottom: Unit (Some)
+                <br>Base: Static Analysis (Always)</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: How to test Service Workers (PWA)?</div>
+        <div class="hint">Browser context.</div>
+        <div class="code-section">
+            <h4>Basic Implementation</h4>
+            <pre><code>// Playwright
+test('works offline', async ({ page }) => {
+  await page.goto('/');
+  await page.context().setOffline(true);
+  
+  await page.reload();
+  await expect(page.locator('h1')).toHaveText('My App');
+});</code></pre>
+            <h4>Real World Example</h4>
+            <pre><code>// Verify that the Service Worker cached the assets.
+// Verify that requests are served from Service Worker (check Network tab via protocol).</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Best tested in E2E (Playwright/Cypress) because they rely on browser APIs not present in JSDOM. You can verify offline behavior by toggling network status in the test.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is "Shift Left" testing?</div>
+        <div class="hint">Earlier.</div>
+        <div class="code-section">
+            <h4>Basic Implementation</h4>
+            <pre><code>// Traditional (Waterfall):
+// Design -> Code -> Test -> Deploy
+// Bug found in Test phase = Expensive fix.
+
+// Shift Left:
+// Design -> Test/Code -> Deploy
+// Bug found in Code phase (via Unit/Lint) = Cheap fix.</code></pre>
+            <h4>Real World Example</h4>
+            <pre><code>// Implementing Pre-commit hooks (Husky).
+// Running tests on every file save.
+// Writing tests *before* code (TDD).
+// All these move testing "left" on the timeline.</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Moving testing earlier in the development cycle. Instead of testing just before release, you test during development (Unit tests, PR checks). It makes fixing bugs cheaper and faster.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: How to test authentication flows (OAuth)?</div>
+        <div class="hint">Programmatic login.</div>
+        <div class="code-section">
+            <h4>Basic Implementation</h4>
+            <pre><code>// Playwright: Reuse state
+test.use({ storageState: 'auth.json' });
+
+test('dashboard access', async ({ page }) => {
+  await page.goto('/dashboard');
+  // Already logged in!
+});</code></pre>
+            <h4>Real World Example</h4>
+            <pre><code>// Global Setup:
+// 1. Run a setup script that logs in via API (POST /login).
+// 2. Save the returned Cookies/LocalStorage to 'auth.json'.
+// 3. All tests reuse this file.
+// Saves massive amounts of time vs logging in via UI for every test.</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>In E2E tests, don't type username/password in the UI every time (slow). Instead, make a direct API request to get a session token, set it in the browser's LocalStorage/Cookie, and reload. This is "Programmatic Login".</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is "A/B Testing" from a dev perspective?</div>
+        <div class="hint">Feature Flags.</div>
+        <div class="code-section">
+            <h4>Basic Implementation</h4>
+            <pre><code>// Code
+const showNewFeature = useFeatureFlag('new-checkout');
+return showNewFeature ? &lt;NewCheckout /&gt; : &lt;OldCheckout /&gt;;
+
+// Test
+test('renders new checkout when flag is on', () => {
+  mockFlags({ 'new-checkout': true });
+  render(&lt;App /&gt;);
+  expect(screen.getByText('New Checkout')).toBeInTheDocument();
+});</code></pre>
+            <h4>Real World Example</h4>
+            <pre><code>// Tools like LaunchDarkly or Split.io.
+// Tests must ensure that BOTH paths work.
+// Don't delete the old code/tests until the A/B test is 100% complete and the old feature is retired.</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Serving different versions of a feature to different users. Developers implement this using <strong>Feature Flags</strong>. Tests should verify both paths (Flag ON and Flag OFF).</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: How to test file uploads?</div>
+        <div class="hint">userEvent.upload.</div>
+        <div class="code-section">
+            <h4>Basic Implementation</h4>
+            <pre><code>test('upload file', async () => {
+  const file = new File(['(content)'], 'hello.png', { type: 'image/png' });
+  const input = screen.getByLabelText(/upload/i);
+  
+  await userEvent.upload(input, file);
+  
+  expect(input.files[0]).toBe(file);
+  expect(input.files.item(0)).toBe(file);
+});</code></pre>
+            <h4>Real World Example</h4>
+            <pre><code>// Testing file size validation
+const hugeFile = new File([''], 'huge.png');
+Object.defineProperty(hugeFile, 'size', { value: 1024 * 1024 * 10 }); // 10MB
+
+await userEvent.upload(input, hugeFile);
+expect(screen.getByText('File too large')).toBeVisible();</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <pre><code>const file = new File(['hello'], 'hello.png', { type: 'image/png' });
+const input = screen.getByLabelText(/upload/i);
+await userEvent.upload(input, file);
+expect(input.files[0]).toBe(file);</code></pre>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is "Smoke Testing"?</div>
+        <div class="hint">Is it on fire?</div>
+        <div class="code-section">
+            <h4>Basic Implementation</h4>
+            <pre><code>// A simple E2E test that runs after deployment
+test('smoke test', async ({ page }) => {
+  await page.goto('https://production.com');
+  await expect(page).toHaveTitle(/My App/);
+  await expect(page.locator('#root')).toBeVisible();
+});</code></pre>
+            <h4>Real World Example</h4>
+            <pre><code>// If this fails, rollback immediately.
+// It doesn't check deep functionality, just "Did the server start?" and "Is the page white?".</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>A quick set of tests run after a build to ensure the critical functions work (e.g., "Can the app load?", "Can I log in?"). If smoke tests fail, there's no point running the full suite.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: How to test infinite scroll?</div>
+        <div class="hint">Intersection Observer.</div>
+        <div class="code-section">
+            <h4>Basic Implementation</h4>
+            <pre><code>// Mock IntersectionObserver
+beforeEach(() => {
+  window.IntersectionObserver = vi.fn((callback) => ({
+    observe: vi.fn(),
+    disconnect: vi.fn(),
+    // Manually trigger callback to simulate scroll
+    trigger: (entries) => callback(entries)
+  }));
+});</code></pre>
+            <h4>Real World Example</h4>
+            <pre><code>// In test:
+render(&lt;InfiniteList /&gt;);
+// Simulate element coming into view
+act(() => {
+  const observer = window.IntersectionObserver.mock.results[0].value;
+  observer.trigger([{ isIntersecting: true }]);
+});
+expect(fetchMoreData).toHaveBeenCalled();</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>You need to mock the <code>IntersectionObserver</code> API in JSDOM. In the test, you manually trigger the observer callback to simulate the user scrolling to the bottom.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is "Regression Testing"?</div>
+        <div class="hint">Did we break it?</div>
+        <div class="code-section">
+            <h4>Basic Implementation</h4>
+            <pre><code>// Scenario:
+// 1. Bug reported: "Login fails if password has space".
+// 2. Fix bug.
+// 3. Write test case: "Login with space in password".
+// 4. This test is now part of the "Regression Suite".</code></pre>
+            <h4>Real World Example</h4>
+            <pre><code>// Every time you run your full test suite, you are doing Regression Testing.
+// You are verifying that new changes didn't break old features.</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Re-running functional and non-functional tests to ensure that previously developed and tested software still performs after a change. Automated suites are essentially regression suites.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: How to test iFrames?</div>
+        <div class="hint">Context switching.</div>
+        <div class="code-section">
+            <h4>Basic Implementation</h4>
+            <pre><code>// Playwright
+const frame = page.frameLocator('#payment-iframe');
+await frame.getByPlaceholder('Card Number').fill('4242 4242...');</code></pre>
+            <h4>Real World Example</h4>
+            <pre><code>// Common in Payment Gateways (Stripe elements) or embedded widgets.
+// You cannot access iframe content from the main page context due to security (CORS)
+// unless you explicitly switch context in the test runner.</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>In Playwright, you have to switch context to the frame: <code>page.frameLocator('#my-frame').getByText('Submit')</code>. Standard <code>getBy</code> selectors won't find elements inside an iframe.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is "Performance Testing" in frontend?</div>
+        <div class="hint">Lighthouse CI.</div>
+        <div class="code-section">
+            <h4>Basic Implementation</h4>
+            <pre><code>// Lighthouse CI (lighthouserc.js)
+module.exports = {
+  ci: {
+    assert: {
+      assertions: {
+        'categories:performance': ['error', { minScore: 0.9 }],
+        'first-contentful-paint': ['warn', { maxNumericValue: 2000 }],
+      },
+    },
+  },
+};</code></pre>
+            <h4>Real World Example</h4>
+            <pre><code>// Run in CI pipeline.
+// If a developer adds a 5MB image, the performance score drops.
+// The build fails, preventing the regression from reaching production.</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Measuring metrics like LCP (Largest Contentful Paint) and TBT (Total Blocking Time). You can run Lighthouse in your CI pipeline to fail the build if performance drops below a threshold.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: How to test Error Boundaries?</div>
+        <div class="hint">Throwing errors.</div>
+        <div class="code-section">
+            <h4>Basic Implementation</h4>
+            <pre><code>const Bomb = () => { throw new Error('Boom'); };
+
+test('catches error', () => {
+  // Prevent console.error from cluttering output
+  const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+  render(
+    &lt;ErrorBoundary fallback={&lt;div&gt;Error Caught&lt;/div&gt;}&gt;
+      &lt;Bomb /&gt;
+    &lt;/ErrorBoundary&gt;
+  );
+
+  expect(screen.getByText('Error Caught')).toBeInTheDocument();
+  consoleSpy.mockRestore();
+});</code></pre>
+            <h4>Real World Example</h4>
+            <pre><code>// Ensure your app doesn't white-screen on crash.
+// Test that the "Try Again" button in the Error Boundary actually resets the state.</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Create a component that throws an error (e.g., <code>const Bomb = () => { throw new Error('Boom') }</code>). Render it inside your Error Boundary. Assert that the fallback UI is displayed and the error was logged (you might need to suppress console.error in the test).</p>
+            </div>
+        </details>
+    </div>
+
+</body>
+</html>

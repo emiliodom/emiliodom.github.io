@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interview: State Management</title>
+    <style>
+        body { font-family: system-ui, -apple-system, sans-serif; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 20px; color: #333; }
+        h2 { border-bottom: 1px solid #ccc; padding-bottom: 10px; margin-top: 40px; }
+        .q-block { background: #f4f4f4; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+        .q-text { font-weight: bold; font-size: 1.1em; color: #764abc; margin-bottom: 10px; }
+        .hint { font-size: 0.9em; color: #666; font-style: italic; margin-bottom: 10px; display: block; }
+        details { margin-top: 10px; }
+        summary { cursor: pointer; color: #0066cc; font-weight: bold; }
+        pre { background: #2d2d2d; color: #f8f8f2; padding: 15px; border-radius: 5px; overflow-x: auto; }
+        code { font-family: monospace; }
+        .answer { margin-top: 15px; border-top: 1px solid #ddd; padding-top: 10px; }
+        nav { margin-bottom: 20px; }
+        .zustand { color: #443e3e; }
+        .code-section { margin-top: 15px; border-left: 4px solid #764abc; padding-left: 15px; }
+        .code-label { font-size: 0.8em; text-transform: uppercase; color: #666; font-weight: bold; margin-bottom: 5px; display: block; }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="interview_index.html">&larr; Back to Interview Index</a>
+    </nav>
+
+    <h1>Global State: Redux vs. Zustand</h1>
+
+    <div id="google_translate_element"></div>
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({pageLanguage: 'en', includedLanguages: 'es'}, 'google_translate_element');
+        }
+    </script>
+    <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+    <h2>1. Redux Toolkit (RTK)</h2>
+    <div class="q-block">
+        <div class="q-text">Q: Explain the Redux Data Flow.</div>
+        <div class="hint">Action -> Reducer -> Store.</div>
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>// 1. Dispatch Action
+dispatch({ type: 'counter/increment' });
+
+// 2. Reducer processes it
+function reducer(state, action) {
+  if (action.type === 'counter/increment') {
+    return { value: state.value + 1 };
+  }
+  return state;
+}
+
+// 3. UI Updates via Selector
+const count = useSelector(state => state.value);</code></pre>
+            <span class="code-label">Real World Example</span>
+            <pre><code>// In a Component
+&lt;button onClick={() => dispatch(increment())}&gt;
+  Count is {count}
+&lt;/button&gt;</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <ol>
+                    <li><strong>Action:</strong> An event describes something that happened. <code>dispatch(addItem(item))</code>.</li>
+                    <li><strong>Reducer:</strong> A pure function that takes the current state and action, and returns the <em>new</em> state.</li>
+                    <li><strong>Store:</strong> Holds the state. Notifies the UI to subscribe to changes.</li>
+                </ol>
+                <p><strong>RTK Improvement:</strong> Uses "Slices" to bundle actions and reducers. Uses "Immer" to allow writing "mutating" logic that is actually immutable.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Code Sample: Create a Slice</div>
+        <div class="hint">createSlice({ name, initialState, reducers })</div>
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>const counterSlice = createSlice({
+  name: 'counter',
+  initialState: { value: 0 },
+  reducers: {
+    increment: state => { state.value += 1; }
+  }
+});</code></pre>
+            <span class="code-label">Real World Example</span>
+            <pre><code>// Async Thunk in Slice
+export const fetchUser = createAsyncThunk('users/fetch', async (id) => {
+  const response = await api.getUser(id);
+  return response.data;
+});
+
+const userSlice = createSlice({
+  extraReducers: (builder) => {
+    builder.addCase(fetchUser.fulfilled, (state, action) => {
+      state.data = action.payload;
+    });
+  }
+});</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <pre><code>import { createSlice } from '@reduxjs/toolkit';
+
+const counterSlice = createSlice({
+  name: 'counter',
+  initialState: { value: 0 },
+  reducers: {
+    increment: state => { state.value += 1; }, // Immer magic
+    decrement: state => { state.value -= 1; }
+  }
+});
+
+export const { increment, decrement } = counterSlice.actions;
+export default counterSlice.reducer;</code></pre>
+            </div>
+        </details>
+    </div>
+
+    <h2>2. Zustand</h2>
+    <div class="q-block">
+        <div class="q-text zustand">Q: Why choose Zustand over Redux?</div>
+        <div class="hint">Simplicity and Boilerplate.</div>
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>// Redux: Requires Provider, Slice, Store config, Dispatch, Selector
+// Zustand: Just create a hook and use it.</code></pre>
+            <span class="code-label">Real World Example</span>
+            <pre><code>// Small to Medium apps where Redux is overkill.
+// Or when you need state outside of React components (Zustand stores are vanilla JS).</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <ul>
+                    <li><strong>Simplicity:</strong> No Providers wrapping the app. No complex boilerplate.</li>
+                    <li><strong>Size:</strong> Tiny bundle size.</li>
+                    <li><strong>Mental Model:</strong> It's just a hook.</li>
+                </ul>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text zustand">Q: Code Sample: Zustand Store</div>
+        <div class="hint">create((set) => ({ ... }))</div>
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>const useStore = create((set) => ({
+  bears: 0,
+  increase: () => set((state) => ({ bears: state.bears + 1 })),
+}));</code></pre>
+            <span class="code-label">Real World Example</span>
+            <pre><code>// Usage in Component
+function BearCounter() {
+  const bears = useStore((state) => state.bears);
+  return &lt;h1&gt;{bears} bears&lt;/h1&gt;;
+}</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <pre><code>import { create } from 'zustand';
+
+interface Store {
+  bears: number;
+  increase: () => void;
+}
+
+const useStore = create&lt;Store&gt;((set) => ({
+  bears: 0,
+  increase: () => set((state) => ({ bears: state.bears + 1 })),
+}));
+
+// Usage in Component
+function BearCounter() {
+  // Selector pattern for performance
+  const bears = useStore((state) => state.bears); 
+  return &lt;h1&gt;{bears} bears&lt;/h1&gt;;
+}</code></pre>
+            </div>
+        </details>
+    </div>
+
+    <h2>3. Comparison Question</h2>
+    <div class="q-block">
+        <div class="q-text">Q: When would you use Context API vs. Redux/Zustand?</div>
+        <div class="hint">Frequency of updates.</div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <ul>
+                    <li><strong>Context API:</strong> For low-frequency updates (Theme, User Language, Auth User). If used for high-frequency updates, it causes re-renders in all consumers.</li>
+                    <li><strong>Redux/Zustand:</strong> For high-frequency updates (Typing in a form, Drag & Drop, Real-time data). They allow components to subscribe to <em>slices</em> of state to avoid unnecessary re-renders.</li>
+                </ul>
+            </div>
+        </details>
+    </div>
+
+    <h2>4. React Query (TanStack Query)</h2>
+
+    <div class="q-block">
+        <div class="q-text">Q: Server State vs. Client State?</div>
+        <div class="hint">Ownership of data.</div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <ul>
+                    <li><strong>Client State:</strong> Data owned by the browser session (UI state, form inputs, modal open/close). Use useState/Zustand.</li>
+                    <li><strong>Server State:</strong> Data owned by the server (User profile, List of products). It is asynchronous and can be out of date. Use React Query.</li>
+                </ul>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Why use React Query instead of useEffect + fetch?</div>
+        <div class="hint">Features out of the box.</div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>React Query handles:</p>
+                <ul>
+                    <li>Caching & Deduping requests</li>
+                    <li>Auto-refetching (on window focus, network reconnect)</li>
+                    <li>Loading & Error states</li>
+                    <li>Pagination & Infinite Scroll</li>
+                    <li>Race condition handling</li>
+                </ul>
+                <p>Doing this manually with <code>useEffect</code> is error-prone and verbose.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is "stale-while-revalidate"?</div>
+        <div class="hint">Caching strategy.</div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>A strategy where the browser serves stale data from the cache instantly (for speed), while simultaneously fetching fresh data in the background to update the cache and UI.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Explain `staleTime` vs `gcTime` (cacheTime).</div>
+        <div class="hint">Freshness vs. Garbage Collection.</div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <ul>
+                    <li><strong>staleTime:</strong> How long data is considered "fresh". If data is fresh, no fetch happens. Default is 0 (always stale).</li>
+                    <li><strong>gcTime:</strong> How long inactive data remains in memory before being garbage collected. Default is 5 mins.</li>
+                </ul>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: How do you invalidate a query?</div>
+        <div class="hint">Refetching data after mutation.</div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <pre><code>const queryClient = useQueryClient();
+// After a successful mutation (POST/PUT)
+mutation.mutate(data, {
+  onSuccess: () => {
+    // Mark 'todos' as stale so they refetch immediately
+    queryClient.invalidateQueries({ queryKey: ['todos'] });
+  }
+});</code></pre>
+            </div>
+        </details>
+    </div>
+
+    <h2>5. Advanced Redux</h2>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is Redux Middleware?</div>
+        <div class="hint">Interceptors.</div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Code that sits between dispatching an action and the moment it reaches the reducer. Used for logging, crash reporting, and async tasks (Thunks/Sagas).</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Thunks vs. Sagas?</div>
+        <div class="hint">Async handling.</div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <ul>
+                    <li><strong>Thunks:</strong> Functions that return a function. Simple, standard in RTK. Good for basic async logic.</li>
+                    <li><strong>Sagas:</strong> Uses Generator functions. More powerful, testable, and complex. Good for complex flows (cancellation, debouncing, race conditions).</li>
+                </ul>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is a "Selector"?</div>
+        <div class="hint">Extracting data.</div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>A function that extracts specific pieces of data from the Redux store state. <code>const selectCount = state => state.counter.value</code>. Memoized selectors (Reselect) prevent re-computation if inputs haven't changed.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is State Normalization?</div>
+        <div class="hint">Database structure in frontend.</div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Structuring state like a database (ID-based lookup) rather than arrays.
+                <br><strong>Array:</strong> <code>[{ id: 1, name: 'A' }]</code> (Find is O(n))
+                <br><strong>Normalized:</strong> <code>{ ids: [1], entities: { 1: { name: 'A' } } }</code> (Find is O(1))
+                <br>Helps avoid duplication and makes updates easier.</p>
+            </div>
+        </details>
+    </div>
+
+    <h2>6. Other State Libraries</h2>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is Recoil / Jotai?</div>
+        <div class="hint">Atomic state.</div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>They use an <strong>Atomic</strong> model. State is split into small "atoms". Components subscribe to specific atoms. This avoids the "top-down" provider issues of Context and the boilerplate of Redux. Great for apps with many interdependent derived states (like a spreadsheet).</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is MobX?</div>
+        <div class="hint">Observables.</div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Uses <strong>Observables</strong> and mutable data structures. It automatically tracks dependencies and updates components when data changes. "Anything that can be derived from the application state, should be."</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is XState?</div>
+        <div class="hint">Finite State Machines.</div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>A library for creating Finite State Machines (FSM). It makes state transitions explicit and robust. You define: <code>Idle -> Loading -> Success/Error</code>. It prevents impossible states (e.g., being "Loading" and "Success" at the same time).</p>
+            </div>
+        </details>
+    </div>
+
+    <h2>7. State Architecture Patterns</h2>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is "Lifting State Up"?</div>
+        <div class="hint">Sharing state between siblings.</div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Moving state from a child component to its parent so that the parent can pass it down to other children (siblings) that need it.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is "Derived State"?</div>
+        <div class="hint">Don't store what you can compute.</div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>State that can be calculated from existing state or props. <strong>Do not</strong> store derived state in <code>useState</code>. Calculate it during render.</p>
+                <p><em>Bad:</em> <code>const [fullName, setFullName] = useState(first + last)</code></p>
+                <p><em>Good:</em> <code>const fullName = firstName + lastName</code></p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: How to persist state across reloads?</div>
+        <div class="hint">LocalStorage.</div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Sync your state store with <code>localStorage</code> or <code>sessionStorage</code>.
+                <br><strong>Redux:</strong> <code>redux-persist</code>.
+                <br><strong>Zustand:</strong> <code>persist</code> middleware.
+                <br><strong>React Query:</strong> <code>persistQueryClient</code>.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is "Optimistic UI"?</div>
+        <div class="hint">Predicting success.</div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Updating the UI immediately as if the server request succeeded, before getting the actual response. If the request fails, you roll back the change. Makes the app feel instant.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Prop Drilling vs. Component Composition?</div>
+        <div class="hint">Passing props vs. Passing children.</div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Instead of passing <code>user</code> down 5 levels, pass the component that needs <code>user</code> as a <code>child</code> prop.</p>
+                <pre><code>// Before
+&lt;Layout user={user} /&gt; // Layout passes it to Header -> UserMenu
+
+// After
+&lt;Layout header={&lt;Header user={user} /&gt;} /&gt;</code></pre>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: When to use `useReducer` instead of `useState`?</div>
+        <div class="hint">Complex logic.</div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>1. When the next state depends on the previous state in complex ways.<br>
+                2. When you have multiple sub-values (objects) that change together.<br>
+                3. When you want to separate state logic from the component (easier testing).</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is the "Single Source of Truth" principle?</div>
+        <div class="hint">Don't duplicate data.</div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Data should exist in only one place. If multiple components need it, lift it up or put it in a store. Duplicating data leads to synchronization bugs.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: How to handle Form State?</div>
+        <div class="hint">Controlled vs Libraries.</div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>For simple forms, <code>useState</code> is fine. For complex forms (validation, dirty fields, touched fields), use a library like <strong>React Hook Form</strong> or <strong>Formik</strong>. They handle the state management and performance optimization (uncontrolled inputs) for you.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is "Propagating State"?</div>
+        <div class="hint">Bubbling up.</div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Passing a callback function from a parent to a child. The child calls the function to update the parent's state. This is the standard way to communicate "up" the tree.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Immutable State Updates?</div>
+        <div class="hint">Why copy objects?</div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>React relies on reference checks (<code>oldState === newState</code>) to decide if it should re-render. If you mutate an object directly, the reference stays the same, and React won't update. Always create a new object/array copy.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Zustand: `set` vs `get`?</div>
+        <div class="hint">Inside actions.</div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p><code>set</code> merges state. <code>get</code> allows you to read the current state inside an action (e.g., to increment a value based on current value).</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Redux DevTools?</div>
+        <div class="hint">Time travel.</div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>A browser extension that lets you inspect every action dispatched, view the state diff, and "time travel" (jump back to previous states) to debug logic errors.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Context + useReducer pattern?</div>
+        <div class="hint">Poor man's Redux.</div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Combining <code>useReducer</code> (for logic) and <code>Context</code> (for passing dispatch down) creates a lightweight global state management system without external libraries. Good for small apps.</p>
+            </div>
+        </details>
+    </div>
+
+    <h2>8. Advanced Patterns & Performance</h2>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is "State Colocation"?</div>
+        <div class="hint">Keep it close.</div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>The practice of keeping state as close to where it is used as possible. Don't make everything global. If only one component needs it, keep it local. If a subtree needs it, lift it to the common ancestor.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: How does `useSyncExternalStore` work?</div>
+        <div class="hint">React 18.</div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>A hook introduced in React 18 for subscribing to external data sources (like Redux, Zustand, or browser APIs). It ensures consistent updates during concurrent rendering features (like Transitions) by preventing "tearing" (visual inconsistencies).</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is "Tearing" in UI?</div>
+        <div class="hint">Inconsistency.</div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>When different parts of the UI show different values for the same state at the same time. This can happen in concurrent rendering if an external store updates while React is in the middle of rendering a tree.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: How to handle "Transient State"?</div>
+        <div class="hint">High frequency, low importance.</div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>State that changes very rapidly but doesn't need to trigger a re-render for every change (e.g., tracking mouse position for a tooltip, or scroll position). Use <code>useRef</code> or direct DOM manipulation for performance, then sync to React state only when necessary.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is the "Proxy Pattern" in state libraries (Valtio/MobX)?</div>
+        <div class="hint">Magic tracking.</div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Libraries wrap the state object in a JS <code>Proxy</code>. When you access a property (get), the library records that your component depends on it. When you change it (set), the library knows exactly which components to re-render. No manual selectors needed.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: How to debug "Zombie Children" in Redux?</div>
+        <div class="hint">Stale props.</div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>A race condition where a child component tries to read data from the store that has already been deleted by a parent's action, causing a crash. Modern <code>react-redux</code> hooks (<code>useSelector</code>) handle this automatically, but it was a common issue with <code>connect</code>.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is "Structural Sharing"?</div>
+        <div class="hint">Efficiency.</div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>When updating an immutable data structure, you copy the parts that changed, but keep references to the parts that didn't. This saves memory and makes equality checks fast. Libraries like Immer and Immutable.js use this.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: How to manage state in Micro-Frontends?</div>
+        <div class="hint">Isolation vs Sharing.</div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Generally, keep state isolated within each micro-frontend. For shared state (Auth, Theme), use a custom event bus, window object, or a shared library instance (though this couples them). URL state is often the best way to coordinate.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: URL as State Manager?</div>
+        <div class="hint">Shareable.</div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Storing state in the URL (query params, route params) makes it shareable, bookmarkable, and handles browser history (back button) automatically. Great for search filters, pagination, and active tabs.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is "Prop Drilling" and 3 ways to fix it?</div>
+        <div class="hint">Passing down.</div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Passing data through many layers of components that don't use it.
+                <br><strong>Fixes:</strong>
+                <br>1. <strong>Composition:</strong> Pass components as children.
+                <br>2. <strong>Context API:</strong> Provide data at the top.
+                <br>3. <strong>Global Store:</strong> Redux/Zustand.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: How to test components connected to a Store?</div>
+        <div class="hint">Integration.</div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Wrap the component in a test-specific Provider with a mocked store/initial state.
+                <br><code>render(&lt;Provider store={mockStore}&gt;&lt;MyComponent /&gt;&lt;/Provider&gt;)</code>.
+                <br>Avoid testing implementation details of the store; test the UI outcome.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is "Batching" in React state updates?</div>
+        <div class="hint">Performance.</div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>React groups multiple state updates into a single re-render for better performance. React 18 introduced "Automatic Batching" which batches updates even inside promises, timeouts, and native event handlers.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: How to handle "Race Conditions" in data fetching?</div>
+        <div class="hint">Order matters.</div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>When a user triggers multiple requests quickly (e.g., typing), responses might arrive out of order.
+                <br><strong>Fix:</strong> Use a library like React Query (handles it automatically) or use a cleanup function in <code>useEffect</code> with a boolean flag to ignore stale responses.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is the "Flux" pattern?</div>
+        <div class="hint">Unidirectional.</div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>The architecture Redux is based on. <strong>Action</strong> -> <strong>Dispatcher</strong> -> <strong>Store</strong> -> <strong>View</strong>. Data flows in one direction only, making it predictable and easier to debug than two-way binding (MVC).</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: When to use `useMemo` for state?</div>
+        <div class="hint">Expensive calculations.</div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Use it to cache the result of an expensive calculation derived from state/props. It runs during render. Do not use it for side effects. It helps prevent performance bottlenecks when the component re-renders.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: How to reset state to initial value?</div>
+        <div class="hint">Keys or Actions.</div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>1. <strong>Key Prop:</strong> Changing the <code>key</code> of a component forces React to destroy and recreate it, resetting all internal state.
+                <br>2. <strong>Store Action:</strong> Dispatch a <code>RESET</code> action in Redux/Zustand that sets the state back to <code>initialState</code>.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is "State Machine" vs "State Management"?</div>
+        <div class="hint">Logic vs Storage.</div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p><strong>State Management</strong> (Redux) is about <em>storing</em> data.
+                <br><strong>State Machine</strong> (XState) is about <em>modeling</em> the logic and valid transitions between states. You can use them together.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is "Optimistic Concurrency Control"?</div>
+        <div class="hint">Versioning.</div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>A method to prevent overwriting data. When updating a record, you send the version number you currently have. The server checks if that version matches the database. If not (someone else updated it), the request fails, and you must re-fetch and merge.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: How to handle "Deeply Nested State"?</div>
+        <div class="hint">Flatten it.</div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Deeply nested objects are hard to update immutably (spread hell).
+                <br><strong>Fixes:</strong>
+                <br>1. <strong>Normalize:</strong> Flatten the structure.
+                <br>2. <strong>Immer:</strong> Use Immer to write mutable-style logic.
+                <br>3. <strong>Lenses/Optics:</strong> Functional programming concept (advanced).</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is the difference between `useRef` and `useState` regarding re-renders?</div>
+        <div class="hint">Triggering updates.</div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p><strong>useState:</strong> Updating the state triggers a re-render of the component.
+                <br><strong>useRef:</strong> Updating the <code>.current</code> property does <em>not</em> trigger a re-render. Useful for mutable values that don't affect the visual output (timers, DOM elements).</p>
+            </div>
+        </details>
+    </div>
+
+</body>
+</html>

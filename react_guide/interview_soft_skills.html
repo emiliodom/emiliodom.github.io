@@ -1,0 +1,1420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interview: Soft Skills & Leadership</title>
+    <style>
+        body { font-family: system-ui, -apple-system, sans-serif; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 20px; color: #333; }
+        h2 { border-bottom: 1px solid #ccc; padding-bottom: 10px; margin-top: 40px; }
+        .q-block { background: #f4f4f4; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+        .q-text { font-weight: bold; font-size: 1.1em; color: #2c3e50; margin-bottom: 10px; }
+        .hint { font-size: 0.9em; color: #666; font-style: italic; margin-bottom: 10px; }
+        details { margin-top: 10px; }
+        summary { cursor: pointer; color: #0066cc; font-weight: bold; }
+        .answer { margin-top: 15px; border-top: 1px solid #ddd; padding-top: 10px; }
+        nav { margin-bottom: 20px; }
+
+        /* New Code Section Styles */
+        .code-section { margin-top: 15px; border-left: 4px solid #0066cc; padding-left: 15px; }
+        .code-section h4 { margin: 10px 0 5px; color: #0066cc; font-size: 0.95em; text-transform: uppercase; letter-spacing: 0.5px; }
+        .code-block { background: #2d2d2d; color: #f8f8f2; padding: 15px; border-radius: 6px; font-family: 'Consolas', 'Monaco', monospace; font-size: 0.9em; overflow-x: auto; white-space: pre-wrap; }
+        .code-comment { color: #6a9955; }
+        .code-keyword { color: #c678dd; }
+        .code-string { color: #98c379; }
+        .code-function { color: #61afef; }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="interview_index.html">&larr; Back to Interview Index</a>
+    </nav>
+
+    <h1>Soft Skills, Leadership & Communication</h1>
+
+    <div id="google_translate_element"></div>
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({pageLanguage: 'en', includedLanguages: 'es'}, 'google_translate_element');
+        }
+    </script>
+    <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+    <h2>1. Behavioral Questions (STAR Method)</h2>
+    <p><em>Use the STAR method: <strong>S</strong>ituation, <strong>T</strong>ask, <strong>A</strong>ction, <strong>R</strong>esult.</em></p>
+
+    <div class="q-block">
+        <div class="q-text">Q: Tell me about a time you disagreed with a senior developer or manager.</div>
+        <div class="hint">Focus on respect and data-driven arguments.</div>
+        
+        <div class="code-section">
+            <h4>Basic Implementation: The "Data-Driven" Script</h4>
+            <div class="code-block">
+<span class="code-comment">// 1. Acknowledge their point</span>
+"I see why you want to use [Option A], it's definitely faster to implement initially."
+
+<span class="code-comment">// 2. Present your concern with data/evidence</span>
+"However, I'm concerned about [Scalability/Performance]. I ran a quick benchmark, and [Option A] slows down by 50% when we hit 10k users."
+
+<span class="code-comment">// 3. Propose alternative & ask for input</span>
+"If we go with [Option B], it takes 2 days longer but handles the load. What do you think is the best trade-off for us right now?"
+            </div>
+
+            <h4>Real World Example: React vs jQuery</h4>
+            <div class="code-block">
+<span class="code-keyword">Situation:</span> Senior dev wanted to use jQuery for a new interactive dashboard because they knew it well.
+<span class="code-keyword">Action:</span> I built a small prototype in React to demonstrate the component reusability and state management benefits.
+<span class="code-keyword">Result:</span> The senior dev saw how much cleaner the code was and agreed to switch, provided I helped set up the boilerplate.
+            </div>
+        </div>
+
+        <details>
+            <summary>Show Answer Strategy</summary>
+            <div class="answer">
+                <p><strong>Do:</strong> Explain that you had a technical concern (e.g., performance, security). Describe how you researched the alternative, built a small prototype or gathered data, and presented it respectfully. If they still said no, mention that you committed to the team's decision ("Disagree and Commit").</p>
+                <p><strong>Don't:</strong> Say "They were wrong so I did it my way" or "I argued until I won."</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Describe a time you made a mistake that broke production.</div>
+        <div class="hint">Own it. Fix it. Prevent it.</div>
+
+        <div class="code-section">
+            <h4>Basic Implementation: The Incident Report (Post-Mortem)</h4>
+            <div class="code-block">
+<span class="code-keyword">Summary:</span> Checkout button failed for 5% of users.
+<span class="code-keyword">Root Cause:</span> A CSS change overlapped the button on mobile devices.
+<span class="code-keyword">Immediate Fix:</span> Reverted the commit (SHA: abc1234) within 10 minutes.
+<span class="code-keyword">Prevention:</span> Added a visual regression test (Percy/Chromatic) to the CI pipeline to catch layout shifts automatically.
+            </div>
+
+            <h4>Real World Example: The "Missing Env Variable"</h4>
+            <div class="code-block">
+<span class="code-comment">// The Mistake</span>
+I deployed a feature that relied on a new API key but forgot to add the key to the production environment variables.
+
+<span class="code-comment">// The Fix</span>
+Saw 500 errors in logs -> Identified missing key -> Added key -> Restarted pods.
+
+<span class="code-comment">// The Process Change</span>
+I updated our deployment checklist and added a script that validates required env vars on server startup, crashing early if one is missing.
+            </div>
+        </div>
+
+        <details>
+            <summary>Show Answer Strategy</summary>
+            <div class="answer">
+                <p><strong>Do:</strong> Admit the mistake immediately. Explain how you fixed it (rollback, hotfix). Most importantly, explain the <strong>process change</strong> you implemented to ensure it never happens again (e.g., added a test case, improved CI pipeline).</p>
+                <p><strong>Don't:</strong> Blame QA or others.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: How do you handle a tight deadline when you know you can't deliver everything?</div>
+        <div class="hint">Communication > Heroics.</div>
+
+        <div class="code-section">
+            <h4>Basic Implementation: The "Scope Negotiation" Email</h4>
+            <div class="code-block">
+<span class="code-keyword">Subject:</span> Risk Update for Project X
+
+"Hi Team,
+Based on current progress, we are at risk of missing the Friday deadline if we include all features.
+
+<span class="code-keyword">Option A:</span> Delay release by 3 days to include everything.
+<span class="code-keyword">Option B:</span> Release on Friday with Core Features (Login, Dashboard) but push 'Advanced Search' to next week.
+
+I recommend <span class="code-keyword">Option B</span> to get feedback early. Please let me know your preference."
+            </div>
+
+            <h4>Real World Example: MVP Definition</h4>
+            <div class="code-block">
+<span class="code-keyword">Context:</span> Launching a new e-commerce site for Black Friday.
+<span class="code-keyword">Problem:</span> The 'Wishlist' feature was buggy and threatening the launch.
+<span class="code-keyword">Action:</span> I proposed hiding the Wishlist button for launch day so we could focus on ensuring Checkout was rock solid.
+<span class="code-keyword">Result:</span> Successful launch with zero downtime; Wishlist was added 2 weeks later.
+            </div>
+        </div>
+
+        <details>
+            <summary>Show Answer Strategy</summary>
+            <div class="answer">
+                <p><strong>Do:</strong> Communicate early. Prioritize features (MoSCoW method - Must have, Should have, Could have). Propose a scope cut (MVP) to meet the date with high quality, rather than shipping buggy code.</p>
+                <p><strong>Don't:</strong> Say "I work weekends" (unsustainable) or hide the delay until the last day.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Tell me about a time you had to learn a new technology quickly.</div>
+        <div class="hint">Adaptability.</div>
+
+        <div class="code-section">
+            <h4>Basic Implementation: The Learning Framework</h4>
+            <div class="code-block">
+<span class="code-comment">// 1. Scan the Landscape</span>
+"I read the 'Getting Started' docs to understand the mental model."
+
+<span class="code-comment">// 2. Build a "Hello World" + 1</span>
+"I built a small ToDo app to test the core concepts (State, Props, API calls)."
+
+<span class="code-comment">// 3. Map to known concepts</span>
+"I related it to what I knew: 'Oh, Vue's computed properties are like React's useMemo'."
+            </div>
+
+            <h4>Real World Example: GraphQL Adoption</h4>
+            <div class="code-block">
+<span class="code-keyword">Task:</span> We needed to switch from REST to GraphQL for a mobile app.
+<span class="code-keyword">Action:</span> I spent a weekend doing the Apollo tutorial. Then I pair-programmed with a backend dev to define the schema.
+<span class="code-keyword">Result:</span> I became the team's 'GraphQL point person' and wrote the internal guide for other devs.
+            </div>
+        </div>
+
+        <details>
+            <summary>Show Answer Strategy</summary>
+            <div class="answer">
+                <p><strong>Strategy:</strong> Describe the situation (e.g., "We needed to switch to GraphQL"). Explain your learning process (docs, tutorials, building a POC). Highlight the result: "I was able to ship the feature on time and taught the rest of the team."</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Tell me about a time you had to persuade a team to adopt your idea.</div>
+        <div class="hint">Influence without authority.</div>
+
+        <div class="code-section">
+            <h4>Basic Implementation: The RFC (Request for Comments) Structure</h4>
+            <div class="code-block">
+<span class="code-keyword">Title:</span> Adopt TypeScript for New Modules
+<span class="code-keyword">Problem:</span> 30% of our recent bugs are "undefined is not a function" type errors.
+<span class="code-keyword">Proposal:</span> Use TS for all new files. No rewrite of old code yet.
+<span class="code-keyword">Cost:</span> Setup takes 4 hours. Learning curve ~1 week.
+<span class="code-keyword">Benefit:</span> Catch errors at compile time, better autocomplete.
+            </div>
+
+            <h4>Real World Example: CSS Modules</h4>
+            <div class="code-block">
+<span class="code-keyword">Situation:</span> Global CSS class conflicts were breaking the UI.
+<span class="code-keyword">Action:</span> I demoed CSS Modules in a lunch-and-learn session, showing how it scopes styles automatically.
+<span class="code-keyword">Result:</span> Team agreed to try it on one component. It worked well, so we adopted it standard.
+            </div>
+        </div>
+
+        <details>
+            <summary>Show Answer Strategy</summary>
+            <div class="answer">
+                <p><strong>Strategy:</strong> Focus on data and benefits. "I noticed our build times were slow. I researched esbuild, created a benchmark comparison showing a 50% reduction, and presented it to the team. We adopted it and saved hours of dev time weekly."</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Tell me about a time you dealt with ambiguity.</div>
+        <div class="hint">Proactivity.</div>
+        <details>
+            <summary>Show Answer Strategy</summary>
+            <div class="answer">
+                <p><strong>Strategy:</strong> "The requirements were vague. Instead of waiting, I set up a meeting with the stakeholders, created wireframes to visualize my understanding, and got sign-off on the specific behavior before writing code."</p>
+            </div>
+        </details>
+    </div>
+
+    <h2>2. Team Collaboration</h2>
+
+    <div class="q-block">
+        <div class="q-text">Q: How do you handle a code review where the code works, but is messy?</div>
+        <div class="hint">Constructive feedback.</div>
+        <details>
+            <summary>Show Answer Strategy</summary>
+            <div class="answer">
+                <p><strong>Strategy:</strong> Be kind but firm on standards. Use "We" language ("Can we make this clearer?") instead of "You" ("You wrote this bad"). Suggest specific improvements. If it's a minor nitpick, approve it with a "non-blocking" comment.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: How do you mentor junior developers?</div>
+        <div class="hint">Guide, don't drive.</div>
+        <details>
+            <summary>Show Answer Strategy</summary>
+            <div class="answer">
+                <p><strong>Strategy:</strong> Don't just give the answer. Ask guiding questions ("What happens if X is null?"). Pair program with them, but let <em>them</em> drive (type). Encourage them to read docs.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: How do you explain a complex technical concept to a non-technical stakeholder?</div>
+        <div class="hint">Analogies and Business Value.</div>
+        <details>
+            <summary>Show Answer Strategy</summary>
+            <div class="answer">
+                <p><strong>Strategy:</strong> Avoid jargon (no "API", "Latency", "Refactor"). Use analogies (e.g., "Refactoring is like organizing the kitchen so we can cook faster next time"). Focus on the <strong>impact</strong>: "This will make the checkout page load 2 seconds faster, increasing sales."</p>
+            </div>
+        </details>
+    </div>
+
+    <h2>3. Leadership & Growth</h2>
+
+    <div class="q-block">
+        <div class="q-text">Q: What do you look for in a company culture?</div>
+        <div class="hint">Be honest, but align with their values.</div>
+        <details>
+            <summary>Show Answer Strategy</summary>
+            <div class="answer">
+                <p><strong>Good Answers:</strong> Psychological safety (safe to fail), emphasis on learning/growth, collaborative environment, user-centric focus.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: How do you stay up to date with technology?</div>
+        <div class="hint">Curiosity.</div>
+        <details>
+            <summary>Show Answer Strategy</summary>
+            <div class="answer">
+                <p>Mention specific sources: Newsletters (Bytes, React Status), Twitter/X, building side projects, reading documentation, attending meetups.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Rapid Fire Soft Skills</div>
+        <div class="hint">Scenarios to ponder.</div>
+        <details>
+            <summary>Show Topics</summary>
+            <div class="answer">
+                <ul>
+                    <li>Handling a toxic team member.</li>
+                    <li>Convincing management to pay down tech debt.</li>
+                    <li>Onboarding new team members.</li>
+                    <li>Giving negative feedback to a peer.</li>
+                    <li>Receiving negative feedback.</li>
+                    <li>Prioritizing tasks when everything is "Urgent".</li>
+                    <li>Working with a difficult designer.</li>
+                    <li>Working with a difficult Product Manager.</li>
+                    <li>Remote work etiquette.</li>
+                    <li>Leading a meeting effectively.</li>
+                </ul>
+            </div>
+        </details>
+    </div>
+
+    <h2>4. Situational & Conflict Resolution</h2>
+
+    <div class="q-block">
+        <div class="q-text">Q: How do you handle a toxic team member?</div>
+        <div class="hint">Professionalism and boundaries.</div>
+
+        <div class="code-section">
+            <h4>Basic Implementation: The Escalation Ladder</h4>
+            <div class="code-block">
+<span class="code-comment">// Level 1: Direct Feedback</span>
+"Hey, when you interrupted me in the standup, I felt dismissed. Can we let each other finish speaking?"
+
+<span class="code-comment">// Level 2: Documentation</span>
+Log dates and specific quotes of unprofessional behavior in a private doc.
+
+<span class="code-comment">// Level 3: Manager Intervention</span>
+"I'm finding it difficult to collaborate with [Name] due to [Specific Incidents]. It's impacting the project timeline. Here is the log."
+            </div>
+
+            <h4>Real World Example: The "Code Review Bully"</h4>
+            <div class="code-block">
+<span class="code-keyword">Situation:</span> A peer left harsh comments like "This is garbage" on PRs.
+<span class="code-keyword">Action:</span> I replied publicly on the PR: "Let's keep comments focused on the code, not the person." Then I messaged them privately to ask for constructive feedback.
+<span class="code-keyword">Result:</span> They didn't stop, so I brought it to the lead. The lead established a "Code of Conduct" for reviews, which solved it.
+            </div>
+        </div>
+
+        <details>
+            <summary>Show Answer Strategy</summary>
+            <div class="answer">
+                <p><strong>Strategy:</strong> Don't engage in drama. Focus on work. If their behavior affects the project, document it objectively. Try to talk to them privately first ("When you said X, it made me feel Y"). If it continues, escalate to the manager with evidence.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: How do you convince management to pay down tech debt?</div>
+        <div class="hint">Speak their language (Money/Risk).</div>
+
+        <div class="code-section">
+            <h4>Basic Implementation: The "Business Case" Translation</h4>
+            <div class="code-block">
+<span class="code-comment">// Don't say:</span>
+"We need to refactor the user module because the code is messy."
+
+<span class="code-comment">// Do say:</span>
+"The current user module adds 2 days of testing time to every release due to regression risks. Refactoring it will cost 1 week now but save us 2 days every sprint, breaking even in 2 months."
+            </div>
+
+            <h4>Real World Example: The "20% Rule"</h4>
+            <div class="code-block">
+<span class="code-keyword">Strategy:</span> I negotiated with the PM to allocate 20% of every sprint (1 day a week) to "Engineering Health".
+<span class="code-keyword">Action:</span> We used this time to upgrade libraries and fix flaky tests.
+<span class="code-keyword">Result:</span> Velocity actually increased because we weren't fighting fires constantly.
+            </div>
+        </div>
+
+        <details>
+            <summary>Show Answer Strategy</summary>
+            <div class="answer">
+                <p><strong>Strategy:</strong> Don't say "The code is ugly." Say "This module is causing 20% of our bugs and slowing down new feature development by 3 days per sprint. Refactoring it will speed up future delivery."</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: How do you handle receiving negative feedback?</div>
+        <div class="hint">Growth mindset.</div>
+
+        <div class="code-section">
+            <h4>Basic Implementation: The "Active Listening" Script</h4>
+            <div class="code-block">
+<span class="code-comment">// 1. Listen & Absorb (Don't interrupt)</span>
+"Okay, I hear you saying that my PRs are too large and hard to review."
+
+<span class="code-comment">// 2. Clarify</span>
+"To make sure I understand: Is 200 lines the limit you'd prefer, or is it about the number of files touched?"
+
+<span class="code-comment">// 3. Commit to Action</span>
+"Thanks for telling me. For the next feature, I'll break it down into 3 smaller PRs. Can you check in with me next week to see if that's better?"
+            </div>
+
+            <h4>Real World Example: The "Slow Delivery" Feedback</h4>
+            <div class="code-block">
+<span class="code-keyword">Feedback:</span> Manager said I was shipping slower than peers.
+<span class="code-keyword">Reflection:</span> I realized I was over-optimizing code before it even worked.
+<span class="code-keyword">Change:</span> I adopted a "Make it work, then make it right" approach. My velocity doubled, and code quality remained high enough.
+            </div>
+        </div>
+
+        <details>
+            <summary>Show Answer Strategy</summary>
+            <div class="answer">
+                <p><strong>Strategy:</strong> Listen without interrupting. Don't get defensive. Ask for specific examples to understand better. Thank them for the feedback. Take time to process it, then propose a plan to improve.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What do you do if you're stuck on a problem?</div>
+        <div class="hint">Timeboxing.</div>
+
+        <div class="code-section">
+            <h4>Basic Implementation: The "15-Minute Rule"</h4>
+            <div class="code-block">
+<span class="code-comment">// Minute 0-15:</span>
+Try to solve it alone. Google error messages. Read docs. Console log everything.
+
+<span class="code-comment">// Minute 16:</span>
+If still stuck, ask for help.
+
+<span class="code-comment">// The "Ask" Template:</span>
+"I'm trying to do [X].
+I expected [Y] to happen, but [Z] happened instead.
+I've tried [A] and [B].
+Here is a link to the code/error."
+            </div>
+
+            <h4>Real World Example: Rubber Duck Debugging</h4>
+            <div class="code-block">
+<span class="code-keyword">Situation:</span> Stuck on a complex Redux reducer logic bug.
+<span class="code-keyword">Action:</span> I started writing a Slack message to a senior dev explaining the bug.
+<span class="code-keyword">Result:</span> Halfway through typing the explanation, I realized I was mutating state directly. I deleted the draft and fixed the bug.
+            </div>
+        </div>
+
+        <details>
+            <summary>Show Answer Strategy</summary>
+            <div class="answer">
+                <p><strong>Strategy:</strong> "I try to solve it myself for X amount of time (e.g., 1 hour). I read docs, check StackOverflow, debug. If I'm still stuck, I reach out to a teammate with what I've tried so far, to respect their time."</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: How do you prioritize tasks when everything is "Urgent"?</div>
+        <div class="hint">Impact vs Effort.</div>
+
+        <div class="code-section">
+            <h4>Basic Implementation: The Eisenhower Matrix (Code Edition)</h4>
+            <div class="code-block">
+<span class="code-keyword">1. Urgent & Important (Do First):</span>
+Production crash, Security vulnerability, Blocker for other devs.
+
+<span class="code-keyword">2. Important, Not Urgent (Schedule):</span>
+Refactoring, Documentation, New Feature Dev.
+
+<span class="code-keyword">3. Urgent, Not Important (Delegate/Minimize):</span>
+Attending meetings with no clear agenda, responding to non-critical emails.
+
+<span class="code-keyword">4. Neither (Delete):</span>
+Polishing a feature that might get cut.
+            </div>
+
+            <h4>Real World Example: The "Fire Drill"</h4>
+            <div class="code-block">
+<span class="code-keyword">Situation:</span> PM asked for a hotfix while I was in the middle of a complex migration.
+<span class="code-keyword">Action:</span> I asked: "If I switch to the hotfix, the migration will be delayed by 1 day. Is the hotfix critical for today?"
+<span class="code-keyword">Result:</span> PM realized the hotfix could wait until the next sprint.
+            </div>
+        </div>
+
+        <details>
+            <summary>Show Answer Strategy</summary>
+            <div class="answer">
+                <p><strong>Strategy:</strong> Ask the Product Manager or Lead to rank them. If I have to decide, I use the Eisenhower Matrix (Urgent/Important) or focus on what blocks other team members first.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: How do you handle a toxic team member?</div>
+        <div class="hint">Professionalism and boundaries.</div>
+        <details>
+            <summary>Show Answer Strategy</summary>
+            <div class="answer">
+                <p><strong>Strategy:</strong> Don't engage in drama. Focus on work. If their behavior affects the project, document it objectively. Try to talk to them privately first ("When you said X, it made me feel Y"). If it continues, escalate to the manager with evidence.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: How do you convince management to pay down tech debt?</div>
+        <div class="hint">Speak their language (Money/Risk).</div>
+        <details>
+            <summary>Show Answer Strategy</summary>
+            <div class="answer">
+                <p><strong>Strategy:</strong> Don't say "The code is ugly." Say "This module is causing 20% of our bugs and slowing down new feature development by 3 days per sprint. Refactoring it will speed up future delivery."</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: How do you handle receiving negative feedback?</div>
+        <div class="hint">Growth mindset.</div>
+        <details>
+            <summary>Show Answer Strategy</summary>
+            <div class="answer">
+                <p><strong>Strategy:</strong> Listen without interrupting. Don't get defensive. Ask for specific examples to understand better. Thank them for the feedback. Take time to process it, then propose a plan to improve.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What do you do if you're stuck on a problem?</div>
+        <div class="hint">Timeboxing.</div>
+        <details>
+            <summary>Show Answer Strategy</summary>
+            <div class="answer">
+                <p><strong>Strategy:</strong> "I try to solve it myself for X amount of time (e.g., 1 hour). I read docs, check StackOverflow, debug. If I'm still stuck, I reach out to a teammate with what I've tried so far, to respect their time."</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: How do you prioritize tasks when everything is "Urgent"?</div>
+        <div class="hint">Impact vs Effort.</div>
+        <details>
+            <summary>Show Answer Strategy</summary>
+            <div class="answer">
+                <p><strong>Strategy:</strong> Ask the Product Manager or Lead to rank them. If I have to decide, I use the Eisenhower Matrix (Urgent/Important) or focus on what blocks other team members first.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Working with a difficult designer?</div>
+        <div class="hint">Feasibility vs Vision.</div>
+        <details>
+            <summary>Show Answer Strategy</summary>
+            <div class="answer">
+                <p><strong>Strategy:</strong> If a design is technically very hard, explain the trade-off: "We can do this exact animation, but it will take 3 days. Or we can do this simpler version in 2 hours." Offer alternatives that achieve the same user goal.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Working with a difficult Product Manager?</div>
+        <div class="hint">Scope creep.</div>
+        <details>
+            <summary>Show Answer Strategy</summary>
+            <div class="answer">
+                <p><strong>Strategy:</strong> If they keep adding requirements, explain the impact on the deadline. "We can add X, but we'll have to drop Y to hit the release date." Make them choose the trade-off.</p>
+            </div>
+        </details>
+    </div>
+
+    <h2>5. Remote Work & Career</h2>
+
+    <div class="q-block">
+        <div class="q-text">Q: What are the challenges of remote work?</div>
+        <div class="hint">Communication and Isolation.</div>
+
+        <div class="code-section">
+            <h4>Basic Implementation: The "Over-Communication" Protocol</h4>
+            <div class="code-block">
+<span class="code-comment">// 1. Status Updates</span>
+"Posting my daily standup in Slack even if we don't have a meeting."
+
+<span class="code-comment">// 2. Availability Signals</span>
+"Updating Slack status to 'In a meeting' or 'Deep Work' so people know when to expect a reply."
+
+<span class="code-comment">// 3. Documentation First</span>
+"Writing down decisions in Notion/Confluence instead of just saying them on a call."
+            </div>
+
+            <h4>Real World Example: The "Async" Shift</h4>
+            <div class="code-block">
+<span class="code-keyword">Problem:</span> Team was spread across 3 time zones, causing meeting fatigue.
+<span class="code-keyword">Action:</span> I proposed moving the daily standup to a text-based Slack thread.
+<span class="code-keyword">Result:</span> Saved 30 mins/day per person and created a searchable history of blockers.
+            </div>
+        </div>
+
+        <details>
+            <summary>Show Answer Strategy</summary>
+            <div class="answer">
+                <p><strong>Strategy:</strong> Acknowledge the need for over-communication. "I make sure to document my progress and be responsive on Slack. I also schedule virtual coffee chats to build rapport with the team."</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Where do you see yourself in 5 years?</div>
+        <div class="hint">Ambition + Alignment.</div>
+
+        <div class="code-section">
+            <h4>Basic Implementation: The "T-Shaped" Growth Plan</h4>
+            <div class="code-block">
+<span class="code-comment">// The "T" Shape</span>
+Horizontal Bar: Broad knowledge of the full stack (Backend, DevOps, Design).
+Vertical Bar: Deep expertise in Frontend Architecture.
+
+<span class="code-comment">// The Script</span>
+"In 5 years, I see myself as a Staff Engineer. I want to have deep expertise in [React/Performance] but also understand the backend well enough to design complete systems."
+            </div>
+
+            <h4>Real World Example: Mentorship Focus</h4>
+            <div class="code-block">
+<span class="code-keyword">Goal:</span> Transition from Senior Dev to Team Lead.
+<span class="code-keyword">Plan:</span> "I want to spend the next few years improving my mentorship skills. I plan to take on interns and lead smaller sub-teams to build that muscle."
+            </div>
+        </div>
+
+        <details>
+            <summary>Show Answer Strategy</summary>
+            <div class="answer">
+                <p><strong>Strategy:</strong> "I want to deepen my technical expertise to become a Senior/Staff Engineer, leading large-scale architectural decisions and mentoring junior devs." (Tailor this to the role: IC track vs Management track).</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Why do you want to leave your current job?</div>
+        <div class="hint">Run towards, not away.</div>
+
+        <div class="code-section">
+            <h4>Basic Implementation: The "Pivot" Technique</h4>
+            <div class="code-block">
+<span class="code-comment">// 1. Gratitude (Past)</span>
+"I've learned a ton about [X] at my current role..."
+
+<span class="code-comment">// 2. The Gap (Present)</span>
+"...however, the company is moving towards [Legacy Tech/Maintenance Mode]..."
+
+<span class="code-comment">// 3. The Goal (Future)</span>
+"...and I'm really eager to work on [Modern Stack/High Scale] which is why I'm excited about this role."
+            </div>
+
+            <h4>Real World Example: Seeking Scale</h4>
+            <div class="code-block">
+"My current company is a small startup (10 people). I've worn many hats, but I want to join a larger engineering organization to learn best practices for CI/CD and testing at scale."
+            </div>
+        </div>
+
+        <details>
+            <summary>Show Answer Strategy</summary>
+            <div class="answer">
+                <p><strong>Do:</strong> "I've learned a lot, but I'm looking for new challenges/growth opportunities/technologies that my current role can't offer."</p>
+                <p><strong>Don't:</strong> "My boss is terrible" or "The company is a mess."</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Why should we hire you?</div>
+        <div class="hint">Value proposition.</div>
+
+        <div class="code-section">
+            <h4>Basic Implementation: The "Bridge" Method</h4>
+            <div class="code-block">
+<span class="code-comment">// Formula:</span>
+[Your Skill] + [Their Problem] = [Value]
+
+<span class="code-comment">// Example:</span>
+"You mentioned you're struggling with [Mobile Performance].
+In my last role, I improved our Core Web Vitals by [40%].
+I can bring that same optimization process to your team immediately."
+            </div>
+
+            <h4>Real World Example: The "Culture Add"</h4>
+            <div class="code-block">
+"Beyond my React skills, I noticed you're building a remote-first team. I've been working remotely for 5 years and have established protocols for async communication that I can share to help the team collaborate better."
+            </div>
+        </div>
+
+        <details>
+            <summary>Show Answer Strategy</summary>
+            <div class="answer">
+                <p><strong>Strategy:</strong> Connect your skills to their problems. "You need someone to migrate to Next.js, and I just successfully led that migration at my last job. I can hit the ground running."</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Do you have any questions for us?</div>
+        <div class="hint">Always say yes.</div>
+
+        <div class="code-section">
+            <h4>Basic Implementation: The "Insightful" List</h4>
+            <div class="code-block">
+<span class="code-comment">// Culture:</span>
+"What's the last thing you learned from a junior developer?"
+
+<span class="code-comment">// Process:</span>
+"How does a feature get from 'Idea' to 'Production' here?"
+
+<span class="code-comment">// Challenges:</span>
+"What keeps you up at night regarding the codebase?"
+            </div>
+
+            <h4>Real World Example: The "Red Flag" Detector</h4>
+            <div class="code-block">
+<span class="code-keyword">Question:</span> "When was the last time you worked on a weekend?"
+<span class="code-keyword">Why ask:</span> To gauge work-life balance without asking "Do you have work-life balance?" (which everyone says yes to).
+            </div>
+        </div>
+
+        <details>
+            <summary>Show Answer Strategy</summary>
+            <div class="answer">
+                <p><strong>Examples:</strong>
+                <br>- "What does a typical day look like?"
+                <br>- "What is the biggest technical challenge the team is facing?"
+                <br>- "How do you handle code reviews?"
+                <br>- "What is the team culture like?"</p>
+            </div>
+        </details>
+    </div>
+
+    <h2>6. System Design (Frontend)</h2>
+
+    <div class="q-block">
+        <div class="q-text">Q: How would you design a News Feed (like Facebook/Twitter)?</div>
+        <div class="hint">Infinite scroll, virtualization.</div>
+
+        <div class="code-section">
+            <h4>Basic Implementation: Component Architecture</h4>
+            <div class="code-block">
+<span class="code-keyword">Components:</span>
+- FeedContainer (Manages state, fetching)
+- VirtualList (Handles windowing/virtualization)
+- FeedItem (Individual post)
+- SkeletonLoader (Loading state)
+
+<span class="code-keyword">State:</span>
+{
+  posts: [],
+  nextCursor: "abc-123",
+  isLoading: false
+}
+            </div>
+
+            <h4>Real World Example: Virtualization Logic</h4>
+            <div class="code-block">
+<span class="code-comment">// Concept:</span>
+Only render items that are in the viewport + a small buffer.
+<span class="code-comment">// Library:</span>
+Use `react-window` or `react-virtualized`.
+<span class="code-comment">// Why:</span>
+Rendering 1000 DOM nodes crashes the browser. Rendering 10 is fast.
+            </div>
+        </div>
+
+        <details>
+            <summary>Show Answer Strategy</summary>
+            <div class="answer">
+                <p><strong>Key Points:</strong>
+                <br>- <strong>Virtualization:</strong> Only render visible posts.
+                <br>- <strong>Pagination:</strong> Cursor-based pagination (not offset).
+                <br>- <strong>Caching:</strong> React Query for data.
+                <br>- <strong>Optimistic Updates:</strong> For likes/comments.
+                <br>- <strong>Image Optimization:</strong> Lazy loading, proper sizing.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: How would you design an Autocomplete/Typeahead?</div>
+        <div class="hint">Debouncing, caching.</div>
+
+        <div class="code-section">
+            <h4>Basic Implementation: Debounce Hook</h4>
+            <div class="code-block">
+<span class="code-keyword">function</span> useDebounce(value, delay) {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+  useEffect(() => {
+    const handler = setTimeout(() => setDebouncedValue(value), delay);
+    return () => clearTimeout(handler);
+  }, [value, delay]);
+  return debouncedValue;
+}
+            </div>
+
+            <h4>Real World Example: Race Condition Handling</h4>
+            <div class="code-block">
+<span class="code-comment">// Problem:</span>
+Request A (search "Rea") fires. Request B (search "React") fires.
+Request A returns *after* Request B. Results for "Rea" overwrite "React".
+
+<span class="code-comment">// Solution:</span>
+Use an `AbortController` to cancel the previous request when a new one starts.
+            </div>
+        </div>
+
+        <details>
+            <summary>Show Answer Strategy</summary>
+            <div class="answer">
+                <p><strong>Key Points:</strong>
+                <br>- <strong>Debouncing:</strong> Wait 300ms after typing stops before fetching.
+                <br>- <strong>Caching:</strong> Cache results for same queries.
+                <br>- <strong>Race Conditions:</strong> Ignore old requests if a new one finishes first.
+                <br>- <strong>Accessibility:</strong> Keyboard navigation (Arrow keys), ARIA attributes.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: How would you design a Photo Gallery?</div>
+        <div class="hint">Performance.</div>
+
+        <div class="code-section">
+            <h4>Basic Implementation: Lazy Loading Image Component</h4>
+            <div class="code-block">
+<span class="code-keyword">const</span> Image = ({ src, alt }) => {
+  const [isVisible, setIsVisible] = useState(false);
+  const imgRef = useRef();
+
+  useEffect(() => {
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) setIsVisible(true);
+    });
+    observer.observe(imgRef.current);
+  }, []);
+
+  return &lt;div ref={imgRef}&gt;{isVisible && &lt;img src={src} alt={alt} /&gt;}&lt;/div&gt;;
+};
+            </div>
+
+            <h4>Real World Example: The "Blur-Up" Technique</h4>
+            <div class="code-block">
+<span class="code-comment">// 1. Load Tiny Placeholder</span>
+Load a 10px wide version of the image (200 bytes) immediately. Scale it up with `filter: blur(20px)`.
+
+<span class="code-comment">// 2. Load Full Image</span>
+Load the high-res version in the background.
+
+<span class="code-comment">// 3. Swap</span>
+When high-res is ready, fade it in over the blurred placeholder.
+            </div>
+        </div>
+
+        <details>
+            <summary>Show Answer Strategy</summary>
+            <div class="answer">
+                <p><strong>Key Points:</strong>
+                <br>- <strong>Lazy Loading:</strong> Don't load off-screen images.
+                <br>- <strong>Thumbnails:</strong> Load small version first, then full res.
+                <br>- <strong>CDN:</strong> Serve images from edge locations.
+                <br>- <strong>Formats:</strong> Use WebP/AVIF.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: How would you design a Chat Application?</div>
+        <div class="hint">Real-time.</div>
+
+        <div class="code-section">
+            <h4>Basic Implementation: WebSocket Hook</h4>
+            <div class="code-block">
+<span class="code-keyword">useEffect</span>(() => {
+  const socket = new WebSocket('wss://api.chat.com');
+  
+  socket.onmessage = (event) => {
+    const newMessage = JSON.parse(event.data);
+    setMessages(prev => [...prev, newMessage]);
+  };
+
+  return () => socket.close();
+}, []);
+            </div>
+
+            <h4>Real World Example: Optimistic UI</h4>
+            <div class="code-block">
+<span class="code-comment">// 1. User hits Send</span>
+Add message to UI immediately with status: 'sending'.
+
+<span class="code-comment">// 2. Send to Server</span>
+If success -> update status to 'sent'.
+If fail -> update status to 'error' and show "Retry" button.
+
+<span class="code-comment">// Why?</span>
+Makes the app feel instant, even on slow networks.
+            </div>
+        </div>
+
+        <details>
+            <summary>Show Answer Strategy</summary>
+            <div class="answer">
+                <p><strong>Key Points:</strong>
+                <br>- <strong>WebSockets:</strong> For real-time bi-directional communication.
+                <br>- <strong>State:</strong> Optimistic UI for sending messages.
+                <br>- <strong>Offline Support:</strong> Service Workers / LocalStorage.
+                <br>- <strong>Security:</strong> Sanitize messages (XSS).</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: How do you handle Internationalization (i18n)?</div>
+        <div class="hint">Translations.</div>
+
+        <div class="code-section">
+            <h4>Basic Implementation: Translation Function</h4>
+            <div class="code-block">
+<span class="code-keyword">const</span> translations = {
+  en: { welcome: "Hello" },
+  es: { welcome: "Hola" }
+};
+
+<span class="code-keyword">const</span> t = (key, lang) => translations[lang][key];
+
+<span class="code-comment">// Usage</span>
+&lt;h1&gt;{t('welcome', 'es')}&lt;/h1&gt; <span class="code-comment">// Output: Hola</span>
+            </div>
+
+            <h4>Real World Example: Pluralization & Interpolation</h4>
+            <div class="code-block">
+<span class="code-comment">// Complex Case:</span>
+"You have {count} messages."
+
+<span class="code-comment">// Library (i18next):</span>
+t('messages_count', { count: 5 }); 
+<span class="code-comment">// Handles "1 message" vs "5 messages" automatically based on language rules.</span>
+            </div>
+        </div>
+
+        <details>
+            <summary>Show Answer Strategy</summary>
+            <div class="answer">
+                <p><strong>Strategy:</strong> Use a library like <code>react-i18next</code>. Store strings in JSON files (en.json, es.json). Use keys in code <code>t('welcome_message')</code>. Handle RTL (Right-to-Left) layouts for languages like Arabic/Hebrew.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: How do you handle Error Logging?</div>
+        <div class="hint">Sentry.</div>
+
+        <div class="code-section">
+            <h4>Basic Implementation: Error Boundary</h4>
+            <div class="code-block">
+<span class="code-keyword">class</span> ErrorBoundary extends React.Component {
+  componentDidCatch(error, info) {
+    logToService(error, info); <span class="code-comment">// Send to Sentry</span>
+  }
+
+  render() {
+    if (this.state.hasError) return &lt;h1&gt;Something went wrong.&lt;/h1&gt;;
+    return this.props.children;
+  }
+}
+            </div>
+
+            <h4>Real World Example: Source Maps</h4>
+            <div class="code-block">
+<span class="code-comment">// Problem:</span>
+Production code is minified (`a.b() is not a function`).
+
+<span class="code-comment">// Solution:</span>
+Upload Source Maps to Sentry during the build process.
+Sentry uses them to un-minify the stack trace so you see `UserComponent.js: line 42`.
+            </div>
+        </div>
+
+        <details>
+            <summary>Show Answer Strategy</summary>
+            <div class="answer">
+                <p><strong>Strategy:</strong> Use a service like Sentry or LogRocket. Wrap the app in an Error Boundary. Capture unhandled promise rejections. Log context (User ID, Browser version) to help debugging.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: How do you optimize Critical Rendering Path?</div>
+        <div class="hint">Lighthouse.</div>
+
+        <div class="code-section">
+            <h4>Basic Implementation: Resource Hints</h4>
+            <div class="code-block">
+&lt;head&gt;
+  <span class="code-comment">&lt;!-- Preload critical font --&gt;</span>
+  &lt;link rel="preload" href="font.woff2" as="font" type="font/woff2" crossorigin&gt;
+  
+  <span class="code-comment">&lt;!-- Preconnect to API domain --&gt;</span>
+  &lt;link rel="preconnect" href="https://api.mysite.com"&gt;
+&lt;/head&gt;
+            </div>
+
+            <h4>Real World Example: Inlining Critical CSS</h4>
+            <div class="code-block">
+<span class="code-keyword">Strategy:</span> Extract the CSS needed for the "Above the Fold" content (Header, Hero).
+<span class="code-keyword">Action:</span> Put that CSS in a `&lt;style&gt;` tag in the HTML head.
+<span class="code-keyword">Result:</span> The page renders instantly without waiting for the main `styles.css` file to download.
+            </div>
+        </div>
+
+        <details>
+            <summary>Show Answer Strategy</summary>
+            <div class="answer">
+                <p><strong>Strategy:</strong> Minimize CSS/JS blocking the head. Inline critical CSS. Defer non-essential scripts. Preload fonts. Compress assets (Gzip/Brotli).</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: How would you design a Collaborative Document Editor (like Google Docs)?</div>
+        <div class="hint">CRDTs, OT.</div>
+
+        <div class="code-section">
+            <h4>Basic Implementation: The Concept of OT</h4>
+            <div class="code-block">
+<span class="code-comment">// User A:</span> inserts "A" at index 0.
+<span class="code-comment">// User B:</span> inserts "B" at index 0.
+
+<span class="code-comment">// Without OT:</span> Result might be "BA" or "AB" depending on network.
+<span class="code-comment">// With OT:</span> Server transforms User B's operation to "insert 'B' at index 1" because User A got there first.
+            </div>
+
+            <h4>Real World Example: Yjs (CRDT Library)</h4>
+            <div class="code-block">
+<span class="code-keyword">import</span> * as Y from 'yjs'
+<span class="code-keyword">import</span> { WebsocketProvider } from 'y-websocket'
+
+const doc = new Y.Doc()
+const wsProvider = new WebsocketProvider('ws://localhost:1234', 'my-room', doc)
+const ytext = doc.getText('codemirror')
+
+<span class="code-comment">// Bind ytext to editor...</span>
+            </div>
+        </div>
+
+        <details>
+            <summary>Show Answer Strategy</summary>
+            <div class="answer">
+                <p><strong>Key Points:</strong>
+                <br>- <strong>Conflict Resolution:</strong> Operational Transformation (OT) or CRDTs (Conflict-free Replicated Data Types).
+                <br>- <strong>WebSockets:</strong> For real-time character-by-character updates.
+                <br>- <strong>Presence:</strong> Showing where other users' cursors are.
+                <br>- <strong>Offline:</strong> Local storage and syncing when back online.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: How would you design a Video Streaming Platform (like Netflix/YouTube)?</div>
+        <div class="hint">Adaptive Bitrate.</div>
+
+        <div class="code-section">
+            <h4>Basic Implementation: HTML5 Video</h4>
+            <div class="code-block">
+&lt;video controls width="250"&gt;
+  &lt;source src="/media/video.webm" type="video/webm"&gt;
+  &lt;source src="/media/video.mp4" type="video/mp4"&gt;
+&lt;/video&gt;
+            </div>
+
+            <h4>Real World Example: HLS (HTTP Live Streaming)</h4>
+            <div class="code-block">
+<span class="code-comment">// 1. Transcode</span>
+Server splits video into 10-second chunks (.ts files) and creates a manifest (.m3u8).
+
+<span class="code-comment">// 2. Adaptive Player</span>
+Client downloads manifest.
+If bandwidth is high -> download 1080p chunks.
+If bandwidth drops -> switch to 480p chunks automatically.
+            </div>
+        </div>
+
+        <details>
+            <summary>Show Answer Strategy</summary>
+            <div class="answer">
+                <p><strong>Key Points:</strong>
+                <br>- <strong>Adaptive Bitrate Streaming (ABR):</strong> HLS or DASH protocols to adjust quality based on bandwidth.
+                <br>- <strong>CDN:</strong> Heavy caching at edge locations.
+                <br>- <strong>Player State:</strong> Buffering, seeking, remembering playback position.
+                <br>- <strong>DRM:</strong> Digital Rights Management for content protection.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: How would you design a File Upload System (Google Drive)?</div>
+        <div class="hint">Chunking.</div>
+
+        <div class="code-section">
+            <h4>Basic Implementation: FormData</h4>
+            <div class="code-block">
+const formData = new FormData();
+formData.append('file', fileInput.files[0]);
+
+fetch('/upload', {
+  method: 'POST',
+  body: formData
+});
+            </div>
+
+            <h4>Real World Example: Resumable Uploads</h4>
+            <div class="code-block">
+<span class="code-comment">// Logic:</span>
+1. Slice file: `file.slice(start, end)`
+2. Upload chunk 1 (0-1MB).
+3. Save progress to LocalStorage.
+4. If network fails, read progress and start uploading chunk 2 (1-2MB).
+            </div>
+        </div>
+
+        <details>
+            <summary>Show Answer Strategy</summary>
+            <div class="answer">
+                <p><strong>Key Points:</strong>
+                <br>- <strong>Chunking:</strong> Split large files into small chunks to avoid timeouts and allow resuming.
+                <br>- <strong>Progress:</strong> Track upload progress per chunk.
+                <br>- <strong>Drag & Drop:</strong> HTML5 Drag and Drop API.
+                <br>- <strong>Virus Scanning:</strong> Scan files on the server before making them available.</p>
+            </div>
+        </details>
+    </div>
+
+    <h2>7. Engineering Process & Methodology</h2>
+
+    <div class="q-block">
+        <div class="q-text">Q: How do you estimate software tasks?</div>
+        <div class="hint">Uncertainty.</div>
+
+        <div class="code-section">
+            <h4>Basic Implementation: The "Cone of Uncertainty"</h4>
+            <div class="code-block">
+<span class="code-comment">// Start of Project:</span>
+Estimate: 1 week (+/- 400%) -> Could be 1 day or 1 month.
+
+<span class="code-comment">// After Specs:</span>
+Estimate: 1 week (+/- 50%) -> 2.5 to 7.5 days.
+
+<span class="code-comment">// After Prototyping:</span>
+Estimate: 1 week (+/- 10%) -> 4.5 to 5.5 days.
+            </div>
+
+            <h4>Real World Example: Planning Poker</h4>
+            <div class="code-block">
+<span class="code-keyword">Process:</span> Team votes on complexity using Fibonacci numbers (1, 2, 3, 5, 8, 13).
+<span class="code-keyword">Benefit:</span> If I vote "3" and you vote "13", we discuss *why*. Usually, you thought of an edge case I missed.
+            </div>
+        </div>
+
+        <details>
+            <summary>Show Answer Strategy</summary>
+            <div class="answer">
+                <p><strong>Strategy:</strong> Break down the task into the smallest possible sub-tasks. Estimate based on complexity (Story Points) or time (Hours/Days). Always add a buffer for testing, code review, and unexpected issues (often 20-30%).</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is your opinion on Test Driven Development (TDD)?</div>
+        <div class="hint">Pragmatism.</div>
+
+        <div class="code-section">
+            <h4>Basic Implementation: Red-Green-Refactor</h4>
+            <div class="code-block">
+<span class="code-comment">// 1. Red (Write failing test)</span>
+expect(add(1, 2)).toBe(3); <span class="code-comment">// Error: add is not defined</span>
+
+<span class="code-comment">// 2. Green (Make it pass)</span>
+const add = (a, b) => a + b;
+
+<span class="code-comment">// 3. Refactor (Clean up)</span>
+const add = (a, b) => Number(a) + Number(b); <span class="code-comment">// Handle strings</span>
+            </div>
+
+            <h4>Real World Example: When NOT to use TDD</h4>
+            <div class="code-block">
+"I don't use TDD when exploring a new API or prototyping a UI layout, because I don't know what the code will look like yet. I add tests once the design stabilizes."
+            </div>
+        </div>
+
+        <details>
+            <summary>Show Answer Strategy</summary>
+            <div class="answer">
+                <p><strong>Strategy:</strong> "I see value in TDD for complex logic or utility functions where edge cases are critical. For UI components, I often prefer writing tests after the initial prototype is stable, or using integration tests, as the DOM structure changes frequently."</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: How do you ensure documentation is kept up to date?</div>
+        <div class="hint">Culture.</div>
+
+        <div class="code-section">
+            <h4>Basic Implementation: Docs as Code</h4>
+            <div class="code-block">
+<span class="code-comment">// Markdown in Repo:</span>
+/docs/architecture.md
+/docs/api.md
+
+<span class="code-comment">// PR Rule:</span>
+"If you change the API signature in `user.ts`, you must update `api.md` in the same PR."
+            </div>
+
+            <h4>Real World Example: Auto-Generation</h4>
+            <div class="code-block">
+<span class="code-keyword">Tool:</span> Storybook or Swagger.
+<span class="code-keyword">Benefit:</span> The documentation is generated *from* the code. If the code changes, the docs update automatically. No manual drift.
+            </div>
+        </div>
+
+        <details>
+            <summary>Show Answer Strategy</summary>
+            <div class="answer">
+                <p><strong>Strategy:</strong> Treat documentation as code. Require documentation updates in the Definition of Done (DoD) for a PR. Use tools that auto-generate docs (Storybook, Swagger) where possible.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: How do you balance Speed vs. Quality?</div>
+        <div class="hint">Context matters.</div>
+
+        <div class="code-section">
+            <h4>Basic Implementation: The "Iron Triangle"</h4>
+            <div class="code-block">
+<span class="code-comment">// Variables:</span>
+Scope, Time, Quality.
+
+<span class="code-comment">// The Rule:</span>
+"You can pick two. If you want High Quality and Fast Time, we must reduce Scope."
+            </div>
+
+            <h4>Real World Example: The "Tech Debt Credit Card"</h4>
+            <div class="code-block">
+"We can ship this feature in 2 days if we hardcode the logic (Speed).
+But we'll have to pay the 'interest' later by refactoring it next sprint (Quality).
+Is the immediate release worth the future cost?"
+            </div>
+        </div>
+
+        <details>
+            <summary>Show Answer Strategy</summary>
+            <div class="answer">
+                <p><strong>Strategy:</strong> "It depends on the stage of the project. For a startup MVP, speed is often prioritized to validate the market, accepting some tech debt. For a mature financial application, quality and stability are non-negotiable."</p>
+            </div>
+        </details>
+    </div>
+
+    <h2>8. Ethics & Culture</h2>
+
+    <div class="q-block">
+        <div class="q-text">Q: What would you do if asked to implement a "Dark Pattern"?</div>
+        <div class="hint">Ethics.</div>
+
+        <div class="code-section">
+            <h4>Basic Implementation: The "User Trust" Argument</h4>
+            <div class="code-block">
+<span class="code-comment">// Scenario:</span>
+PM wants to make the "Unsubscribe" button invisible.
+
+<span class="code-comment">// Response:</span>
+"I understand we want to reduce churn. However, hiding the button frustrates users and leads to spam reports, which hurts our email deliverability. Let's instead add a 'Pause Subscription' option to offer value."
+            </div>
+
+            <h4>Real World Example: Accessibility as Ethics</h4>
+            <div class="code-block">
+<span class="code-keyword">Situation:</span> Designer wanted low-contrast grey text because it looked "sleek".
+<span class="code-keyword">Action:</span> I showed them a simulation of how it looks to someone with visual impairments.
+<span class="code-keyword">Result:</span> We agreed to darken the text to meet WCAG AA standards.
+            </div>
+        </div>
+
+        <details>
+            <summary>Show Answer Strategy</summary>
+            <div class="answer">
+                <p><strong>Strategy:</strong> Push back respectfully. Explain the long-term damage to user trust and brand reputation. "If we trick users into subscribing, they will just chargeback or leave bad reviews. It's better to win them over with value."</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: How do you foster an inclusive environment?</div>
+        <div class="hint">Awareness.</div>
+
+        <div class="code-section">
+            <h4>Basic Implementation: Inclusive Language</h4>
+            <div class="code-block">
+<span class="code-comment">// Instead of:</span>
+"Hey guys, let's man the helpdesk."
+
+<span class="code-comment">// Use:</span>
+"Hey team, let's staff the helpdesk."
+
+<span class="code-comment">// Instead of:</span>
+"Whitelist / Blacklist"
+
+<span class="code-comment">// Use:</span>
+"Allowlist / Blocklist"
+            </div>
+
+            <h4>Real World Example: Meeting Dynamics</h4>
+            <div class="code-block">
+<span class="code-keyword">Action:</span> In meetings, I notice who hasn't spoken yet.
+<span class="code-keyword">Script:</span> "I'd love to hear [Name]'s thoughts on this since they worked on the related module."
+<span class="code-keyword">Result:</span> Ensures quieter voices are heard and valued.
+            </div>
+        </div>
+
+        <details>
+            <summary>Show Answer Strategy</summary>
+            <div class="answer">
+                <p><strong>Strategy:</strong> Be mindful of language (e.g., avoiding "guys" for mixed groups). Ensure everyone has a chance to speak in meetings. Advocate for accessibility so the product is usable by everyone. Call out bias when I see it."</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: How do you handle a production incident (On-Call)?</div>
+        <div class="hint">Calmness.</div>
+        <details>
+            <summary>Show Answer Strategy</summary>
+            <div class="answer">
+                <p><strong>Strategy:</strong> 1. Acknowledge the alert. 2. Triage (Impact assessment). 3. Communicate (Status page/Stakeholders). 4. Mitigate (Rollback/Hotfix). 5. Root Cause Analysis (Post-mortem) afterwards. Don't panic.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is "Psychological Safety" and why is it important?</div>
+        <div class="hint">Google's Project Aristotle.</div>
+        <details>
+            <summary>Show Answer Strategy</summary>
+            <div class="answer">
+                <p><strong>Strategy:</strong> It's the belief that you won't be punished or humiliated for speaking up with ideas, questions, concerns, or mistakes. It is the #1 predictor of high-performing teams because it fosters innovation and faster bug reporting.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: How do you approach "Accessibility" (a11y) from an ethical standpoint?</div>
+        <div class="hint">Inclusion.</div>
+        <details>
+            <summary>Show Answer Strategy</summary>
+            <div class="answer">
+                <p><strong>Strategy:</strong> "Accessibility isn't just a compliance checklist; it's a civil right. Building inaccessible software excludes millions of people (blind, motor impaired, etc.) from participating in society. It's our ethical duty to build for everyone."</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: How do you handle "Imposter Syndrome"?</div>
+        <div class="hint">Honesty.</div>
+        <details>
+            <summary>Show Answer Strategy</summary>
+            <div class="answer">
+                <p><strong>Strategy:</strong> "I acknowledge that no one knows everything in this field because it changes so fast. I focus on my ability to learn rather than what I already know. I also talk about it with peers, which usually reveals they feel the same way."</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is the "Bus Factor" and how do you increase it?</div>
+        <div class="hint">Knowledge sharing.</div>
+        <details>
+            <summary>Show Answer Strategy</summary>
+            <div class="answer">
+                <p><strong>Strategy:</strong> The number of people who would need to get hit by a bus for the project to stall. If it's 1, that's bad. I increase it by writing documentation, pair programming, and rotating responsibilities so knowledge is distributed."</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: How do you give feedback to your manager?</div>
+        <div class="hint">Managing up.</div>
+        <details>
+            <summary>Show Answer Strategy</summary>
+            <div class="answer">
+                <p><strong>Strategy:</strong> "I schedule a 1:1. I frame it around how their actions impact the team's output. 'When we change priorities mid-sprint, the team loses momentum. Could we try to lock scope for 2 weeks?' I focus on solutions."</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: How do you handle burnout?</div>
+        <div class="hint">Sustainability.</div>
+        <details>
+            <summary>Show Answer Strategy</summary>
+            <div class="answer">
+                <p><strong>Strategy:</strong> "I recognize the signs early (cynicism, exhaustion). I communicate with my lead to adjust workload. I make sure to disconnect fully during off-hours and take my vacation time to recharge."</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is "Blameless Post-Mortem"?</div>
+        <div class="hint">Process over people.</div>
+        <details>
+            <summary>Show Answer Strategy</summary>
+            <div class="answer">
+                <p><strong>Strategy:</strong> A meeting after an incident where we focus on <em>what</em> failed in the system, not <em>who</em> made the mistake. We assume everyone had good intentions. The goal is to improve the system so the same mistake is impossible to make again.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: How do you handle a disagreement about code style?</div>
+        <div class="hint">Automation.</div>
+        <details>
+            <summary>Show Answer Strategy</summary>
+            <div class="answer">
+                <p><strong>Strategy:</strong> "I suggest we stop arguing and let a tool decide. We should adopt Prettier and ESLint. Subjective style debates waste time; automation solves it instantly and consistently."</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: How do you onboard a new developer?</div>
+        <div class="hint">Empathy.</div>
+        <details>
+            <summary>Show Answer Strategy</summary>
+            <div class="answer">
+                <p><strong>Strategy:</strong> "I create a 'First Day' checklist. I assign them a 'Buddy' for questions. I encourage them to push a small code change to production on day 1 or 2 to build confidence. I make them feel welcome and safe to ask 'stupid' questions."</p>
+            </div>
+        </details>
+    </div>
+
+</body>
+</html>

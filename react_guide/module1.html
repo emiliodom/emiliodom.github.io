@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 1: The Foundation</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+</head>
+<body>
+    <header>
+        <h1>Module 1: The Foundation</h1>
+        <p>Setup, JSX, Components, and TypeScript Props.</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <h2>1. Deep Dive: The React Mental Model</h2>
+        
+        <h3>1.1 Components are just Functions</h3>
+        <p>Forget "classes" or "instances" for a moment. A React component is simply a JavaScript function. It takes an input (<code>props</code>) and returns an output (<code>JSX</code>). If you call the function with the same props, you should get the exact same UI. This is called <strong>idempotency</strong>.</p>
+        <pre><code class="language-jsx">// Input: { name: "Alice" }
+// Output: &lt;h1&gt;Hello, Alice&lt;/h1&gt;
+function Welcome(props) {
+  return &lt;h1&gt;Hello, {props.name}&lt;/h1&gt;;
+}</code></pre>
+
+        <h3>1.2 JSX is not HTML</h3>
+        <p>Browsers do not understand JSX. Build tools (Vite/Babel) compile it into standard JavaScript calls.
+        <br><code>&lt;div className="box"&gt;Hi&lt;/div&gt;</code> becomes <code>React.createElement('div', { className: 'box' }, 'Hi')</code>.</p>
+        <p><strong>Why this matters:</strong> You can't use HTML keywords like <code>class</code> (reserved in JS) or <code>for</code>. You must use <code>className</code> and <code>htmlFor</code>. You can't return multiple sibling elements without a parent because a function cannot return two values at once.</p>
+
+        <h3>1.3 The One-Way Data Flow</h3>
+        <p>Data flows <strong>down</strong>. Parents pass data to children via props. Children <em>cannot</em> modify props. If a child needs to change something, it must ask the parent to do it (via a callback function). This strict hierarchy makes debugging predictable.</p>
+
+        <h3>1.4 TypeScript & React</h3>
+        <p>We use TypeScript to enforce the "contract" between components. If a component expects a <code>userId</code>, TS ensures you don't forget it.</p>
+        <pre><code>interface UserCardProps {
+  name: string;
+  age?: number; // Optional
+  role: 'admin' | 'user'; // Union type (Specific strings only)
+}</code></pre>
+
+        <h3>1.5 Industry Standard: The Component Interface</h3>
+        <p>In professional codebases, components are treated as <strong>APIs</strong>. They must be robust and predictable. A "Senior" component definition often looks like this:</p>
+        <pre><code>// Real-world Button Interface
+interface ButtonProps extends React.ButtonHTMLAttributes&lt;HTMLButtonElement&gt; {
+  variant?: 'primary' | 'secondary' | 'danger';
+  size?: 'sm' | 'md' | 'lg';
+  isLoading?: boolean;
+  leftIcon?: React.ReactNode;
+}
+// Note: It extends native HTML attributes so you don't have to manually type 'onClick', 'disabled', etc.</code></pre>
+
+        <h3>1.3 TypeScript Interfaces: The Contract</h3>
+        <p>In professional React, we don't guess what props a component needs. We define a contract.</p>
+        <pre><code class="language-tsx">interface ButtonProps {
+  label: string;
+  onClick: () => void;
+  variant?: 'primary' | 'secondary'; // Optional prop
+  disabled?: boolean;
+}
+
+const Button = ({ label, onClick, variant = 'primary', disabled }: ButtonProps) => {
+  return (
+    &lt;button 
+      className={`btn-${variant}`} 
+      onClick={onClick} 
+      disabled={disabled}
+    &gt;
+      {label}
+    &lt;/button&gt;
+  );
+};</code></pre>
+
+        <div class="jira-ticket">
+            <div class="jira-header">
+                <span class="jira-id">REQ-002</span>
+                <span class="jira-status">To Do</span>
+            </div>
+            <div class="jira-body">
+                <h3 class="jira-title">Create a Reusable "UserCard" Component</h3>
+                
+                <div class="jira-section">
+                    <span class="jira-label">User Story</span>
+                    <p>As a UI designer, I need a standard card component to display user profiles across the application so that the design remains consistent.</p>
+                </div>
+
+                <div class="jira-section">
+                    <span class="jira-label">Acceptance Criteria</span>
+                    <ul class="req-list">
+                        <li>Create a <code>UserCard</code> component.</li>
+                        <li>It must accept <code>name</code> (string), <code>role</code> (string), and <code>isActive</code> (boolean).</li>
+                        <li>If <code>isActive</code> is true, display a green "Active" badge. If false, a red "Offline" badge.</li>
+                        <li>Style the card with a border and shadow (use CSS classes).</li>
+                    </ul>
+                </div>
+
+                <div class="jira-section">
+                    <span class="jira-label">Senior Bonus</span>
+                    <ul class="req-list">
+                        <li><strong>TypeScript:</strong> Define a strict <code>UserCardProps</code> interface.</li>
+                        <li><strong>Destructuring:</strong> Destructure props in the function signature.</li>
+                        <li><strong>Composition:</strong> Allow the card to accept <code>children</code> so we can pass arbitrary content inside it later.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <h2>2. The Setup Challenge</h2>
+        <div class="task">
+            <h3>Task: Initialize the Environment</h3>
+            <p>Do not use a template you found online. Use the CLI.</p>
+            <ol>
+                <li>Open your terminal.</li>
+                <li>Run <code>npm create vite@latest my-app -- --template react-ts</code>.</li>
+                <li>Navigate into the folder, install dependencies, and start the server.</li>
+                <li><strong>Cleanup:</strong> Delete <code>App.css</code>, delete the contents of <code>App.tsx</code> (keep the component shell), and delete the logo files. Start blank.</li>
+            </ol>
+        </div>
+
+        <h2>3. The Build Challenge: "User Card"</h2>
+        <div class="task">
+            <h3>Level 1: The Basics</h3>
+            <p>Create a component named <code>UserCard</code>.</p>
+            <ul>
+                <li>It must accept the following props (define a TypeScript interface):
+                    <ul>
+                        <li><code>name</code> (string)</li>
+                        <li><code>role</code> (string, optional - default to "Guest")</li>
+                        <li><code>isActive</code> (boolean)</li>
+                        <li><code>skills</code> (array of strings)</li>
+                    </ul>
+                </li>
+                <li><strong>Logic:</strong>
+                    <ul>
+                        <li>If <code>isActive</code> is true, show a green dot (CSS). If false, red.</li>
+                        <li>Render the list of <code>skills</code> using <code>.map()</code>.</li>
+                        <li>If the user has no skills, display "No skills listed".</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <h3>Level 2: Senior Constraints (Strict Mode)</h3>
+            <ul>
+                <li><strong>Destructuring:</strong> You must destructure props in the function signature, not inside the body.</li>
+                <li><strong>Strict Typing:</strong> Do not use <code>any</code>. If <code>skills</code> is an array of objects, define that object type.</li>
+                <li><strong>Composition:</strong> Instead of hardcoding the "Green Dot", create a tiny sub-component <code>&lt;StatusIndicator isActive={true} /&gt;</code> and use it inside the card.</li>
+            </ul>
+
+            <h3>Level 3: Nice to Haves</h3>
+            <ul>
+                <li><strong>Loading State:</strong> Add an <code>isLoading</code> prop. If true, hide the content and show "Loading user data...".</li>
+                <li><strong>Event Handling:</strong> Add an <code>onRoleClick</code> callback prop. When the role text is clicked, fire this function.</li>
+            </ul>
+        </div>
+
+        <h2>4. The Bug Hunt</h2>
+        <div class="bug-hunt">
+            <h3>🐛 Scenario: The Missing Key</h3>
+            <p><strong>The Setup:</strong></p>
+            <pre><code class="language-jsx">const users = ["Alice", "Bob", "Charlie"];
+return (
+  &lt;ul&gt;
+    {users.map(user => &lt;li&gt;{user}&lt;/li&gt;)}
+  &lt;/ul&gt;
+);</code></pre>
+            <p><strong>The Bug:</strong> Check your console. You'll see a warning: "Each child in a list should have a unique 'key' prop."</p>
+            <p><strong>The Task:</strong></p>
+            <ol>
+                <li>Fix the warning by adding a <code>key</code>.</li>
+                <li><strong>Interview Question:</strong> Why does React need keys? (Hint: Reconciliation).</li>
+                <li><strong>Trap:</strong> Why is using <code>index</code> as a key (e.g., <code>map((u, i) => key={i})</code>) dangerous if the list order changes?</li>
+            </ol>
+        </div>
+
+        <h2>5. Test on your own</h2>
+        <div class="task">
+            <h3>Verify your Environment</h3>
+            <ul>
+                <li><strong>HMR Check:</strong> Change the text color in your CSS while the server is running. Does it update without a full page reload?</li>
+                <li><strong>Strict Mode Check:</strong> Add a <code>console.log('Render')</code> inside your component. Open the browser console. Do you see it log <strong>twice</strong>? (This is React Strict Mode intentionally double-invoking to catch side effects).</li>
+            </ul>
+        </div>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-jsx.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-tsx.min.js"></script>
+    <script src="layout.js"></script>
+</body>
+</html>

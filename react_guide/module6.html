@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 6: Global State Management</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+</head>
+<body>
+    <header>
+        <h1>Module 6: Global State Management</h1>
+        <p>Redux Toolkit (RTK) and Zustand.</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <h2>1. Core Concepts</h2>
+        <p><strong>Global State:</strong> When data is needed by many disparate parts of the app (User Profile, Shopping Cart, Theme), Context can be slow or messy. We use libraries.</p>
+        <p><strong>Redux Toolkit (RTK):</strong> The industry standard. Uses a central "Store". You "dispatch" actions to modify the store. It's strict, verbose, but very predictable.</p>
+        <p><strong>Zustand:</strong> The modern favorite. Much simpler. Just a hook that returns your state and functions to update it. No complex providers needed.</p>
+
+        <h3>1.1 Deep Dive: Prop Drilling vs. Composition</h3>
+        <p>Before reaching for Redux, ask: "Can I solve this with Composition?"
+        <br>Instead of passing <code>user</code> down 4 levels, can you pass the <code>&lt;Avatar user={user} /&gt;</code> component itself as a prop? This is often cleaner than global state.</p>
+
+        <h3>1.2 Industry Standard: Feature Slices</h3>
+        <p>In Redux Toolkit, we organize code by "Feature", not by file type. We don't have a folder for "Actions" and a folder for "Reducers". We have a folder for "Cart" which contains <code>cartSlice.ts</code> (logic) and <code>CartComponent.tsx</code> (UI). This is known as the "Ducks" pattern or "Feature Folder" structure.</p>
+
+        <h3>1.3 Senior Concept: Server State vs. Client State</h3>
+        <p><strong>The Anti-Pattern:</strong> Storing <em>everything</em> in Redux/Zustand.
+        <br><strong>The Senior Approach:</strong> Distinguish between:
+        <br>1. <strong>Client State:</strong> UI state (Is the modal open? What is the theme? What is in the cart?). Use <strong>Zustand/Redux</strong>.
+        <br>2. <strong>Server State:</strong> Data from an API (User profile, List of products). This is <em>cache</em>, not state. Use <strong>TanStack Query (React Query)</strong>. It handles caching, deduping, and re-fetching automatically.</p>
+
+        <details>
+            <summary><strong>📚 Deep Dive (Documentation)</strong></summary>
+            <ul>
+                <li><a href="https://redux-toolkit.js.org/introduction/getting-started" target="_blank">Redux Toolkit Quick Start</a></li>
+                <li><a href="https://github.com/pmndrs/zustand" target="_blank">Zustand Documentation</a></li>
+            </ul>
+        </details>
+
+        <div class="jira-ticket">
+            <div class="jira-header">
+                <span class="jira-id">REQ-007</span>
+                <span class="jira-status">To Do</span>
+            </div>
+            <div class="jira-body">
+                <h3 class="jira-title">Implement Shopping Cart State</h3>
+                
+                <div class="jira-section">
+                    <span class="jira-label">User Story</span>
+                    <p>As a customer, I want to add items to my cart and see the total price update instantly, regardless of which page I am on.</p>
+                </div>
+
+                <div class="jira-section">
+                    <span class="jira-label">Acceptance Criteria</span>
+                    <ul class="req-list">
+                        <li><strong>Redux Toolkit Setup:</strong>
+                            <ul>
+                                <li>Create <code>cartSlice</code> with <code>items</code> array.</li>
+                                <li>Actions: <code>addToCart</code>, <code>removeFromCart</code>, <code>updateQuantity</code>.</li>
+                                <li>Logic: If item exists, increment quantity. Else add new.</li>
+                            </ul>
+                        </li>
+                        <li><strong>Selectors:</strong>
+                            <ul>
+                                <li><code>selectCartTotal</code>: Sum of (price * quantity).</li>
+                                <li><code>selectCartCount</code>: Total number of items.</li>
+                            </ul>
+                        </li>
+                        <li><strong>UI Integration:</strong>
+                            <ul>
+                                <li>"Products" page with "Add" buttons.</li>
+                                <li>"Cart" page displaying items and total.</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="jira-section">
+                    <span class="jira-label">Senior Bonus</span>
+                    <ul class="req-list">
+                        <li><strong>Zustand Migration:</strong> Re-implement the exact same logic using Zustand in a separate branch/folder.</li>
+                        <li><strong>Performance:</strong> Use selectors in Zustand (<code>useStore(state => state.items)</code>) to prevent unnecessary re-renders.</li>
+                        <li><strong>Persistence:</strong> Use middleware to save the cart to <code>localStorage</code>.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <h2>3. The Bug Hunt</h2>
+        <div class="bug-hunt">
+            <h3>🐛 Scenario: The Mutated State</h3>
+            <p><strong>The Setup (Redux):</strong></p>
+            <pre><code class="language-javascript">// In a Redux reducer
+state.items.push(newItem); // This works in RTK because of Immer!
+
+// BUT, imagine you are using Context or old Redux:
+return { ...state, items: state.items.push(newItem) }; // BUG!</code></pre>
+            <p><strong>The Bug:</strong> <code>Array.push</code> returns the <em>new length</em> of the array, not the array itself. So your state becomes a number (e.g., <code>3</code>) instead of an object.</p>
+            <p><strong>The Task:</strong></p>
+            <ol>
+                <li>Write the correct immutable update logic without Immer.</li>
+                <li><code>return { ...state, items: [...state.items, newItem] }</code>.</li>
+            </ol>
+        </div>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-jsx.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-tsx.min.js"></script>
+    <script src="layout.js"></script>
+</body>
+</html>

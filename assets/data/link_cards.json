@@ -54,7 +54,7 @@
         {
           "title": "React Guide",
           "description": "Educational resources and guides",
-          "href": "/react",
+          "href": "/react_guide",
           "icon": "🎓",
           "external": true
         }

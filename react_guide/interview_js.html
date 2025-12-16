@@ -1,0 +1,1509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interview: JavaScript Core</title>
+    <style>
+        body { font-family: system-ui, -apple-system, sans-serif; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 20px; color: #333; }
+        h2 { border-bottom: 1px solid #ccc; padding-bottom: 10px; margin-top: 40px; }
+        .q-block { background: #f4f4f4; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+        .q-text { font-weight: bold; font-size: 1.1em; color: #d32f2f; margin-bottom: 10px; }
+        .hint { font-size: 0.9em; color: #666; font-style: italic; margin-bottom: 10px; }
+        details { margin-top: 10px; }
+        summary { cursor: pointer; color: #0066cc; font-weight: bold; }
+        pre { background: #2d2d2d; color: #f8f8f2; padding: 15px; border-radius: 5px; overflow-x: auto; }
+        code { font-family: monospace; }
+        .answer { margin-top: 15px; border-top: 1px solid #ddd; padding-top: 10px; }
+        nav { margin-bottom: 20px; }
+        .code-section { margin-top: 15px; border-left: 4px solid #d32f2f; padding-left: 15px; margin-bottom: 15px; }
+        .code-label { font-size: 0.8em; text-transform: uppercase; color: #666; font-weight: bold; margin-bottom: 5px; display: block; }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="interview_index.html">&larr; Back to Interview Index</a>
+    </nav>
+
+    <h1>JavaScript Core & ES6+</h1>
+
+    <div id="google_translate_element"></div>
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({pageLanguage: 'en', includedLanguages: 'es'}, 'google_translate_element');
+        }
+    </script>
+    <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+    <h2>1. Operators & Equality</h2>
+    <div class="q-block">
+        <div class="q-text">Q: What is the difference between == and ===?</div>
+        <div class="hint">Think about type coercion.</div>
+        
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>console.log(5 == "5");  // true (Coercion)
+console.log(5 === "5"); // false (Strict)</code></pre>
+        </div>
+        
+        <div class="code-section">
+            <span class="code-label">Real World Example (Lodash)</span>
+            <pre><code>// From Lodash .eq source
+function eq(value, other) {
+  return value === other || (value !== value && other !== other);
+}
+// Uses strict equality but handles NaN (value !== value)</code></pre>
+        </div>
+
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p><strong>== (Loose Equality):</strong> Performs type coercion before comparing. <code>5 == "5"</code> is true.</p>
+                <p><strong>=== (Strict Equality):</strong> Checks both value and type. <code>5 === "5"</code> is false.</p>
+                <p><strong>Senior Note:</strong> Always use <code>===</code>. The only exception might be checking for null/undefined simultaneously with <code>if (x == null)</code>, but even then, explicit checks are preferred.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Explain Short-Circuit Evaluation (&&, ||, ??)</div>
+        <div class="hint">How does React use this for conditional rendering?</div>
+        
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>const name = user.name || "Guest"; // Fallback
+const age = user.age ?? 18; // Nullish check</code></pre>
+        </div>
+
+        <div class="code-section">
+            <span class="code-label">Real World Example (React)</span>
+            <pre><code>return (
+  &lt;div&gt;
+    {isLoggedIn && &lt;UserProfile /&gt;}
+    {errorMessage || &lt;DefaultMessage /&gt;}
+  &lt;/div&gt;
+);</code></pre>
+        </div>
+
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Used heavily in React for conditional rendering.</p>
+                <pre><code>// AND (&&): Returns first falsy or last truthy
+const show = true && "Display Me"; // "Display Me"
+
+// OR (||): Returns first truthy
+const name = inputName || "Default"; // "Default" if inputName is ""
+
+// Nullish Coalescing (??): Returns right side ONLY if left is null/undefined
+const count = 0 ?? 10; // 0 (because 0 is not null)
+const count2 = 0 || 10; // 10 (because 0 is falsy)</code></pre>
+            </div>
+        </details>
+    </div>
+
+    <h2>2. ES6+ Features</h2>
+    <div class="q-block">
+        <div class="q-text">Q: What is the difference between var, let, and const?</div>
+        <div class="hint">Scope and Hoisting.</div>
+
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>let count = 1;
+count = 2; // OK
+
+const pi = 3.14;
+pi = 3; // TypeError: Assignment to constant variable.</code></pre>
+        </div>
+
+        <div class="code-section">
+            <span class="code-label">Real World Example (React State)</span>
+            <pre><code>// 'state' is const because we don't reassign it directly.
+// We use the setter function to trigger updates.
+const [state, setState] = useState(0);</code></pre>
+        </div>
+
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <ul>
+                    <li><strong>var:</strong> Function scoped. Hoisted. Can be re-declared. (Avoid using).</li>
+                    <li><strong>let:</strong> Block scoped. Not hoisted (TDZ). Can be re-assigned.</li>
+                    <li><strong>const:</strong> Block scoped. Cannot be re-assigned (but objects can be mutated).</li>
+                </ul>
+                <pre><code>const user = { name: "A" };
+user.name = "B"; // Allowed (Mutation)
+user = { name: "C" }; // Error (Re-assignment)</code></pre>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Explain Closures with a practical example.</div>
+        <div class="hint">Function inside a function.</div>
+
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>function outer() {
+  let x = 10;
+  return () => x; // Remembers x
+}
+const getX = outer();
+console.log(getX()); // 10</code></pre>
+        </div>
+
+        <div class="code-section">
+            <span class="code-label">Real World Example (React useEffect)</span>
+            <pre><code>useEffect(() => {
+  const timer = setInterval(() => {
+    console.log(count); // Closure captures 'count'
+  }, 1000);
+  return () => clearInterval(timer);
+}, [count]); // Dependency array updates the closure</code></pre>
+        </div>
+
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>A closure is a function that remembers the variables from the scope where it was defined, even after that scope has closed.</p>
+                <pre><code>function createCounter() {
+  let count = 0; // Private variable
+  return function() {
+    count++;
+    return count;
+  };
+}
+
+const counter = createCounter();
+console.log(counter()); // 1
+console.log(counter()); // 2
+// 'count' is inaccessible from outside</code></pre>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is "Hoisting"?</div>
+        <div class="hint">Moving to the top.</div>
+
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>console.log(x); // undefined (var is hoisted)
+var x = 5;
+
+console.log(y); // ReferenceError (let is in TDZ)
+let y = 10;</code></pre>
+        </div>
+
+        <div class="code-section">
+            <span class="code-label">Real World Example (Component Structure)</span>
+            <pre><code>// Function declarations are hoisted, allowing top-down reading
+export default function App() {
+  return &lt;Helper /&gt;;
+}
+
+function Helper() { // Defined below, used above
+  return &lt;div&gt;Helper&lt;/div&gt;;
+}</code></pre>
+        </div>
+
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>JavaScript's behavior of moving declarations to the top of the scope. <code>var</code> and <code>function</code> declarations are hoisted. <code>let</code> and <code>const</code> are hoisted but stay in the "Temporal Dead Zone" (TDZ) until initialized.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is the Event Loop?</div>
+        <div class="hint">Call Stack, Web APIs, Callback Queue.</div>
+
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>console.log(1);
+setTimeout(() => console.log(2), 0); // Macrotask
+Promise.resolve().then(() => console.log(3)); // Microtask
+console.log(4);
+// Output: 1, 4, 3, 2</code></pre>
+        </div>
+
+        <div class="code-section">
+            <span class="code-label">Real World Example (Non-blocking UI)</span>
+            <pre><code>// Deferring heavy calculation to avoid freezing UI
+function handleHeavyTask() {
+  setTimeout(() => {
+    heavyCalculation(); // Runs in next tick
+  }, 0);
+}</code></pre>
+        </div>
+
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>JS is single-threaded. The Event Loop checks if the Call Stack is empty. If yes, it moves items from the Callback Queue (Macrotasks) or Microtask Queue (Promises) to the Call Stack to be executed.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is `this` keyword?</div>
+        <div class="hint">Context of execution.</div>
+
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>const obj = {
+  name: 'Me',
+  say: function() { console.log(this.name) },
+  arrow: () => console.log(this.name)
+};
+obj.say(); // 'Me'
+obj.arrow(); // undefined (inherits global/window)</code></pre>
+        </div>
+
+        <div class="code-section">
+            <span class="code-label">Real World Example (Class Components)</span>
+            <pre><code>class Button extends React.Component {
+  handleClick = () => {
+    // Arrow function auto-binds 'this' to the instance
+    console.log(this.props.label);
+  }
+}</code></pre>
+        </div>
+
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>It refers to the object that is executing the current function. In an arrow function, `this` is lexically scoped (inherited from parent). In a regular function, it depends on how the function is called.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is "Prototypal Inheritance"?</div>
+        <div class="hint">Objects linking to objects.</div>
+
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>const animal = { eats: true };
+const rabbit = Object.create(animal);
+console.log(rabbit.eats); // true (inherited)</code></pre>
+        </div>
+
+        <div class="code-section">
+            <span class="code-label">Real World Example (Polyfills)</span>
+            <pre><code>if (!Array.prototype.includes) {
+  Array.prototype.includes = function(item) {
+    // Add method to all Arrays via prototype
+    return this.indexOf(item) !== -1;
+  };
+}</code></pre>
+        </div>
+
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Objects in JS have a hidden property `[[Prototype]]`. If you access a property that doesn't exist on the object, JS looks up the prototype chain until it finds it or hits null.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is "Currying"?</div>
+        <div class="hint">f(a, b) -> f(a)(b)</div>
+
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>const add = a => b => a + b;
+add(1)(2); // 3</code></pre>
+        </div>
+
+        <div class="code-section">
+            <span class="code-label">Real World Example (Redux Middleware)</span>
+            <pre><code>const logger = store => next => action => {
+  console.log('dispatching', action);
+  return next(action);
+};</code></pre>
+        </div>
+
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Transforming a function that takes multiple arguments into a sequence of functions that each take a single argument. Useful for partial application.</p>
+            </div>
+        </details>
+    </div>
+
+    <h2>3. Async Logic</h2>
+    <div class="q-block">
+        <div class="q-text">Q: Promises vs. Async/Await</div>
+        <div class="hint">Syntactic sugar.</div>
+
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>// Promise
+fetch(url).then(r => r.json()).then(d => console.log(d));
+
+// Async/Await
+const res = await fetch(url);
+const data = await res.json();</code></pre>
+        </div>
+
+        <div class="code-section">
+            <span class="code-label">Real World Example (React Effect)</span>
+            <pre><code>useEffect(() => {
+  async function load() {
+    try {
+      const data = await api.get();
+      setData(data);
+    } catch (e) { setError(e); }
+  }
+  load();
+}, []);</code></pre>
+        </div>
+
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Async/Await is syntactic sugar over Promises. It makes async code look synchronous.</p>
+                <pre><code>// Promise Chain
+fetch('/api')
+  .then(res => res.json())
+  .then(data => console.log(data))
+  .catch(err => console.error(err));
+
+// Async/Await (Cleaner)
+async function getData() {
+  try {
+    const res = await fetch('/api');
+    const data = await res.json();
+    console.log(data);
+  } catch (err) {
+    console.error(err);
+  }
+}</code></pre>
+            </div>
+        </details>
+    </div>
+
+    <h2>4. Functions & Scope</h2>
+    <div class="q-block">
+        <div class="q-text">Q: What is the difference between Function Declaration and Function Expression?</div>
+        <div class="hint">Hoisting.</div>
+
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>// Declaration (Hoisted)
+function add(a, b) { return a + b; }
+
+// Expression (Not Hoisted)
+const sub = function(a, b) { return a - b; };</code></pre>
+        </div>
+
+        <div class="code-section">
+            <span class="code-label">Real World Example (React Components)</span>
+            <pre><code>// Named export (Declaration)
+export function Button() {}
+
+// Default export (Expression often used)
+const Card = () => {};
+export default Card;</code></pre>
+        </div>
+
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Declarations are hoisted (can be called before definition). Expressions are not (must be defined before use).</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is an IIFE?</div>
+        <div class="hint">Immediately Invoked...</div>
+
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>(function() {
+  const privateVar = "secret";
+})();
+// privateVar is not accessible here</code></pre>
+        </div>
+
+        <div class="code-section">
+            <span class="code-label">Real World Example (useEffect Async)</span>
+            <pre><code>useEffect(() => {
+  // IIFE to run async code in useEffect
+  (async () => {
+    await fetchData();
+  })();
+}, []);</code></pre>
+        </div>
+
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Immediately Invoked Function Expression. Used to create a private scope and avoid polluting the global namespace.</p>
+                <pre><code>(function() {
+  // Private code
+})();</code></pre>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Arrow Functions vs Regular Functions (`this`)</div>
+        <div class="hint">Lexical vs Dynamic scoping.</div>
+
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>function Regular() { this.val = 1; }
+const Arrow = () => { this.val = 1; }; // Error if used as constructor</code></pre>
+        </div>
+
+        <div class="code-section">
+            <span class="code-label">Real World Example (Event Handlers)</span>
+            <pre><code>// Regular function needs binding in classes
+this.handleClick = this.handleClick.bind(this);
+
+// Arrow function inherits 'this' automatically
+handleClick = () => { this.setState(...) };</code></pre>
+        </div>
+
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Arrow functions do not have their own `this`; they inherit it from the parent scope. Regular functions have a dynamic `this` depending on how they are called.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is "Callback Hell"?</div>
+        <div class="hint">Pyramid of Doom.</div>
+
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>getData(a => {
+  getMore(a, b => {
+    getFinal(b, c => {
+      console.log(c);
+    });
+  });
+});</code></pre>
+        </div>
+
+        <div class="code-section">
+            <span class="code-label">Real World Example (Solution)</span>
+            <pre><code>// Flattened with Async/Await
+const a = await getData();
+const b = await getMore(a);
+const c = await getFinal(b);</code></pre>
+        </div>
+
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Deeply nested callbacks that make code hard to read and debug. Solved by Promises and Async/Await.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is the difference between `call`, `apply`, and `bind`?</div>
+        <div class="hint">Invoking vs Returning.</div>
+
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>function greet(lang) { console.log(lang, this.name); }
+const user = { name: 'Dev' };
+
+greet.call(user, 'JS'); // "JS Dev"
+greet.apply(user, ['JS']); // "JS Dev"
+const newFn = greet.bind(user); newFn('JS');</code></pre>
+        </div>
+
+        <div class="code-section">
+            <span class="code-label">Real World Example (Borrowing Methods)</span>
+            <pre><code>// Borrowing Array methods for arguments object
+const args = Array.prototype.slice.call(arguments);</code></pre>
+        </div>
+
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <ul>
+                    <li><code>call(thisArg, arg1, arg2)</code>: Invokes function immediately.</li>
+                    <li><code>apply(thisArg, [args])</code>: Invokes immediately, takes array of args.</li>
+                    <li><code>bind(thisArg)</code>: Returns a new function with `this` bound.</li>
+                </ul>
+            </div>
+        </details>
+    </div>
+
+    <h2>5. Objects & Arrays</h2>
+    <div class="q-block">
+        <div class="q-text">Q: Deep Copy vs Shallow Copy</div>
+        <div class="hint">References vs Values.</div>
+
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>const original = { a: { b: 1 } };
+const shallow = { ...original }; // shallow.a === original.a
+const deep = JSON.parse(JSON.stringify(original)); // New object</code></pre>
+        </div>
+
+        <div class="code-section">
+            <span class="code-label">Real World Example (Redux Reducers)</span>
+            <pre><code>// Must return new object references for updates
+return {
+  ...state,
+  nested: { ...state.nested, value: 1 }
+};</code></pre>
+        </div>
+
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p><strong>Shallow:</strong> Copies top-level properties. Nested objects are still references. (<code>{...obj}</code>, <code>Object.assign</code>).</p>
+                <p><strong>Deep:</strong> Copies all levels. (<code>JSON.parse(JSON.stringify(obj))</code> or <code>structuredClone(obj)</code>).</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: `map` vs `forEach`</div>
+        <div class="hint">Return value.</div>
+
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>const arr = [1, 2, 3];
+const doubled = arr.map(x => x * 2); // [2, 4, 6]
+arr.forEach(x => console.log(x)); // Returns undefined</code></pre>
+        </div>
+
+        <div class="code-section">
+            <span class="code-label">Real World Example (React Rendering)</span>
+            <pre><code>// map is used to transform data into elements
+{items.map(item => (
+  &lt;li key={item.id}&gt;{item.name}&lt;/li&gt;
+))}</code></pre>
+        </div>
+
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p><code>map</code> returns a new array. <code>forEach</code> returns undefined (used for side effects).</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Explain `reduce`</div>
+        <div class="hint">Accumulator.</div>
+
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>const nums = [1, 2, 3, 4];
+const sum = nums.reduce((acc, curr) => acc + curr, 0); // 10</code></pre>
+        </div>
+
+        <div class="code-section">
+            <span class="code-label">Real World Example (Data Transformation)</span>
+            <pre><code>// Convert array to object map
+const userMap = users.reduce((acc, user) => {
+  acc[user.id] = user;
+  return acc;
+}, {});</code></pre>
+        </div>
+
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Transforms an array into a single value (number, object, another array) by applying a function to an accumulator and each element.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: `filter` vs `find`</div>
+        <div class="hint">Array vs Item.</div>
+
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>const nums = [1, 2, 3, 4];
+const evens = nums.filter(n => n % 2 === 0); // [2, 4]
+const firstEven = nums.find(n => n % 2 === 0); // 2</code></pre>
+        </div>
+
+        <div class="code-section">
+            <span class="code-label">Real World Example (Search)</span>
+            <pre><code>// Filter for search results
+const results = items.filter(i => i.name.includes(query));
+// Find for specific item selection
+const selected = items.find(i => i.id === selectedId);</code></pre>
+        </div>
+
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p><code>filter</code> returns an array of all matching elements. <code>find</code> returns the first matching element (or undefined).</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Mutability methods in Arrays</div>
+        <div class="hint">Which ones change the original array?</div>
+
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>const arr = [3, 1, 2];
+arr.sort(); // Mutates arr to [1, 2, 3]
+const sorted = arr.toSorted(); // New array (ES2023)</code></pre>
+        </div>
+
+        <div class="code-section">
+            <span class="code-label">Real World Example (State Updates)</span>
+            <pre><code>// Avoid mutation in React
+// Bad: state.push(item)
+// Good:
+setState([...state, item]);</code></pre>
+        </div>
+
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p><strong>Mutating:</strong> push, pop, shift, unshift, splice, sort, reverse.</p>
+                <p><strong>Non-Mutating:</strong> map, filter, reduce, slice, concat, toSorted (ES2023).</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Object.freeze vs const</div>
+        <div class="hint">Variable vs Value.</div>
+
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>const obj = { x: 1 };
+obj.x = 2; // Allowed
+Object.freeze(obj);
+obj.x = 3; // Error in strict mode</code></pre>
+        </div>
+
+        <div class="code-section">
+            <span class="code-label">Real World Example (Config)</span>
+            <pre><code>const CONFIG = Object.freeze({
+  API_URL: 'https://api.example.com',
+  TIMEOUT: 5000
+});</code></pre>
+        </div>
+
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p><code>const</code> prevents reassignment of the variable identifier. <code>Object.freeze</code> prevents modification of the object's properties.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Optional Chaining (`?.`)</div>
+        <div class="hint">Safe access.</div>
+
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>const street = user?.address?.street;
+// Equivalent to:
+// user && user.address && user.address.street</code></pre>
+        </div>
+
+        <div class="code-section">
+            <span class="code-label">Real World Example (API Response)</span>
+            <pre><code>// Handling incomplete data
+const avatar = data?.user?.profile?.avatarUrl || defaultAvatar;</code></pre>
+        </div>
+
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Allows reading the value of a property located deep within a chain of connected objects without having to expressly validate that each reference in the chain is valid. <code>user?.address?.street</code>.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Destructuring Assignment</div>
+        <div class="hint">Unpacking.</div>
+
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>const [first, second] = [10, 20];
+const { name, age } = { name: 'A', age: 25 };</code></pre>
+        </div>
+
+        <div class="code-section">
+            <span class="code-label">Real World Example (Props)</span>
+            <pre><code>function UserCard({ name, email, ...rest }) {
+  return &lt;div {...rest}&gt;{name} ({email})&lt;/div&gt;;
+}</code></pre>
+        </div>
+
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Extracting values from arrays or properties from objects into distinct variables. <code>const { name } = user;</code>.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Spread vs Rest Operator (`...`)</div>
+        <div class="hint">Expanding vs Collecting.</div>
+
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>// Spread
+const combined = [...arr1, ...arr2];
+// Rest
+function sum(...args) { return args.reduce((a,b)=>a+b); }</code></pre>
+        </div>
+
+        <div class="code-section">
+            <span class="code-label">Real World Example (State Updates)</span>
+            <pre><code>setUser(prev => ({
+  ...prev, // Spread existing properties
+  name: 'New Name' // Overwrite one
+}));</code></pre>
+        </div>
+
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p><strong>Spread:</strong> Expands an iterable into elements. <code>[...arr]</code>.</p>
+                <p><strong>Rest:</strong> Collects multiple elements into an array. <code>function(...args) {}</code>.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: `Set` vs `Map`</div>
+        <div class="hint">Unique values vs Key-Value pairs.</div>
+
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>const unique = new Set([1, 1, 2]); // {1, 2}
+const map = new Map();
+map.set(keyObj, "value");</code></pre>
+        </div>
+
+        <div class="code-section">
+            <span class="code-label">Real World Example (Deduplication)</span>
+            <pre><code>const uniqueTags = [...new Set(allTags)];</code></pre>
+        </div>
+
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p><strong>Set:</strong> Collection of unique values.</p>
+                <p><strong>Map:</strong> Collection of key-value pairs where keys can be any type (objects, functions), unlike Objects where keys are strings/symbols.</p>
+            </div>
+        </details>
+    </div>
+
+    <h2>6. DOM & Web APIs</h2>
+    <div class="q-block">
+        <div class="q-text">Q: Event Bubbling vs Capturing</div>
+        <div class="hint">Up vs Down.</div>
+
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>// Bubbling (Default): Child -> Parent
+// Capturing: Parent -> Child
+element.addEventListener('click', handler, { capture: true });</code></pre>
+        </div>
+
+        <div class="code-section">
+            <span class="code-label">Real World Example (Analytics)</span>
+            <pre><code>// Capture all clicks on the page for tracking
+document.addEventListener('click', (e) => {
+  trackClick(e.target);
+}, true); // Use capture to ensure it runs before stopPropagation</code></pre>
+        </div>
+
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p><strong>Bubbling:</strong> Event starts at target and goes up to window (default).</p>
+                <p><strong>Capturing:</strong> Event goes down from window to target.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Event Delegation</div>
+        <div class="hint">One listener for many.</div>
+
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>document.getElementById('list').addEventListener('click', (e) => {
+  if (e.target.tagName === 'LI') {
+    console.log('Clicked item:', e.target.textContent);
+  }
+});</code></pre>
+        </div>
+
+        <div class="code-section">
+            <span class="code-label">Real World Example (Dynamic Lists)</span>
+            <pre><code>// React uses delegation automatically at the root.
+// But in vanilla JS, this saves memory for large lists.
+const table = document.querySelector('table');
+table.onclick = function(event) {
+  let target = event.target.closest('td');
+  if (!target) return;
+  highlight(target);
+};</code></pre>
+        </div>
+
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Attaching a single event listener to a parent element to manage events for all its children (using bubbling). Efficient for dynamic lists.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: `preventDefault` vs `stopPropagation`</div>
+        <div class="hint">Browser action vs Bubble.</div>
+
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>form.onsubmit = (e) => {
+  e.preventDefault(); // Stop reload
+  e.stopPropagation(); // Stop bubbling to parent
+};</code></pre>
+        </div>
+
+        <div class="code-section">
+            <span class="code-label">Real World Example (Modal)</span>
+            <pre><code>// Prevent closing modal when clicking inside content
+&lt;div onClick={closeModal}&gt;
+  &lt;div onClick={e => e.stopPropagation()}&gt;
+    Content
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+        </div>
+
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p><code>preventDefault</code>: Stops the browser's default behavior (e.g., form submission).</p>
+                <p><code>stopPropagation</code>: Stops the event from bubbling up the DOM.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: LocalStorage vs SessionStorage vs Cookies</div>
+        <div class="hint">Persistence and Scope.</div>
+
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>localStorage.setItem('theme', 'dark'); // Forever
+sessionStorage.setItem('tabData', '123'); // Tab life
+document.cookie = "user=John; max-age=3600"; // Server sent</code></pre>
+        </div>
+
+        <div class="code-section">
+            <span class="code-label">Real World Example (Auth Token)</span>
+            <pre><code>// HttpOnly Cookie is best for security (XSS protection)
+// LocalStorage is okay for non-sensitive preferences
+const theme = localStorage.getItem('theme') || 'light';</code></pre>
+        </div>
+
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <ul>
+                    <li><strong>LocalStorage:</strong> Persists until cleared. 5MB. Client-side only.</li>
+                    <li><strong>SessionStorage:</strong> Persists until tab closed. 5MB.</li>
+                    <li><strong>Cookies:</strong> Sent with every HTTP request. 4KB. Can have expiration.</li>
+                </ul>
+            </div>
+        </details>
+    </div>
+
+    <h2>7. Advanced & Performance</h2>
+    <div class="q-block">
+        <div class="q-text">Q: Debounce vs Throttle</div>
+        <div class="hint">Delay vs Rate Limit.</div>
+
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>// Debounce: Search input
+const debouncedSearch = debounce((text) => api.search(text), 300);
+
+// Throttle: Scroll event
+const throttledScroll = throttle(() => checkPosition(), 100);</code></pre>
+        </div>
+
+        <div class="code-section">
+            <span class="code-label">Real World Example (Lodash)</span>
+            <pre><code>import { debounce } from 'lodash';
+// Prevent API spam on every keystroke
+&lt;input onChange={e => debouncedSearch(e.target.value)} /&gt;</code></pre>
+        </div>
+
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p><strong>Debounce:</strong> Wait for a pause in events before running (e.g., Search input).</p>
+                <p><strong>Throttle:</strong> Run at most once every X ms (e.g., Scroll event).</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Garbage Collection</div>
+        <div class="hint">Mark and Sweep.</div>
+
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>let user = { name: "John" };
+user = null; // Object is now unreachable -> GC collects it</code></pre>
+        </div>
+
+        <div class="code-section">
+            <span class="code-label">Real World Example (Memory Leak)</span>
+            <pre><code>// Detached DOM nodes
+let detached = document.createElement('div');
+// If we keep a reference to 'detached' in a global array,
+// it will never be collected even if not in DOM.</code></pre>
+        </div>
+
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>JS engine automatically frees memory. "Mark and Sweep" algorithm marks reachable objects and sweeps (deletes) unreachable ones.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Memory Leaks</div>
+        <div class="hint">Unwanted references.</div>
+
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>// Forgotten Timer
+setInterval(() => {
+  // This runs forever if not cleared
+}, 1000);</code></pre>
+        </div>
+
+        <div class "code-section">
+            <span class="code-label">Real World Example (React Cleanup)</span>
+            <pre><code>useEffect(() => {
+  const sub = api.subscribe();
+  // FORGETTING THIS causes leak on unmount:
+  return () => sub.unsubscribe();
+}, []);</code></pre>
+        </div>
+
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Common causes: Global variables, Uncleared intervals/timeouts, Event listeners not removed, Closures holding references.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: CommonJS vs ES Modules</div>
+        <div class="hint">require vs import.</div>
+
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>// CJS
+const fs = require('fs');
+module.exports = fn;
+
+// ESM
+import fs from 'fs';
+export default fn;</code></pre>
+        </div>
+
+        <div class="code-section">
+            <span class="code-label">Real World Example (Tree Shaking)</span>
+            <pre><code>// ESM allows bundlers to remove unused code
+import { Button } from 'library'; // Only bundles Button</code></pre>
+        </div>
+
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p><strong>CommonJS:</strong> Node.js default. <code>require/module.exports</code>. Synchronous.</p>
+                <p><strong>ESM:</strong> Browser standard. <code>import/export</code>. Asynchronous/Static analysis.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Generator Functions</div>
+        <div class="hint">function* and yield.</div>
+
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>function* idMaker() {
+  let index = 0;
+  while(true) yield index++;
+}
+const gen = idMaker();
+console.log(gen.next().value); // 0</code></pre>
+        </div>
+
+        <div class="code-section">
+            <span class="code-label">Real World Example (Redux Saga)</span>
+            <pre><code>function* fetchUser(action) {
+  try {
+    const user = yield call(Api.fetchUser, action.payload.userId);
+    yield put({type: "USER_FETCH_SUCCEEDED", user: user});
+  } catch (e) {
+    yield put({type: "USER_FETCH_FAILED", message: e.message});
+  }
+}</code></pre>
+        </div>
+
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Functions that can be paused and resumed. Used in Redux-Saga.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: WeakMap vs Map</div>
+        <div class="hint">Garbage collection.</div>
+
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>let obj = { id: 1 };
+const weakMap = new WeakMap();
+weakMap.set(obj, "metadata");
+obj = null; // Entry in weakMap is automatically removed</code></pre>
+        </div>
+
+        <div class="code-section">
+            <span class="code-label">Real World Example (Private Data)</span>
+            <pre><code>const privateData = new WeakMap();
+class User {
+  constructor(name) {
+    privateData.set(this, { secret: '123' });
+  }
+}</code></pre>
+        </div>
+
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>WeakMap keys must be objects and are weakly held, meaning they don't prevent garbage collection if the object is not used elsewhere.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: `NaN`</div>
+        <div class="hint">Not a Number.</div>
+
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>console.log(Number("abc")); // NaN
+console.log(NaN === NaN); // false</code></pre>
+        </div>
+
+        <div class="code-section">
+            <span class="code-label">Real World Example (Validation)</span>
+            <pre><code>function safeDivide(a, b) {
+  const res = a / b;
+  if (Number.isNaN(res)) return 0;
+  return res;
+}</code></pre>
+        </div>
+
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Result of invalid math. <code>typeof NaN === 'number'</code>. <code>NaN !== NaN</code> (Use <code>Number.isNaN()</code>).</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: `null` vs `undefined`</div>
+        <div class="hint">Intentional vs Unintentional.</div>
+
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>let a; // undefined
+let b = null; // null</code></pre>
+        </div>
+
+        <div class="code-section">
+            <span class="code-label">Real World Example (API Design)</span>
+            <pre><code>// undefined: Field missing from JSON
+// null: Field exists but has no value
+{ "name": "John", "middleName": null }</code></pre>
+        </div>
+
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p><strong>undefined:</strong> Variable declared but not assigned.</p>
+                <p><strong>null:</strong> Intentional absence of value.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Implicit Coercion</div>
+        <div class="hint">1 + "2"</div>
+
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>console.log(1 + "2"); // "12"
+console.log("5" - 1); // 4
+console.log([] + []); // ""</code></pre>
+        </div>
+
+        <div class="code-section">
+            <span class="code-label">Real World Example (Bugs)</span>
+            <pre><code>// API returns string "100"
+const total = price + tax; // "10010" if not parsed!
+const safeTotal = Number(price) + Number(tax);</code></pre>
+        </div>
+
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Automatic conversion of values. <code>1 + "2" = "12"</code>. <code>"5" - 1 = 4</code>.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Strict Mode</div>
+        <div class="hint">"use strict"</div>
+
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>"use strict";
+x = 3.14; // ReferenceError (x is not defined)</code></pre>
+        </div>
+
+        <div class="code-section">
+            <span class="code-label">Real World Example (Modules)</span>
+            <pre><code>// ES Modules are strict by default.
+// You don't need to add "use strict" in React/Vite projects.</code></pre>
+        </div>
+
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Enforces stricter parsing and error handling. Prevents using undeclared variables, duplicate parameter names, etc.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: `try...catch...finally`</div>
+        <div class="hint">Error handling.</div>
+
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>try {
+  throw new Error("Oops");
+} catch (e) {
+  console.error(e);
+} finally {
+  console.log("Cleanup");
+}</code></pre>
+        </div>
+
+        <div class="code-section">
+            <span class="code-label">Real World Example (Loading State)</span>
+            <pre><code>setLoading(true);
+try {
+  await fetchData();
+} catch (e) {
+  setError(e);
+} finally {
+  setLoading(false); // Runs even if error occurs
+}</code></pre>
+        </div>
+
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p><code>finally</code> block executes regardless of whether an error occurred or not. Useful for cleanup.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Custom Errors</div>
+        <div class="hint">Extending Error.</div>
+
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>class AuthError extends Error {
+  constructor(msg) {
+    super(msg);
+    this.name = "AuthError";
+  }
+}</code></pre>
+        </div>
+
+        <div class="code-section">
+            <span class="code-label">Real World Example (API Handling)</span>
+            <pre><code>if (response.status === 401) {
+  throw new AuthError("Session expired");
+}
+// Catch block can check: if (e instanceof AuthError) ...</code></pre>
+        </div>
+
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <pre><code>class ValidationError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = "ValidationError";
+  }
+}</code></pre>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: `Symbol`</div>
+        <div class="hint">Unique identifier.</div>
+
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>const sym1 = Symbol('foo');
+const sym2 = Symbol('foo');
+console.log(sym1 === sym2); // false</code></pre>
+        </div>
+
+        <div class="code-section">
+            <span class="code-label">Real World Example (Hidden Properties)</span>
+            <pre><code>const ID = Symbol('id');
+user[ID] = 123; // Not visible in for...in loops or JSON.stringify</code></pre>
+        </div>
+
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>A primitive data type that is guaranteed to be unique. Often used for object property keys to avoid collisions.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Iterator Protocol</div>
+        <div class="hint">next()</div>
+
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>const myIter = {
+  [Symbol.iterator]() {
+    let n = 0;
+    return {
+      next() { return { value: n++, done: n > 3 } }
+    };
+  }
+};
+for (const n of myIter) console.log(n); // 0, 1, 2</code></pre>
+        </div>
+
+        <div class="code-section">
+            <span class="code-label">Real World Example (Custom Collections)</span>
+            <pre><code>// Making a custom LinkedList iterable so you can use
+// for...of loop on it.</code></pre>
+        </div>
+
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>An object is an iterator if it has a <code>next()</code> method that returns <code>{ value, done }</code>.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: `Object.create`</div>
+        <div class="hint">Prototypal inheritance.</div>
+
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>const proto = { greet() { return "Hi"; } };
+const obj = Object.create(proto);
+console.log(obj.greet()); // "Hi"</code></pre>
+        </div>
+
+        <div class="code-section">
+            <span class="code-label">Real World Example (Factory Pattern)</span>
+            <pre><code>// Creating objects without constructor functions
+// for cleaner composition.</code></pre>
+        </div>
+
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Creates a new object, using an existing object as the prototype of the newly created object.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: `Reflect` API</div>
+        <div class="hint">Interception.</div>
+
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>const obj = { x: 1 };
+Reflect.set(obj, 'x', 2);
+console.log(obj.x); // 2</code></pre>
+        </div>
+
+        <div class="code-section">
+            <span class="code-label">Real World Example (Proxy Forwarding)</span>
+            <pre><code>const handler = {
+  get(target, prop, receiver) {
+    console.log(`Getting ${prop}`);
+    return Reflect.get(target, prop, receiver);
+  }
+};</code></pre>
+        </div>
+
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Built-in object that provides methods for interceptable JavaScript operations. Used with Proxies.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: `Proxy` Object</div>
+        <div class="hint">Custom behavior.</div>
+
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>const target = {};
+const proxy = new Proxy(target, {
+  get: (obj, prop) => prop in obj ? obj[prop] : 'Not Found'
+});
+console.log(proxy.foo); // "Not Found"</code></pre>
+        </div>
+
+        <div class="code-section">
+            <span class="code-label">Real World Example (Validation)</span>
+            <pre><code>// Validate property setting
+set: (obj, prop, value) => {
+  if (prop === 'age' && typeof value !== 'number') return false;
+  obj[prop] = value;
+  return true;
+}</code></pre>
+        </div>
+
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Enables you to create a proxy for another object, which can intercept and redefine fundamental operations for that object (like getting/setting properties).</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Temporal Dead Zone (TDZ)</div>
+        <div class="hint">let/const before declaration.</div>
+
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>{
+  // TDZ starts here
+  console.log(x); // ReferenceError
+  let x = 10; // TDZ ends here
+}</code></pre>
+        </div>
+
+        <div class="code-section">
+            <span class="code-label">Real World Example (Debugging)</span>
+            <pre><code>// Helps catch bugs where variables are used before initialization
+// unlike 'var' which would just be undefined.</code></pre>
+        </div>
+
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>The time between entering a scope and the actual declaration of a <code>let</code> or <code>const</code> variable. Accessing it throws a ReferenceError.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: `globalThis`</div>
+        <div class="hint">Universal global.</div>
+
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>console.log(globalThis); 
+// Window (Browser) or Global (Node)</code></pre>
+        </div>
+
+        <div class="code-section">
+            <span class="code-label">Real World Example (Polyfills)</span>
+            <pre><code>// Writing code that runs on both Server (SSR) and Client
+if (typeof globalThis.window === 'undefined') {
+  // Server side logic
+}</code></pre>
+        </div>
+
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Standard way to access the global object across environments (window in browser, global in Node).</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: `BigInt`</div>
+        <div class="hint">Large integers.</div>
+
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>const big = 9007199254740991n;
+const sum = big + 1n;</code></pre>
+        </div>
+
+        <div class="code-section">
+            <span class="code-label">Real World Example (Financials)</span>
+            <pre><code>// High precision calculations where floating point math fails
+// 0.1 + 0.2 !== 0.3 (Float)
+// BigInt avoids this for integers.</code></pre>
+        </div>
+
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Primitive for integers larger than 2^53 - 1. Created by appending 'n' to an integer literal.</p>
+            </div>
+        </details>
+    </div>
+</body>
+</html>

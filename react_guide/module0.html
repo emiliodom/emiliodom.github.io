@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 0: JS Prerequisites</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+</head>
+<body>
+    <header>
+        <h1>Module 0: JS Prerequisites</h1>
+        <p>ES6+, Array Methods, and Asynchronous Logic.</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <h2>1. Deep Dive: The React Foundation</h2>
+        <p>React is just JavaScript. If you struggle with React, 90% of the time you are actually struggling with JavaScript concepts like closures, `this`, or reference equality.</p>
+
+        <h3>1.1 Reference vs. Value</h3>
+        <p>Primitives (string, number, boolean) are passed by value. Objects and Arrays are passed by reference.
+        <br><strong>Crucial for React:</strong> React compares props using "shallow comparison" (<code>===</code>). If you mutate an object (<code>obj.name = 'new'</code>), the reference is the same, so React <em>won't know it changed</em> and won't re-render.</p>
+
+        <h3>1.2 Declarative vs. Imperative</h3>
+        <p><strong>Imperative (Old):</strong> "Loop through the array. Create a new variable. If index is even, push to array."
+        <br><strong>Declarative (React/Modern):</strong> "Map this array to that array."
+        <br>We use <code>.map()</code>, <code>.filter()</code>, and <code>.reduce()</code> because they return <em>new</em> arrays (immutability) and describe <em>what</em> we want, not <em>how</em> to get it.</p>
+
+        <h3>1.3 Industry Standard: Immutability</h3>
+        <p>Senior devs never mutate data. They create copies.
+        <br><strong>Bad:</strong> <code>user.name = "Alice"</code>
+        <br><strong>Good:</strong> <code>const updatedUser = { ...user, name: "Alice" }</code>
+        <br>This uses the <strong>Spread Operator</strong> to copy properties to a new object.</p>
+
+        <div class="jira-ticket">
+            <div class="jira-header">
+                <span class="jira-id">REQ-001</span>
+                <span class="jira-status">To Do</span>
+            </div>
+            <div class="jira-body">
+                <h3 class="jira-title">Build "The Data Transformer" Utility</h3>
+                
+                <div class="jira-section">
+                    <span class="jira-label">User Story</span>
+                    <p>As a data analyst, I need a utility to process raw order data so that I can view revenue from shipped orders only.</p>
+                </div>
+
+                <div class="jira-section">
+                    <span class="jira-label">Acceptance Criteria</span>
+                    <ul class="req-list">
+                        <li>Filter the list to keep only "shipped" orders.</li>
+                        <li>Map over them to create an array of strings: "Order #ID: $AMOUNT".</li>
+                        <li>Reduce the list to calculate the total revenue of shipped orders.</li>
+                        <li><strong>Constraint:</strong> Use <code>.map()</code>, <code>.filter()</code>, and <code>.reduce()</code>. No <code>for</code> loops.</li>
+                    </ul>
+                </div>
+
+                <div class="jira-section">
+                    <span class="jira-label">Technical Notes</span>
+                    <pre><code class="language-javascript">const orders = [
+  { id: 1, status: "pending", amount: 50 },
+  { id: 2, status: "shipped", amount: 100 },
+  { id: 3, status: "cancelled", amount: 20 },
+  { id: 4, status: "shipped", amount: 150 },
+];</code></pre>
+                </div>
+
+                <div class="jira-section">
+                    <span class="jira-label">Senior Bonus</span>
+                    <ul class="req-list">
+                        <li><strong>Chaining:</strong> Perform all operations in a single chain without intermediate variables.</li>
+                        <li><strong>Immutability:</strong> Ensure <code>orders</code> array remains unchanged.</li>
+                        <li><strong>TypeScript:</strong> Define an <code>Order</code> interface.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <h2>3. The Bug Hunt</h2>
+        <div class="bug-hunt">
+            <h3>🐛 Scenario: The Accidental Mutation</h3>
+            <p><strong>The Setup:</strong></p>
+            <pre><code class="language-javascript">const user = { name: "John", address: { city: "NY" } };
+const updatedUser = { ...user };
+updatedUser.address.city = "LA";
+console.log(user.address.city); // What does this print?</code></pre>
+            <p><strong>The Bug:</strong> You expected <code>user.address.city</code> to stay "NY", but it changed to "LA".</p>
+            <p><strong>The Task:</strong></p>
+            <ol>
+                <li>Explain <strong>Shallow Copy</strong> vs <strong>Deep Copy</strong>.</li>
+                <li>Fix the code so that <code>user</code> is not affected (use nested spread or <code>structuredClone</code>).</li>
+            </ol>
+        </div>
+
+        <h2>4. Test on your own</h2>
+        <div class="task">
+            <h3>Verify your JS Knowledge</h3>
+            <ul>
+                <li><strong>Console Check:</strong> Open your browser console. Type <code>[] == []</code>. It returns <code>false</code>. Why? (Reference equality).</li>
+                <li><strong>Closure Check:</strong> Write a loop <code>for (var i=0; i<3; i++) { setTimeout(() => console.log(i), 100) }</code>. It prints "3, 3, 3". Change <code>var</code> to <code>let</code>. It prints "0, 1, 2". Explain why to yourself.</li>
+            </ul>
+        </div>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+    <script src="layout.js"></script>
+</body>
+</html>

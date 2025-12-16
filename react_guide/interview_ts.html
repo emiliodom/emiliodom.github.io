@@ -1,0 +1,1196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interview: TypeScript</title>
+    <style>
+        body { font-family: system-ui, -apple-system, sans-serif; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 20px; color: #333; }
+        h2 { border-bottom: 1px solid #ccc; padding-bottom: 10px; margin-top: 40px; }
+        .q-block { background: #f4f4f4; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+        .q-text { font-weight: bold; font-size: 1.1em; color: #007acc; margin-bottom: 10px; }
+        .hint { font-size: 0.9em; color: #666; font-style: italic; margin-bottom: 10px; }
+        details { margin-top: 10px; }
+        summary { cursor: pointer; color: #0066cc; font-weight: bold; }
+        pre { background: #2d2d2d; color: #f8f8f2; padding: 15px; border-radius: 5px; overflow-x: auto; }
+        code { font-family: monospace; }
+        .answer { margin-top: 15px; border-top: 1px solid #ddd; padding-top: 10px; }
+        nav { margin-bottom: 20px; }
+        .code-section { margin-top: 15px; border-left: 4px solid #007acc; padding-left: 15px; }
+        .code-label { font-size: 0.8em; text-transform: uppercase; color: #666; font-weight: bold; margin-bottom: 5px; display: block; }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="interview_index.html">&larr; Back to Interview Index</a>
+    </nav>
+
+    <h1>TypeScript Essentials</h1>
+
+    <div id="google_translate_element"></div>
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({pageLanguage: 'en', includedLanguages: 'es'}, 'google_translate_element');
+        }
+    </script>
+    <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+    <h2>1. Core Types</h2>
+    <div class="q-block">
+        <div class="q-text">Q: Interface vs. Type Alias?</div>
+        <div class="hint">Declaration merging vs Unions.</div>
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>// Interface (can be merged)
+interface User { name: string; }
+interface User { age: number; }
+
+// Type (can define unions)
+type ID = string | number;</code></pre>
+            <span class="code-label">Real World Example</span>
+            <pre><code>// Use Interface for Object Shapes (e.g., React Props)
+interface ButtonProps {
+    label: string;
+    onClick: () => void;
+}
+
+// Use Type for Unions or Complex Mappings
+type ButtonVariant = 'primary' | 'secondary' | 'danger';</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>They are very similar, but:</p>
+                <ul>
+                    <li><strong>Interface:</strong> Better for defining object shapes. Supports "Declaration Merging" (extending an interface by declaring it again).</li>
+                    <li><strong>Type:</strong> More flexible. Can define unions, primitives, and tuples.</li>
+                </ul>
+                <pre><code>// Interface
+interface User {
+  name: string;
+}
+interface User { // Merges with above
+  age: number;
+}
+
+// Type
+type Status = "success" | "error"; // Union (Interface can't do this)</code></pre>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: any vs. unknown?</div>
+        <div class="hint">Safety first.</div>
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>let loose: any = 4;
+loose.method(); // No error (dangerous)
+
+let strict: unknown = 4;
+// strict.method(); // Error: Object is of type 'unknown'</code></pre>
+            <span class="code-label">Real World Example</span>
+            <pre><code>// Use 'unknown' for external data (e.g., API response)
+function parseResponse(response: unknown) {
+    if (typeof response === 'string') {
+        return JSON.parse(response); // Safe now
+    }
+    throw new Error("Invalid response");
+}</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p><strong>any:</strong> Turns off type checking. "I don't care." Dangerous.</p>
+                <p><strong>unknown:</strong> "I don't know yet." You must check the type (narrowing) before using it. Safe.</p>
+                <pre><code>let x: unknown = "hello";
+// console.log(x.length); // Error: Object is of type 'unknown'.
+
+if (typeof x === "string") {
+  console.log(x.length); // OK
+}</code></pre>
+            </div>
+        </details>
+    </div>
+
+    <h2>2. Generics</h2>
+    <div class="q-block">
+        <div class="q-text">Q: What are Generics? Why use them?</div>
+        <div class="hint">Reusable components with type safety.</div>
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>function identity&lt;T&gt;(arg: T): T {
+    return arg;
+}
+const num = identity(5); // T is number</code></pre>
+            <span class="code-label">Real World Example</span>
+            <pre><code>// Reusable API Response Wrapper
+interface ApiResponse&lt;Data&gt; {
+    status: number;
+    data: Data;
+    error?: string;
+}
+
+type UserResponse = ApiResponse&lt;{ id: number; name: string }&gt;;</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Generics allow you to create reusable components/functions that work with multiple types while retaining type safety.</p>
+                <pre><code>// Without Generics (Lost type info)
+function identity(arg: any): any { return arg; }
+
+// With Generics (Preserves type info)
+function identity&lt;T&gt;(arg: T): T {
+  return arg;
+}
+
+const num = identity(5); // TS knows 'num' is number
+const str = identity("hi"); // TS knows 'str' is string</code></pre>
+            </div>
+        </details>
+    </div>
+
+    <h2>3. Utility Types</h2>
+    <div class="q-block">
+        <div class="q-text">Q: Explain Partial, Pick, and Omit.</div>
+        <div class="hint">Manipulating existing types.</div>
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>interface Todo { id: number; title: string; desc: string; }
+
+type P = Partial&lt;Todo&gt;; // { id?: number; title?: string; ... }
+type K = Pick&lt;Todo, 'title'&gt;; // { title: string; }
+type O = Omit&lt;Todo, 'desc'&gt;; // { id: number; title: string; }</code></pre>
+            <span class="code-label">Real World Example</span>
+            <pre><code>// Updating a user profile (not all fields required)
+function updateUser(id: number, fields: Partial&lt;User&gt;) {
+  // ...
+}
+
+// Component Props excluding internal props
+type PublicProps = Omit&lt;ButtonProps, 'internalId'&gt;;</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <pre><code>interface Todo {
+  id: number;
+  title: string;
+  desc: string;
+}
+
+// Partial: All properties become optional
+type UpdateTodo = Partial&lt;Todo&gt;; // { id?: number, title?: string... }
+
+// Pick: Select specific keys
+type TodoPreview = Pick&lt;Todo, "id" | "title"&gt;;
+
+// Omit: Remove specific keys
+type TodoInput = Omit&lt;Todo, "id"&gt;;</code></pre>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is "Type Inference"?</div>
+        <div class="hint">Letting TS guess.</div>
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>let x = 10; // TS infers x is number
+// x = "hello"; // Error</code></pre>
+            <span class="code-label">Real World Example</span>
+            <pre><code>// Return type inferred automatically
+function add(a: number, b: number) {
+  return a + b; // Inferred as number
+}
+
+// Array type inferred
+const numbers = [1, 2, 3]; // number[]</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>TS automatically deduces the type based on the value. <code>let x = 5;</code> is inferred as <code>number</code>. You don't always need to write types explicitly.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is a "Tuple"?</div>
+        <div class="hint">Fixed length array.</div>
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>let tuple: [string, number];
+tuple = ["hello", 10]; // OK
+// tuple = [10, "hello"]; // Error</code></pre>
+            <span class="code-label">Real World Example</span>
+            <pre><code>// React Hooks return tuples
+function useState&lt;T&gt;(initial: T): [T, (v: T) => void] {
+  // ...
+  return [state, setState];
+}
+
+const [count, setCount] = useState(0);</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>An array with a fixed number of elements whose types are known. <code>let x: [string, number] = ["hello", 10];</code>.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is "Union" vs "Intersection"?</div>
+        <div class="hint">OR vs AND.</div>
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>type Union = string | number; // One OR the other
+type Intersection = { a: string } & { b: number }; // Both</code></pre>
+            <span class="code-label">Real World Example</span>
+            <pre><code>// Union: Handling different states
+type State = { status: 'loading' } | { status: 'success', data: any };
+
+// Intersection: Combining Props
+type ButtonProps = BaseProps & { variant: 'primary' | 'secondary' };</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p><strong>Union (|):</strong> A value can be one of several types. <code>string | number</code>.</p>
+                <p><strong>Intersection (&):</strong> Combines multiple types into one. <code>TypeA & TypeB</code> (must have properties of both).</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is the `never` type?</div>
+        <div class="hint">Impossible state.</div>
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>function throwError(msg: string): never {
+  throw new Error(msg);
+}</code></pre>
+            <span class="code-label">Real World Example</span>
+            <pre><code>// Exhaustive checking in switch
+function getArea(shape: Shape) {
+  switch (shape.kind) {
+    case 'circle': return ...;
+    case 'square': return ...;
+    default:
+      const _exhaustiveCheck: never = shape; // Error if new shape added
+      return _exhaustiveCheck;
+  }
+}</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Represents values that never occur. Used for functions that throw errors or infinite loops, or for exhaustive checks in switch statements.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is `keyof` operator?</div>
+        <div class="hint">Getting keys as a union.</div>
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>interface Person { name: string; age: number; }
+type Keys = keyof Person; // "name" | "age"</code></pre>
+            <span class="code-label">Real World Example</span>
+            <pre><code>// Type-safe property access
+function getProperty&lt;T, K extends keyof T&gt;(obj: T, key: K) {
+  return obj[key];
+}
+const user = { name: "Alice", age: 30 };
+getProperty(user, "name"); // OK
+// getProperty(user, "email"); // Error</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Takes an object type and produces a string or numeric literal union of its keys. <code>keyof User</code> might be <code>"name" | "age"</code>.</p>
+            </div>
+        </details>
+    </div>
+
+    <h2>4. Advanced Types & Features</h2>
+    <div class="q-block">
+        <div class="q-text">Q: `void` vs `undefined`</div>
+        <div class="hint">Return types.</div>
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>function log(): void { console.log("Hi"); }
+function getVal(): undefined { return undefined; }</code></pre>
+            <span class="code-label">Real World Example</span>
+            <pre><code>// Callback that doesn't return anything
+function runCallback(cb: () => void) {
+    cb();
+}
+// Even if cb returns something, it's ignored</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p><code>void</code> means a function doesn't return a value. <code>undefined</code> is a value. A function returning void can return undefined, but void is semantically "no return".</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: `readonly` modifier</div>
+        <div class="hint">Immutability.</div>
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>interface Config {
+    readonly apiUrl: string;
+}
+const c: Config = { apiUrl: "http://..." };
+// c.apiUrl = "new"; // Error</code></pre>
+            <span class="code-label">Real World Example</span>
+            <pre><code>// Immutable State in Redux/Zustand
+type State = {
+    readonly count: number;
+    readonly user: Readonly&lt;User&gt;;
+};</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Prevents a property of an object or class from being changed after initialization.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: `const` assertions</div>
+        <div class="hint">as const</div>
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>let x = "hello" as const; // Type is "hello"
+const arr = [1, 2] as const; // Type is readonly [1, 2]</code></pre>
+            <span class="code-label">Real World Example</span>
+            <pre><code>// Redux Action Types
+const ACTIONS = {
+    LOGIN: 'LOGIN',
+    LOGOUT: 'LOGOUT'
+} as const;
+// ACTIONS.LOGIN is type "LOGIN", not string</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Tells the compiler to infer the narrowest possible type (literals) and make properties readonly. <code>let x = "hello" as const;</code> (Type is "hello", not string).</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Enums (String vs Numeric)</div>
+        <div class="hint">Named constants.</div>
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>enum Direction { Up, Down, Left, Right } // 0, 1, 2, 3
+enum Status { Success = "OK", Error = "ERR" }</code></pre>
+            <span class="code-label">Real World Example</span>
+            <pre><code>// Better alternative: Union Types
+type Status = 'loading' | 'success' | 'error';
+// Less runtime overhead than Enums</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p><strong>Numeric:</strong> Auto-incrementing numbers. <strong>String:</strong> Explicit string values. Prefer Union Types over Enums in modern TS.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Abstract Classes</div>
+        <div class="hint">Blueprints.</div>
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>abstract class Animal {
+    abstract makeSound(): void;
+    move() { console.log("Moving"); }
+}</code></pre>
+            <span class="code-label">Real World Example</span>
+            <pre><code>// Base Service Class
+abstract class BaseService&lt;T&gt; {
+    abstract getAll(): Promise&lt;T[]&gt;;
+    abstract getById(id: string): Promise&lt;T&gt;;
+}</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Classes that cannot be instantiated directly. Used as base classes for other classes to extend.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Access Modifiers</div>
+        <div class="hint">public, private, protected.</div>
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>class Car {
+    public make: string;
+    private vin: string;
+    protected speed: number;
+}</code></pre>
+            <span class="code-label">Real World Example</span>
+            <pre><code>// Encapsulation in Services
+class AuthService {
+    private token: string;
+    public login() { ... }
+    private validateToken() { ... }
+}</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <ul>
+                    <li><strong>public:</strong> Accessible everywhere (default).</li>
+                    <li><strong>private:</strong> Accessible only within the class.</li>
+                    <li><strong>protected:</strong> Accessible within the class and subclasses.</li>
+                </ul>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: `implements` vs `extends`</div>
+        <div class="hint">Interface vs Class.</div>
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>class Dog extends Animal { ... } // Inherits code
+class Car implements Vehicle { ... } // Enforces shape</code></pre>
+            <span class="code-label">Real World Example</span>
+            <pre><code>// React Class Components
+class MyComp extends React.Component&lt;Props&gt; { ... }
+
+// Custom Class implementing Interface
+class LocalStorageService implements StorageService {
+    save(key: string, val: string) { ... }
+}</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p><code>extends</code>: Inherit from a class (code reuse). <code>implements</code>: Contract that a class must satisfy an interface (shape enforcement).</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Type Guards</div>
+        <div class="hint">Narrowing types.</div>
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>if (typeof x === "string") { ... }
+if (x instanceof Date) { ... }
+if ("role" in user) { ... }</code></pre>
+            <span class="code-label">Real World Example</span>
+            <pre><code>// Handling API Errors
+try {
+    await apiCall();
+} catch (e) {
+    if (e instanceof Error) {
+        console.log(e.message);
+    }
+}</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Techniques to narrow down the type of a variable within a conditional block. <code>typeof</code>, <code>instanceof</code>, <code>in</code>.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: User-Defined Type Guards</div>
+        <div class="hint">is keyword.</div>
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>function isString(x: any): x is string {
+    return typeof x === "string";
+}</code></pre>
+            <span class="code-label">Real World Example</span>
+            <pre><code>// Validating API Data
+interface User { id: number; name: string; }
+function isUser(obj: any): obj is User {
+    return obj && typeof obj.id === 'number';
+}</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <pre><code>function isFish(pet: Fish | Bird): pet is Fish {
+  return (pet as Fish).swim !== undefined;
+}</code></pre>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Discriminated Unions</div>
+        <div class="hint">Common property.</div>
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>type Shape = 
+  | { kind: "circle"; radius: number }
+  | { kind: "square"; side: number };</code></pre>
+            <span class="code-label">Real World Example</span>
+            <pre><code>// Redux Actions
+type Action = 
+  | { type: 'LOGIN_SUCCESS'; payload: User }
+  | { type: 'LOGIN_FAIL'; error: string };
+
+function reducer(state: State, action: Action) {
+    if (action.type === 'LOGIN_SUCCESS') {
+        // action.payload is available
+    }
+}</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>A pattern where every type in a union has a common literal property (the discriminant) used to narrow the type.</p>
+                <pre><code>interface Circle { kind: "circle"; radius: number; }
+interface Square { kind: "square"; side: number; }
+type Shape = Circle | Square;</code></pre>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Non-null assertion operator (`!`)</div>
+        <div class="hint">Trust me.</div>
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>const el = document.getElementById("app")!;
+// I know 'app' exists, so don't worry TS.</code></pre>
+            <span class="code-label">Real World Example</span>
+            <pre><code>// Refs in React (sometimes)
+const inputRef = useRef&lt;HTMLInputElement&gt;(null);
+// Later...
+inputRef.current!.focus();</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Tells TS that a value is not null or undefined, even if the type suggests it might be. Use with caution.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Generic Constraints</div>
+        <div class="hint">extends keyword.</div>
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>function getLength&lt;T extends { length: number }&gt;(arg: T) {
+    return arg.length;
+}</code></pre>
+            <span class="code-label">Real World Example</span>
+            <pre><code>// React Component Props Constraint
+interface BaseProps { id: string; }
+function Card&lt;T extends BaseProps&gt;(props: T) {
+    return &lt;div id={props.id}&gt;...&lt;/div&gt;;
+}</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Restricting the types that can be used with a generic. <code>function logLength&lt;T extends { length: number }&gt;(arg: T)</code>.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: `Record&lt;K, T&gt;`</div>
+        <div class="hint">Utility type.</div>
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>type Scores = Record&lt;string, number&gt;;
+const s: Scores = { "Alice": 10, "Bob": 20 };</code></pre>
+            <span class="code-label">Real World Example</span>
+            <pre><code>// Mapping IDs to Data
+type UserMap = Record&lt;number, User&gt;;
+const usersById: UserMap = {
+    1: { id: 1, name: "Alice" },
+    2: { id: 2, name: "Bob" }
+};</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Constructs an object type whose property keys are <code>K</code> and whose property values are <code>T</code>.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: `Exclude&lt;T, U&gt;`</div>
+        <div class="hint">Removing types.</div>
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>type T0 = Exclude&lt;"a" | "b" | "c", "a"&gt;; // "b" | "c"</code></pre>
+            <span class="code-label">Real World Example</span>
+            <pre><code>// Removing specific keys from a union of keys
+type AllKeys = "id" | "name" | "email";
+type PublicKeys = Exclude&lt;AllKeys, "email"&gt;;</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Constructs a type by excluding from <code>T</code> all union members that are assignable to <code>U</code>.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: `Extract&lt;T, U&gt;`</div>
+        <div class="hint">Keeping types.</div>
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>type T0 = Extract&lt;"a" | "b" | "c", "a" | "f"&gt;; // "a"</code></pre>
+            <span class="code-label">Real World Example</span>
+            <pre><code>// Extracting common types from two unions
+type Common = Extract&lt;TypeA | TypeB, TypeC&gt;;</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Constructs a type by extracting from <code>T</code> all union members that are assignable to <code>U</code>.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: `NonNullable&lt;T&gt;`</div>
+        <div class="hint">No nulls.</div>
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>type T0 = NonNullable&lt;string | number | undefined&gt;; // string | number</code></pre>
+            <span class="code-label">Real World Example</span>
+            <pre><code>// Ensuring a prop is present
+type Props = { title?: string };
+function render(title: NonNullable&lt;Props['title']&gt;) {
+    // title is string, not undefined
+}</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Constructs a type by excluding <code>null</code> and <code>undefined</code> from <code>T</code>.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: `ReturnType&lt;T&gt;`</div>
+        <div class="hint">Function return.</div>
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>function getUser() { return { name: "Alice", age: 20 }; }
+type User = ReturnType&lt;typeof getUser&gt;;</code></pre>
+            <span class="code-label">Real World Example</span>
+            <pre><code>// Getting Redux State type from reducer
+type RootState = ReturnType&lt;typeof rootReducer&gt;;</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Constructs a type consisting of the return type of function <code>T</code>.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: `Parameters&lt;T&gt;`</div>
+        <div class="hint">Function args.</div>
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>function add(a: number, b: number) {}
+type Args = Parameters&lt;typeof add&gt;; // [number, number]</code></pre>
+            <span class="code-label">Real World Example</span>
+            <pre><code>// Reusing function parameters for a wrapper
+type HandlerArgs = Parameters&lt;typeof eventHandler&gt;;
+function wrapper(...args: HandlerArgs) {
+    console.log("Called");
+    eventHandler(...args);
+}</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Constructs a tuple type from the types used in the parameters of a function type <code>T</code>.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Mapped Types</div>
+        <div class="hint">Iterating keys.</div>
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>type OptionsFlags&lt;Type&gt; = {
+  [Property in keyof Type]: boolean;
+};</code></pre>
+            <span class="code-label">Real World Example</span>
+            <pre><code>// Creating a validation schema type from a model
+type Validator&lt;T&gt; = {
+    [P in keyof T]: (value: T[P]) => boolean;
+};</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Creating new types based on old ones by iterating over property keys. <code>{ [P in K]: T }</code>.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Conditional Types</div>
+        <div class="hint">Ternary for types.</div>
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>type IsString&lt;T&gt; = T extends string ? true : false;</code></pre>
+            <span class="code-label">Real World Example</span>
+            <pre><code>// Flattening Array Types
+type Flatten&lt;T&gt; = T extends any[] ? T[number] : T;
+type Str = Flatten&lt;string[]&gt;; // string</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p><code>T extends U ? X : Y</code>. Selects one of two types based on a condition.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Template Literal Types</div>
+        <div class="hint">String manipulation.</div>
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>type World = "world";
+type Greeting = `hello ${World}`; // "hello world"</code></pre>
+            <span class="code-label">Real World Example</span>
+            <pre><code>// Generating Event Names
+type Event = "click" | "hover";
+type Handler = `on${Capitalize&lt;Event&gt;}`; // "onClick" | "onHover"</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Builds types via string interpolation. <code>type Greeting = `Hello ${string}`;</code>.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: `infer` keyword</div>
+        <div class="hint">Type inference in conditionals.</div>
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>type GetReturnType&lt;T&gt; = T extends (...args: any[]) => infer R ? R : never;</code></pre>
+            <span class="code-label">Real World Example</span>
+            <pre><code>// Unpacking Promise types
+type Unpack&lt;T&gt; = T extends Promise&lt;infer U&gt; ? U : T;
+type Data = Unpack&lt;Promise&lt;string&gt;&gt;; // string</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Used within conditional types to infer a type variable to be used in the true branch.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: `declare` keyword</div>
+        <div class="hint">Ambient declaration.</div>
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>declare const myLibrary: any;</code></pre>
+            <span class="code-label">Real World Example</span>
+            <pre><code>// Declaring global variables injected by build tools
+declare const __DEV__: boolean;
+if (__DEV__) { console.log("Debug mode"); }</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Used to tell the compiler about variables/functions that exist elsewhere (e.g., from a CDN script) without defining implementation.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: `.d.ts` files</div>
+        <div class="hint">Type definitions.</div>
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>// my-lib.d.ts
+export function doSomething(a: string): number;</code></pre>
+            <span class="code-label">Real World Example</span>
+            <pre><code>// Adding types to untyped JS libraries
+// npm install @types/lodash</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Files that contain only type information, no executable code. Used to provide types for JS libraries.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: `tsconfig.json`</div>
+        <div class="hint">Configuration.</div>
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>{
+  "compilerOptions": {
+    "target": "es6",
+    "strict": true
+  }
+}</code></pre>
+            <span class="code-label">Real World Example</span>
+            <pre><code>// Path Aliases
+"paths": {
+  "@components/*": ["src/components/*"]
+}</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Root file of a TS project. Configures compiler options like <code>target</code>, <code>module</code>, <code>strict</code>, etc.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Module Resolution</div>
+        <div class="hint">Finding files.</div>
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>import { x } from "./file"; // Relative
+import { y } from "react"; // Node_modules</code></pre>
+            <span class="code-label">Real World Example</span>
+            <pre><code>// Configuring "baseUrl" and "paths" in tsconfig
+// to support absolute imports</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>The process the compiler uses to figure out what an import refers to (Classic vs Node).</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Namespaces</div>
+        <div class="hint">Internal modules.</div>
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>namespace Utils {
+    export function log(msg: string) { ... }
+}
+Utils.log("Hi");</code></pre>
+            <span class="code-label">Real World Example</span>
+            <pre><code>// Mostly legacy. Use ES Modules instead.
+// Sometimes used for merging types with classes/functions.</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Older way to organize code. Modern TS prefers ES Modules (import/export). Avoid namespaces in new code.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: `Required&lt;T&gt;`</div>
+        <div class="hint">Opposite of Partial.</div>
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>interface Props { a?: number; }
+type AllProps = Required&lt;Props&gt;; // { a: number; }</code></pre>
+            <span class="code-label">Real World Example</span>
+            <pre><code>// Ensuring all config options are present internally
+function init(config: Config) {
+    const fullConfig: Required&lt;Config&gt; = { ...defaults, ...config };
+}</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Constructs a type consisting of all properties of T set to required.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: `Readonly&lt;T&gt;`</div>
+        <div class="hint">Immutable object.</div>
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>interface Todo { title: string; }
+const todo: Readonly&lt;Todo&gt; = { title: "Buy milk" };
+// todo.title = "New"; // Error</code></pre>
+            <span class="code-label">Real World Example</span>
+            <pre><code>// Freezing state in functional programming
+function update(state: Readonly&lt;State&gt;) {
+    return { ...state, count: state.count + 1 };
+}</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Constructs a type with all properties of T set to readonly.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Covariance vs Contravariance</div>
+        <div class="hint">Type compatibility.</div>
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>// Covariant: Return types (Dog -> Animal)
+// Contravariant: Argument types (Animal -> Dog)</code></pre>
+            <span class="code-label">Real World Example</span>
+            <pre><code>// Assigning functions
+type Logger = (msg: string) => void;
+let log: Logger;
+let logAny = (msg: any) => console.log(msg);
+log = logAny; // OK (Contravariance)</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Complex topic regarding how subtypes relate to supertypes in complex structures (like function args vs return types).</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Function Overloading</div>
+        <div class="hint">Multiple signatures.</div>
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>function makeDate(timestamp: number): Date;
+function makeDate(m: number, d: number, y: number): Date;
+function makeDate(mOrTimestamp: number, d?: number, y?: number): Date {
+    if (d !== undefined && y !== undefined) {
+        return new Date(y, mOrTimestamp, d);
+    } else {
+        return new Date(mOrTimestamp);
+    }
+}</code></pre>
+            <span class="code-label">Real World Example</span>
+            <pre><code>// jQuery-style APIs
+// $(selector) vs $(element) vs $(callback)</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Defining multiple function signatures for a single implementation to handle different argument combinations.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Index Signatures</div>
+        <div class="hint">Dynamic keys.</div>
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>interface StringArray {
+    [index: number]: string;
+}
+const myArray: StringArray = ["Bob", "Fred"];</code></pre>
+            <span class="code-label">Real World Example</span>
+            <pre><code>// Dictionary / Map
+interface Cache {
+    [key: string]: any;
+}
+const cache: Cache = {};
+cache["user_1"] = { ... };</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Defining types for objects when you don't know the property names ahead of time. <code>{ [key: string]: number }</code>.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Hybrid Types</div>
+        <div class="hint">Function + Object.</div>
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>interface Counter {
+    (start: number): string;
+    interval: number;
+    reset(): void;
+}</code></pre>
+            <span class="code-label">Real World Example</span>
+            <pre><code>// Libraries like Axios or jQuery
+// axios('url') // function
+// axios.get('url') // object property</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>An object that acts as both a function and an object (has properties). Common in libraries like jQuery or Axios.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: `OmitThisParameter`</div>
+        <div class="hint">Utility.</div>
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>function toHex(this: Number) {
+    return this.toString(16);
+}
+const fiveToHex: OmitThisParameter&lt;typeof toHex&gt; = toHex.bind(5);</code></pre>
+            <span class="code-label">Real World Example</span>
+            <pre><code>// Binding methods in classes or utilities
+// to ensure 'this' is handled correctly.</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Removes the <code>this</code> parameter from a function type.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: `ThisType&lt;T&gt;`</div>
+        <div class="hint">Contextual this.</div>
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>type ObjectDescriptor&lt;D, M&gt; = {
+    data?: D;
+    methods?: M & ThisType&lt;D & M&gt;; // 'this' inside methods is D & M
+};</code></pre>
+            <span class="code-label">Real World Example</span>
+            <pre><code>// Vue 2 Options API
+// 'this' in methods refers to data + props + methods</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Marker utility type used to enable contextual <code>this</code> type in object literals.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Structural Typing</div>
+        <div class="hint">Duck typing.</div>
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>interface Point { x: number; y: number; }
+function logPoint(p: Point) { console.log(p); }
+
+const point3D = { x: 1, y: 2, z: 3 };
+logPoint(point3D); // OK (has x and y)</code></pre>
+            <span class="code-label">Real World Example</span>
+            <pre><code>// Mocking objects for testing
+// You only need to match the required shape, not the exact class.</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>TS uses structural typing: if it looks like a duck (has same props), it is a duck. Names don't matter, shape does.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Nominal Typing</div>
+        <div class="hint">Branding.</div>
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>type USD = number & { __brand: "USD" };
+type EUR = number & { __brand: "EUR" };
+
+let usd = 10 as USD;
+let eur = 10 as EUR;
+// usd = eur; // Error</code></pre>
+            <span class="code-label">Real World Example</span>
+            <pre><code>// Preventing mixing up units (e.g. meters vs feet)
+// or validated strings (e.g. EmailAddress vs string)</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>TS doesn't support this natively, but you can simulate it using "Branding" (adding a unique property) to distinguish types with the same shape.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: `satisfies` operator</div>
+        <div class="hint">Validation without widening.</div>
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>type Colors = "red" | "green" | "blue";
+type RGB = [number, number, number];
+
+const palette = {
+    red: [255, 0, 0],
+    green: "#00ff00",
+    blue: [0, 0, 255]
+} satisfies Record&lt;Colors, string | RGB&gt;;</code></pre>
+            <span class="code-label">Real World Example</span>
+            <pre><code>// palette.red is inferred as [number, number, number]
+// palette.green is inferred as string
+// We get type checking AND specific inference.</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Validates that an expression matches a type, but preserves the more specific type of the expression for inference.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Recursive Types</div>
+        <div class="hint">JSON.</div>
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>type Json = 
+    | string | number | boolean | null
+    | Json[]
+    | { [key: string]: Json };</code></pre>
+            <span class="code-label">Real World Example</span>
+            <pre><code>// Nested Comment Structure
+interface Comment {
+    text: string;
+    replies: Comment[];
+}</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Types that reference themselves. Example: JSON object type.</p>
+            </div>
+        </details>
+    </div>
+</body>
+</html>

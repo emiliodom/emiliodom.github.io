@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 7: Professional Testing</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+</head>
+<body>
+    <header>
+        <h1>Module 7: Testing Strategy</h1>
+        <p>Vitest, React Testing Library, and Mocking.</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section class="concept-section">
+            <h2>1. The Testing Philosophy</h2>
+            <p>In modern React, we test <strong>behavior</strong>, not implementation details. We don't care if a component has a state variable named `isOpen`. We care if the user can see the modal when they click the button.</p>
+            
+            <div class="highlight-box">
+                <h3>Key Tools</h3>
+                <ul>
+                    <li><strong>Vitest:</strong> The runner (fast, compatible with Vite). Replaces Jest.</li>
+                    <li><strong>React Testing Library (RTL):</strong> The utility to render components and query the DOM like a user (`getByText`, `findByRole`).</li>
+                    <li><strong>MSW (Mock Service Worker):</strong> The industry standard for mocking network requests. It intercepts calls at the network layer.</li>
+                </ul>
+            </div>
+        </section>
+
+        <div class="jira-ticket">
+            <div class="jira-header">
+                <span class="jira-id">TEST-101</span>
+                <span class="jira-status">To Do</span>
+            </div>
+            <div class="jira-body">
+                <h3 class="jira-title">Setup Test Infrastructure</h3>
+                
+                <div class="jira-section">
+                    <span class="jira-label">User Story</span>
+                    <p>As a developer, I need a robust testing environment to ensure my application is stable before deployment.</p>
+                </div>
+
+                <div class="jira-section">
+                    <span class="jira-label">Acceptance Criteria</span>
+                    <ul class="req-list">
+                        <li>Install <code>vitest</code>, <code>jsdom</code>, and <code>@testing-library/react</code>.</li>
+                        <li>Configure <code>vite.config.ts</code> to use the `jsdom` environment.</li>
+                        <li>Add a <code>test</code> script to `package.json`.</li>
+                    </ul>
+                </div>
+
+                <div class="jira-section">
+                    <span class="jira-label">Implementation Guide</span>
+                    <pre><code class="language-bash">npm install -D vitest jsdom @testing-library/react @testing-library/jest-dom</code></pre>
+                    
+                    <p><strong>vite.config.ts:</strong></p>
+                    <pre><code class="language-typescript">/// <reference types="vitest" />
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+
+export default defineConfig({
+  plugins: [react()],
+  test: {
+    environment: 'jsdom',
+    setupFiles: './src/test/setup.ts',
+    globals: true // optional, allows using describe/it without import
+  }
+})</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="jira-ticket">
+            <div class="jira-header">
+                <span class="jira-id">TEST-102</span>
+                <span class="jira-status">To Do</span>
+            </div>
+            <div class="jira-body">
+                <h3 class="jira-title">Unit & Integration Tests</h3>
+                
+                <div class="jira-section">
+                    <span class="jira-label">User Story</span>
+                    <p>As a QA Engineer, I want to verify that individual components render correctly and respond to user interactions.</p>
+                </div>
+
+                <div class="jira-section">
+                    <span class="jira-label">Acceptance Criteria</span>
+                    <ul class="req-list">
+                        <li><strong>UserCard:</strong> Verify it renders the `name` and `role` props correctly.</li>
+                        <li><strong>Counter:</strong> Verify clicking "Increment" updates the count text.</li>
+                        <li>Use <code>screen.getByRole</code> or <code>screen.getByText</code> for queries (accessible queries).</li>
+                    </ul>
+                </div>
+
+                <div class="jira-section">
+                    <span class="jira-label">Code Example (UserCard.test.tsx)</span>
+                    <pre><code class="language-typescript">import { render, screen } from '@testing-library/react';
+import { describe, it, expect } from 'vitest';
+import UserCard from './UserCard';
+
+describe('UserCard', () => {
+    it('renders user information correctly', () => {
+        render(&lt;UserCard name="Alice" role="Admin" /&gt;);
+        
+        // Check if text exists in the document
+        expect(screen.getByText('Alice')).toBeInTheDocument();
+        expect(screen.getByText(/admin/i)).toBeInTheDocument();
+    });
+});</code></pre>
+                </div>
+
+                <div class="jira-section">
+                    <span class="jira-label">Code Example (Counter.test.tsx)</span>
+                    <pre><code class="language-typescript">import { render, screen, fireEvent } from '@testing-library/react';
+import Counter from './Counter';
+
+it('increments count on click', () => {
+    render(&lt;Counter /&gt;);
+    
+    const button = screen.getByRole('button', { name: /increment/i });
+    
+    // Initial state
+    expect(screen.getByText('Count: 0')).toBeInTheDocument();
+    
+    // Interaction
+    fireEvent.click(button);
+    
+    // Assert new state
+    expect(screen.getByText('Count: 1')).toBeInTheDocument();
+});</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="jira-ticket">
+            <div class="jira-header">
+                <span class="jira-id">TEST-103</span>
+                <span class="jira-status">To Do</span>
+            </div>
+            <div class="jira-body">
+                <h3 class="jira-title">Async & Mocking (Advanced)</h3>
+                
+                <div class="jira-section">
+                    <span class="jira-label">User Story</span>
+                    <p>As a developer, I want to test data fetching components without relying on the real backend API.</p>
+                </div>
+
+                <div class="jira-section">
+                    <span class="jira-label">Acceptance Criteria</span>
+                    <ul class="req-list">
+                        <li>Mock the <code>fetch</code> global or use MSW.</li>
+                        <li>Verify the "Loading..." state appears initially.</li>
+                        <li>Verify the data appears after the async operation completes using <code>await screen.findBy...</code>.</li>
+                    </ul>
+                </div>
+
+                <div class="jira-section">
+                    <span class="jira-label">Code Example (UserList.test.tsx)</span>
+                    <pre><code class="language-typescript">import { render, screen, waitFor } from '@testing-library/react';
+import { vi } from 'vitest';
+import UserList from './UserList';
+
+// Simple fetch mock
+global.fetch = vi.fn();
+
+function createFetchResponse(data) {
+    return { json: () => new Promise((resolve) => resolve(data)) };
+}
+
+it('renders users after fetching', async () => {
+    // Setup mock response
+    (fetch as any).mockResolvedValue(createFetchResponse([
+        { id: 1, name: 'John Doe' }
+    ]));
+
+    render(&lt;UserList /&gt;);
+
+    // 1. Check Loading State
+    expect(screen.getByText(/loading/i)).toBeInTheDocument();
+
+    // 2. Check Async Result (findBy waits for appearance)
+    const userItem = await screen.findByText('John Doe');
+    expect(userItem).toBeInTheDocument();
+});</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <section class="bug-hunt">
+            <h3>🐛 Bug Hunt: The "Not Wrapped in Act" Warning</h3>
+            <p><strong>Scenario:</strong> You run a test and see a console error: <code>Warning: An update to Component inside a test was not wrapped in act(...)</code>.</p>
+            <p><strong>Why?</strong> Your component updated state (like after a fetch resolves) <em>after</em> your test finished or while your test was doing something else. React wants you to signal that an update is happening.</p>
+            <p><strong>Fix:</strong> Usually, you don't need to use `act()` manually. Instead, use <strong>async queries</strong> like <code>findByText</code> which automatically wait for updates.</p>
+            <pre><code class="language-typescript">// ❌ Bad: Asserting immediately
+// expect(screen.getByText('Data')).toBeInTheDocument(); // Fails, data isn't there yet
+
+// ✅ Good: Waiting for appearance
+// await screen.findByText('Data'); // Waits up to 1000ms (default)</code></pre>
+        </section>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+    <script src="layout.js"></script>
+    <script>
+        initLayout();
+    </script>
+</body>
+</html>

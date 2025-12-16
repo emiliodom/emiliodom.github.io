@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 2: Hooks & Lifecycle</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+</head>
+<body>
+    <header>
+        <h1>Module 2: Hooks & Lifecycle</h1>
+        <p>useState, useEffect, and the Rules of Hooks.</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <h2>1. Deep Dive: The Lifecycle of State</h2>
+
+        <h3>1.1 State is a Snapshot</h3>
+        <p>This is the most common point of confusion. Setting state does not change the variable immediately. It schedules a re-render with the new value.</p>
+        <pre><code class="language-jsx">const [count, setCount] = useState(0);
+
+function handleClick() {
+  setCount(count + 1); // Schedules update to 1
+  setCount(count + 1); // Schedules update to 1 (still uses old 'count' value of 0)
+  setCount(count + 1); // Schedules update to 1
+  console.log(count);  // Prints 0!
+}</code></pre>
+        <p>To fix this, use the <strong>updater function</strong>: <code>setCount(prev => prev + 1)</code>.</p>
+
+        <h3>1.2 The Dependency Array</h3>
+        <p><code>useEffect</code> is not a lifecycle method like <code>componentDidMount</code>. It is a synchronization mechanism. "Synchronize this code with these variables."</p>
+        <ul>
+            <li><code>[]</code>: "I depend on nothing. Run once."</li>
+            <li><code>[userId]</code>: "I depend on userId. Run when it changes."</li>
+            <li>No array: "I depend on everything. Run every render." (Bad performance).</li>
+        </ul>
+
+        <h3>1.3 Cleanup Functions</h3>
+        <p>If your effect subscribes to something (like a WebSocket or a Timer), you MUST return a cleanup function. React runs this function before the component unmounts or before the effect runs again.</p>
+        <pre><code class="language-jsx">useEffect(() => {
+  const timer = setInterval(tick, 1000);
+  return () => clearInterval(timer); // The Cleanup
+}, []);</code></pre>
+
+        <h3>1.4 Industry Standard: Custom Hooks</h3>
+        <p>Senior developers rarely write complex <code>useEffect</code> logic directly inside UI components. They extract it into <strong>Custom Hooks</strong>. This separates <em>logic</em> from <em>view</em>.</p>
+        <pre><code class="language-jsx">// Instead of writing useEffect in every component:
+function UserProfile({ id }) {
+  const { data, loading, error } = useFetch(`/users/${id}`);
+  // ... render logic
+}</code></pre>
+
+        <details>
+            <summary><strong>📚 Official Documentation References</strong></summary>
+            <ul>
+                <li><a href="https://react.dev/reference/react/useState" target="_blank">useState</a></li>
+                <li><a href="https://react.dev/reference/react/useEffect" target="_blank">useEffect</a></li>
+                <li><a href="https://react.dev/learn/state-as-a-snapshot" target="_blank">State as a Snapshot</a> (Crucial!)</li>
+            </ul>
+        </details>
+
+        <div class="jira-ticket">
+            <div class="jira-header">
+                <span class="jira-id">REQ-003</span>
+                <span class="jira-status">To Do</span>
+            </div>
+            <div class="jira-body">
+                <h3 class="jira-title">Build "SmartCounter" with History</h3>
+                
+                <div class="jira-section">
+                    <span class="jira-label">User Story</span>
+                    <p>As a user, I want to see a history of my counter values so I can track my changes over time.</p>
+                </div>
+
+                <div class="jira-section">
+                    <span class="jira-label">Acceptance Criteria</span>
+                    <ul class="req-list">
+                        <li>Create a <code>SmartCounter</code> component.</li>
+                        <li><strong>State:</strong> Track <code>count</code> (number) and <code>history</code> (array of numbers).</li>
+                        <li><strong>Actions:</strong> Add Increment (+1) and Decrement (-1) buttons.</li>
+                        <li><strong>Logic:</strong> Whenever <code>count</code> changes, append the new value to <code>history</code>.</li>
+                        <li><strong>Display:</strong> Show the current count and a list of previous values.</li>
+                    </ul>
+                </div>
+
+                <div class="jira-section">
+                    <span class="jira-label">Senior Bonus</span>
+                    <ul class="req-list">
+                        <li><strong>Auto-Increment:</strong> Add a "Start/Stop" button that increments the counter every second using <code>setInterval</code>.</li>
+                        <li><strong>Cleanup:</strong> Ensure the interval is cleared when the component unmounts or when "Stop" is clicked.</li>
+                        <li><strong>Bug Prevention:</strong> Ensure the interval doesn't speed up if "Start" is clicked multiple times.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <h2>3. The Bug Hunt</h2>
+        <div class="bug-hunt">
+            <h3>🐛 Scenario: The Infinite Loop</h3>
+            <p><strong>The Setup:</strong></p>
+            <pre><code class="language-jsx">function BadComponent() {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    setCount(count + 1);
+  }); // Missing dependency array!
+
+  return &lt;div&gt;{count}&lt;/div&gt;;
+}</code></pre>
+            <p><strong>The Bug:</strong> This component crashes the browser tab. Why?</p>
+            <p><strong>The Task:</strong></p>
+            <ol>
+                <li>Explain the cycle: Render -> Effect -> SetState -> Render...</li>
+                <li>Fix it so it only runs once on mount.</li>
+                <li><strong>Challenge:</strong> How would you make it run only when a prop <code>userId</code> changes?</li>
+            </ol>
+        </div>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-jsx.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-tsx.min.js"></script>
+    <script src="layout.js"></script>
+</body>
+</html>

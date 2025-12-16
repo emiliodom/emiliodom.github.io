@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Capstone Project: TaskMaster Pro</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+</head>
+<body>
+    <header>
+        <h1>The Capstone Project</h1>
+        <p>Build a production-ready Kanban Board.</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section class="concept-section">
+            <h2>The Brief</h2>
+            <p>You are applying for a Senior Frontend Developer role. This is your take-home assignment. The goal is not just to make it work, but to make it <strong>maintainable, performant, and accessible</strong>.</p>
+            
+            <div class="highlight-box">
+                <h3>Project: "TaskMaster Pro"</h3>
+                <p>A Trello-style Kanban board with drag-and-drop functionality, persistent state, and URL-driven navigation.</p>
+            </div>
+        </section>
+
+        <div class="jira-ticket">
+            <div class="jira-header">
+                <span class="jira-id">CAP-101</span>
+                <span class="jira-status">To Do</span>
+            </div>
+            <div class="jira-body">
+                <h3 class="jira-title">MVP: Core Board Functionality</h3>
+                
+                <div class="jira-section">
+                    <span class="jira-label">User Story</span>
+                    <p>As a user, I want to organize my tasks into columns so I can track progress.</p>
+                </div>
+
+                <div class="jira-section">
+                    <span class="jira-label">Acceptance Criteria</span>
+                    <ul class="req-list">
+                        <li><strong>Columns:</strong> Three fixed columns: "To Do", "In Progress", "Done".</li>
+                        <li><strong>CRUD:</strong> Create, Read, Update, and Delete tasks.</li>
+                        <li><strong>State:</strong> Use <strong>Zustand</strong> for global state management.</li>
+                        <li><strong>Persistence:</strong> Save data to <code>localStorage</code> automatically.</li>
+                    </ul>
+                </div>
+
+                <div class="jira-section">
+                    <span class="jira-label">Technical Requirement (Interfaces)</span>
+                    <pre><code class="language-typescript">export type Status = 'TODO' | 'IN_PROGRESS' | 'DONE';
+
+export interface Task {
+  id: string;
+  title: string;
+  description: string;
+  status: Status;
+  createdAt: number;
+}
+
+export interface BoardState {
+  tasks: Task[];
+  addTask: (title: string, status: Status) => void;
+  moveTask: (id: string, newStatus: Status) => void;
+  deleteTask: (id: string) => void;
+}</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="jira-ticket">
+            <div class="jira-header">
+                <span class="jira-id">CAP-102</span>
+                <span class="jira-status">To Do</span>
+            </div>
+            <div class="jira-body">
+                <h3 class="jira-title">Senior Feature: Drag & Drop</h3>
+                
+                <div class="jira-section">
+                    <span class="jira-label">User Story</span>
+                    <p>As a user, I want to drag tasks between columns for a natural interaction.</p>
+                </div>
+
+                <div class="jira-section">
+                    <span class="jira-label">Acceptance Criteria</span>
+                    <ul class="req-list">
+                        <li>Implement <strong>dnd-kit</strong> (recommended) or <code>react-beautiful-dnd</code>.</li>
+                        <li>Tasks must visually snap into place.</li>
+                        <li><strong>Accessibility:</strong> Must support keyboard navigation (Space to lift, Arrows to move, Space to drop).</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="jira-ticket">
+            <div class="jira-header">
+                <span class="jira-id">CAP-103</span>
+                <span class="jira-status">To Do</span>
+            </div>
+            <div class="jira-body">
+                <h3 class="jira-title">Senior Feature: URL-Driven Modals</h3>
+                
+                <div class="jira-section">
+                    <span class="jira-label">User Story</span>
+                    <p>As a user, I want to share a link to a specific task with my colleague.</p>
+                </div>
+
+                <div class="jira-section">
+                    <span class="jira-label">Acceptance Criteria</span>
+                    <ul class="req-list">
+                        <li>Clicking a task opens a modal.</li>
+                        <li>The URL must update to <code>/board/task/123</code>.</li>
+                        <li>Refreshing the page at that URL must open the board <em>and</em> the modal immediately.</li>
+                        <li>Closing the modal returns the URL to <code>/board</code>.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="jira-ticket">
+            <div class="jira-header">
+                <span class="jira-id">CAP-104</span>
+                <span class="jira-status">To Do</span>
+            </div>
+            <div class="jira-body">
+                <h3 class="jira-title">Quality Assurance</h3>
+                
+                <div class="jira-section">
+                    <span class="jira-label">User Story</span>
+                    <p>As a developer, I want to ensure the app is robust and bug-free.</p>
+                </div>
+
+                <div class="jira-section">
+                    <span class="jira-label">Acceptance Criteria</span>
+                    <ul class="req-list">
+                        <li><strong>Testing:</strong> Write unit tests for the `TaskCard` and integration tests for the "Add Task" flow.</li>
+                        <li><strong>Performance:</strong> Use <code>React.memo</code> on `TaskCard`. Ensure dragging one card doesn't re-render the whole board.</li>
+                        <li><strong>Linting:</strong> No ESLint warnings or TypeScript errors.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <section class="bug-hunt">
+            <h3>🏁 Final Challenge: The "Clean Slate"</h3>
+            <p>Once you build this project and it works perfectly:</p>
+            <ol>
+                <li>Delete the entire folder.</li>
+                <li>Rebuild it from scratch without looking at your old code.</li>
+            </ol>
+            <p>This is the only way to know if you truly understand the concepts or if you were just copying code. Good luck.</p>
+        </section>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+    <script src="layout.js"></script>
+    <script>
+        initLayout();
+    </script>
+</body>
+</html>

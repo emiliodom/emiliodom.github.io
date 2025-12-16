@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interview: Take-Home Assignment</title>
+    <style>
+        body { font-family: system-ui, -apple-system, sans-serif; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 20px; color: #333; }
+        h1, h2 { color: #1e293b; }
+        .assignment-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 30px; margin-bottom: 30px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+        
+        .req-list { list-style: none; padding: 0; }
+        .req-list li { margin-bottom: 10px; padding-left: 25px; position: relative; }
+        .req-list li::before { content: "☐"; position: absolute; left: 0; color: #94a3b8; font-weight: bold; }
+        
+        .bonus-list li::before { content: "★"; color: #eab308; }
+
+        .api-box { background: #f1f5f9; padding: 15px; border-radius: 6px; font-family: monospace; margin: 10px 0; border: 1px solid #cbd5e1; }
+        
+        .rubric-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .rubric-table th, .rubric-table td { border: 1px solid #e2e8f0; padding: 12px; text-align: left; }
+        .rubric-table th { background: #f8fafc; }
+    </style>
+</head>
+<body>
+    <nav style="margin-bottom: 20px;">
+        <a href="interview_index.html">&larr; Back to Interview Index</a>
+    </nav>
+
+    <h1>Take-Home Assignment Practice</h1>
+    <p>This is a mock "Take-Home" challenge similar to what companies like Uber, Airbnb, or startups might send you. Treat this as a real 4-hour timed test.</p>
+
+    <div id="google_translate_element"></div>
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({pageLanguage: 'en', includedLanguages: 'es'}, 'google_translate_element');
+        }
+    </script>
+    <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+    <div class="assignment-card">
+        <h2>Project: "User Directory & Search"</h2>
+        <p><strong>Objective:</strong> Build a React application that fetches a list of users from an API, displays them in a grid, and allows filtering by name.</p>
+        
+        <h3>1. API Endpoint</h3>
+        <div class="api-box">
+            GET https://jsonplaceholder.typicode.com/users
+        </div>
+
+        <h3>2. Core Requirements (MVP)</h3>
+        <ul class="req-list">
+            <li>Fetch data from the API on component mount.</li>
+            <li>Display a loading state while fetching.</li>
+            <li>Render a card for each user showing: Name, Email, Company Name.</li>
+            <li>Implement a Search Bar at the top.</li>
+            <li>Filtering should happen in real-time (client-side) as the user types.</li>
+            <li>Handle error states (e.g., if the API fails).</li>
+        </ul>
+
+        <h3>3. Bonus Requirements (Senior Level)</h3>
+        <ul class="req-list bonus-list">
+            <li><strong>Debounce</strong> the search input to avoid excessive re-renders.</li>
+            <li>Implement <strong>Sort by Name</strong> (A-Z / Z-A).</li>
+            <li>Make the design <strong>Responsive</strong> (Grid: 1 col mobile, 3 cols desktop).</li>
+            <li>Add a "Dark Mode" toggle using Context API.</li>
+            <li>Write at least one Unit Test (e.g., testing the filter logic).</li>
+        </ul>
+    </div>
+
+    <div class="assignment-card">
+        <h2>Evaluation Rubric</h2>
+        <p>This is how your code would be graded:</p>
+        <table class="rubric-table">
+            <thead>
+                <tr>
+                    <th>Criteria</th>
+                    <th>What we look for</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Code Quality</strong></td>
+                    <td>Clean folder structure, meaningful variable names, small components.</td>
+                </tr>
+                <tr>
+                    <td><strong>Performance</strong></td>
+                    <td>No unnecessary re-renders. Use of `useMemo` for filtered lists.</td>
+                </tr>
+                <tr>
+                    <td><strong>UX/UI</strong></td>
+                    <td>Loading spinners, empty states ("No users found"), error messages.</td>
+                </tr>
+                <tr>
+                    <td><strong>Modern React</strong></td>
+                    <td>Functional components, Hooks (useEffect, useState), Custom Hooks.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</body>
+</html>

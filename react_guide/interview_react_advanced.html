@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interview: React Advanced</title>
+    <style>
+        body { font-family: system-ui, -apple-system, sans-serif; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 20px; color: #333; }
+        h2 { border-bottom: 1px solid #ccc; padding-bottom: 10px; margin-top: 40px; }
+        .q-block { background: #f4f4f4; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+        .q-text { font-weight: bold; font-size: 1.1em; color: #61dafb; background: #222; padding: 5px 10px; border-radius: 4px; display: inline-block; margin-bottom: 10px; }
+        .hint { font-size: 0.9em; color: #666; font-style: italic; margin-bottom: 10px; display: block; }
+        details { margin-top: 10px; }
+        summary { cursor: pointer; color: #0066cc; font-weight: bold; }
+        pre { background: #2d2d2d; color: #f8f8f2; padding: 15px; border-radius: 5px; overflow-x: auto; }
+        code { font-family: monospace; }
+        .answer { margin-top: 15px; border-top: 1px solid #ddd; padding-top: 10px; }
+        nav { margin-bottom: 20px; }
+        .code-section { margin-top: 15px; border-left: 4px solid #61dafb; padding-left: 15px; }
+        .code-label { font-size: 0.8em; text-transform: uppercase; color: #666; font-weight: bold; margin-bottom: 5px; display: block; }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="interview_index.html">&larr; Back to Interview Index</a>
+    </nav>
+
+    <h1>React Advanced & Complex Questions</h1>
+
+    <div id="google_translate_element"></div>
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({pageLanguage: 'en', includedLanguages: 'es'}, 'google_translate_element');
+        }
+    </script>
+    <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+    <h2>1. Performance Optimization</h2>
+    <div class="q-block">
+        <div class="q-text">Q: useMemo vs. useCallback?</div>
+        <div class="hint">Value vs. Function.</div>
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>// useMemo: Caches a return value
+const expensiveValue = useMemo(() => compute(a, b), [a, b]);
+
+// useCallback: Caches a function definition
+const handleClick = useCallback(() => {
+  doSomething(a);
+}, [a]);</code></pre>
+            <span class="code-label">Real World Example</span>
+            <pre><code>// Preventing Child Re-renders
+const Parent = () => {
+  // Without useCallback, this function is new every render
+  // causing Child (if memoized) to re-render anyway.
+  const handleSelect = useCallback((id) => setSelected(id), []);
+
+  return &lt;MemoizedChild onSelect={handleSelect} /&gt;;
+};</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Both are for memoization (caching) to prevent unnecessary re-computations or re-renders.</p>
+                <ul>
+                    <li><strong>useMemo:</strong> Caches a <strong>value</strong> (result of a function).
+                        <br><code>const expensiveValue = useMemo(() => compute(a, b), [a, b]);</code>
+                    </li>
+                    <li><strong>useCallback:</strong> Caches a <strong>function definition</strong>.
+                        <br><code>const handleClick = useCallback(() => { ... }, []);</code>
+                    </li>
+                </ul>
+                <p><strong>Why use useCallback?</strong> To maintain referential equality when passing functions to child components wrapped in <code>React.memo</code>.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is React.memo?</div>
+        <div class="hint">HOC for performance.</div>
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>const MyComponent = React.memo(function MyComponent(props) {
+  /* render using props */
+});</code></pre>
+            <span class="code-label">Real World Example</span>
+            <pre><code>// List Item Optimization
+const ListItem = React.memo(({ item, onToggle }) => {
+  console.log("Render Item", item.id);
+  return &lt;li onClick={() => onToggle(item.id)}&gt;{item.text}&lt;/li&gt;;
+});
+// Only re-renders if 'item' or 'onToggle' changes.</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>A Higher Order Component (HOC) that skips re-rendering a component if its props have not changed.</p>
+                <pre><code>const Child = React.memo(({ onClick }) => {
+  console.log("Render Child");
+  return &lt;button onClick={onClick}&gt;Click&lt;/button&gt;;
+});
+
+// Parent
+// If 'handleClick' is not wrapped in useCallback, 
+// Child will re-render every time Parent renders, 
+// because the function reference changes.</code></pre>
+            </div>
+        </details>
+    </div>
+
+    <h2>2. Architecture & Patterns</h2>
+    <div class="q-block">
+        <div class="q-text">Q: What is the "Prop Drilling" problem and how do you solve it?</div>
+        <div class="hint">Passing data down 10 levels.</div>
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>// Problem:
+&lt;Page user={user} /&gt; -> &lt;Header user={user} /&gt; -> &lt;Avatar user={user} /&gt;
+
+// Solution 1 (Composition):
+&lt;Page header={&lt;Header avatar={&lt;Avatar user={user} /&gt;} /&gt;} /&gt;
+
+// Solution 2 (Context):
+&lt;UserContext.Provider value={user}&gt;...&lt;/UserContext.Provider&gt;</code></pre>
+            <span class="code-label">Real World Example</span>
+            <pre><code>// Theme Context
+const ThemeContext = createContext('light');
+// Any deep child can access theme without passing props
+const theme = useContext(ThemeContext);</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Passing data through many layers of components that don't need it.</p>
+                <p><strong>Solutions:</strong></p>
+                <ol>
+                    <li><strong>Composition (Component Composition):</strong> Pass components as children or props. <code>&lt;Layout header={&lt;Header user={user} /&gt;} /&gt;</code>.</li>
+                    <li><strong>Context API:</strong> For global settings (Theme, Auth).</li>
+                    <li><strong>State Management Libraries:</strong> Redux/Zustand for complex data flows.</li>
+                </ol>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Explain Error Boundaries.</div>
+        <div class="hint">Catching crashes.</div>
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>class ErrorBoundary extends React.Component {
+  state = { hasError: false };
+  static getDerivedStateFromError(error) { return { hasError: true }; }
+  componentDidCatch(error, info) { logError(error, info); }
+  render() {
+    if (this.state.hasError) return &lt;h1&gt;Something went wrong.&lt;/h1&gt;;
+    return this.props.children;
+  }
+}</code></pre>
+            <span class="code-label">Real World Example</span>
+            <pre><code>// Wrapping major sections
+&lt;ErrorBoundary&gt;
+  &lt;Feed /&gt;
+&lt;/ErrorBoundary&gt;
+&lt;ErrorBoundary&gt;
+  &lt;Sidebar /&gt;
+&lt;/ErrorBoundary&gt;
+// If Feed crashes, Sidebar still works.</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>React components that catch JavaScript errors anywhere in their child component tree, log those errors, and display a fallback UI.</p>
+                <p><strong>Note:</strong> Error Boundaries must be Class Components (currently no Hook equivalent).</p>
+                <pre><code>class ErrorBoundary extends React.Component {
+  state = { hasError: false };
+  static getDerivedStateFromError(error) { return { hasError: true }; }
+  render() {
+    if (this.state.hasError) return &lt;h1&gt;Something went wrong.&lt;/h1&gt;;
+    return this.props.children; 
+  }
+}</code></pre>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is "Code Splitting"?</div>
+        <div class="hint">Lazy loading.</div>
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>const OtherComponent = React.lazy(() => import('./OtherComponent'));
+
+function MyComponent() {
+  return (
+    &lt;Suspense fallback={&lt;div&gt;Loading...&lt;/div&gt;}&gt;
+      &lt;OtherComponent /&gt;
+    &lt;/Suspense&gt;
+  );
+}</code></pre>
+            <span class="code-label">Real World Example</span>
+            <pre><code>// Route-based splitting
+&lt;Routes&gt;
+  &lt;Route path="/" element={&lt;Home /&gt;} /&gt;
+  &lt;Route path="/admin" element={
+    &lt;Suspense fallback={&lt;Spinner /&gt;}&gt;
+      &lt;AdminPanel /&gt; 
+    &lt;/Suspense&gt;
+  } /&gt;
+&lt;/Routes&gt;</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Splitting the bundle into smaller chunks so the user only downloads what they need for the current page. Implemented via <code>React.lazy</code> and dynamic <code>import()</code>.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is "Concurrency" in React 18?</div>
+        <div class="hint">Interruptible rendering.</div>
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>// Automatic Batching
+setTimeout(() => {
+  setCount(c => c + 1);
+  setFlag(f => !f);
+  // React 18: Only 1 re-render (batched)
+  // React 17: 2 re-renders
+}, 1000);</code></pre>
+            <span class="code-label">Real World Example</span>
+            <pre><code>// Keeping UI responsive during heavy updates
+const [isPending, startTransition] = useTransition();
+
+function handleChange(e) {
+  const value = e.target.value;
+  setInputValue(value); // Urgent: Update input immediately
+  
+  startTransition(() => {
+    setFilter(value); // Non-urgent: Filter heavy list
+  });
+}</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>The ability for React to work on multiple tasks at once. It can pause a heavy render to handle a high-priority user interaction (like typing), then resume the heavy render. Features: <code>useTransition</code>, <code>useDeferredValue</code>.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is "Hydration"?</div>
+        <div class="hint">SSR to Interactive.</div>
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>// Server
+const html = ReactDOMServer.renderToString(&lt;App /&gt;);
+
+// Client
+ReactDOM.hydrateRoot(document.getElementById('root'), &lt;App /&gt;);</code></pre>
+            <span class="code-label">Real World Example</span>
+            <pre><code>// Next.js handles this automatically.
+// Hydration mismatch error occurs if server HTML != client HTML
+// e.g., rendering Date.now() or Math.random() directly.</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>The process where React attaches event listeners to the static HTML generated by the server (SSR), making the page interactive.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is the "Flux" pattern?</div>
+        <div class="hint">Unidirectional data flow.</div>
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>// 1. Action
+const action = { type: 'ADD_TODO', text: 'Buy milk' };
+
+// 2. Dispatcher sends action to Store
+// 3. Store updates state
+// 4. View updates based on Store</code></pre>
+            <span class="code-label">Real World Example</span>
+            <pre><code>// Redux is the most popular implementation
+dispatch(addTodo('Buy milk')); 
+// -> Reducer calculates new state
+// -> Components re-render</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Action -> Dispatcher -> Store -> View. The predecessor to Redux. It enforces one-way data flow to make state predictable.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What are "Higher Order Components" (HOCs)?</div>
+        <div class="hint">Functions that return components.</div>
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>function withBorder(WrappedComponent) {
+  return (props) => (
+    &lt;div style={{ border: '1px solid red' }}&gt;
+      &lt;WrappedComponent {...props} /&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+            <span class="code-label">Real World Example</span>
+            <pre><code>// Authentication HOC
+const ProtectedProfile = withAuth(Profile);
+
+function withAuth(Component) {
+  return (props) => {
+    if (!isLoggedIn) return &lt;Login /&gt;;
+    return &lt;Component {...props} /&gt;;
+  };
+}</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>A function that takes a component and returns a new component with added props or behavior. Example: <code>withAuth(Profile)</code>. Largely replaced by Hooks, but still used in libraries.</p>
+            </div>
+        </details>
+    </div>
+
+    <h2>3. Advanced Hooks</h2>
+
+    <div class="q-block">
+        <div class="q-text">Q: useLayoutEffect vs. useEffect?</div>
+        <div class="hint">Timing of execution.</div>
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>// useEffect: Runs after paint (Async)
+useEffect(() => {
+  console.log("Visible to user");
+});
+
+// useLayoutEffect: Runs before paint (Sync)
+useLayoutEffect(() => {
+  console.log("Blocks visual update");
+});</code></pre>
+            <span class="code-label">Real World Example</span>
+            <pre><code>// Measuring DOM elements
+useLayoutEffect(() => {
+  const { height } = ref.current.getBoundingClientRect();
+  setHeight(height);
+}, []);
+// Prevents "flicker" where user sees 0 height then jumps to real height.</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p><strong>useEffect:</strong> Runs <em>asynchronously</em> after the render is painted to the screen. Good for data fetching, subscriptions.</p>
+                <p><strong>useLayoutEffect:</strong> Runs <em>synchronously</em> after DOM mutations but <em>before</em> the browser paints. Use this to measure DOM layout (e.g., getting scroll position or element width) to prevent visual flickering.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is useImperativeHandle?</div>
+        <div class="hint">Customizing the ref instance.</div>
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>const CustomInput = forwardRef((props, ref) => {
+  const inputRef = useRef();
+  
+  useImperativeHandle(ref, () => ({
+    alertValue: () => alert(inputRef.current.value)
+  }));
+
+  return &lt;input ref={inputRef} /&gt;;
+});</code></pre>
+            <span class="code-label">Real World Example</span>
+            <pre><code>// Parent Component
+const ref = useRef();
+// ...
+&lt;CustomInput ref={ref} /&gt;
+// ...
+ref.current.alertValue(); // Only exposes this method, not full DOM node</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>It allows you to customize the instance value that is exposed to parent components when using <code>ref</code>. Typically used with <code>forwardRef</code>.</p>
+                <pre><code>useImperativeHandle(ref, () => ({
+  focus: () => inputRef.current.focus(),
+  scroll: () => inputRef.current.scrollIntoView()
+}));</code></pre>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is useDeferredValue?</div>
+        <div class="hint">Debouncing state updates.</div>
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>const deferredQuery = useDeferredValue(query);
+
+// React renders with 'query' (urgent)
+// Then re-renders with 'deferredQuery' (non-urgent)</code></pre>
+            <span class="code-label">Real World Example</span>
+            <pre><code>// Search Results
+const [query, setQuery] = useState('');
+const deferredQuery = useDeferredValue(query);
+
+return (
+  &lt;&gt;
+    &lt;input value={query} onChange={e => setQuery(e.target.value)} /&gt;
+    &lt;HeavyList filter={deferredQuery} /&gt; 
+  &lt;/&gt;
+);
+// Input stays responsive, List updates later.</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>It allows you to defer updating a part of the UI. It's like a built-in debounce. React will first render with the old value, then render with the new value in the background.</p>
+                <p>Useful for search inputs where the list filtering is heavy.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is useTransition?</div>
+        <div class="hint">Marking updates as non-urgent.</div>
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>const [isPending, startTransition] = useTransition();
+
+startTransition(() => {
+  // State updates here are low priority
+  setPage(newPage);
+});</code></pre>
+            <span class="code-label">Real World Example</span>
+            <pre><code>// Tab Switching
+{isPending && &lt;Spinner /&gt;}
+&lt;button onClick={() => startTransition(() => setTab('photos'))}&gt;
+  Photos
+&lt;/button&gt;
+// If 'Photos' is heavy, UI remains interactive during render.</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>It lets you mark a state update as a "transition" (low priority). If the user interacts while the transition is pending, React can interrupt it.</p>
+                <pre><code>const [isPending, startTransition] = useTransition();
+startTransition(() => {
+  setQuery(input); // This update is low priority
+});</code></pre>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is useId?</div>
+        <div class="hint">Accessibility IDs.</div>
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>const id = useId();
+return (
+  &lt;&gt;
+    &lt;label htmlFor={id}&gt;Name&lt;/label&gt;
+    &lt;input id={id} /&gt;
+  &lt;/&gt;
+);</code></pre>
+            <span class="code-label">Real World Example</span>
+            <pre><code>// Ensuring unique IDs in repeated components
+// Works consistently between Server (SSR) and Client (Hydration)
+// avoiding "prop mismatch" errors.</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Generates unique IDs that are stable across server and client (hydration safe). Essential for connecting labels to inputs (<code>htmlFor</code>) and ARIA attributes.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is useSyncExternalStore?</div>
+        <div class="hint">Library authors tool.</div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>A hook for subscribing to external data sources (like Redux store or browser history) in a way that is compatible with concurrent rendering features. It replaces <code>useEffect</code> for subscriptions in libraries.</p>
+            </div>
+        </details>
+    </div>
+
+    <h2>4. React Internals & Fiber</h2>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is the Virtual DOM really?</div>
+        <div class="hint">A JavaScript object tree.</div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>It is a lightweight copy of the actual DOM kept in memory. React creates a tree of objects (Fiber nodes) representing the UI. When state changes, it creates a new tree, diffs it with the old one, and computes the minimal set of changes (Reconciliation) to apply to the real DOM.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is "Reconciliation"?</div>
+        <div class="hint">The diffing algorithm.</div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>The process of comparing the current tree with the new tree to determine what parts of the UI need to be updated. React uses a heuristic O(n) algorithm based on assumptions like: two elements of different types will produce different trees, and keys are stable.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is "React Fiber"?</div>
+        <div class="hint">The engine rewrite.</div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>The reimplementation of React's core algorithm (introduced in v16). Its main goal was to enable <strong>incremental rendering</strong>: the ability to split rendering work into chunks and spread it out over multiple frames.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Why are "Keys" important in lists?</div>
+        <div class="hint">Identity stability.</div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Keys help React identify which items have changed, been added, or removed. Without keys (or using index as key), React might reuse DOM elements incorrectly, leading to state bugs or performance issues when the list order changes.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is "Batching" in React?</div>
+        <div class="hint">Grouping updates.</div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>React groups multiple state updates into a single re-render for better performance. Before React 18, only updates inside event handlers were batched. In React 18, <strong>Automatic Batching</strong> covers promises, timeouts, and native event handlers too.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is a "Portal"?</div>
+        <div class="hint">Teleporting DOM nodes.</div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p><code>ReactDOM.createPortal(child, container)</code> lets you render a child component into a DOM node that exists outside the hierarchy of the parent component. Essential for Modals, Tooltips, and Dropdowns to avoid z-index or overflow issues.</p>
+            </div>
+        </details>
+    </div>
+
+    <h2>5. Server Components (RSC)</h2>
+
+    <div class="q-block">
+        <div class="q-text">Q: Client Components vs. Server Components?</div>
+        <div class="hint">Where do they run?</div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <ul>
+                    <li><strong>Server Components:</strong> Run <em>only</em> on the server. No interactivity (onClick), no hooks (useState). Can access DB directly. Zero bundle size impact.</li>
+                    <li><strong>Client Components:</strong> Run on client (and server during SSR). Standard React components. Use <code>"use client"</code> directive.</li>
+                </ul>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: When to use "use client"?</div>
+        <div class="hint">Interactivity boundary.</div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Add <code>"use client"</code> at the top of a file if the component needs:</p>
+                <ul>
+                    <li>Event listeners (onClick, onChange)</li>
+                    <li>React Hooks (useState, useEffect)</li>
+                    <li>Browser-only APIs (localStorage, window)</li>
+                </ul>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Can Server Components import Client Components?</div>
+        <div class="hint">Yes.</div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Yes. This is the standard pattern. A Server Component (Page) renders a Client Component (Button).</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Can Client Components import Server Components?</div>
+        <div class="hint">No.</div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>No, not directly. Because Client Components run in the browser, they cannot execute server-only code. However, you can pass a Server Component as a <em>child</em> (prop) to a Client Component.</p>
+            </div>
+        </details>
+    </div>
+
+    <h2>6. Advanced Patterns</h2>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is the "Compound Component" pattern?</div>
+        <div class="hint">Select & Option.</div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>A pattern where components work together to share state implicitly, usually via Context. Example: <code>&lt;Select&gt;</code> and <code>&lt;Option&gt;</code>. The parent <code>Select</code> manages the state, and <code>Option</code> communicates with it without explicit prop passing by the user.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is the "Render Props" pattern?</div>
+        <div class="hint">Function as a child.</div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>A technique for sharing code between components using a prop whose value is a function.</p>
+                <pre><code>&lt;MouseTracker render={({ x, y }) => (
+  &lt;h1&gt;The mouse is at {x}, {y}&lt;/h1&gt;
+)} /&gt;</code></pre>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is "Control Inversion" in React?</div>
+        <div class="hint">Giving control to the user.</div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Instead of a component handling all logic internally, it exposes props (like <code>renderItem</code> or <code>components={{ Header: MyHeader }}</code>) to let the consumer customize the rendering logic.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Controlled vs. Uncontrolled Components?</div>
+        <div class="hint">React state vs DOM state.</div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <ul>
+                    <li><strong>Controlled:</strong> React manages the state (value prop + onChange handler). Single source of truth.</li>
+                    <li><strong>Uncontrolled:</strong> The DOM manages the state. Accessed via <code>ref</code>. Easier for integrating non-React code.</li>
+                </ul>
+            </div>
+        </details>
+    </div>
+
+    <h2>7. Security & Accessibility</h2>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is XSS and how does React prevent it?</div>
+        <div class="hint">Cross Site Scripting.</div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>XSS is injecting malicious scripts. React escapes all variables embedded in JSX by default, converting them to strings before rendering. This prevents script injection.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: When is `dangerouslySetInnerHTML` safe?</div>
+        <div class="hint">Sanitization.</div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Only when the HTML content has been <strong>sanitized</strong> (using a library like DOMPurify) to strip out malicious scripts. Never use it with raw user input.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What are ARIA attributes?</div>
+        <div class="hint">Accessibility helpers.</div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Accessible Rich Internet Applications attributes (e.g., <code>aria-label</code>, <code>aria-expanded</code>). They provide extra semantic information to assistive technologies (screen readers) when standard HTML tags aren't enough.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: How do you handle focus management in Modals?</div>
+        <div class="hint">Focus trap.</div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>When a modal opens, focus should move to the modal. Focus should be "trapped" inside the modal (tabbing shouldn't exit it). When closed, focus should return to the element that opened it.</p>
+            </div>
+        </details>
+    </div>
+
+    <h2>8. Performance Deep Dive</h2>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is "Virtualization" (Windowing)?</div>
+        <div class="hint">Rendering huge lists.</div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>A technique to render only the items currently visible in the viewport (plus a small buffer). Libraries like <code>react-window</code> or <code>react-virtualized</code> are used for lists with thousands of items to maintain performance.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: How do you debug performance issues?</div>
+        <div class="hint">DevTools.</div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Use the <strong>React DevTools Profiler</strong>. It shows which components rendered, why they rendered (prop changes, hooks), and how long it took. Look for "wasted renders".</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is the cost of Context?</div>
+        <div class="hint">Re-rendering consumers.</div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>When a Context value changes, <strong>all</strong> components consuming that context will re-render, even if they only use a part of the data. To mitigate this, split context into smaller contexts or use memoization.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Why shouldn't you define a component inside another component?</div>
+        <div class="hint">Remounting.</div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>If you define <code>Child</code> inside <code>Parent</code>, <code>Child</code> is redefined on every render of <code>Parent</code>. React treats it as a completely new component type, causing it to unmount and remount (losing state and focus) every time.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is "Tree Shaking"?</div>
+        <div class="hint">Dead code elimination.</div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>A build step (Webpack/Rollup) that removes unused code from the final bundle. It relies on ES6 static module syntax (import/export). If you import a huge library but only use one function, tree shaking attempts to remove the rest.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is the "Key Prop" trick for resetting state?</div>
+        <div class="hint">Forcing a remount.</div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Changing the <code>key</code> prop of a component forces React to destroy the old instance and create a new one. This is the cleanest way to reset a component's internal state to its initial values.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Explain "Strict Mode" double invocation.</div>
+        <div class="hint">Why does my log print twice?</div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>In development, <code>&lt;React.StrictMode&gt;</code> intentionally invokes render functions, effects, and reducers twice to help detect side effects in places they shouldn't be (like the render phase). It does not happen in production.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is the difference between `super()` and `super(props)`?</div>
+        <div class="hint">Class components legacy.</div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>In a class constructor, <code>super(props)</code> passes props to the parent <code>React.Component</code>, making <code>this.props</code> available immediately in the constructor. If you just call <code>super()</code>, <code>this.props</code> will be undefined <em>inside the constructor</em> (but fine in other methods).</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: How does React handle events differently than standard DOM?</div>
+        <div class="hint">Synthetic Events.</div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>React uses <strong>SyntheticEvents</strong>, a cross-browser wrapper around the native event. It also uses <strong>Event Delegation</strong>: it attaches a single event listener to the root of the document rather than one for every node, improving memory usage.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is "Prop Types"?</div>
+        <div class="hint">Runtime type checking.</div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>A library for runtime type checking of props. <code>Component.propTypes = { name: PropTypes.string }</code>. Largely replaced by TypeScript (compile-time checking), but still useful for library authors.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is the "Rules of Hooks"?</div>
+        <div class="hint">Top level only.</div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <ol>
+                    <li>Only call Hooks at the <strong>top level</strong> (not inside loops, conditions, or nested functions).</li>
+                    <li>Only call Hooks from <strong>React function components</strong> or custom Hooks.</li>
+                </ol>
+                <p>This ensures hooks are called in the same order every render.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: How to optimize a large form in React?</div>
+        <div class="hint">Avoid re-rendering the whole form on every keystroke.</div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>1. Use <strong>uncontrolled components</strong> (refs) or libraries like <code>react-hook-form</code> that minimize re-renders.<br>
+                2. Isolate state: Move the state of a specific input down into its own component so typing only re-renders that input, not the whole page.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is "Suspense"?</div>
+        <div class="hint">Waiting for data/code.</div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>A component that lets you display a fallback (loading spinner) while its children are waiting for something (like lazy loaded code or data fetching). <code>&lt;Suspense fallback={&lt;Spinner /&gt;}&gt;...&lt;/Suspense&gt;</code>.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is "Micro-frontend" architecture?</div>
+        <div class="hint">Frontend composition.</div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Splitting a frontend app into smaller, semi-independent "apps" that can be developed and deployed by different teams, then composed together in the browser (e.g., via Module Federation).</p>
+            </div>
+        </details>
+    </div>
+</body>
+</html>

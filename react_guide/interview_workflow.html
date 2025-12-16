@@ -1,0 +1,1583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interview: Workflow & Best Practices</title>
+    <style>
+        body { font-family: system-ui, -apple-system, sans-serif; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 20px; color: #333; }
+        h2 { border-bottom: 1px solid #ccc; padding-bottom: 10px; margin-top: 40px; }
+        .q-block { background: #f4f4f4; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+        .q-text { font-weight: bold; font-size: 1.1em; color: #2c3e50; margin-bottom: 10px; }
+        .hint { font-size: 0.9em; color: #666; font-style: italic; margin-bottom: 10px; }
+        details { margin-top: 10px; }
+        summary { cursor: pointer; color: #0066cc; font-weight: bold; }
+        .answer { margin-top: 15px; border-top: 1px solid #ddd; padding-top: 10px; }
+        .code-section { margin-top: 15px; border-left: 4px solid #0066cc; padding-left: 15px; }
+        .code-section h4 { margin: 10px 0 5px; color: #0066cc; font-size: 0.95em; text-transform: uppercase; letter-spacing: 0.5px; }
+        .code-block { background: #1e1e1e; color: #d4d4d4; padding: 10px; border-radius: 4px; font-family: 'Consolas', 'Monaco', monospace; font-size: 0.9em; overflow-x: auto; }
+        .comment { color: #6a9955; }
+        .keyword { color: #569cd6; }
+        .string { color: #ce9178; }
+        .function { color: #dcdcaa; }
+        nav { margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="interview_index.html">&larr; Back to Interview Index</a>
+    </nav>
+
+    <h1>Workflow, Scrum & Best Practices</h1>
+
+    <div id="google_translate_element"></div>
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({pageLanguage: 'en', includedLanguages: 'es'}, 'google_translate_element');
+        }
+    </script>
+    <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+    <h2>1. Agile & Scrum</h2>
+
+    <div class="q-block">
+        <div class="q-text">Q: Explain the difference between Agile and Waterfall.</div>
+        <div class="hint">Iterative vs. Sequential.</div>
+        <div class="code-section">
+            <h4>Basic Implementation (Conceptual)</h4>
+            <div class="code-block">
+<span class="comment">// Waterfall: Sequential, rigid</span>
+<span class="keyword">function</span> <span class="function">waterfallProject</span>() {
+  <span class="function">gatherRequirements</span>();
+  <span class="function">designSystem</span>();
+  <span class="function">implementCode</span>();
+  <span class="function">verifyTesting</span>();
+  <span class="function">deploy</span>();
+  <span class="comment">// If requirements change here, we are in trouble.</span>
+}
+
+<span class="comment">// Agile: Iterative, flexible</span>
+<span class="keyword">function</span> <span class="function">agileProject</span>() {
+  <span class="keyword">while</span> (projectNotFinished) {
+    <span class="keyword">const</span> sprintWork = <span class="function">planSprint</span>();
+    <span class="function">build</span>(sprintWork);
+    <span class="function">reviewAndAdapt</span>();
+  }
+}
+            </div>
+            <h4>Real World Example (JIRA/Board)</h4>
+            <div class="code-block">
+<span class="comment"># Waterfall Ticket Structure</span>
+- Project Phase: Implementation
+- Due Date: Dec 31st (Fixed)
+- Dependency: Design Phase Complete
+
+<span class="comment"># Agile Ticket (User Story)</span>
+- As a: User
+- I want to: Reset my password
+- So that: I can regain access
+- Acceptance Criteria: Email sent, Link works.
+- Story Points: 3
+            </div>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p><strong>Waterfall:</strong> Linear. Requirements -> Design -> Build -> Test -> Deploy. Hard to change course once started.</p>
+                <p><strong>Agile:</strong> Iterative. Build small chunks, get feedback, adjust. Embraces change.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What are the key Scrum Ceremonies?</div>
+        <div class="hint">There are usually 4 main ones.</div>
+        <div class="code-section">
+            <h4>Basic Implementation (Schedule)</h4>
+            <div class="code-block">
+<span class="keyword">const</span> sprintSchedule = {
+  <span class="string">"Monday 10am"</span>: <span class="string">"Sprint Planning (Start)"</span>,
+  <span class="string">"Daily 9am"</span>: <span class="string">"Daily Standup (15m)"</span>,
+  <span class="string">"Friday 3pm"</span>: <span class="string">"Sprint Review (Demo)"</span>,
+  <span class="string">"Friday 4pm"</span>: <span class="string">"Sprint Retrospective (Team)"</span>
+};
+            </div>
+            <h4>Real World Example (Agenda)</h4>
+            <div class="code-block">
+<span class="comment"># Daily Standup Agenda</span>
+1. What did I achieve yesterday?
+   <span class="comment">- "Completed the Login API endpoint."</span>
+2. What will I achieve today?
+   <span class="comment">- "Writing unit tests for Login."</span>
+3. Is anything blocking me?
+   <span class="comment">- "Waiting for DB credentials."</span>
+            </div>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <ul>
+                    <li><strong>Daily Standup:</strong> 15 mins. What did I do? What will I do? Blockers?</li>
+                    <li><strong>Sprint Planning:</strong> Defining what goes into the next sprint (2 weeks).</li>
+                    <li><strong>Sprint Review:</strong> Demoing the work to stakeholders.</li>
+                    <li><strong>Sprint Retrospective:</strong> Team only. What went well? What went wrong? How to improve?</li>
+                </ul>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is "Velocity" in Scrum?</div>
+        <div class="hint">It's a metric, but not for comparing teams.</div>
+        <div class="code-section">
+            <h4>Basic Implementation (Calculation)</h4>
+            <div class="code-block">
+<span class="keyword">const</span> pastSprints = [<span class="string">20</span>, <span class="string">22</span>, <span class="string">18</span>, <span class="string">24</span>];
+<span class="keyword">const</span> velocity = pastSprints.<span class="function">reduce</span>((a, b) => a + b) / pastSprints.length;
+<span class="comment">// Average Velocity: 21 points per sprint</span>
+            </div>
+            <h4>Real World Example (Planning)</h4>
+            <div class="code-block">
+<span class="comment">// If Backlog has 100 points of work:</span>
+<span class="keyword">const</span> sprintsNeeded = Math.<span class="function">ceil</span>(<span class="string">100</span> / <span class="string">21</span>); 
+<span class="comment">// Estimate: ~5 sprints to finish.</span>
+<span class="comment">// WARNING: Do not compare Team A (21) with Team B (40).</span>
+<span class="comment">// Their point scales might differ.</span>
+            </div>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>The amount of work (story points) a team can complete in a single sprint. It helps in estimating future delivery dates. It should <strong>never</strong> be used to compare Team A vs Team B.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is a "Story Point"?</div>
+        <div class="hint">It's not hours.</div>
+        <div class="code-section">
+            <h4>Basic Implementation (Fibonacci)</h4>
+            <div class="code-block">
+<span class="keyword">const</span> storyPoints = [<span class="string">1</span>, <span class="string">2</span>, <span class="string">3</span>, <span class="string">5</span>, <span class="string">8</span>, <span class="string">13</span>, <span class="string">21</span>];
+<span class="comment">// 1: Fix a typo</span>
+<span class="comment">// 3: Create a simple form</span>
+<span class="comment">// 8: Build a payment integration</span>
+            </div>
+            <h4>Real World Example (Estimation)</h4>
+            <div class="code-block">
+<span class="comment">// Developer A (Senior): "This takes me 2 hours."</span>
+<span class="comment">// Developer B (Junior): "This takes me 8 hours."</span>
+
+<span class="comment">// Both agree on Complexity:</span>
+<span class="keyword">const</span> complexity = <span class="string">"Medium"</span>; 
+<span class="keyword">const</span> points = <span class="string">5</span>; 
+<span class="comment">// Points measure complexity/risk, not just time.</span>
+            </div>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>A unit of measure for effort/complexity/risk. It is relative. A "5" is harder than a "3". It abstracts away "time" because a Senior might do a task in 1 hour that takes a Junior 5 hours, but the <em>complexity</em> is the same.</p>
+            </div>
+        </details>
+    </div>
+
+    <h2>2. Git & Version Control</h2>
+
+    <div class="q-block">
+        <div class="q-text">Q: Explain Git Flow vs. Trunk Based Development.</div>
+        <div class="hint">Complex branches vs. Fast integration.</div>
+        <div class="code-section">
+            <h4>Basic Implementation (Git Flow)</h4>
+            <div class="code-block">
+<span class="comment"># Git Flow Structure</span>
+main      (production ready)
+develop   (integration branch)
+feature/* (feature branches)
+release/* (prep for production)
+hotfix/*  (urgent fixes)
+            </div>
+            <h4>Real World Example (Trunk Based)</h4>
+            <div class="code-block">
+<span class="comment"># Trunk Based (Modern CI/CD)</span>
+main (The only long-lived branch)
+
+<span class="comment"># Developer workflow:</span>
+1. git checkout -b feature/new-login
+2. <span class="comment"># Work for 1 day max</span>
+3. git push
+4. <span class="comment"># Merge to main (behind Feature Flag if incomplete)</span>
+            </div>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p><strong>Git Flow:</strong> Feature branches -> Develop -> Release -> Master. Good for strict release cycles.</p>
+                <p><strong>Trunk Based:</strong> Everyone pushes to Main (Trunk) daily. Uses Feature Flags to hide unfinished work. Faster, modern standard for CI/CD.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is a Merge Conflict and how do you resolve it?</div>
+        <div class="hint">Two people touched the same line.</div>
+        <div class="code-section">
+            <h4>Basic Implementation (The Conflict)</h4>
+            <div class="code-block">
+<<<<<<< HEAD
+<span class="keyword">const</span> title = <span class="string">"My App"</span>;
+=======
+<span class="keyword">const</span> title = <span class="string">"Our App"</span>;
+>>>>>>> feature/branch-b
+            </div>
+            <h4>Real World Example (Resolution)</h4>
+            <div class="code-block">
+<span class="comment">// You must manually edit the file to choose:</span>
+<span class="keyword">const</span> title = <span class="string">"Our App"</span>; <span class="comment">// Accepted incoming change</span>
+
+<span class="comment">// Then run:</span>
+git add file.js
+git commit -m "Resolved merge conflict"
+            </div>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Occurs when Git cannot automatically reconcile differences. You must manually edit the file to choose which code to keep (Current Change vs Incoming Change), then commit the result.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is the difference between `git merge` and `git rebase`?</div>
+        <div class="hint">History preservation vs. Clean history.</div>
+        <div class="code-section">
+            <h4>Basic Implementation (Commands)</h4>
+            <div class="code-block">
+<span class="comment"># Merge: Adds a new commit</span>
+git checkout main
+git merge feature-branch
+
+<span class="comment"># Rebase: Rewrites history</span>
+git checkout feature-branch
+git rebase main
+            </div>
+            <h4>Real World Example (Visual History)</h4>
+            <div class="code-block">
+<span class="comment">// Merge History:</span>
+A --- B --- E (Merge Commit)
+       \   /
+        C-D
+
+<span class="comment">// Rebase History (Linear):</span>
+A --- B --- C --- D
+            </div>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p><strong>Merge:</strong> Creates a "merge commit". Preserves the exact history of when things happened. Can be messy.</p>
+                <p><strong>Rebase:</strong> Moves your commits to the tip of the target branch. Creates a linear history. Dangerous on shared branches (rewrites history).</p>
+            </div>
+        </details>
+    </div>
+
+    <h2>3. Project Structure & Architecture</h2>
+
+    <div class="q-block">
+        <div class="q-text">Q: Explain "Feature Folder" structure vs. "Type Folder" structure.</div>
+        <div class="hint">Grouping by file extension vs. grouping by domain.</div>
+        <div class="code-section">
+            <h4>Basic Implementation (Type Folder - Old)</h4>
+            <div class="code-block">
+/src
+  /components
+    UserCard.js
+    ProductCard.js
+  /hooks
+    useUser.js
+    useProduct.js
+  /utils
+    userHelpers.js
+            </div>
+            <h4>Real World Example (Feature Folder - Modern)</h4>
+            <div class="code-block">
+/src
+  /features
+    /user
+      UserCard.js
+      useUser.js
+      userHelpers.js
+    /product
+      ProductCard.js
+      useProduct.js
+<span class="comment">// Easier to delete or refactor a whole feature.</span>
+            </div>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p><strong>Type Folder (Old):</strong> <code>/components</code>, <code>/hooks</code>, <code>/utils</code>. Hard to scale. Related code is far apart.</p>
+                <p><strong>Feature Folder (Modern):</strong> <code>/features/auth</code>, <code>/features/cart</code>. Each folder contains its own components, hooks, and state. Better for modularity.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What are SOLID principles? (Briefly)</div>
+        <div class="hint">S.O.L.I.D.</div>
+        <div class="code-section">
+            <h4>Basic Implementation (Single Responsibility)</h4>
+            <div class="code-block">
+<span class="comment">// BAD: God Component</span>
+<span class="keyword">function</span> <span class="function">UserProfile</span>() {
+  <span class="comment">// Fetches data, Validates form, Renders UI</span>
+}
+
+<span class="comment">// GOOD: Separation</span>
+<span class="keyword">function</span> <span class="function">UserProfileContainer</span>() { <span class="comment">/* Logic */</span> }
+<span class="keyword">function</span> <span class="function">UserProfileView</span>() { <span class="comment">/* UI only */</span> }
+            </div>
+            <h4>Real World Example (Open/Closed)</h4>
+            <div class="code-block">
+<span class="comment">// Open for extension, Closed for modification</span>
+<span class="keyword">function</span> <span class="function">Button</span>({ icon }) {
+  <span class="comment">// Instead of hardcoding icons inside,</span>
+  <span class="comment">// we accept an icon prop (Extension).</span>
+  <span class="keyword">return</span> &lt;button&gt;{icon} Click Me&lt;/button&gt;;
+}
+            </div>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <ul>
+                    <li><strong>S</strong>ingle Responsibility: Do one thing well.</li>
+                    <li><strong>O</strong>pen/Closed: Open for extension, closed for modification.</li>
+                    <li><strong>L</strong>iskov Substitution: Subtypes must be substitutable for base types.</li>
+                    <li><strong>I</strong>nterface Segregation: Small, specific interfaces are better than big ones.</li>
+                    <li><strong>D</strong>ependency Inversion: Depend on abstractions, not concretions.</li>
+                </ul>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is "Technical Debt"?</div>
+        <div class="hint">Borrowing time now, paying interest later.</div>
+        <div class="code-section">
+            <h4>Basic Implementation (The "Hack")</h4>
+            <div class="code-block">
+<span class="comment">// TODO: Refactor this later. It's slow but works.</span>
+<span class="keyword">const</span> user = users.<span class="function">find</span>(u => u.id === id); 
+<span class="comment">// O(N) lookup every render.</span>
+            </div>
+            <h4>Real World Example (Paying Interest)</h4>
+            <div class="code-block">
+<span class="comment">// Later, as users array grows to 10,000:</span>
+<span class="comment">// The app freezes. We must now stop feature work</span>
+<span class="comment">// to refactor this to a Hash Map O(1).</span>
+<span class="keyword">const</span> userMap = { [id]: user, ... };
+            </div>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Choosing an easy/fast solution now instead of a better approach that would take longer. It's okay sometimes, but you must "pay it back" (refactor) later, or the code becomes unmaintainable.</p>
+            </div>
+        </details>
+    </div>
+
+    <h2>4. CI/CD & DevOps</h2>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is CI/CD?</div>
+        <div class="hint">Continuous Integration / Continuous Deployment.</div>
+        <div class="code-section">
+            <h4>Basic Implementation (Concept)</h4>
+            <div class="code-block">
+<span class="comment">// CI: Developer commits code -> Auto Test runs</span>
+<span class="comment">// CD: Tests Pass -> Auto Deploy to Server</span>
+            </div>
+            <h4>Real World Example (GitHub Actions)</h4>
+            <div class="code-block">
+<span class="comment"># .github/workflows/ci.yml</span>
+name: CI
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: npm install
+      - run: npm test
+            </div>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <ul>
+                    <li><strong>CI (Integration):</strong> Automating the build and testing of code every time a team member commits changes to version control.</li>
+                    <li><strong>CD (Deployment/Delivery):</strong> Automating the release of validated code to a repository or production environment.</li>
+                </ul>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is a "Pipeline"?</div>
+        <div class="hint">Steps to production.</div>
+        <div class="code-section">
+            <h4>Basic Implementation (Steps)</h4>
+            <div class="code-block">
+1. Lint Code
+2. Run Unit Tests
+3. Build Application
+4. Deploy to Staging
+5. Run E2E Tests
+6. Deploy to Production
+            </div>
+            <h4>Real World Example (Config)</h4>
+            <div class="code-block">
+<span class="comment"># Pipeline failure blocks deployment</span>
+lint:
+  script: npm run lint
+test:
+  script: npm run test
+  needs: [lint]
+deploy:
+  script: npm run deploy
+  needs: [test]
+            </div>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>A series of automated steps defined in a config file (e.g., <code>.github/workflows/main.yml</code>). Example: Checkout Code -> Install Deps -> Lint -> Test -> Build -> Deploy.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Docker in Frontend?</div>
+        <div class="hint">Containers.</div>
+        <div class="code-section">
+            <h4>Basic Implementation (Dockerfile)</h4>
+            <div class="code-block">
+<span class="comment"># Define environment</span>
+FROM node:18-alpine
+WORKDIR /app
+COPY package.json .
+RUN npm install
+COPY . .
+CMD ["npm", "start"]
+            </div>
+            <h4>Real World Example (Usage)</h4>
+            <div class="code-block">
+<span class="comment"># Run anywhere with same results</span>
+docker build -t my-app .
+docker run -p 3000:3000 my-app
+<span class="comment"># No more "It works on my machine"</span>
+            </div>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Docker packages the app and its environment (Node version, OS) into a container. It ensures "It works on my machine" means it works everywhere. Useful for consistent build environments and SSR apps.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is "Linting" vs "Formatting"?</div>
+        <div class="hint">ESLint vs Prettier.</div>
+        <div class="code-section">
+            <h4>Basic Implementation (ESLint - Logic)</h4>
+            <div class="code-block">
+<span class="comment">// ESLint Error: Variable defined but never used</span>
+<span class="keyword">const</span> x = <span class="string">10</span>; 
+<span class="function">console</span>.<span class="function">log</span>(<span class="string">"Hello"</span>);
+            </div>
+            <h4>Real World Example (Prettier - Style)</h4>
+            <div class="code-block">
+<span class="comment">// Before Prettier:</span>
+<span class="keyword">const</span> obj={a:1,b:2}
+
+<span class="comment">// After Prettier:</span>
+<span class="keyword">const</span> obj = { a: 1, b: 2 };
+            </div>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <ul>
+                    <li><strong>Linting (ESLint):</strong> Analyzes code for potential errors, bugs, and bad practices (e.g., unused variables, infinite loops).</li>
+                    <li><strong>Formatting (Prettier):</strong> Enforces a consistent style (indentation, quotes, semicolons). It doesn't care about logic.</li>
+                </ul>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What are Husky and lint-staged?</div>
+        <div class="hint">Git Hooks.</div>
+        <div class="code-section">
+            <h4>Basic Implementation (Husky)</h4>
+            <div class="code-block">
+<span class="comment"># .husky/pre-commit</span>
+<span class="comment"># Runs before every commit</span>
+npm run lint
+            </div>
+            <h4>Real World Example (lint-staged)</h4>
+            <div class="code-block">
+<span class="comment">// package.json</span>
+"lint-staged": {
+  "*.{js,ts,tsx}": [
+    "eslint --fix",
+    "prettier --write"
+  ]
+}
+<span class="comment">// Only runs on files you are committing!</span>
+            </div>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Tools to run scripts <em>before</em> you commit (pre-commit hook).
+                <br><strong>Husky:</strong> Manages git hooks.
+                <br><strong>lint-staged:</strong> Runs linters/formatters only on the files that are currently staged for commit (saves time).</p>
+            </div>
+        </details>
+    </div>
+
+    <h2>5. Package Management & Tooling</h2>
+
+    <div class="q-block">
+        <div class="q-text">Q: npm vs. yarn vs. pnpm?</div>
+        <div class="hint">Dependency managers.</div>
+        <div class="code-section">
+            <h4>Basic Implementation (Commands)</h4>
+            <div class="code-block">
+npm install
+yarn install
+pnpm install
+            </div>
+            <h4>Real World Example (pnpm structure)</h4>
+            <div class="code-block">
+node_modules/
+  .pnpm/ (hard links store)
+  react -> .pnpm/react@18...
+<span class="comment">// pnpm uses symlinks to a global store.</span>
+<span class="comment">// Saves disk space if you have 10 React projects.</span>
+            </div>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <ul>
+                    <li><strong>npm:</strong> Default, comes with Node. Slowest historically, but caught up.</li>
+                    <li><strong>yarn:</strong> Introduced lockfiles and speed.</li>
+                    <li><strong>pnpm:</strong> Fastest and most disk-efficient. Uses symlinks to share packages globally (saves GBs of space).</li>
+                </ul>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is `package-lock.json`?</div>
+        <div class="hint">Deterministic installs.</div>
+        <div class="code-section">
+            <h4>Basic Implementation (The File)</h4>
+            <div class="code-block">
+{
+  "name": "my-app",
+  "version": "1.0.0",
+  "dependencies": {
+    "react": {
+      "version": "18.2.0",
+      "resolved": "https://registry.npmjs.org/..."
+    }
+  }
+}
+            </div>
+            <h4>Real World Example (CI Usage)</h4>
+            <div class="code-block">
+<span class="comment"># In CI/CD, use `npm ci` instead of `npm install`</span>
+<span class="comment"># It strictly installs what is in the lockfile.</span>
+npm ci
+            </div>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>It locks the exact versions of every dependency (and sub-dependency) installed. It ensures that every developer and the CI server install exactly the same tree of packages.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: dependencies vs. devDependencies?</div>
+        <div class="hint">Production vs Development.</div>
+        <div class="code-section">
+            <h4>Basic Implementation (Installation)</h4>
+            <div class="code-block">
+npm install react          <span class="comment"># dependencies</span>
+npm install -D typescript  <span class="comment"># devDependencies</span>
+            </div>
+            <h4>Real World Example (package.json)</h4>
+            <div class="code-block">
+"dependencies": {
+  "react": "^18.0.0",
+  "axios": "^1.0.0"
+},
+"devDependencies": {
+  "jest": "^29.0.0",
+  "eslint": "^8.0.0"
+}
+<span class="comment">// Production build will NOT include jest/eslint.</span>
+            </div>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <ul>
+                    <li><strong>dependencies:</strong> Libraries required for the app to run in production (React, Lodash).</li>
+                    <li><strong>devDependencies:</strong> Tools needed only for development/building (TypeScript, ESLint, Jest, Webpack). They are not included in the production build output.</li>
+                </ul>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is a "Monorepo"?</div>
+        <div class="hint">One repo, many apps.</div>
+        <div class="code-section">
+            <h4>Basic Implementation (Structure)</h4>
+            <div class="code-block">
+/my-company-repo
+  /apps
+    /web-app
+    /mobile-app
+  /packages
+    /ui-library (shared)
+    /utils (shared)
+            </div>
+            <h4>Real World Example (Workspaces)</h4>
+            <div class="code-block">
+<span class="comment">// package.json</span>
+{
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ]
+}
+<span class="comment">// Allows importing shared code locally without publishing to npm.</span>
+            </div>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>A single git repository that holds multiple projects (e.g., Web App, Mobile App, UI Library, Backend). Tools: Nx, Turborepo, Lerna. Benefits: Easy code sharing, atomic commits across projects.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Vite vs. Webpack?</div>
+        <div class="hint">Bundlers.</div>
+        <div class="code-section">
+            <h4>Basic Implementation (Webpack)</h4>
+            <div class="code-block">
+<span class="comment">// webpack.config.js</span>
+module.exports = {
+  entry: './src/index.js',
+  module: { rules: [...] }, <span class="comment">// Complex config</span>
+  <span class="comment">// Bundles entire app before starting dev server.</span>
+};
+            </div>
+            <h4>Real World Example (Vite)</h4>
+            <div class="code-block">
+<span class="comment">// vite.config.js</span>
+export default defineConfig({
+  plugins: [react()],
+});
+<span class="comment">// Serves files as native ES Modules. Instant start.</span>
+            </div>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <ul>
+                    <li><strong>Webpack:</strong> The veteran. Powerful, highly configurable, but slow startup and HMR on large projects. Bundles everything.</li>
+                    <li><strong>Vite:</strong> The modern standard. Uses native ES Modules in dev (instant startup) and Rollup for production build. Extremely fast.</li>
+                </ul>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is "Semantic Versioning" (SemVer)?</div>
+        <div class="hint">Major.Minor.Patch</div>
+        <div class="code-section">
+            <h4>Basic Implementation (Format)</h4>
+            <div class="code-block">
+1.0.0  -> Initial Release
+1.0.1  -> Patch (Bug fix)
+1.1.0  -> Minor (New feature)
+2.0.0  -> Major (Breaking change)
+            </div>
+            <h4>Real World Example (Ranges)</h4>
+            <div class="code-block">
+"react": "^18.2.0" 
+<span class="comment">// ^ means "Compatible with 18.2.0"</span>
+<span class="comment">// Will install 18.3.0, but NOT 19.0.0</span>
+            </div>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Format: <code>1.2.3</code>
+                <br><strong>Major (1):</strong> Breaking changes.
+                <br><strong>Minor (2):</strong> New features (backward compatible).
+                <br><strong>Patch (3):</strong> Bug fixes (backward compatible).</p>
+            </div>
+        </details>
+    </div>
+
+    <h2>6. Advanced Workflow & Release Strategies</h2>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is "Blue-Green Deployment"?</div>
+        <div class="hint">Zero downtime.</div>
+        <div class="code-section">
+            <h4>Basic Implementation (Concept)</h4>
+            <div class="code-block">
+Env Blue:  Running V1 (Live)
+Env Green: Deploying V2 (Idle)
+
+<span class="comment">// Switch Router:</span>
+Router -> Points to Green (V2 is now Live)
+Blue becomes Idle.
+            </div>
+            <h4>Real World Example (Rollback)</h4>
+            <div class="code-block">
+<span class="comment">// If V2 has a critical bug:</span>
+Router -> Switch back to Blue (Instant rollback)
+<span class="comment">// No need to re-deploy or revert commits.</span>
+            </div>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>You have two identical environments: Blue (Live) and Green (Idle). You deploy the new version to Green. Once tested, you switch the router to point to Green. Green becomes Live, Blue becomes Idle. Allows instant rollback.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is "Canary Release"?</div>
+        <div class="hint">Testing in production.</div>
+        <div class="code-section">
+            <h4>Basic Implementation (Traffic Split)</h4>
+            <div class="code-block">
+Users 1-95%  -> Server A (Old Version)
+Users 96-100% -> Server B (New Version)
+            </div>
+            <h4>Real World Example (Feature Flag)</h4>
+            <div class="code-block">
+<span class="keyword">if</span> (user.id % <span class="string">20</span> === <span class="string">0</span>) { 
+  <span class="comment">// 5% of users</span>
+  <span class="keyword">return</span> &lt;NewDashboard /&gt;;
+}
+<span class="keyword">return</span> &lt;OldDashboard /&gt;;
+            </div>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Rolling out a new feature to a small subset of users (e.g., 5%) first. If metrics look good (no errors), you gradually increase the percentage to 100%. If bad, you roll back. Reduces risk.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is "Tree Shaking"?</div>
+        <div class="hint">Dead code elimination.</div>
+        <div class="code-section">
+            <h4>Basic Implementation (ES Modules)</h4>
+            <div class="code-block">
+<span class="comment">// Library exports A and B</span>
+export <span class="keyword">const</span> A = () => {};
+export <span class="keyword">const</span> B = () => {};
+
+<span class="comment">// App imports only A</span>
+import { A } from <span class="string">'./library'</span>;
+            </div>
+            <h4>Real World Example (Result)</h4>
+            <div class="code-block">
+<span class="comment">// The bundler (Webpack/Vite) sees B is unused.</span>
+<span class="comment">// Final Bundle:</span>
+<span class="keyword">const</span> A = () => {};
+<span class="comment">// B is completely removed from the file.</span>
+            </div>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>A build optimization step where the bundler (Webpack/Rollup) removes unused code from the final bundle. It relies on ES Modules (import/export) static structure to know what is used.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is "Code Splitting"?</div>
+        <div class="hint">Lazy loading.</div>
+        <div class="code-section">
+            <h4>Basic Implementation (React.lazy)</h4>
+            <div class="code-block">
+<span class="keyword">const</span> HeavyChart = React.<span class="function">lazy</span>(() => import(<span class="string">'./HeavyChart'</span>));
+
+<span class="keyword">function</span> <span class="function">App</span>() {
+  <span class="keyword">return</span> (
+    &lt;Suspense fallback="Loading..."&gt;
+      &lt;HeavyChart /&gt;
+    &lt;/Suspense&gt;
+  );
+}
+            </div>
+            <h4>Real World Example (Network Tab)</h4>
+            <div class="code-block">
+<span class="comment">// Instead of one big bundle.js (5MB):</span>
+- main.js (200KB) <span class="comment">// Loaded initially</span>
+- src_HeavyChart.js (4.8MB) <span class="comment">// Loaded ONLY when component renders</span>
+            </div>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Splitting the code into smaller bundles that can be loaded on demand (e.g., when a user visits a specific route). Reduces the initial load time of the application.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is "Polyfill" vs "Transpilation"?</div>
+        <div class="hint">New features in old browsers.</div>
+        <div class="code-section">
+            <h4>Basic Implementation (Transpilation)</h4>
+            <div class="code-block">
+<span class="comment">// Input (ES6):</span>
+<span class="keyword">const</span> add = (a, b) => a + b;
+
+<span class="comment">// Output (ES5 - Babel):</span>
+<span class="keyword">var</span> add = <span class="keyword">function</span>(a, b) { <span class="keyword">return</span> a + b; };
+            </div>
+            <h4>Real World Example (Polyfill)</h4>
+            <div class="code-block">
+<span class="comment">// Array.prototype.includes doesn't exist in IE11.</span>
+<span class="comment">// Polyfill adds it:</span>
+<span class="keyword">if</span> (!Array.prototype.includes) {
+  Array.prototype.includes = <span class="keyword">function</span>(search) {
+    <span class="comment">// implementation...</span>
+  };
+}
+            </div>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <ul>
+                    <li><strong>Transpilation (Babel):</strong> Converts new syntax (arrow functions, classes) into old syntax that browsers understand.</li>
+                    <li><strong>Polyfill:</strong> Adds missing functionality (Promise, Array.includes) by implementing it in JavaScript for browsers that don't support it natively.</li>
+                </ul>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is "Atomic Design"?</div>
+        <div class="hint">Component hierarchy.</div>
+        <div class="code-section">
+            <h4>Basic Implementation (Structure)</h4>
+            <div class="code-block">
+/components
+  /atoms      (Button, Input, Icon)
+  /molecules  (SearchForm: Input + Button)
+  /organisms  (Header: Logo + Nav + SearchForm)
+  /templates  (DashboardLayout)
+  /pages      (DashboardPage)
+            </div>
+            <h4>Real World Example (Composition)</h4>
+            <div class="code-block">
+&lt;OrganismHeader&gt;
+  &lt;MoleculeSearch&gt;
+    &lt;AtomInput /&gt;
+    &lt;AtomButton /&gt;
+  &lt;/MoleculeSearch&gt;
+&lt;/OrganismHeader&gt;
+            </div>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>A methodology for creating design systems.
+                <br><strong>Atoms:</strong> Basic tags (Button, Input).
+                <br><strong>Molecules:</strong> Groups of atoms (SearchForm).
+                <br><strong>Organisms:</strong> Complex sections (Header).
+                <br><strong>Templates:</strong> Page layout.
+                <br><strong>Pages:</strong> Real content.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is "BEM" methodology?</div>
+        <div class="hint">CSS naming.</div>
+        <div class="code-section">
+            <h4>Basic Implementation (Naming)</h4>
+            <div class="code-block">
+.block {}
+.block__element {}
+.block--modifier {}
+            </div>
+            <h4>Real World Example (Card)</h4>
+            <div class="code-block">
+&lt;div class="card"&gt;
+  &lt;h2 class="card__title card__title--highlighted"&gt;Title&lt;/h2&gt;
+  &lt;button class="card__button"&gt;Click&lt;/button&gt;
+&lt;/div&gt;
+<span class="comment">/* CSS */</span>
+.card__title--highlighted { color: red; }
+            </div>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p><strong>Block Element Modifier</strong>. A naming convention for CSS classes to prevent style leaks and make code readable.
+                <br>Example: <code>.card__title--large</code> (Block: card, Element: title, Modifier: large).</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is "Jamstack"?</div>
+        <div class="hint">Architecture.</div>
+        <div class="code-section">
+            <h4>Basic Implementation (Concept)</h4>
+            <div class="code-block">
+Pre-rendered HTML (Markup)
++ Client-side JS
++ Reusable APIs (Headless CMS, Auth0, Stripe)
+            </div>
+            <h4>Real World Example (Next.js)</h4>
+            <div class="code-block">
+<span class="comment">// Build time: Fetch data from CMS API</span>
+export <span class="keyword">async</span> <span class="keyword">function</span> <span class="function">getStaticProps</span>() {
+  <span class="keyword">const</span> posts = <span class="keyword">await</span> <span class="function">fetchCMS</span>();
+  <span class="keyword">return</span> { props: { posts } };
+}
+<span class="comment">// Result: Static HTML files served via CDN.</span>
+            </div>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p><strong>J</strong>avaScript, <strong>A</strong>PIs, and <strong>M</strong>arkup. An architecture designed to make the web faster, more secure, and easier to scale. Pre-rendering and decoupling the frontend from the backend.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is "Headless CMS"?</div>
+        <div class="hint">Content API.</div>
+        <div class="code-section">
+            <h4>Basic Implementation (Traditional CMS)</h4>
+            <div class="code-block">
+WordPress:
+- Database -> PHP Engine -> HTML Page
+(Frontend and Backend are coupled)
+            </div>
+            <h4>Real World Example (Headless)</h4>
+            <div class="code-block">
+Contentful/Strapi:
+- Database -> API (JSON)
+
+React App:
+- Fetches JSON -> Renders Components
+<span class="comment">// Decoupled. Same content can go to Web, Mobile, Watch.</span>
+            </div>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>A Content Management System that provides content via an API (JSON) rather than rendering HTML pages itself. Allows the frontend (React/Next.js) to be completely decoupled from the content source (Contentful, Strapi).</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is "Isomorphic / Universal" JavaScript?</div>
+        <div class="hint">Shared code.</div>
+        <div class="code-section">
+            <h4>Basic Implementation (Check Environment)</h4>
+            <div class="code-block">
+<span class="keyword">if</span> (<span class="keyword">typeof</span> window === <span class="string">'undefined'</span>) {
+  <span class="comment">// Running on Server (Node.js)</span>
+  <span class="function">dbCall</span>();
+} <span class="keyword">else</span> {
+  <span class="comment">// Running on Client (Browser)</span>
+  <span class="function">alert</span>(<span class="string">'Hello'</span>);
+}
+            </div>
+            <h4>Real World Example (SSR)</h4>
+            <div class="code-block">
+<span class="comment">// React component renders on server to HTML string</span>
+<span class="comment">// AND hydrates in browser to become interactive.</span>
+ReactDOM.<span class="function">hydrateRoot</span>(root, &lt;App /&gt;);
+            </div>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>JavaScript code that can run on both the client (browser) and the server (Node.js). Essential for Server-Side Rendering (SSR) frameworks like Next.js.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is "Hot Module Replacement" (HMR)?</div>
+        <div class="hint">Dev experience.</div>
+        <div class="code-section">
+            <h4>Basic Implementation (Concept)</h4>
+            <div class="code-block">
+1. You edit `Button.js`.
+2. Bundler detects change.
+3. Sends new module to browser via WebSocket.
+4. Browser swaps ONLY `Button` code.
+5. State (e.g., Modal open) is preserved.
+            </div>
+            <h4>Real World Example (Vite/Webpack)</h4>
+            <div class="code-block">
+<span class="keyword">if</span> (import.meta.hot) {
+  import.meta.hot.<span class="function">accept</span>((newModule) => {
+    <span class="comment">// Handle update without reload</span>
+  });
+}
+            </div>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>A feature in bundlers (Webpack/Vite) that updates modules in the browser at runtime without a full page refresh. It retains application state (e.g., form data) while you edit code.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is "Git Cherry-Pick"?</div>
+        <div class="hint">Selective commits.</div>
+        <div class="code-section">
+            <h4>Basic Implementation (Command)</h4>
+            <div class="code-block">
+git cherry-pick &lt;commit-hash&gt;
+            </div>
+            <h4>Real World Example (Scenario)</h4>
+            <div class="code-block">
+<span class="comment">// Feature branch has 10 commits.</span>
+<span class="comment">// You only want ONE specific fix from it to go to Main.</span>
+
+git checkout main
+git cherry-pick a1b2c3d
+<span class="comment">// Only that commit is applied to main.</span>
+            </div>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>A command to take a specific commit from one branch and apply it to another. Useful for applying a hotfix from `main` to a release branch without merging the entire `main` branch.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is "Peer Dependency"?</div>
+        <div class="hint">Plugins.</div>
+        <div class="code-section">
+            <h4>Basic Implementation (package.json)</h4>
+            <div class="code-block">
+"peerDependencies": {
+  "react": ">=17.0.0"
+}
+            </div>
+            <h4>Real World Example (Library Author)</h4>
+            <div class="code-block">
+<span class="comment">// You are building "MyReactButton".</span>
+<span class="comment">// You don't want to bundle React inside it.</span>
+<span class="comment">// You expect the HOST app to provide React.</span>
+<span class="comment">// If host doesn't have React, npm warns them.</span>
+            </div>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>A dependency that your package expects the <em>host</em> application to have installed. For example, a React component library will list `react` as a peer dependency, so it doesn't bundle its own copy of React.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is "Scoped CSS" vs "Global CSS"?</div>
+        <div class="hint">Encapsulation.</div>
+        <div class="code-section">
+            <h4>Basic Implementation (Global)</h4>
+            <div class="code-block">
+<span class="comment">/* styles.css */</span>
+.button { color: red; }
+<span class="comment">// Affects EVERY .button in the app.</span>
+            </div>
+            <h4>Real World Example (Scoped/Modules)</h4>
+            <div class="code-block">
+<span class="comment">// Button.module.css</span>
+.button { color: blue; }
+
+<span class="comment">// Component</span>
+import styles from <span class="string">'./Button.module.css'</span>;
+&lt;button className={styles.button} /&gt;
+<span class="comment">// Compiles to unique class: .Button_button__x9s2</span>
+            </div>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p><strong>Global:</strong> Styles apply to the whole document (standard CSS). Prone to conflicts.
+                <br><strong>Scoped:</strong> Styles apply only to a specific component (CSS Modules, Styled Components). Prevents side effects.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is "Progressive Enhancement" vs "Graceful Degradation"?</div>
+        <div class="hint">Strategy.</div>
+        <div class="code-section">
+            <h4>Basic Implementation (Graceful Degradation)</h4>
+            <div class="code-block">
+<span class="comment">// Build for latest Chrome.</span>
+<span class="comment">// If old browser, show "Please upgrade".</span>
+            </div>
+            <h4>Real World Example (Progressive Enhancement)</h4>
+            <div class="code-block">
+<span class="comment">// 1. Basic HTML Form (Works without JS)</span>
+&lt;form action="/submit" method="POST"&gt;...&lt;/form&gt;
+
+<span class="comment">// 2. Enhance with JS (AJAX)</span>
+form.addEventListener(<span class="string">'submit'</span>, (e) => {
+  e.preventDefault();
+  <span class="comment">// Submit via fetch() for better UX</span>
+});
+            </div>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p><strong>Progressive Enhancement:</strong> Start with basic HTML/CSS that works for everyone, then add JS layers for better experience.
+                <br><strong>Graceful Degradation:</strong> Build for modern browsers first, then provide fallbacks for older ones.</p>
+            </div>
+        </details>
+    </div>
+
+    <h2>7. Collaboration & Quality Assurance</h2>
+
+    <div class="q-block">
+        <div class="q-text">Q: What should you look for in a Code Review?</div>
+        <div class="hint">More than just syntax.</div>
+        <div class="code-section">
+            <h4>Basic Implementation (Checklist)</h4>
+            <div class="code-block">
+- Does it work?
+- Are there tests?
+- Is it readable?
+- Any security risks?
+            </div>
+            <h4>Real World Example (Comment)</h4>
+            <div class="code-block">
+<span class="comment">// "Good logic here, but this loop is O(N^2)."</span>
+<span class="comment">// "Can we extract this inline style to a class?"</span>
+<span class="comment">// "Missing error handling if API fails."</span>
+            </div>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Logic errors, security vulnerabilities, performance issues, readability, maintainability, and test coverage. It's also a chance for knowledge sharing, not just finding bugs.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is the difference between a "Nitpick" and a "Blocker" in code review?</div>
+        <div class="hint">Severity.</div>
+        <div class="code-section">
+            <h4>Basic Implementation (Blocker)</h4>
+            <div class="code-block">
+<span class="comment">// "BLOCKER: This exposes the API key in the client!"</span>
+<span class="comment">// "BLOCKER: This breaks the login page."</span>
+            </div>
+            <h4>Real World Example (Nitpick)</h4>
+            <div class="code-block">
+<span class="comment">// "NIT: Extra whitespace here."</span>
+<span class="comment">// "NIT: Rename variable 'd' to 'data' for clarity."</span>
+<span class="comment">// (Approves PR, but asks for small cleanup)</span>
+            </div>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p><strong>Blocker:</strong> A critical issue (bug, security flaw) that prevents the code from being merged.
+                <br><strong>Nitpick:</strong> A minor suggestion (variable naming, comment style) that improves code but shouldn't stop the merge if time is tight.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is Storybook?</div>
+        <div class="hint">UI Development.</div>
+        <div class="code-section">
+            <h4>Basic Implementation (Story)</h4>
+            <div class="code-block">
+<span class="comment">// Button.stories.js</span>
+export <span class="keyword">const</span> Primary = () => &lt;Button primary&gt;Click&lt;/Button&gt;;
+export <span class="keyword">const</span> Secondary = () => &lt;Button secondary&gt;Click&lt;/Button&gt;;
+            </div>
+            <h4>Real World Example (Controls)</h4>
+            <div class="code-block">
+<span class="comment">// Allows non-devs to play with props in UI</span>
+export <span class="keyword">default</span> {
+  component: Button,
+  argTypes: {
+    color: { control: <span class="string">'color'</span> },
+    label: { control: <span class="string">'text'</span> }
+  }
+};
+            </div>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>A tool for building UI components in isolation. It documents components, allows testing different states (props) visually, and serves as a living style guide for the team.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Why is a README.md important?</div>
+        <div class="hint">First impressions.</div>
+        <div class="code-section">
+            <h4>Basic Implementation (Header)</h4>
+            <div class="code-block">
+# My Project
+This is a todo app built with React.
+            </div>
+            <h4>Real World Example (Sections)</h4>
+            <div class="code-block">
+# Project Name
+
+## Installation
+`npm install`
+
+## Usage
+`npm start`
+
+## Contributing
+Please read CONTRIBUTING.md
+            </div>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>It's the entry point for any developer. It should explain: What the project does, how to install/run it, how to run tests, and how to deploy. Good documentation reduces onboarding time.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is "Design Handoff"?</div>
+        <div class="hint">Figma to Code.</div>
+        <div class="code-section">
+            <h4>Basic Implementation (Specs)</h4>
+            <div class="code-block">
+Designer says: "Button is blue."
+Dev writes: color: blue;
+            </div>
+            <h4>Real World Example (Tokens)</h4>
+            <div class="code-block">
+<span class="comment">// Figma Dev Mode / Zeplin provides:</span>
+width: 343px;
+height: 48px;
+background: #0066CC;
+border-radius: 8px;
+font-family: 'Inter', sans-serif;
+            </div>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>The process where designers provide assets, specs, and prototypes (via tools like Figma or Zeplin) to developers. Good communication here prevents "pixel perfect" issues and logic gaps.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is `.gitignore`?</div>
+        <div class="hint">Files to exclude.</div>
+        <div class="code-section">
+            <h4>Basic Implementation (File)</h4>
+            <div class="code-block">
+node_modules/
+.env
+dist/
+            </div>
+            <h4>Real World Example (Why)</h4>
+            <div class="code-block">
+<span class="comment"># Never commit secrets!</span>
+.env.local
+.DS_Store
+coverage/
+npm-debug.log
+            </div>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>A file that tells Git which files or directories to ignore. Common entries: <code>node_modules/</code>, <code>.env</code> (secrets), build artifacts (<code>dist/</code>), and OS files (<code>.DS_Store</code>).</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is `git stash`?</div>
+        <div class="hint">Save for later.</div>
+        <div class="code-section">
+            <h4>Basic Implementation (Command)</h4>
+            <div class="code-block">
+git stash
+<span class="comment"># Working directory is now clean.</span>
+git stash pop
+<span class="comment"># Changes are back.</span>
+            </div>
+            <h4>Real World Example (Scenario)</h4>
+            <div class="code-block">
+<span class="comment">// You are working on Feature A.</span>
+<span class="comment">// Boss: "Fix critical bug on Main NOW!"</span>
+1. git stash (Save Feature A work)
+2. git checkout main
+3. Fix bug & commit
+4. git checkout feature-a
+5. git stash pop (Resume work)
+            </div>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>A command to temporarily shelve (store) changes you've made to your working copy so you can work on something else, and then come back and re-apply them later.</p>
+            </div>
+        </details>
+    </div>
+
+    <h2>8. Performance & Security Workflow</h2>
+
+    <div class="q-block">
+        <div class="q-text">Q: What are Core Web Vitals?</div>
+        <div class="hint">Google metrics.</div>
+        <div class="code-section">
+            <h4>Basic Implementation (Metrics)</h4>
+            <div class="code-block">
+LCP: Loading Speed (&lt; 2.5s)
+FID: Interactivity (&lt; 100ms)
+CLS: Visual Stability (&lt; 0.1)
+            </div>
+            <h4>Real World Example (Monitoring)</h4>
+            <div class="code-block">
+import { onLCP, onFID, onCLS } from <span class="string">'web-vitals'</span>;
+
+<span class="function">onLCP</span>(console.log);
+<span class="function">onFID</span>(console.log);
+<span class="function">onCLS</span>(console.log);
+<span class="comment">// Send these to Google Analytics</span>
+            </div>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>A set of metrics Google uses to measure user experience:
+                <br><strong>LCP (Largest Contentful Paint):</strong> Loading performance.
+                <br><strong>FID (First Input Delay):</strong> Interactivity.
+                <br><strong>CLS (Cumulative Layout Shift):</strong> Visual stability.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is Lighthouse?</div>
+        <div class="hint">Auditing tool.</div>
+        <div class="code-section">
+            <h4>Basic Implementation (DevTools)</h4>
+            <div class="code-block">
+1. Open Chrome DevTools
+2. Click "Lighthouse" tab
+3. Click "Analyze page load"
+            </div>
+            <h4>Real World Example (CI/CD)</h4>
+            <div class="code-block">
+<span class="comment"># Run Lighthouse in CI pipeline</span>
+npm install -g @lhci/cli
+lhci autorun
+<span class="comment">// Fails build if score &lt; 90</span>
+            </div>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>An open-source tool (built into Chrome DevTools) for auditing web pages. It scores Performance, Accessibility, Best Practices, and SEO, providing actionable suggestions.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is OWASP Top 10?</div>
+        <div class="hint">Security risks.</div>
+        <div class="code-section">
+            <h4>Basic Implementation (List)</h4>
+            <div class="code-block">
+1. Broken Access Control
+2. Cryptographic Failures
+3. Injection
+4. Insecure Design
+...
+            </div>
+            <h4>Real World Example (Mitigation)</h4>
+            <div class="code-block">
+<span class="comment">// Don't store passwords in plain text.</span>
+<span class="comment">// Don't trust user input (SQL Injection).</span>
+<span class="comment">// Use HTTPS everywhere.</span>
+            </div>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>A standard awareness document for developers and web application security. It represents a broad consensus about the most critical security risks to web applications (e.g., Injection, Broken Auth).</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: How do you prevent XSS (Cross-Site Scripting)?</div>
+        <div class="hint">Sanitization.</div>
+        <div class="code-section">
+            <h4>Basic Implementation (React Default)</h4>
+            <div class="code-block">
+<span class="keyword">const</span> input = <span class="string">"&lt;script&gt;alert('hack')&lt;/script&gt;"</span>;
+<span class="keyword">return</span> &lt;div&gt;{input}&lt;/div&gt;;
+<span class="comment">// React renders as text, not HTML. Safe.</span>
+            </div>
+            <h4>Real World Example (Danger Zone)</h4>
+            <div class="code-block">
+<span class="comment">// Only do this if you trust the source!</span>
+<span class="keyword">return</span> &lt;div dangerouslySetInnerHTML={{ __html: input }} /&gt;;
+<span class="comment">// Must sanitize 'input' first (e.g., DOMPurify).</span>
+            </div>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Never trust user input. Escape untrusted data before inserting it into HTML. Modern frameworks like React do this automatically (unless you use <code>dangerouslySetInnerHTML</code>). Use Content Security Policy (CSP) headers.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: How do you prevent CSRF (Cross-Site Request Forgery)?</div>
+        <div class="hint">Fake requests.</div>
+        <div class="code-section">
+            <h4>Basic Implementation (SameSite Cookie)</h4>
+            <div class="code-block">
+Set-Cookie: session_id=xyz; SameSite=Strict;
+<span class="comment">// Browser won't send cookie on cross-site requests.</span>
+            </div>
+            <h4>Real World Example (CSRF Token)</h4>
+            <div class="code-block">
+<span class="comment">// Server sends token in HTML/Cookie.</span>
+<span class="comment">// Client must send it back in Header.</span>
+axios.<span class="function">post</span>(<span class="string">'/api'</span>, data, {
+  headers: { <span class="string">'X-CSRF-Token'</span>: token }
+});
+            </div>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Use Anti-CSRF tokens (hidden fields) that the server validates. Ensure state-changing requests use POST/PUT/DELETE, not GET. Use <code>SameSite</code> cookie attributes.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is Error Tracking (e.g., Sentry)?</div>
+        <div class="hint">Production monitoring.</div>
+        <div class="code-section">
+            <h4>Basic Implementation (Console)</h4>
+            <div class="code-block">
+try {
+  <span class="function">crashApp</span>();
+} catch (e) {
+  console.<span class="function">error</span>(e); <span class="comment">// Only developer sees this.</span>
+}
+            </div>
+            <h4>Real World Example (Sentry)</h4>
+            <div class="code-block">
+Sentry.<span class="function">init</span>({ dsn: <span class="string">"..."</span> });
+
+try {
+  <span class="function">crashApp</span>();
+} catch (e) {
+  Sentry.<span class="function">captureException</span>(e);
+  <span class="comment">// Alerts dev team via Slack/Email immediately.</span>
+}
+            </div>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Tools that capture errors occurring in users' browsers in real-time. They provide stack traces, device info, and user actions leading up to the crash, helping developers fix bugs they can't reproduce locally.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Automated vs. Manual Accessibility Testing?</div>
+        <div class="hint">Tools vs Humans.</div>
+        <div class="code-section">
+            <h4>Basic Implementation (Automated)</h4>
+            <div class="code-block">
+npm install axe-core
+<span class="comment">// Reports: "Button missing aria-label"</span>
+            </div>
+            <h4>Real World Example (Manual)</h4>
+            <div class="code-block">
+1. Unplug mouse.
+2. Try to use the site with ONLY Tab/Enter.
+3. Turn on Screen Reader (VoiceOver).
+4. Close eyes and listen. Does it make sense?
+            </div>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p><strong>Automated (axe-core):</strong> Catches ~30-50% of issues (missing labels, contrast). Fast.
+                <br><strong>Manual:</strong> Required for the rest. navigating with keyboard only, using a screen reader (VoiceOver/NVDA) to ensure the flow makes sense.</p>
+            </div>
+        </details>
+    </div>
+
+</body>
+</html>

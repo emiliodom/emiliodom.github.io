@@ -50,6 +50,13 @@
           "href": "https://edominurl.github.io",
           "icon": "🎓",
           "external": true
+        },
+        {
+          "title": "React Guide",
+          "description": "Educational resources and guides",
+          "href": "/react",
+          "icon": "🎓",
+          "external": true
         }
       ]
     },

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 5: Styling - Next.js Guide</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Module 5: Styling & Fonts</h1>
+        <p>Tailwind CSS, CSS Modules, and Font Optimization</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section id="tailwind">
+            <h2>Tailwind CSS</h2>
+            <p>Next.js has built-in support for Tailwind CSS. It's the recommended way to style applications.</p>
+            
+            <h3>Configuration</h3>
+            <p>The <code>tailwind.config.js</code> file controls your design system.</p>
+            <pre><code class="language-javascript">/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: [
+    './app/**/*.{js,ts,jsx,tsx,mdx}', // Note the 'app' directory
+    './components/**/*.{js,ts,jsx,tsx,mdx}',
+  ],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+}</code></pre>
+        </section>
+
+        <section id="utility-helpers">
+            <h2>Utility Helpers</h2>
+            <p>When conditionally applying classes, use <code>clsx</code> and <code>tailwind-merge</code>.</p>
+            <pre><code class="language-bash">npm install clsx tailwind-merge</code></pre>
+            
+            <pre><code class="language-javascript">// lib/utils.js
+import { clsx } from "clsx"
+import { twMerge } from "tailwind-merge"
+
+export function cn(...inputs) {
+  return twMerge(clsx(inputs))
+}
+
+// Usage
+<div className={cn("bg-red-500", isActive && "bg-green-500")}>
+  {/* Result: "bg-green-500" (red is correctly overridden) */}
+</div></code></pre>
+        </section>
+
+        <section id="fonts">
+            <h2>Next.js Fonts</h2>
+            <p><code>next/font</code> automatically optimizes your fonts (including custom fonts) and removes external network requests for improved privacy and performance.</p>
+            
+            <h3>Google Fonts</h3>
+            <pre><code class="language-javascript">// app/layout.js
+import { Inter } from 'next/font/google'
+import './globals.css'
+
+const inter = Inter({ subsets: ['latin'] })
+
+export default function RootLayout({ children }) {
+  return (
+    <html lang="en">
+      <body className={inter.className}>{children}</body>
+    </html>
+  )
+}</code></pre>
+
+            <h3>Local Fonts</h3>
+            <pre><code class="language-javascript">import localFont from 'next/font/local'
+
+const myFont = localFont({
+  src: './my-font.woff2',
+  display: 'swap',
+})</code></pre>
+        </section>
+
+        <section id="css-modules">
+            <h2>CSS Modules</h2>
+            <p>For component-level CSS without Tailwind, use CSS Modules (<code>.module.css</code>).</p>
+            <pre><code class="language-css">/* styles.module.css */
+.dashboard {
+  padding: 20px;
+}</code></pre>
+            <pre><code class="language-javascript">import styles from './styles.module.css'
+
+export default function Dashboard() {
+  return <div className={styles.dashboard}>...</div>
+}</code></pre>
+        </section>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+
+    <script>
+        initLayout();
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

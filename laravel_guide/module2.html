@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 2: Laravel 12 Core - Laravel Guide</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Module 2: Laravel 12 Core</h1>
+        <p>Architecture, Routing, and Dependency Injection</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section id="architecture">
+            <h2>Request Lifecycle</h2>
+            <p>Understanding how Laravel handles a request is crucial for senior developers.</p>
+            <ol>
+                <li><strong>Entry Point:</strong> <code>public/index.php</code> loads the Composer autoloader and retrieves the application instance.</li>
+                <li><strong>Kernel:</strong> The request is sent to the HTTP Kernel (or Console Kernel). This is where middleware runs.</li>
+                <li><strong>Service Providers:</strong> The core of the bootstrapping process. All service providers are registered (<code>register</code> method) and then booted (<code>boot</code> method).</li>
+                <li><strong>Routing:</strong> The router dispatches the request to a route or controller.</li>
+                <li><strong>Response:</strong> The controller returns a response, which flows back through middleware to the client.</li>
+            </ol>
+        </section>
+
+        <section id="routing">
+            <h2>Advanced Routing</h2>
+            <p>Laravel 11+ simplified the directory structure, moving routes to <code>routes/web.php</code> and <code>routes/console.php</code> by default. API routes are opt-in.</p>
+            
+            <h3>Route Groups & Middleware</h3>
+            <pre><code class="language-php">use App\Http\Controllers\OrderController;
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::prefix('orders')->name('orders.')->group(function () {
+        Route::get('/', [OrderController::class, 'index'])->name('index');
+        Route::post('/', [OrderController::class, 'store'])->name('store');
+        Route::get('/{order}', [OrderController::class, 'show'])->name('show');
+    });
+});</code></pre>
+
+            <h3>Route Model Binding</h3>
+            <p>Automatically inject model instances into your routes.</p>
+            <pre><code class="language-php">// Implicit Binding
+Route::get('/users/{user}', function (User $user) {
+    return $user->email;
+});
+
+// Custom Key Binding
+Route::get('/posts/{post:slug}', function (Post $post) {
+    return $post;
+});</code></pre>
+        </section>
+
+        <section id="di">
+            <h2>Dependency Injection & Service Container</h2>
+            <p>The Service Container is a powerful tool for managing class dependencies.</p>
+            
+            <h3>Automatic Injection</h3>
+            <p>Type-hint dependencies in controllers, jobs, or event listeners.</p>
+            <pre><code class="language-php">class UserController extends Controller
+{
+    public function __construct(
+        protected UserRepository $users,
+        protected PaymentService $payments
+    ) {}
+}</code></pre>
+
+            <h3>Binding Interfaces to Implementations</h3>
+            <p>Use Service Providers to bind interfaces, allowing for easy swapping of implementations (Strategy Pattern).</p>
+            <pre><code class="language-php">// AppServiceProvider.php
+public function register(): void
+{
+    $this->app->bind(PaymentGatewayInterface::class, StripePaymentGateway::class);
+    
+    // Singleton (shared instance)
+    $this->app->singleton(LoggerService::class, function ($app) {
+        return new LoggerService($app['config']['logging']);
+    });
+}</code></pre>
+        </section>
+
+        <section id="middleware">
+            <h2>Middleware</h2>
+            <p>Middleware provide a convenient mechanism for inspecting and filtering HTTP requests entering your application.</p>
+            <pre><code class="language-php">// bootstrap/app.php (Laravel 11+)
+->withMiddleware(function (Middleware $middleware) {
+    $middleware->append(EnsureTokenIsValid::class);
+    
+    $middleware->alias([
+        'admin' => \App\Http\Middleware\EnsureUserIsAdmin::class,
+    ]);
+})</code></pre>
+        </section>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+
+    <script>
+        initLayout();
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

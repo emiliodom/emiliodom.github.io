@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rendering & Streaming Interview Questions - Next.js Guide</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Rendering & Streaming</h1>
+        <p>Interview Questions: Suspense, Streaming, and Partial Prerendering</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section class="qna">
+            <h3>Q1: What is Streaming in Next.js and how does it improve UX?</h3>
+            <div class="answer">
+                <p><strong>Concept:</strong> Streaming allows you to break down the page's HTML into smaller chunks and progressively send them from the server to the client.</p>
+                <p><strong>Benefit:</strong> Instead of waiting for the entire page's data to be fetched before showing anything (blocking), the user sees the initial UI (layout, navbar) immediately. Slow data-fetching components show a loading state (Suspense fallback) and then "pop in" when ready.</p>
+                <p><strong>Mechanism:</strong> It uses HTTP Transfer-Encoding: chunked.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q2: How do you implement Streaming using Suspense?</h3>
+            <div class="answer">
+                <p>Wrap an asynchronous component that performs data fetching with a React <code>&lt;Suspense&gt;</code> boundary.</p>
+                <pre><code class="language-javascript">import { Suspense } from 'react'
+import PostFeed from './PostFeed'
+import Loading from './loading'
+
+export default function Page() {
+  return (
+    <section>
+      <h1>My Feed</h1>
+      <Suspense fallback={<Loading />}>
+        <PostFeed />
+      </Suspense>
+    </section>
+  )
+}</code></pre>
+                <p>Next.js also provides a special file <code>loading.js</code> which automatically wraps the page content in a Suspense boundary.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q3: What is Partial Prerendering (PPR)?</h3>
+            <div class="answer">
+                <p><strong>Concept:</strong> PPR is an experimental feature that combines static and dynamic rendering in the same route.</p>
+                <p><strong>How it works:</strong> The shell of the application is prerendered at build time (static), leaving "holes" for dynamic content. When a request comes in, the static shell is sent immediately, and the dynamic parts are streamed in parallel.</p>
+                <p><strong>Difference from standard Streaming:</strong> Standard streaming usually happens at request time for the whole page. PPR pre-computes the static parts during the build.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+
+    <script>
+        initLayout();
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

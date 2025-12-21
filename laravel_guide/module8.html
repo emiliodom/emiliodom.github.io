@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 8: Testing & CI/CD - Laravel Guide</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Module 8: Testing & CI/CD</h1>
+        <p>Pest PHP, TDD, and Deployment Pipelines</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section id="pest">
+            <h2>Pest PHP</h2>
+            <p>Pest is a testing framework with a focus on simplicity and elegance. It's the default in Laravel 11.</p>
+            
+            <h3>Unit Tests</h3>
+            <pre><code class="language-php">test('sum', function () {
+    $result = 1 + 1;
+    expect($result)->toBe(2);
+});</code></pre>
+
+            <h3>Feature Tests</h3>
+            <pre><code class="language-php">test('user can view dashboard', function () {
+    $user = User::factory()->create();
+ 
+    $response = this->actingAs($user)
+                     ->get('/dashboard');
+ 
+    $response->assertStatus(200);
+});</code></pre>
+        </section>
+
+        <section id="factories">
+            <h2>Model Factories</h2>
+            <p>Generate fake data for testing.</p>
+            <pre><code class="language-php">// UserFactory.php
+public function definition(): array
+{
+    return [
+        'name' => fake()->name(),
+        'email' => fake()->unique()->safeEmail(),
+        'password' => static::$password ??= Hash::make('password'),
+    ];
+}
+
+// Usage in Test
+$users = User::factory()->count(10)->create();</code></pre>
+        </section>
+
+        <section id="cicd">
+            <h2>CI/CD Pipeline (GitHub Actions)</h2>
+            <p>Automate your testing and deployment.</p>
+            <pre><code class="language-yaml"># .github/workflows/laravel.yml
+name: Laravel
+
+on: [push, pull_request]
+
+jobs:
+  laravel-tests:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.2'
+    - name: Install Dependencies
+      run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+    - name: Execute tests (Pest)
+      run: vendor/bin/pest</code></pre>
+        </section>
+
+        <section id="deployment">
+            <h2>Deployment (Laravel Forge)</h2>
+            <p>Forge is the easiest way to deploy Laravel applications to DigitalOcean, Linode, AWS, etc.</p>
+            <ul>
+                <li><strong>Push to Deploy:</strong> Automatically deploys when you push to your Git branch.</li>
+                <li><strong>Queue Workers:</strong> Easily configure Supervisor.</li>
+                <li><strong>SSL:</strong> Free Let's Encrypt certificates.</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+
+    <script>
+        initLayout();
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

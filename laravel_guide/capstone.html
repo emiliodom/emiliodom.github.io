@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Capstone: Laravel CRM System</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Capstone Project</h1>
+        <p>Build an Enterprise CRM with the TALL Stack.</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section class="concept-section">
+            <h2>The Brief</h2>
+            <p>You are building a <strong>Customer Relationship Management (CRM)</strong> system. The goal is to demonstrate mastery of Laravel's backend capabilities and Livewire's frontend interactivity.</p>
+        </section>
+
+        <div class="jira-ticket">
+            <div class="jira-header">
+                <span class="jira-id">CAP-301</span>
+                <span class="jira-status">To Do</span>
+            </div>
+            <div class="jira-body">
+                <h3 class="jira-title">Data Model & Filament Admin</h3>
+                <div class="jira-section">
+                    <span class="jira-label">Requirements</span>
+                    <ul class="req-list">
+                        <li><strong>Models:</strong> Companies, Contacts, Deals, and Activities.</li>
+                        <li><strong>Relationships:</strong> Polymorphic `notes` that can attach to Companies or Deals.</li>
+                        <li><strong>Admin:</strong> Use <strong>Filament</strong> to generate the entire back-office CRUD interface.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="jira-ticket">
+            <div class="jira-header">
+                <span class="jira-id">CAP-302</span>
+                <span class="jira-status">To Do</span>
+            </div>
+            <div class="jira-body">
+                <h3 class="jira-title">Livewire Dashboard</h3>
+                <div class="jira-section">
+                    <span class="jira-label">Requirements</span>
+                    <ul class="req-list">
+                        <li><strong>Dashboard:</strong> A custom Livewire component showing sales metrics (charts).</li>
+                        <li><strong>Real-time:</strong> Use `wire:poll` or websockets (Reverb) to update the "Recent Activity" feed.</li>
+                        <li><strong>Search:</strong> A global search bar (Alpine + Livewire) to find contacts instantly.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="jira-ticket">
+            <div class="jira-header">
+                <span class="jira-id">CAP-303</span>
+                <span class="jira-status">To Do</span>
+            </div>
+            <div class="jira-body">
+                <h3 class="jira-title">Background Jobs & Reports</h3>
+                <div class="jira-section">
+                    <span class="jira-label">Requirements</span>
+                    <ul class="req-list">
+                        <li><strong>Export:</strong> A button to "Export CSV" that dispatches a Queued Job.</li>
+                        <li><strong>Notification:</strong> Send an email notification when the export is ready.</li>
+                        <li><strong>Testing:</strong> Write Feature tests for the Deal creation flow using Pest.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+    <script>
+        initLayout();
+    </script>
+</body>
+</html>

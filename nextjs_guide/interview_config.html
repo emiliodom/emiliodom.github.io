@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Next.js Config & Ecosystem Interview Questions - Next.js Guide</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Config & Ecosystem</h1>
+        <p>Interview Questions: next.config.js, Turbopack, and React 19</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section class="qna">
+            <h3>Q1: What is Turbopack?</h3>
+            <div class="answer">
+                <p><strong>Concept:</strong> An incremental bundler written in Rust, designed to replace Webpack.</p>
+                <p><strong>Benefits:</strong> It is significantly faster than Webpack, providing near-instant server startup and HMR (Hot Module Replacement), regardless of the project size.</p>
+                <p><strong>Usage:</strong> <code>next dev --turbo</code></p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q2: What are some common configurations in <code>next.config.js</code>?</h3>
+            <div class="answer">
+                <ul>
+                    <li><strong><code>images.remotePatterns</code>:</strong> Whitelist external domains for <code>next/image</code>.</li>
+                    <li><strong><code>redirects</code> / <code>rewrites</code>:</strong> Handle URL mapping at the server level.</li>
+                    <li><strong><code>logging</code>:</strong> Configure fetch logging for debugging caching.</li>
+                    <li><strong><code>experimental</code>:</strong> Enable features like <code>ppr</code> (Partial Prerendering) or <code>serverActions</code> (in older versions).</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q3: How does Next.js relate to React 19?</h3>
+            <div class="answer">
+                <p>Next.js (App Router) was the first framework to adopt the React Server Components architecture, which is a core part of React 19.</p>
+                <p>Many "Next.js features" like Server Actions, <code>useFormStatus</code>, and <code>useOptimistic</code> are actually React features that Next.js integrates and provides the server infrastructure for.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+
+    <script>
+        initLayout();
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

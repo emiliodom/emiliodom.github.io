@@ -57,6 +57,20 @@
           "href": "/react_guide",
           "icon": "🎓",
           "external": true
+        },
+        {
+          "title": "Next.js Guide",
+          "description": "App Router & Server Actions",
+          "href": "/nextjs_guide",
+          "icon": "▲",
+          "external": true
+        },
+        {
+          "title": "Laravel Guide",
+          "description": "TALL Stack & Filament",
+          "href": "/laravel_guide",
+          "icon": "🐘",
+          "external": true
         }
       ]
     },

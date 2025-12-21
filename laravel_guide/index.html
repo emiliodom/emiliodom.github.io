@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laravel Senior Developer Roadmap</title>
+    <link rel="icon" href="/assets/img/avatar-fallback.svg">
+    <link rel="stylesheet" href="/laravel_guide/styles.css">
+</head>
+<body>
+    <header>
+        <h1>Laravel 12 + TALL Stack: Senior Developer Path</h1>
+        <p>PHP 8.2+, Livewire 3, Filament, and Enterprise Architecture.</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <h2>Introduction</h2>
+        <p>This curriculum is tailored to the requirements of a <strong>Senior Laravel Developer</strong> role. It assumes you know the basics of web development and focuses on the specific stack: <strong>T</strong>ailwind, <strong>A</strong>lpine.js, <strong>L</strong>aravel, <strong>L</strong>ivewire (TALL), plus <strong>Filament</strong> for admin panels.</p>
+
+        <div class="bug-hunt" style="background: #fff3cd; border-color: #ffeeba; color: #856404;">
+            <h3>⚠️ Job Profile Requirements</h3>
+            <ul>
+                <li><strong>Experience:</strong> 5+ Years. We will simulate "Senior" tasks, not just "Hello World".</li>
+                <li><strong>Stack:</strong> PHP 8.2+, Laravel 12, Livewire 3, Alpine.js, TailwindCSS.</li>
+                <li><strong>Infrastructure:</strong> MySQL (Optimization), Redis (Queues/Cache), Nginx, Linux.</li>
+                <li><strong>Soft Skills:</strong> Code Reviews, Documentation, Agile/Lean Workflow.</li>
+            </ul>
+        </div>
+
+        <div class="task" style="background: #d4edda; border-color: #c3e6cb; color: #155724;">
+            <h3>🎯 Expected Outcome</h3>
+            <p>By the end of this guide, you will be able to:</p>
+            <ul>
+                <li>Architect scalable applications using <strong>Laravel 12</strong> and <strong>PHP 8.2</strong> features.</li>
+                <li>Build dynamic, SPA-like interfaces with <strong>Livewire 3</strong> without writing complex React/Vue code.</li>
+                <li>Create robust admin dashboards in minutes using <strong>Filament</strong>.</li>
+                <li>Optimize database performance using <strong>MySQL indexes</strong> and <strong>Redis caching</strong>.</li>
+                <li>Manage background jobs and queues for high-performance processing.</li>
+                <li>Implement CI/CD pipelines with <strong>GitLab CI</strong>.</li>
+                <li>Write clean, testable code following <strong>SOLID principles</strong>.</li>
+            </ul>
+        </div>
+
+        <div class="jira-ticket">
+            <div class="jira-header">
+                <span class="jira-id">HR-001</span>
+                <span class="jira-status">Role Definition</span>
+            </div>
+            <div class="jira-body">
+                <h3 class="jira-title">The "Senior" Difference</h3>
+                
+                <div class="jira-section">
+                    <span class="jira-label">Junior vs Senior</span>
+                    <p>A Junior asks: "How do I make this work?"<br>
+                    A Senior asks: "How do I make this maintainable, scalable, and secure?"</p>
+                </div>
+
+                <div class="jira-section">
+                    <span class="jira-label">Key Responsibilities</span>
+                    <ul class="req-list">
+                        <li><strong>Legacy Support:</strong> You will likely encounter older code. You must know how to refactor safely.</li>
+                        <li><strong>Performance:</strong> N+1 queries are unacceptable. You must know how to use Eager Loading.</li>
+                        <li><strong>Architecture:</strong> Service Classes, Repositories, and DTOs (Data Transfer Objects) over fat controllers.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <h3>How to use this guide</h3>
+        <ol>
+            <li><strong>Environment:</strong> We will use <strong>Laravel Sail</strong> (Docker) to match the requirement for Linux/Nginx knowledge.</li>
+            <li><strong>Strict Typing:</strong> We will enforce PHP strict types <code>declare(strict_types=1);</code>.</li>
+            <li><strong>Documentation:</strong> You will be asked to write PHPDoc and README sections.</li>
+        </ol>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+    <script src="/laravel_guide/layout.js"></script>
+</body>
+</html>

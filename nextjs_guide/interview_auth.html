@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authentication Interview Questions - Next.js Guide</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Authentication & Security</h1>
+        <p>Interview Questions: Auth.js, Middleware, and Session Management</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section class="qna">
+            <h3>Q1: How do you implement Authentication in the App Router?</h3>
+            <div class="answer">
+                <p><strong>Auth.js (NextAuth v5):</strong> The standard solution. It supports OAuth, email magic links, and credentials.</p>
+                <p><strong>Implementation:</strong></p>
+                <ul>
+                    <li><strong>Config:</strong> Create an <code>auth.js</code> file exporting the config.</li>
+                    <li><strong>Middleware:</strong> Use <code>middleware.js</code> to protect routes globally.</li>
+                    <li><strong>Server Side:</strong> Use <code>auth()</code> helper to get the session in RSCs.</li>
+                    <li><strong>Client Side:</strong> Use <code>SessionProvider</code> and <code>useSession</code> hook.</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q2: How does Middleware protect routes?</h3>
+            <div class="answer">
+                <p>Middleware runs before the request hits the page. You can check for a session token and redirect if missing.</p>
+                <pre><code class="language-javascript">import { auth } from "@/auth"
+
+export default auth((req) => {
+  const isLoggedIn = !!req.auth
+  const isOnDashboard = req.nextUrl.pathname.startsWith('/dashboard')
+  
+  if (isOnDashboard && !isLoggedIn) {
+    return Response.redirect(new URL('/login', req.nextUrl))
+  }
+})
+
+export const config = {
+  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
+}</code></pre>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q3: Where should you store sensitive data like API keys?</h3>
+            <div class="answer">
+                <p><strong>Environment Variables:</strong> Store them in <code>.env.local</code>.</p>
+                <p><strong>Server-only:</strong> Variables without the <code>NEXT_PUBLIC_</code> prefix are only available on the server. This prevents accidental leakage to the client bundle.</p>
+                <p><strong>Best Practice:</strong> Use the <code>server-only</code> package to ensure a module that handles sensitive data (like database connection) is never imported into a Client Component.</p>
+                <pre><code class="language-javascript">import 'server-only'
+// ... database logic ...</code></pre>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+
+    <script>
+        initLayout();
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

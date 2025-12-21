@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 6: Filament Admin - Laravel Guide</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Module 6: Filament Admin</h1>
+        <p>Rapid Admin Panel Development with TALL Stack</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section id="intro">
+            <h2>What is Filament?</h2>
+            <p>Filament is a collection of full-stack components for building admin panels, forms, and tables. It is built on top of the TALL stack (Tailwind, Alpine, Laravel, Livewire).</p>
+            <pre><code class="language-bash">composer require filament/filament:"^3.2" -W
+php artisan filament:install --panels</code></pre>
+        </section>
+
+        <section id="resources">
+            <h2>Resources</h2>
+            <p>Resources are static classes that describe how to interact with an Eloquent model.</p>
+            <pre><code class="language-bash">php artisan make:filament-resource Customer</code></pre>
+            <p>This creates a <code>CustomerResource</code> class with methods for <code>form()</code> and <code>table()</code>.</p>
+        </section>
+
+        <section id="forms">
+            <h2>Building Forms</h2>
+            <p>Define your form schema using a fluent PHP API.</p>
+            <pre><code class="language-php">public static function form(Form $form): Form
+{
+    return $form
+        ->schema([
+            TextInput::make('name')
+                ->required()
+                ->maxLength(255),
+            Select::make('status')
+                ->options([
+                    'draft' => 'Draft',
+                    'published' => 'Published',
+                ]),
+            RichEditor::make('content'),
+        ]);
+}</code></pre>
+        </section>
+
+        <section id="tables">
+            <h2>Building Tables</h2>
+            <p>Define your data table with columns, filters, and actions.</p>
+            <pre><code class="language-php">public static function table(Table $table): Table
+{
+    return $table
+        ->columns([
+            TextColumn::make('name')->searchable(),
+            TextColumn::make('email'),
+            BadgeColumn::make('status')
+                ->colors([
+                    'danger' => 'draft',
+                    'success' => 'published',
+                ]),
+        ])
+        ->filters([
+            SelectFilter::make('status')
+                ->options([
+                    'draft' => 'Draft',
+                    'published' => 'Published',
+                ]),
+        ])
+        ->actions([
+            Tables\Actions\EditAction::make(),
+        ]);
+}</code></pre>
+        </section>
+
+        <section id="widgets">
+            <h2>Widgets & Dashboards</h2>
+            <p>Create stats widgets for your dashboard.</p>
+            <pre><code class="language-bash">php artisan make:filament-widget StatsOverview --stats-overview</code></pre>
+            <pre><code class="language-php">protected function getStats(): array
+{
+    return [
+        Stat::make('Unique views', '192.1k')
+            ->description('32k increase')
+            ->descriptionIcon('heroicon-m-arrow-trending-up')
+            ->color('success'),
+        Stat::make('Bounce rate', '21%'),
+    ];
+}</code></pre>
+        </section>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+
+    <script>
+        initLayout();
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

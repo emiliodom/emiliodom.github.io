@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 8: Deployment - Next.js Guide</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Module 8: Deployment</h1>
+        <p>Production Optimization and Vercel Deployment</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section id="checklist">
+            <h2>Production Checklist</h2>
+            <ul>
+                <li><strong>Environment Variables:</strong> Ensure all secrets are set in your hosting provider.</li>
+                <li><strong>Build Check:</strong> Run <code>npm run build</code> locally to catch type errors and linting issues.</li>
+                <li><strong>Image Optimization:</strong> Ensure <code>next/image</code> domains are whitelisted in <code>next.config.js</code>.</li>
+            </ul>
+        </section>
+
+        <section id="vercel">
+            <h2>Deploying to Vercel</h2>
+            <p>Vercel is the creators of Next.js and offers the best integration.</p>
+            <ol>
+                <li>Push code to GitHub/GitLab/Bitbucket.</li>
+                <li>Import project in Vercel dashboard.</li>
+                <li>Configure Environment Variables.</li>
+                <li>Deploy.</li>
+            </ol>
+            <p>Vercel automatically detects Next.js and configures the build settings.</p>
+        </section>
+
+        <section id="self-hosting">
+            <h2>Self-Hosting (Docker)</h2>
+            <p>You can host Next.js anywhere using Node.js or Docker.</p>
+            
+            <h3>Dockerfile</h3>
+            <pre><code class="language-dockerfile">FROM node:18-alpine AS base
+
+# Install dependencies only when needed
+FROM base AS deps
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci
+
+# Rebuild the source code only when needed
+FROM base AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+RUN npm run build
+
+# Production image, copy all the files and run next
+FROM base AS runner
+WORKDIR /app
+ENV NODE_ENV production
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
+
+EXPOSE 3000
+CMD ["node", "server.js"]</code></pre>
+            <p><strong>Note:</strong> You must enable <code>output: 'standalone'</code> in <code>next.config.js</code> for this Dockerfile to work efficiently.</p>
+        </section>
+
+        <section id="runtimes">
+            <h2>Runtimes: Edge vs Node.js</h2>
+            <p>Next.js supports two runtimes.</p>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Feature</th>
+                            <th>Node.js (Default)</th>
+                            <th>Edge</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Startup</td>
+                            <td>Slower (Cold starts)</td>
+                            <td>Instant</td>
+                        </tr>
+                        <tr>
+                            <td>APIs</td>
+                            <td>Full Node.js API</td>
+                            <td>Limited (Web Standards)</td>
+                        </tr>
+                        <tr>
+                            <td>Region</td>
+                            <td>Single Region (usually)</td>
+                            <td>Global</td>
+                        </tr>
+                        <tr>
+                            <td>Use Case</td>
+                            <td>Complex logic, heavy libs</td>
+                            <td>Middleware, simple APIs</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <pre><code class="language-javascript">// Switch runtime for a specific page/route
+export const runtime = 'edge' // 'nodejs' (default) | 'edge'</code></pre>
+        </section>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+
+    <script>
+        initLayout();
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

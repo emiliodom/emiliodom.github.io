@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Next.js Interview Homework - Next.js Guide</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Take-Home Assignment</h1>
+        <p>Practice Task: Build a Full-Stack Dashboard</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section class="homework">
+            <h2>Task: E-Commerce Admin Dashboard</h2>
+            <p><strong>Objective:</strong> Build a small dashboard to manage products using Next.js App Router, Server Actions, and a database (Postgres/Vercel KV/SQLite).</p>
+            
+            <h3>Requirements:</h3>
+            <ul>
+                <li><strong>Public Page:</strong> A product listing page (Grid view) with a search bar. Search must use URL search params.</li>
+                <li><strong>Admin Area:</strong> Protected route (<code>/admin</code>) requiring a simple password (mock auth).</li>
+                <li><strong>CRUD:</strong> Ability to Add, Edit, and Delete products using Server Actions.</li>
+                <li><strong>Validation:</strong> Validate form inputs using Zod.</li>
+                <li><strong>Optimistic UI:</strong> The UI should update immediately when adding/deleting a product, before the server responds.</li>
+                <li><strong>Loading States:</strong> Use <code>loading.js</code> and Suspense for data fetching.</li>
+            </ul>
+
+            <h3>Bonus Points:</h3>
+            <ul>
+                <li>Implement an Intercepting Route to show product details in a modal.</li>
+                <li>Add image upload support (or mock it).</li>
+                <li>Use <code>useFormState</code> to handle server-side validation errors.</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+
+    <script>
+        initLayout();
+    </script>
+</body>
+</html>

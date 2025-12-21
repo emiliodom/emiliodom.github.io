@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laravel Interview Homework - Laravel Guide</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Take-Home Assignment</h1>
+        <p>Practice Task: Build a Task Management API</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section class="homework">
+            <h2>Task: RESTful API for Project Management</h2>
+            <p><strong>Objective:</strong> Build a JSON API using Laravel to manage Projects and Tasks.</p>
+            
+            <h3>Requirements:</h3>
+            <ul>
+                <li><strong>Authentication:</strong> Use Sanctum to protect the API. Users can register and login to get a token.</li>
+                <li><strong>Relationships:</strong> A User has many Projects. A Project has many Tasks.</li>
+                <li><strong>CRUD:</strong> Endpoints to Create, Read, Update, and Delete Projects and Tasks.</li>
+                <li><strong>Authorization:</strong> Users can only view/edit their own projects (Policy).</li>
+                <li><strong>Validation:</strong> Use Form Requests for validation.</li>
+                <li><strong>Resources:</strong> Use API Resources to format the response.</li>
+            </ul>
+
+            <h3>Bonus Points:</h3>
+            <ul>
+                <li>Implement a background job to send an email when a task is completed.</li>
+                <li>Add filtering to the task list (e.g., <code>?status=completed</code>).</li>
+                <li>Write Feature tests for the endpoints.</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+
+    <script>
+        initLayout();
+    </script>
+</body>
+</html>

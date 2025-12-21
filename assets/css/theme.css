@@ -177,6 +177,64 @@ body {
     animation: fadeIn 0.8s ease-in;
 }
 
+/* Global Navigation */
+.site-nav {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    padding: 10px 20px;
+    background: var(--card-bg);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    margin-bottom: 20px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.site-nav a {
+    text-decoration: none;
+    color: var(--text-color);
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: 20px;
+    transition: all 0.2s ease;
+    font-size: 0.95rem;
+}
+
+.site-nav a:hover {
+    background: rgba(0,0,0,0.05);
+    color: var(--link-color);
+}
+
+.site-nav a.active {
+    background: var(--link-color);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+[data-theme="dark"] .site-nav {
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+[data-theme="dark"] .site-nav a:hover {
+    background: rgba(255,255,255,0.1);
+}
+
+@media (max-width: 600px) {
+    .site-nav {
+        overflow-x: auto;
+        justify-content: flex-start;
+        padding: 10px;
+        -webkit-overflow-scrolling: touch;
+    }
+    .site-nav a {
+        white-space: nowrap;
+        font-size: 0.9rem;
+        padding: 6px 12px;
+    }
+}
+
 /* Make header and main use full width on tablets and mobile */
 @media (max-width: 1024px) {
     .site-header {

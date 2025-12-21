@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 1: App Router & RSC</title>
+    <link rel="icon" href="/assets/img/avatar-fallback.svg">
+    <link rel="stylesheet" href="/nextjs_guide/styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+</head>
+<body>
+    <header>
+        <h1>Module 1: App Router & RSC</h1>
+        <p>The Foundation: Server Components vs. Client Components.</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <h2>1. The Mental Model</h2>
+        <p>In the "Old" React (and Pages Router), everything was bundled and sent to the browser. The browser did the heavy lifting (Hydration).</p>
+        <p>In the <strong>App Router</strong>, components render on the server by default. They send <strong>HTML</strong> to the browser, not JavaScript logic (unless needed).</p>
+
+        <h3>1.1 React Server Components (RSC)</h3>
+        <ul>
+            <li><strong>Can:</strong> Access database directly, read files, keep secrets (API keys).</li>
+            <li><strong>Cannot:</strong> Use hooks (`useState`, `useEffect`), add event listeners (`onClick`).</li>
+            <li><strong>Output:</strong> Static HTML + a special JSON payload for React to reconcile.</li>
+        </ul>
+
+        <h3>1.2 Client Components</h3>
+        <p>Marked with <code>"use client"</code> at the top of the file.</p>
+        <ul>
+            <li><strong>Can:</strong> Use state, effects, and interactivity.</li>
+            <li><strong>Cost:</strong> Adds to the JavaScript bundle size. Use sparingly (at the leaves of the tree).</li>
+        </ul>
+
+        <h2>2. The Setup Challenge</h2>
+        <div class="task">
+            <h3>Task: Initialize Next.js</h3>
+            <ol>
+                <li>Run <code>npx create-next-app@latest my-next-app</code>.</li>
+                <li>Select: TypeScript, ESLint, Tailwind CSS, <strong>App Router (Yes)</strong>.</li>
+                <li>Clean up `page.tsx` and `globals.css`.</li>
+            </ol>
+        </div>
+
+        <h2>3. The Build Challenge: "Hybrid Page"</h2>
+        <div class="task">
+            <h3>Requirements</h3>
+            <p>Create a page that demonstrates the split between Server and Client.</p>
+            <ul>
+                <li><strong>Server Part (`page.tsx`):</strong>
+                    <ul>
+                        <li>Fetch data from a public API (e.g., `https://jsonplaceholder.typicode.com/posts`).</li>
+                        <li>Do this directly in the component: <code>const data = await fetch(...)</code>. No `useEffect`!</li>
+                        <li>Render the list of post titles.</li>
+                    </ul>
+                </li>
+                <li><strong>Client Part (`LikeButton.tsx`):</strong>
+                    <ul>
+                        <li>Create a component with <code>"use client"</code>.</li>
+                        <li>It should have a simple counter state (`useState`).</li>
+                        <li>Render this button next to each post title.</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+
+        <div class="jira-ticket">
+            <div class="jira-header">
+                <span class="jira-id">NEXT-001</span>
+                <span class="jira-status">Concept</span>
+            </div>
+            <div class="jira-body">
+                <h3 class="jira-title">The Network Boundary</h3>
+                <p><strong>Question:</strong> What happens if you try to pass a function (like `onClick={() => log('hi')}`) from a Server Component to a Client Component?</p>
+                <p><strong>Answer:</strong> It fails. Functions are not serializable. You can pass data (strings, numbers, objects), but not functions, unless they are Server Actions (Module 3).</p>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-jsx.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-tsx.min.js"></script>
+    <script src="/nextjs_guide/layout.js"></script>
+</body>
+</html>

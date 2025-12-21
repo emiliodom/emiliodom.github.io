@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laravel Performance Interview Questions - Laravel Guide</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Performance Optimization</h1>
+        <p>Interview Questions: Caching, Database Indexing, and Optimization</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section class="qna">
+            <h3>Q1: How do you identify and fix N+1 query problems?</h3>
+            <div class="answer">
+                <p><strong>Identification:</strong> Use tools like Laravel Debugbar or Telescope to see the number of queries executed per request.</p>
+                <p><strong>Fix:</strong> Use Eager Loading (<code>with()</code>) to load relationships in a single query.</p>
+                <pre><code class="language-php">// Bad (N+1)
+$books = Book::all();
+foreach ($books as $book) {
+    echo $book->author->name;
+}
+
+// Good (Eager Loading)
+$books = Book::with('author')->get();</code></pre>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q2: What are the different Cache drivers in Laravel?</h3>
+            <div class="answer">
+                <p>Laravel supports multiple drivers via a unified API:</p>
+                <ul>
+                    <li><strong>file:</strong> Stores cached items in the filesystem (default).</li>
+                    <li><strong>database:</strong> Stores items in a DB table.</li>
+                    <li><strong>redis / memcached:</strong> In-memory stores. Best for high performance and distributed systems.</li>
+                    <li><strong>array:</strong> Ephemeral cache for the current request (testing).</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q3: How does Route Caching and Config Caching improve performance?</h3>
+            <div class="answer">
+                <p><strong>Config Caching (<code>php artisan config:cache</code>):</strong> Combines all config files into a single file, reducing file I/O.</p>
+                <p><strong>Route Caching (<code>php artisan route:cache</code>):</strong> Compiles all route registrations into a single method call, drastically speeding up route registration.</p>
+                <p><strong>Note:</strong> These should only be used in production. Any changes to config/routes require clearing the cache.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+
+    <script>
+        initLayout();
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

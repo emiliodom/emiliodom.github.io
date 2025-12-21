@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data & Mutations Interview Questions - Next.js Guide</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Data & Mutations</h1>
+        <p>Interview Questions: Server Actions, Caching, and Revalidation</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section class="qna">
+            <h3>Q1: What are Server Actions and how do they differ from API Routes?</h3>
+            <div class="answer">
+                <p><strong>Server Actions:</strong> Asynchronous functions executed on the server, callable directly from components (Server or Client). They are designed for <strong>mutations</strong> (POST requests) and form handling.</p>
+                <p><strong>API Routes:</strong> Traditional REST endpoints (<code>route.js</code>). Useful for webhooks, public APIs, or complex request handling.</p>
+                <p><strong>Advantage:</strong> Server Actions reduce boilerplate (no need to manually <code>fetch('/api/...')</code>) and integrate tightly with Next.js caching (<code>revalidatePath</code>).</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q2: How does Caching work in the App Router?</h3>
+            <div class="answer">
+                <p>Next.js has a multi-layer caching system:</p>
+                <ol>
+                    <li><strong>Request Memoization:</strong> Deduplicates identical fetch requests within a single render pass (React feature).</li>
+                    <li><strong>Data Cache:</strong> Persists fetch results across requests (Server feature). Controlled via <code>next: { revalidate: 3600 }</code>.</li>
+                    <li><strong>Full Route Cache:</strong> Caches the rendered HTML and RSC payload of static routes at build time.</li>
+                    <li><strong>Router Cache:</strong> Client-side cache of visited routes for instant navigation.</li>
+                </ol>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q3: How do you handle form validation and errors in Server Actions?</h3>
+            <div class="answer">
+                <p>Since Server Actions are just functions, you can return plain objects.</p>
+                <pre><code class="language-javascript">'use server'
+import { z } from 'zod'
+
+const schema = z.object({ email: z.string().email() })
+
+export async function subscribe(prevState, formData) {
+  const result = schema.safeParse({ email: formData.get('email') })
+  
+  if (!result.success) {
+    return { errors: result.error.flatten().fieldErrors }
+  }
+  
+  // ... database logic ...
+  return { message: 'Success!' }
+}</code></pre>
+                <p>On the client, use <code>useFormState</code> (React 18) or <code>useActionState</code> (React 19) to handle the return value.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q4: What is the difference between <code>revalidatePath</code> and <code>revalidateTag</code>?</h3>
+            <div class="answer">
+                <p><strong><code>revalidatePath('/blog')</code>:</strong> Purges the cache for a specific URL path.</p>
+                <p><strong><code>revalidateTag('posts')</code>:</strong> Purges all data fetches tagged with <code>['posts']</code>, regardless of which page they are on. This is more granular and powerful for shared data.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+
+    <script>
+        initLayout();
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

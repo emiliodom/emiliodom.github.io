@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Module 4: State & Forms</title>
-    <link rel="stylesheet" href="../assets/css/styles.css">
+    <link rel="icon" href="/assets/img/avatar-fallback.svg">
+    <link rel="stylesheet" href="/react_guide/styles.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
 </head>
 <body>
@@ -87,6 +88,23 @@
                 </div>
             </div>
         </div>
+
+        <div class="jira-ticket">
+            <div class="jira-header">
+                <span class="jira-id">REQ-008</span>
+                <span class="jira-title">Form Validation with Zod</span>
+            </div>
+            <div class="jira-body">
+                <p><strong>User Story:</strong> As a user, I want immediate feedback if I enter invalid data so I don't waste time submitting.</p>
+                <p><strong>Acceptance Criteria:</strong></p>
+                <ul>
+                    <li>Install <code>zod</code> and <code>react-hook-form</code>.</li>
+                    <li>Create a schema for the Registration Form (email, password, confirm password).</li>
+                    <li>Connect the schema to the form using <code>zodResolver</code>.</li>
+                    <li>Display error messages below each field.</li>
+                </ul>
+            </div>
+        </div>
     </main>
 
     <footer>
@@ -96,6 +114,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-jsx.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-tsx.min.js"></script>
-    <script src="../assets/js/layout.js"></script>
+    <script src="/react_guide/layout.js"></script>
 </body>
 </html>

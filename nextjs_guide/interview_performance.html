@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Performance Optimization Interview Questions - Next.js Guide</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Performance Optimization</h1>
+        <p>Interview Questions: Bundle Analysis, Lazy Loading, and Core Web Vitals</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section class="qna">
+            <h3>Q1: How do you analyze the bundle size of a Next.js application?</h3>
+            <div class="answer">
+                <p><strong>Tool:</strong> <code>@next/bundle-analyzer</code>.</p>
+                <p><strong>Usage:</strong> It generates an interactive treemap of your client-side bundles. This helps identify large dependencies that might be accidentally included in the client bundle (instead of staying on the server).</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q2: How do you implement Lazy Loading for components?</h3>
+            <div class="answer">
+                <p><strong><code>next/dynamic</code>:</strong> It is a composite of <code>React.lazy()</code> and <code>Suspense</code>.</p>
+                <pre><code class="language-javascript">import dynamic from 'next/dynamic'
+
+const HeavyChart = dynamic(() => import('./components/HeavyChart'), {
+  loading: () => <p>Loading...</p>,
+  ssr: false // Optional: Disable server-side rendering for this component
+})</code></pre>
+                <p>This splits the component into a separate chunk that is only loaded when rendered.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q3: How does the Script component (<code>next/script</code>) improve performance?</h3>
+            <div class="answer">
+                <p>It allows you to control the loading priority of third-party scripts (like Analytics or Ads) to prevent them from blocking the main thread.</p>
+                <ul>
+                    <li><strong><code>strategy="beforeInteractive"</code>:</strong> Load before hydration (critical scripts).</li>
+                    <li><strong><code>strategy="afterInteractive"</code>:</strong> Load immediately after hydration (default).</li>
+                    <li><strong><code>strategy="lazyOnload"</code>:</strong> Load during idle time.</li>
+                    <li><strong><code>strategy="worker"</code>:</strong> (Experimental) Load in a web worker (Partytown).</li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+
+    <script>
+        initLayout();
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

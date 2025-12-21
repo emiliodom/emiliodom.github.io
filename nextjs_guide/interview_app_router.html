@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>App Router Interview Questions - Next.js Guide</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>App Router & Architecture</h1>
+        <p>Interview Questions: RSC, Routing, and Rendering</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section class="qna">
+            <h3>Q1: Explain the difference between Server Components and Client Components. When would you use each?</h3>
+            <div class="answer">
+                <p><strong>Concept:</strong> React Server Components (RSC) render exclusively on the server. Their code is not included in the client-side bundle. Client Components are standard React components that are hydrated on the client.</p>
+                <p><strong>Usage:</strong></p>
+                <ul>
+                    <li><strong>Server Components (Default):</strong> Use for fetching data, accessing backend resources (DB), keeping sensitive info (API keys), and reducing client bundle size.</li>
+                    <li><strong>Client Components (<code>'use client'</code>):</strong> Use for interactivity (onClick, onChange), using State/Effects (useState, useEffect), or using browser-only APIs (localStorage, window).</li>
+                </ul>
+                <p><strong>Gotcha:</strong> You cannot import a Server Component <em>into</em> a Client Component directly. You must pass it as a <code>children</code> prop (Composition Pattern).</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q2: How does the App Router handle Layouts vs Templates?</h3>
+            <div class="answer">
+                <p><strong>Layout (<code>layout.js</code>):</strong> Wraps pages and preserves state on navigation. It does not re-render when navigating between sibling routes.</p>
+                <p><strong>Template (<code>template.js</code>):</strong> Similar to a layout, but it creates a new instance for each child on navigation. State is reset.</p>
+                <p><strong>Use Case:</strong> Use templates for features that rely on <code>useEffect</code> (like logging page views) or animation libraries (framer-motion) that need to trigger on every page transition.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q3: What are Parallel Routes and Intercepting Routes?</h3>
+            <div class="answer">
+                <p><strong>Parallel Routes (<code>@folder</code>):</strong> Allow rendering multiple pages in the same layout simultaneously (e.g., a dashboard with <code>@team</code> and <code>@analytics</code> slots).</p>
+                <p><strong>Intercepting Routes (<code>(.)folder</code>):</strong> Allow loading a route within the current layout while keeping the URL context (e.g., opening a photo in a modal when clicked from a feed, but as a full page on refresh).</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q4: How does Next.js handle Static vs Dynamic Rendering?</h3>
+            <div class="answer">
+                <p><strong>Static Rendering (Default):</strong> Routes are rendered at build time. Data is cached indefinitely.</p>
+                <p><strong>Dynamic Rendering:</strong> Routes are rendered at request time. This happens automatically if you use:</p>
+                <ul>
+                    <li>Dynamic functions: <code>cookies()</code>, <code>headers()</code>.</li>
+                    <li><code>searchParams</code> prop in a page.</li>
+                    <li><code>no-store</code> fetch requests.</li>
+                </ul>
+                <p><strong>Forcing Dynamic:</strong> <code>export const dynamic = 'force-dynamic'</code></p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+
+    <script>
+        initLayout();
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

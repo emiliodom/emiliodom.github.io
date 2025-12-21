@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 4: Client Interactivity - Next.js Guide</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Module 4: Client Interactivity</h1>
+        <p>Using Client Components effectively in the App Router</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section id="use-client">
+            <h2>The <code>'use client'</code> Directive</h2>
+            <p>To use React hooks (<code>useState</code>, <code>useEffect</code>) or event listeners, you must mark a component as a Client Component.</p>
+            <pre><code class="language-javascript">'use client' // Must be at the very top
+
+import { useState } from 'react'
+
+export default function Counter() {
+  const [count, setCount] = useState(0)
+  return &lt;button onClick={() => setCount(c => c + 1)}&gt;{count}&lt;/button&gt;
+}</code></pre>
+            <p><strong>Note:</strong> "Client Component" doesn't mean it <em>only</em> runs on the client. It is pre-rendered on the server (SSR) and then hydrated on the client.</p>
+        </section>
+
+        <section id="when-to-use">
+            <h2>When to use Client Components?</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Use Case</th>
+                            <th>Server Component</th>
+                            <th>Client Component</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Fetch data</td>
+                            <td>✅ (Preferred)</td>
+                            <td>⚠️ (Use SWR/React Query)</td>
+                        </tr>
+                        <tr>
+                            <td>Access Backend Resources (DB)</td>
+                            <td>✅</td>
+                            <td>❌</td>
+                        </tr>
+                        <tr>
+                            <td>Keep sensitive info (API keys)</td>
+                            <td>✅</td>
+                            <td>❌</td>
+                        </tr>
+                        <tr>
+                            <td>Add interactivity (onClick)</td>
+                            <td>❌</td>
+                            <td>✅</td>
+                        </tr>
+                        <tr>
+                            <td>Use State / Lifecycle Effects</td>
+                            <td>❌</td>
+                            <td>✅</td>
+                        </tr>
+                        <tr>
+                            <td>Use Browser APIs (localStorage)</td>
+                            <td>❌</td>
+                            <td>✅</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="composition">
+            <h2>Composition Patterns</h2>
+            <p>Avoid making everything a Client Component. Move interactivity to the leaves of your component tree.</p>
+            
+            <h3>Passing Server Components as Props</h3>
+            <p>You cannot import a Server Component into a Client Component directly if you need it to remain a Server Component. Instead, pass it as <code>children</code>.</p>
+
+            <pre><code class="language-javascript">// app/page.js (Server)
+import ClientWrapper from './client-wrapper'
+import ServerContent from './server-content'
+
+export default function Page() {
+  return (
+    &lt;ClientWrapper&gt;
+      &lt;ServerContent /&gt; {/* Remains a Server Component! */}
+    &lt;/ClientWrapper&gt;
+  )
+}</code></pre>
+
+            <pre><code class="language-javascript">// app/client-wrapper.js (Client)
+'use client'
+import { useState } from 'react'
+
+export default function ClientWrapper({ children }) {
+  const [open, setOpen] = useState(false)
+  return (
+    &lt;div&gt;
+      &lt;button onClick={() => setOpen(!open)}&gt;Toggle&lt;/button&gt;
+      {open && children}
+    &lt;/div&gt;
+  )
+}</code></pre>
+        </section>
+
+        <section id="hooks">
+            <h2>Next.js Specific Hooks</h2>
+            <p>Hooks from <code>next/navigation</code> are for Client Components.</p>
+            <ul>
+                <li><code>useRouter()</code>: Programmatic navigation.</li>
+                <li><code>usePathname()</code>: Get current URL path.</li>
+                <li><code>useSearchParams()</code>: Get query string parameters.</li>
+                <li><code>useParams()</code>: Get dynamic route parameters.</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+
+    <script>
+        initLayout();
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

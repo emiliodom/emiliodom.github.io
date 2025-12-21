@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 7: Queues & Redis - Laravel Guide</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Module 7: Queues & Redis</h1>
+        <p>Asynchronous Processing and Caching</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section id="queues">
+            <h2>Queues</h2>
+            <p>Offload time-consuming tasks (emails, image processing) to a background queue to keep your app snappy.</p>
+            
+            <h3>Configuration</h3>
+            <p>Set <code>QUEUE_CONNECTION=redis</code> in your <code>.env</code> file.</p>
+
+            <h3>Creating Jobs</h3>
+            <pre><code class="language-bash">php artisan make:job ProcessPodcast</code></pre>
+            <pre><code class="language-php">class ProcessPodcast implements ShouldQueue
+{
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+
+    public function __construct(public Podcast $podcast) {}
+
+    public function handle(): void
+    {
+        // Process the podcast upload...
+    }
+}</code></pre>
+
+            <h3>Dispatching Jobs</h3>
+            <pre><code class="language-php">ProcessPodcast::dispatch($podcast)
+    ->onQueue('processing')
+    ->delay(now()->addMinutes(10));</code></pre>
+        </section>
+
+        <section id="workers">
+            <h2>Running Workers</h2>
+            <p>You need a worker process to consume the queue.</p>
+            <pre><code class="language-bash">php artisan queue:work --tries=3 --timeout=90</code></pre>
+            <p>In production, use <strong>Supervisor</strong> to keep the worker running.</p>
+        </section>
+
+        <section id="horizon">
+            <h2>Laravel Horizon</h2>
+            <p>Horizon provides a beautiful dashboard and code-driven configuration for your Redis queues.</p>
+            <pre><code class="language-bash">composer require laravel/horizon
+php artisan horizon:install</code></pre>
+            <p>Access it at <code>/horizon</code>.</p>
+        </section>
+
+        <section id="caching">
+            <h2>Caching with Redis</h2>
+            <p>Cache expensive database queries or API calls.</p>
+            <pre><code class="language-php">// Remember for 60 seconds
+$users = Cache::remember('users', 60, function () {
+    return DB::table('users')->get();
+});
+
+// Atomic Locks
+$lock = Cache::lock('processing-invoice-1', 10);
+if ($lock->get()) {
+    // Process invoice...
+    $lock->release();
+}</code></pre>
+        </section>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+
+    <script>
+        initLayout();
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Module 2: Hooks & Lifecycle</title>
-    <link rel="stylesheet" href="../assets/css/styles.css">
+    <link rel="icon" href="/assets/img/avatar-fallback.svg">
+    <link rel="stylesheet" href="/react_guide/styles.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
 </head>
 <body>
@@ -99,8 +100,25 @@ function UserProfile({ id }) {
             </div>
         </div>
 
-        <h2>3. The Bug Hunt</h2>
-        <div class="bug-hunt">
+        <div class="jira-ticket">
+            <div class="jira-header">
+                <span class="jira-id">REQ-004</span>
+                <span class="jira-title">Custom Hook: useWindowSize</span>
+            </div>
+            <div class="jira-body">
+                <p><strong>User Story:</strong> As a developer, I want a reusable hook to track the window dimensions so I can make responsive logic in JS.</p>
+                <p><strong>Acceptance Criteria:</strong></p>
+                <ul>
+                    <li>Create `useWindowSize.ts`.</li>
+                    <li>Return `{ width, height }`.</li>
+                    <li>Add event listener for `resize`.</li>
+                    <li><strong>Crucial:</strong> Clean up the event listener on unmount to prevent memory leaks.</li>
+                </ul>
+            </div>
+        </div>
+
+        <h2>2. The Setup Challenge</h2>
+        <div class="task">
             <h3>🐛 Scenario: The Infinite Loop</h3>
             <p><strong>The Setup:</strong></p>
             <pre><code class="language-jsx">function BadComponent() {
@@ -129,6 +147,6 @@ function UserProfile({ id }) {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-jsx.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-tsx.min.js"></script>
-    <script src="../assets/js/layout.js"></script>
+    <script src="/react_guide/layout.js"></script>
 </body>
 </html>

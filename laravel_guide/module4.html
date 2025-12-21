@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 4: Livewire 3 - Laravel Guide</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Module 4: Livewire 3</h1>
+        <p>Full-Stack Framework for Laravel</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section id="concept">
+            <h2>The Livewire Paradigm</h2>
+            <p>Livewire allows you to build dynamic interfaces without writing complex JavaScript. It renders HTML on the server and updates the DOM via AJAX requests automatically.</p>
+            <p><strong>Livewire 3</strong> introduces automatic script injection, Alpine.js bundling, and faster morphing.</p>
+        </section>
+
+        <section id="components">
+            <h2>Creating Components</h2>
+            <pre><code class="language-bash">php artisan make:livewire CreatePost</code></pre>
+            
+            <pre><code class="language-php">// app/Livewire/CreatePost.php
+namespace App\Livewire;
+
+use Livewire\Component;
+use Livewire\Attributes\Rule;
+use App\Models\Post;
+
+class CreatePost extends Component
+{
+    #[Rule('required|min:5')] 
+    public $title = '';
+
+    #[Rule('required')]
+    public $content = '';
+
+    public function save()
+    {
+        $this->validate();
+
+        Post::create([
+            'title' => $this->title,
+            'content' => $this->content,
+        ]);
+
+        $this->reset(); 
+        session()->flash('status', 'Post created!');
+    }
+
+    public function render()
+    {
+        return view('livewire.create-post');
+    }
+}</code></pre>
+
+            <pre><code class="language-html"><!-- resources/views/livewire/create-post.blade.php -->
+<form wire:submit="save">
+    <input type="text" wire:model="title">
+    @error('title') <span>{{ $message }}</span> @enderror
+
+    <textarea wire:model="content"></textarea>
+    @error('content') <span>{{ $message }}</span> @enderror
+
+    <button type="submit">Save</button>
+    
+    @if (session('status'))
+        <div class="alert">{{ session('status') }}</div>
+    @endif
+</form></code></pre>
+        </section>
+
+        <section id="properties">
+            <h2>Properties & Data Binding</h2>
+            <ul>
+                <li><code>wire:model</code>: Two-way data binding. Livewire 3 defers updates by default (like <code>.lazy</code> in v2). Use <code>.live</code> for real-time updates.</li>
+                <li><code>wire:click</code>: Bind click events to PHP methods.</li>
+            </ul>
+            <pre><code class="language-html"><input type="text" wire:model.live="search"> <!-- Updates as you type --></code></pre>
+        </section>
+
+        <section id="forms">
+            <h2>Form Objects</h2>
+            <p>Extract form logic into dedicated classes to keep components clean.</p>
+            <pre><code class="language-php">// app/Livewire/Forms/PostForm.php
+use Livewire\Form;
+use Livewire\Attributes\Rule;
+
+class PostForm extends Form
+{
+    #[Rule('required')]
+    public $title = '';
+
+    #[Rule('required')]
+    public $content = '';
+}
+
+// Component
+class CreatePost extends Component
+{
+    public PostForm $form;
+
+    public function save()
+    {
+        $this->form->validate();
+        Post::create($this->form->all());
+    }
+}</code></pre>
+        </section>
+
+        <section id="volt">
+            <h2>Volt (Functional API)</h2>
+            <p>Volt allows you to write single-file components, similar to React or Vue SFCs.</p>
+            <pre><code class="language-php"><?php
+
+use function Livewire\Volt\{state, save};
+use App\Models\Post;
+
+state(['title' => '']);
+
+$save = function () {
+    Post::create(['title' => $this->title]);
+};
+
+?>
+
+<div>
+    <form wire:submit="save">
+        <input wire:model="title">
+        <button>Save</button>
+    </form>
+</div></code></pre>
+        </section>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+
+    <script>
+        initLayout();
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

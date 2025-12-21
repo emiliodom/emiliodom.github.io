@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Module 9: Performance & Security</title>
-    <link rel="stylesheet" href="../assets/css/styles.css">
+    <link rel="icon" href="/assets/img/avatar-fallback.svg">
+    <link rel="stylesheet" href="/react_guide/styles.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
 </head>
 <body>
@@ -130,6 +131,22 @@ const Example = () => (
 
         <div class="jira-ticket">
             <div class="jira-header">
+                <span class="jira-id">PERF-103</span>
+                <span class="jira-title">Memoization Strategy</span>
+            </div>
+            <div class="jira-body">
+                <p><strong>User Story:</strong> As a user, I want the interface to remain responsive even when performing heavy calculations.</p>
+                <p><strong>Acceptance Criteria:</strong></p>
+                <ul>
+                    <li>Identify a slow function (e.g., filtering a large list).</li>
+                    <li>Wrap the calculation in <code>useMemo</code>.</li>
+                    <li>Wrap the callback passed to a child component in <code>useCallback</code> to prevent unnecessary re-renders of the child (if the child is wrapped in <code>React.memo</code>).</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="jira-ticket">
+            <div class="jira-header">
                 <span class="jira-id">SEC-101</span>
                 <span class="jira-status">To Do</span>
             </div>
@@ -172,6 +189,10 @@ const SafeHTML = ({ dirtyContent }: Props) => {
             </div>
         </div>
 
+        <h2>4. Debugging & Refactoring</h2>
+        <p><strong>Debug:</strong> Use the React Developer Tools Profiler to identify components that re-render too often. Look for "wasted renders".</p>
+        <p><strong>Refactor:</strong> Improve codebase by breaking large components into smaller, reusable ones. Adopt new practices like migrating class components to Functional Components + Hooks.</p>
+
         <section class="bug-hunt">
             <h3>🐛 Bug Hunt: The "Memo" Trap</h3>
             <p><strong>Scenario:</strong> You wrapped a component in <code>React.memo</code>, but it still re-renders every time the parent renders.</p>
@@ -192,7 +213,7 @@ const SafeHTML = ({ dirtyContent }: Props) => {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
-    <script src="../assets/js/layout.js"></script>
+    <script src="/react_guide/layout.js"></script>
     <script>
         initLayout();
     </script>

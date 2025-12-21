@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laravel Queues & Jobs Interview Questions - Laravel Guide</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Queues & Background Jobs</h1>
+        <p>Interview Questions: Workers, Horizon, and Redis</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section class="qna">
+            <h3>Q1: Why use Queues in Laravel?</h3>
+            <div class="answer">
+                <p><strong>Performance:</strong> To offload time-consuming tasks (sending emails, processing uploads, generating reports) from the main request cycle. This ensures the user gets a fast response.</p>
+                <p><strong>Reliability:</strong> Jobs can be retried automatically if they fail.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q2: How do you handle failed jobs?</h3>
+            <div class="answer">
+                <p><strong>Configuration:</strong> You can define <code>$tries</code> or <code>$backoff</code> properties on the Job class.</p>
+                <p><strong>Failed Table:</strong> Failed jobs are logged to the <code>failed_jobs</code> database table.</p>
+                <p><strong>Retrying:</strong> You can use Artisan commands like <code>queue:retry all</code> or <code>queue:retry {id}</code> to re-run them after fixing the issue.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q3: What is Laravel Horizon?</h3>
+            <div class="answer">
+                <p><strong>Tool:</strong> A dashboard and configuration system for Redis queues.</p>
+                <p><strong>Features:</strong> It allows you to monitor key metrics like job throughput, runtime, and failures. It also allows you to balance workers across different queues based on workload (auto-scaling).</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+
+    <script>
+        initLayout();
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

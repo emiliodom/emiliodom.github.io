@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Capstone: Next.js SaaS Platform</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Capstone Project</h1>
+        <p>Build a Multi-Tenant SaaS Platform with Next.js 14.</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section class="concept-section">
+            <h2>The Brief</h2>
+            <p>You are building a <strong>Project Management SaaS</strong> (similar to Linear or Jira). The goal is to demonstrate mastery of the App Router, Server Actions, and Optimistic UI.</p>
+        </section>
+
+        <div class="jira-ticket">
+            <div class="jira-header">
+                <span class="jira-id">CAP-201</span>
+                <span class="jira-status">To Do</span>
+            </div>
+            <div class="jira-body">
+                <h3 class="jira-title">Core Architecture & Auth</h3>
+                <div class="jira-section">
+                    <span class="jira-label">Requirements</span>
+                    <ul class="req-list">
+                        <li><strong>Auth:</strong> Implement NextAuth v5 with GitHub and Email providers.</li>
+                        <li><strong>Database:</strong> Use Prisma with a Postgres database (Neon/Supabase).</li>
+                        <li><strong>Tenancy:</strong> Users belong to "Organizations". Data is isolated by `orgId`.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="jira-ticket">
+            <div class="jira-header">
+                <span class="jira-id">CAP-202</span>
+                <span class="jira-status">To Do</span>
+            </div>
+            <div class="jira-body">
+                <h3 class="jira-title">Tasks & Server Actions</h3>
+                <div class="jira-section">
+                    <span class="jira-label">Requirements</span>
+                    <ul class="req-list">
+                        <li><strong>CRUD:</strong> Create, Update, Delete tasks using <strong>Server Actions</strong> only (no API routes).</li>
+                        <li><strong>Optimistic UI:</strong> Use `useOptimistic` to update the UI immediately when a task is moved or edited.</li>
+                        <li><strong>Validation:</strong> Validate all inputs with Zod on the server.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="jira-ticket">
+            <div class="jira-header">
+                <span class="jira-id">CAP-203</span>
+                <span class="jira-status">To Do</span>
+            </div>
+            <div class="jira-body">
+                <h3 class="jira-title">Performance & Polish</h3>
+                <div class="jira-section">
+                    <span class="jira-label">Requirements</span>
+                    <ul class="req-list">
+                        <li><strong>Streaming:</strong> Use `Suspense` to stream the task list while the sidebar loads instantly.</li>
+                        <li><strong>Metadata:</strong> Dynamic OpenGraph images for shared task links.</li>
+                        <li><strong>Deployment:</strong> Deploy to Vercel with a Postgres database attached.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+    <script>
+        initLayout();
+    </script>
+</body>
+</html>

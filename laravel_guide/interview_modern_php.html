@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern PHP & Core Interview Questions - Laravel Guide</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Modern PHP & Core</h1>
+        <p>Interview Questions: PHP 8.2+, Service Container, and Architecture</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section class="qna">
+            <h3>Q1: What are the key features of PHP 8.0, 8.1, and 8.2 that you use daily?</h3>
+            <div class="answer">
+                <ul>
+                    <li><strong>Constructor Property Promotion (8.0):</strong> Reduces boilerplate in classes/DTOs.</li>
+                    <li><strong>Named Arguments (8.0):</strong> clearer function calls, skipping optional params.</li>
+                    <li><strong>Match Expression (8.0):</strong> Strict, expression-based alternative to switch.</li>
+                    <li><strong>Enums (8.1):</strong> First-class support for enumerations.</li>
+                    <li><strong>Readonly Properties/Classes (8.1/8.2):</strong> Immutable data objects (DTOs).</li>
+                </ul>
+                <pre><code class="language-php">readonly class UserData {
+    public function __construct(
+        public string $name,
+        public UserStatus $status, // Enum
+    ) {}
+}</code></pre>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q2: Explain the Laravel Service Container and Dependency Injection.</h3>
+            <div class="answer">
+                <p><strong>Service Container:</strong> A powerful tool for managing class dependencies and performing dependency injection. It acts as a registry where you bind interfaces to implementations.</p>
+                <p><strong>Dependency Injection:</strong> Instead of creating objects manually (<code>new Service()</code>), you type-hint them in the constructor, and the container resolves them automatically.</p>
+                <p><strong>Why?</strong> Decoupling. It allows you to swap implementations (e.g., switching from Stripe to PayPal) without changing the consuming code, and makes testing easier by allowing mocks.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q3: What is the difference between <code>bind</code>, <code>singleton</code>, and <code>scoped</code>?</h3>
+            <div class="answer">
+                <ul>
+                    <li><strong>bind:</strong> Returns a new instance every time the service is requested.</li>
+                    <li><strong>singleton:</strong> Returns the same instance (created once) for the entire lifetime of the application (or request in web context).</li>
+                    <li><strong>scoped:</strong> Similar to singleton, but flushed whenever the Laravel application starts a new "scope" (relevant for Octane/long-running processes).</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q4: Describe the Laravel Request Lifecycle.</h3>
+            <div class="answer">
+                <ol>
+                    <li><strong>Entry:</strong> <code>public/index.php</code> loads Composer autoloader.</li>
+                    <li><strong>Kernel:</strong> Request is sent to HTTP Kernel. Global middleware runs.</li>
+                    <li><strong>Service Providers:</strong> <code>register()</code> (bindings) then <code>boot()</code> (listeners, routes) methods are called.</li>
+                    <li><strong>Router:</strong> Dispatches request to Controller or Closure. Route middleware runs.</li>
+                    <li><strong>Controller:</strong> Executes logic, returns Response.</li>
+                    <li><strong>Output:</strong> Response is sent back through middleware to the browser.</li>
+                </ol>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+
+    <script>
+        initLayout();
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

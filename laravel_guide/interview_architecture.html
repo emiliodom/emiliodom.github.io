@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laravel Architecture Interview Questions - Laravel Guide</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Architecture & Design Patterns</h1>
+        <p>Interview Questions: Service Container, Facades, and SOLID</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section class="qna">
+            <h3>Q1: Explain the Laravel Service Container and Dependency Injection.</h3>
+            <div class="answer">
+                <p><strong>Service Container:</strong> It is a powerful tool for managing class dependencies and performing dependency injection. It acts as a registry where you bind interfaces to implementations.</p>
+                <p><strong>Dependency Injection:</strong> Instead of creating objects manually (<code>new ClassName()</code>), you type-hint the dependency in the constructor or method, and the container automatically resolves and injects it.</p>
+                <pre><code class="language-php">public function __construct(UserRepository $users) {
+    $this->users = $users;
+}</code></pre>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q2: What is a Facade and how does it work under the hood?</h3>
+            <div class="answer">
+                <p><strong>Concept:</strong> A Facade provides a static interface to classes that are available in the application's service container.</p>
+                <p><strong>Under the hood:</strong> It uses the <code>__callStatic()</code> magic method to defer calls from the static facade to an instance of the underlying class resolved from the container.</p>
+                <p><strong>Example:</strong> <code>Cache::get('key')</code> resolves the cache driver instance and calls <code>get('key')</code> on it.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q3: What is the Repository Pattern and is it still relevant in Laravel?</h3>
+            <div class="answer">
+                <p><strong>Concept:</strong> A layer of abstraction between the domain logic and data mapping layers. It allows you to decouple your business logic from the specific database implementation (Eloquent).</p>
+                <p><strong>Relevance:</strong> It is debated. For simple apps, Eloquent is sufficient and Repositories add boilerplate. For complex, enterprise apps where you might switch data sources or need strict testing boundaries, it is highly valuable.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+
+    <script>
+        initLayout();
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

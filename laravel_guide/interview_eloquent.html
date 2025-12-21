@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eloquent & Database Interview Questions - Laravel Guide</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Eloquent & Database</h1>
+        <p>Interview Questions: ORM, Performance, and Queues</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section class="qna">
+            <h3>Q1: What is the N+1 problem and how do you solve it?</h3>
+            <div class="answer">
+                <p><strong>Problem:</strong> Occurs when you loop through a collection of models and access a relationship that hasn't been loaded. Laravel executes one query to get the main models (N) and then one additional query for <em>each</em> model to get the relationship (+1).</p>
+                <p><strong>Solution:</strong> Eager Loading using <code>with()</code>.</p>
+                <pre><code class="language-php">// Bad: 101 queries for 100 posts
+$posts = Post::all();
+foreach($posts as $post) { echo $post->author->name; }
+
+// Good: 2 queries
+$posts = Post::with('author')->get();</code></pre>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q2: Explain Polymorphic Relationships.</h3>
+            <div class="answer">
+                <p>A polymorphic relationship allows a model to belong to more than one other model on a single association. For example, a <code>Comment</code> model might belong to both a <code>Post</code> and a <code>Video</code>.</p>
+                <p><strong>Structure:</strong> The <code>comments</code> table needs <code>commentable_id</code> (integer) and <code>commentable_type</code> (string).</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q3: How do Queues work in Laravel and why use them?</h3>
+            <div class="answer">
+                <p><strong>Concept:</strong> Queues allow you to defer the processing of a time-consuming task (sending email, processing uploads) until a later time. This speeds up web requests.</p>
+                <p><strong>Components:</strong></p>
+                <ul>
+                    <li><strong>Job:</strong> The class containing the logic (<code>handle()</code> method).</li>
+                    <li><strong>Queue Connection:</strong> Where jobs are stored (Redis, Database, SQS).</li>
+                    <li><strong>Worker:</strong> A background process (<code>php artisan queue:work</code>) that pulls jobs off the queue and executes them.</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q4: What are Eloquent Scopes?</h3>
+            <div class="answer">
+                <p>Scopes allow you to define common sets of constraints that you may easily re-use throughout your application.</p>
+                <ul>
+                    <li><strong>Global Scope:</strong> Applied automatically to all queries for a model (e.g., <code>SoftDeletes</code>).</li>
+                    <li><strong>Local Scope:</strong> Manually applied (e.g., <code>scopeActive($query)</code> -> <code>User::active()->get()</code>).</li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+
+    <script>
+        initLayout();
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

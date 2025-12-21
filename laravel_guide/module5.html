@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 5: Alpine & Tailwind - Laravel Guide</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Module 5: Alpine.js & Tailwind CSS</h1>
+        <p>The Frontend of the TALL Stack</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section id="tailwind">
+            <h2>Tailwind CSS in Laravel</h2>
+            <p>Laravel ships with Vite and Tailwind configured out of the box.</p>
+            <pre><code class="language-bash">npm install
+npm run dev</code></pre>
+            <p>The <code>@vite</code> directive loads your assets.</p>
+            <pre><code class="language-html"><head>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+</head></code></pre>
+        </section>
+
+        <section id="alpine">
+            <h2>Alpine.js Basics</h2>
+            <p>Alpine offers the reactive nature of Vue/React at a much lower cost. It's bundled with Livewire 3.</p>
+            
+            <h3>State & Visibility</h3>
+            <pre><code class="language-html"><div x-data="{ open: false }">
+    <button @click="open = !open">Toggle</button>
+    
+    <div x-show="open" x-transition>
+        Content...
+    </div>
+</div></code></pre>
+
+            <h3>Binding Attributes</h3>
+            <pre><code class="language-html"><button :class="open ? 'bg-blue-500' : 'bg-gray-500'">
+    Submit
+</button></code></pre>
+        </section>
+
+        <section id="entangle">
+            <h2>Livewire + Alpine: @entangle</h2>
+            <p>Share state between Livewire (server) and Alpine (client).</p>
+            <pre><code class="language-php">// Livewire Component
+public $showModal = false;</code></pre>
+
+            <pre><code class="language-html"><!-- Blade View -->
+<div x-data="{ open: @entangle('showModal') }">
+    <!-- Changing 'open' in Alpine updates '$showModal' in PHP, and vice-versa -->
+    <div x-show="open">
+        Modal Content
+        <button @click="open = false">Close</button>
+    </div>
+</div></code></pre>
+        </section>
+
+        <section id="wire-navigate">
+            <h2>SPA-like Navigation</h2>
+            <p>Livewire 3 introduces <code>wire:navigate</code> to fetch pages via AJAX and swap the body content, preventing full page reloads.</p>
+            <pre><code class="language-html"><a href="/dashboard" wire:navigate>Dashboard</a>
+<a href="/profile" wire:navigate.hover>Profile</a> <!-- Prefetch on hover --></code></pre>
+        </section>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+
+    <script>
+        initLayout();
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Testing Interview Questions - Next.js Guide</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Testing in Next.js</h1>
+        <p>Interview Questions: Unit, Integration, and E2E Testing</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section class="qna">
+            <h3>Q1: How do you test Server Components?</h3>
+            <div class="answer">
+                <p><strong>Challenge:</strong> Server Components are async functions that may access headers, cookies, or databases directly.</p>
+                <p><strong>Unit Testing:</strong> Since they are just functions, you can test them by mocking the data they fetch or the Next.js headers/cookies API.</p>
+                <p><strong>Integration Testing:</strong> It is often better to test them via E2E tests (Playwright/Cypress) or by rendering the parent page that uses them, as traditional React testing libraries (RTL) run in a jsdom environment which doesn't fully support the RSC protocol.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q2: What is the recommended tool for E2E testing in Next.js?</h3>
+            <div class="answer">
+                <p><strong>Playwright:</strong> It is the recommended tool by the Next.js team.</p>
+                <p><strong>Why?</strong></p>
+                <ul>
+                    <li>Supports testing across all modern browsers.</li>
+                    <li>Can handle multiple tabs and users.</li>
+                    <li>Works well with Next.js's async nature and hydration.</li>
+                    <li>Can easily mock network requests or run against a real production build.</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q3: How do you mock `next/navigation` (useRouter, usePathname) in unit tests?</h3>
+            <div class="answer">
+                <p>When using Jest and React Testing Library, you need to mock the module.</p>
+                <pre><code class="language-javascript">jest.mock('next/navigation', () => ({
+  useRouter: () => ({
+    push: jest.fn(),
+    replace: jest.fn(),
+    prefetch: jest.fn(),
+  }),
+  usePathname: () => '/current-path',
+  useSearchParams: () => new URLSearchParams({ query: 'test' }),
+}));</code></pre>
+                <p>This allows you to assert that <code>router.push</code> was called with the correct arguments.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+
+    <script>
+        initLayout();
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

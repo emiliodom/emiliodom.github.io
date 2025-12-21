@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laravel API Development Interview Questions - Laravel Guide</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>API Development</h1>
+        <p>Interview Questions: Resources, Sanctum, and Versioning</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section class="qna">
+            <h3>Q1: What are API Resources?</h3>
+            <div class="answer">
+                <p><strong>Concept:</strong> A transformation layer that sits between your Eloquent models and the JSON response returned to the API user.</p>
+                <p><strong>Benefit:</strong> It allows you to format the output, rename keys, cast types, and include relationships conditionally, ensuring your internal database structure isn't exposed directly.</p>
+                <pre><code class="language-php">public function toArray($request) {
+    return [
+        'id' => $this->id,
+        'full_name' => $this->first_name . ' ' . $this->last_name,
+        'email' => $this->email,
+    ];
+}</code></pre>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q2: Explain Laravel Sanctum vs Passport.</h3>
+            <div class="answer">
+                <p><strong>Sanctum:</strong> Lightweight authentication system for SPAs (using cookies) and simple mobile APIs (using tokens). It is the default and recommended for most use cases.</p>
+                <p><strong>Passport:</strong> Full OAuth2 server implementation. Use it only if you need to support third-party clients (like "Login with Google" but for your own app).</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q3: How do you handle API Versioning?</h3>
+            <div class="answer">
+                <p><strong>URI Versioning:</strong> The most common approach (e.g., <code>/api/v1/users</code>).</p>
+                <p><strong>Implementation:</strong> You can define route groups with prefixes in <code>routes/api.php</code> or separate route files entirely.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+
+    <script>
+        initLayout();
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

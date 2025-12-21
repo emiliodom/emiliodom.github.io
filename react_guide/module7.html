@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Module 7: Professional Testing</title>
-    <link rel="stylesheet" href="../assets/css/styles.css">
+    <link rel="icon" href="/assets/img/avatar-fallback.svg">
+    <link rel="stylesheet" href="/react_guide/styles.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
 </head>
 <body>
@@ -191,6 +192,28 @@ it('renders users after fetching', async () => {
             </div>
         </div>
 
+        <div class="jira-ticket">
+            <div class="jira-header">
+                <span class="jira-id">TEST-103</span>
+                <span class="jira-title">Mock API Calls</span>
+            </div>
+            <div class="jira-body">
+                <p><strong>User Story:</strong> As a developer, I want to test my component's data fetching logic without hitting the real API.</p>
+                <p><strong>Acceptance Criteria:</strong></p>
+                <ul>
+                    <li>Use <strong>MSW (Mock Service Worker)</strong> to intercept requests.</li>
+                    <li>Test the "Loading" state.</li>
+                    <li>Test the "Success" state (data renders).</li>
+                    <li>Test the "Error" state (error message renders).</li>
+                </ul>
+            </div>
+        </div>
+
+        <h2>2. Types of Testing</h2>
+        <p><strong>Unit Tests:</strong> Testing individual functions or components in isolation (e.g., `utils/formatDate.ts`).</p>
+        <p><strong>Integration Tests:</strong> Testing how multiple units work together (e.g., `UserProfile` component fetching data and rendering `UserCard`).</p>
+        <p><strong>E2E (End-to-End):</strong> Testing the full flow in a real browser (Playwright/Cypress). We will focus on Unit/Integration here.</p>
+
         <section class="bug-hunt">
             <h3>🐛 Bug Hunt: The "Not Wrapped in Act" Warning</h3>
             <p><strong>Scenario:</strong> You run a test and see a console error: <code>Warning: An update to Component inside a test was not wrapped in act(...)</code>.</p>
@@ -211,7 +234,7 @@ it('renders users after fetching', async () => {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
-    <script src="../assets/js/layout.js"></script>
+    <script src="/react_guide/layout.js"></script>
     <script>
         initLayout();
     </script>

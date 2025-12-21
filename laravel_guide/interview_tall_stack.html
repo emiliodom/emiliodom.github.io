@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TALL Stack Interview Questions - Laravel Guide</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>TALL Stack & Filament</h1>
+        <p>Interview Questions: Livewire, Alpine, and Admin Panels</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section class="qna">
+            <h3>Q1: How does Livewire work under the hood?</h3>
+            <div class="answer">
+                <p>Livewire renders the initial component output with the page (SEO friendly). When an interaction occurs (e.g., click):</p>
+                <ol>
+                    <li>Livewire sends an AJAX request to the server with the component state.</li>
+                    <li>The server runs the method, updates the state, and re-renders the Blade view.</li>
+                    <li>The server sends back the new HTML.</li>
+                    <li>Livewire intelligently morphs the DOM to match the new HTML without a full reload.</li>
+                </ol>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q2: What is the purpose of <code>wire:model.live</code> vs <code>wire:model</code> in Livewire 3?</h3>
+            <div class="answer">
+                <p>In Livewire 3, <code>wire:model</code> is <strong>deferred</strong> by default. It only sends a request when an action (like submit) is performed, saving network requests.</p>
+                <p><code>wire:model.live</code> sends a request to the server immediately upon input (like <code>debounce</code>), useful for real-time search or validation.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q3: How do you share state between Livewire and Alpine.js?</h3>
+            <div class="answer">
+                <p>Using the <code>@entangle</code> directive.</p>
+                <pre><code class="language-html"><div x-data="{ open: @entangle('showModal') }">
+    <!-- 'open' in Alpine is now synced with '$showModal' in PHP -->
+</div></code></pre>
+                <p>This creates a two-way binding bridge between the client-side Alpine state and server-side Livewire property.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q4: What is Filament and why would you use it?</h3>
+            <div class="answer">
+                <p>Filament is a collection of tools for building admin panels, forms, and tables powered by the TALL stack.</p>
+                <p><strong>Benefits:</strong></p>
+                <ul>
+                    <li><strong>Speed:</strong> Generates CRUD interfaces in minutes.</li>
+                    <li><strong>Consistency:</strong> Provides a unified UI/UX.</li>
+                    <li><strong>Extensibility:</strong> Built on Livewire, so you can create custom widgets and pages easily.</li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+
+    <script>
+        initLayout();
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

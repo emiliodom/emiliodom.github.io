@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Module 8: Professional Workflow</title>
-    <link rel="stylesheet" href="../assets/css/styles.css">
+    <link rel="icon" href="/assets/img/avatar-fallback.svg">
+    <link rel="stylesheet" href="/react_guide/styles.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
 </head>
 <body>
@@ -167,6 +168,61 @@ export const Inactive: Story = {
             </div>
         </div>
 
+        <div class="jira-ticket">
+            <div class="jira-header">
+                <span class="jira-id">WORK-103</span>
+                <span class="jira-status">To Do</span>
+            </div>
+            <div class="jira-body">
+                <h3 class="jira-title">Agile Workflow & Code Reviews</h3>
+                
+                <div class="jira-section">
+                    <span class="jira-label">User Story</span>
+                    <p>As a Senior Developer, I need to participate in Agile ceremonies and conduct code reviews to ensure high-quality deliverables.</p>
+                </div>
+
+                <div class="jira-section">
+                    <span class="jira-label">Acceptance Criteria</span>
+                    <ul class="req-list">
+                        <li><strong>Agile Participation:</strong> Simulate a Sprint Planning session. Break down a large feature (e.g., "User Dashboard") into small, estimable tasks (Jira tickets).</li>
+                        <li><strong>Code Review Simulation:</strong> Review a "Pull Request" (provided in the Bug Hunt section below). Identify:
+                            <ul>
+                                <li>Performance issues (unnecessary re-renders).</li>
+                                <li>Security flaws (XSS vulnerabilities).</li>
+                                <li>Code style violations.</li>
+                                <li>Logic errors.</li>
+                            </ul>
+                        </li>
+                        <li><strong>Refactoring:</strong> Take a legacy class-based component and refactor it to a functional component with Hooks, improving readability and performance.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <h2>2. Agile & Collaboration</h2>
+        <p>Senior developers don't just write code; they drive the process. You are expected to participate in <strong>Agile ceremonies</strong>.</p>
+        
+        <div class="task" style="background: #e2e3e5; border-color: #d6d8db; color: #383d41;">
+            <h3>📅 The Agile Cycle</h3>
+            <ul>
+                <li><strong>Sprint Planning:</strong> Estimating effort (Story Points) for tickets like the ones above.</li>
+                <li><strong>Daily Stand-ups:</strong> "Yesterday I set up Storybook. Today I'm writing stories for the Button component. No blockers."</li>
+                <li><strong>Retrospectives:</strong> Discussing what went well and what didn't. "We need to improve our code review turnaround time."</li>
+            </ul>
+        </div>
+
+        <h2>3. Code Reviews & Best Practices</h2>
+        <p>You will be expected to <strong>conduct code reviews</strong>. This is where you ensure scalability and maintainability.</p>
+        <div class="bug-hunt">
+            <h3>🔍 Code Review Checklist</h3>
+            <ul>
+                <li><strong>Functionality:</strong> Does it meet the acceptance criteria?</li>
+                <li><strong>Scalability:</strong> Will this component break if we add 100 items? (See Module 9)</li>
+                <li><strong>Readability:</strong> Are variables named clearly? Is the logic complex?</li>
+                <li><strong>Testing:</strong> Are there unit tests? (See Module 7)</li>
+            </ul>
+        </div>
+
         <section class="bug-hunt">
             <h3>🐛 Bug Hunt: The "Works on My Machine"</h3>
             <p><strong>Scenario:</strong> You push code that works locally, but the CI/CD pipeline fails.</p>
@@ -188,7 +244,7 @@ export const Inactive: Story = {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
-    <script src="../assets/js/layout.js"></script>
+    <script src="/react_guide/layout.js"></script>
     <script>
         initLayout();
     </script>

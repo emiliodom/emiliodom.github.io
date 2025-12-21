@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Collections & Helpers Interview Questions - Laravel Guide</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Collections & Helpers</h1>
+        <p>Interview Questions: Data Manipulation, Higher Order Messages, and Pipelines</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section class="qna">
+            <h3>Q1: What is a Laravel Collection and how does it differ from a PHP array?</h3>
+            <div class="answer">
+                <p><strong>Concept:</strong> A Collection is a wrapper around native PHP arrays that provides a fluent, convenient interface for working with data. It comes with dozens of helper methods to chain operations.</p>
+                <p><strong>Key Differences:</strong></p>
+                <ul>
+                    <li><strong>Object-Oriented:</strong> Collections are objects, arrays are primitives.</li>
+                    <li><strong>Chaining:</strong> You can chain methods like <code>->filter()->map()->sort()</code>.</li>
+                    <li><strong>Lazy Collections:</strong> Can handle massive datasets by loading one item at a time (using Generators) to save memory.</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q2: Explain the difference between `map()` and `transform()`.</h3>
+            <div class="answer">
+                <p>Both iterate over the collection and modify items, but they behave differently regarding the original collection instance.</p>
+                <ul>
+                    <li><strong>map():</strong> Returns a <em>new</em> collection instance with the modified values. The original collection remains unchanged.</li>
+                    <li><strong>transform():</strong> Modifies the collection <em>in place</em>. It returns the same collection instance but with mutated data.</li>
+                </ul>
+                <pre><code class="language-php">$collection = collect([1, 2, 3]);
+
+// Map returns new, original is [1, 2, 3]
+$new = $collection->map(fn($x) => $x * 2); 
+
+// Transform changes original to [2, 4, 6]
+$collection->transform(fn($x) => $x * 2);</code></pre>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q3: What are Higher Order Messages in Collections?</h3>
+            <div class="answer">
+                <p>Higher Order Messages allow you to perform common actions on collections without writing a closure. They act as shortcuts for accessing properties or calling methods on objects within the collection.</p>
+                <pre><code class="language-php">// Without Higher Order Messages
+$users->each(function($user) {
+    $user->markAsActive();
+});
+
+// With Higher Order Messages
+$users->each->markAsActive();
+
+// Mapping a property
+$emails = $users->map->email;</code></pre>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q4: How would you handle a large CSV file import using Collections?</h3>
+            <div class="answer">
+                <p>Using standard Collections would load the entire file into memory, likely causing a crash. The solution is <strong>Lazy Collections</strong>.</p>
+                <p>Lazy Collections use PHP Generators to read the file line-by-line, keeping memory usage low regardless of file size.</p>
+                <pre><code class="language-php">use Illuminate\Support\LazyCollection;
+
+LazyCollection::make(function () {
+    $handle = fopen('large-file.csv', 'r');
+    while (($line = fgets($handle)) !== false) {
+        yield str_getcsv($line);
+    }
+})->chunk(1000)->each(function ($chunk) {
+    DB::table('records')->insert($chunk->toArray());
+});</code></pre>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q5: What is the `pipeline()` helper?</h3>
+            <div class="answer">
+                <p>The <code>Pipeline</code> pattern allows you to pass an object through a series of "pipes" (classes or closures) to perform a sequence of operations. It is used internally by Laravel for middleware.</p>
+                <p>It is useful for complex filtering logic where you want to break down a large query builder into small, reusable classes.</p>
+                <pre><code class="language-php">$users = app(Pipeline::class)
+    ->send(User::query())
+    ->through([
+        FilterActive::class,
+        FilterSort::class,
+        FilterSearch::class,
+    ])
+    ->thenReturn()
+    ->get();</code></pre>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+
+    <script>
+        initLayout();
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

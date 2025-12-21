@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Internationalization (i18n) Interview Questions - Next.js Guide</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Internationalization (i18n)</h1>
+        <p>Interview Questions: Routing, Middleware, and Localization</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section class="qna">
+            <h3>Q1: How is i18n routing handled in the App Router?</h3>
+            <div class="answer">
+                <p>Unlike the Pages Router, the App Router does not have built-in i18n configuration in <code>next.config.js</code>.</p>
+                <p><strong>Pattern:</strong> You typically use a dynamic route segment <code>[lang]</code> at the root of your <code>app</code> directory to wrap all routes.</p>
+                <p><code>app/[lang]/page.js</code></p>
+                <p>This allows you to access the <code>lang</code> param in every layout and page to fetch the correct dictionary.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q2: How do you detect and redirect the user to their preferred language?</h3>
+            <div class="answer">
+                <p><strong>Middleware:</strong> Use <code>middleware.js</code> to inspect the <code>Accept-Language</code> header or cookies.</p>
+                <p>If the URL is missing a locale (e.g., <code>/about</code>), the middleware determines the best locale (e.g., <code>en-US</code>) and redirects the user (e.g., to <code>/en-US/about</code>).</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q3: How do you handle translations in Server Components?</h3>
+            <div class="answer">
+                <p>Since Server Components run on the server, you can load translation files (JSON) directly from the file system or a database without bundling them to the client.</p>
+                <pre><code class="language-javascript">const dictionaries = {
+  en: () => import('./dictionaries/en.json').then((module) => module.default),
+  nl: () => import('./dictionaries/nl.json').then((module) => module.default),
+}
+
+export const getDictionary = async (locale) => dictionaries[locale]()</code></pre>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+
+    <script>
+        initLayout();
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

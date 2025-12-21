@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 3: Database & Eloquent - Laravel Guide</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Module 3: Database & Eloquent</h1>
+        <p>Advanced ORM, Relationships, and Performance</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section id="migrations">
+            <h2>Migrations & Schema</h2>
+            <p>Laravel 11 compresses default migrations into fewer files.</p>
+            <pre><code class="language-php">Schema::create('orders', function (Blueprint $table) {
+    $table->id();
+    $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+    $table->integer('total_cents');
+    $table->string('status')->default('pending')->index();
+    $table->json('metadata')->nullable();
+    $table->timestamps();
+});</code></pre>
+        </section>
+
+        <section id="relationships">
+            <h2>Relationships</h2>
+            <p>Defining relationships correctly is key to leveraging Eloquent.</p>
+            
+            <h3>Polymorphic Relationships</h3>
+            <p>Allow a model to belong to more than one other model on a single association.</p>
+            <pre><code class="language-php">class Comment extends Model {
+    public function commentable() {
+        return $this->morphTo();
+    }
+}
+
+class Post extends Model {
+    public function comments() {
+        return $this->morphMany(Comment::class, 'commentable');
+    }
+}
+
+class Video extends Model {
+    public function comments() {
+        return $this->morphMany(Comment::class, 'commentable');
+    }
+}</code></pre>
+        </section>
+
+        <section id="performance">
+            <h2>Performance Optimization</h2>
+            <p>The N+1 query problem is the most common performance bottleneck.</p>
+            
+            <h3>Eager Loading</h3>
+            <pre><code class="language-php">// Bad (N+1 problem)
+$books = Book::all();
+foreach ($books as $book) {
+    echo $book->author->name; // Triggers a query for each book
+}
+
+// Good (Eager Loading)
+$books = Book::with('author')->get(); // 2 queries total</code></pre>
+
+            <h3>Preventing N+1 in Development</h3>
+            <p>Strict mode helps catch these issues early.</p>
+            <pre><code class="language-php">// AppServiceProvider.php
+public function boot(): void
+{
+    Model::shouldBeStrict(! $this->app->isProduction());
+}</code></pre>
+            <p>This enables: <code>preventLazyLoading</code>, <code>preventSilentlyDiscardingAttributes</code>, and <code>preventAccessingMissingAttributes</code>.</p>
+        </section>
+
+        <section id="scopes">
+            <h2>Scopes</h2>
+            <p>Encapsulate common query logic.</p>
+            <pre><code class="language-php">// Local Scope
+public function scopeActive(Builder $query): void
+{
+    $query->where('active', 1);
+}
+
+// Usage
+$users = User::active()->get();</code></pre>
+        </section>
+
+        <section id="accessors">
+            <h2>Accessors & Mutators</h2>
+            <p>New syntax using <code>Attribute</code> class.</p>
+            <pre><code class="language-php">use Illuminate\Database\Eloquent\Casts\Attribute;
+
+protected function amount(): Attribute
+{
+    return Attribute::make(
+        get: fn (int $value) => $value / 100,
+        set: fn (float $value) => $value * 100,
+    );
+}</code></pre>
+        </section>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+
+    <script>
+        initLayout();
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

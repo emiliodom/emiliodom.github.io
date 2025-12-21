@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laravel Events & Listeners Interview Questions - Laravel Guide</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Events & Listeners</h1>
+        <p>Interview Questions: Observers, Broadcasting, and Decoupling</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section class="qna">
+            <h3>Q1: What is the difference between an Event and a Listener?</h3>
+            <div class="answer">
+                <p><strong>Event:</strong> A class that represents something that happened in the application (e.g., <code>OrderShipped</code>). It is a data container.</p>
+                <p><strong>Listener:</strong> A class that handles the logic in response to the event (e.g., <code>SendShipmentNotification</code>). It contains the business logic.</p>
+                <p><strong>Benefit:</strong> This decouples the code. The code firing the event doesn't need to know what happens next.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q2: What are Model Observers?</h3>
+            <div class="answer">
+                <p><strong>Concept:</strong> Observers allow you to group event listeners for a model into a single class.</p>
+                <p><strong>Methods:</strong> They hook into Eloquent lifecycle events like <code>creating</code>, <code>created</code>, <code>updating</code>, <code>deleted</code>, etc.</p>
+                <p><strong>Use Case:</strong> Automatically generating a slug when a post is created, or deleting associated files when a user is deleted.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q3: Explain Event Broadcasting.</h3>
+            <div class="answer">
+                <p><strong>Concept:</strong> Broadcasting allows you to share your server-side Laravel events with your client-side JavaScript application via WebSockets.</p>
+                <p><strong>Mechanism:</strong> When an event is fired, Laravel pushes a payload to a driver (Pusher, Reverb) which then sends it to the browser. The frontend (using Laravel Echo) listens for these events to update the UI in real-time.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+
+    <script>
+        initLayout();
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laravel Deployment Interview Questions - Laravel Guide</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Deployment & DevOps</h1>
+        <p>Interview Questions: Forge, Vapor, and Env Management</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section class="qna">
+            <h3>Q1: What is the difference between Laravel Forge and Laravel Vapor?</h3>
+            <div class="answer">
+                <p><strong>Forge:</strong> A server management tool. It provisions and manages traditional VPS servers (DigitalOcean, AWS EC2, Linode) for you. You still "own" the server.</p>
+                <p><strong>Vapor:</strong> A serverless deployment platform for AWS Lambda. It handles auto-scaling automatically, and you don't manage any servers.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q2: What steps are critical when deploying to production?</h3>
+            <div class="answer">
+                <ul>
+                    <li>Set <code>APP_ENV=production</code> and <code>APP_DEBUG=false</code>.</li>
+                    <li>Run optimizations: <code>config:cache</code>, <code>route:cache</code>, <code>view:cache</code>.</li>
+                    <li>Run database migrations: <code>migrate --force</code>.</li>
+                    <li>Install dependencies without dev packages: <code>composer install --optimize-autoloader --no-dev</code>.</li>
+                    <li>Compile assets: <code>npm run build</code>.</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q3: How do you manage environment variables securely?</h3>
+            <div class="answer">
+                <p><strong>.env file:</strong> Never commit this to version control.</p>
+                <p><strong>CI/CD:</strong> Inject secrets via your CI/CD provider (GitHub Actions secrets).</p>
+                <p><strong>Production:</strong> On Forge/Vapor, use their UI to manage environment variables, which are then injected into the server/lambda environment.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+
+    <script>
+        initLayout();
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

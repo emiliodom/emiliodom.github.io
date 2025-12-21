@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Next.js Interview: Caching</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Caching & Revalidation</h1>
+        <p>Mastering the Next.js Data Cache and Request Memoization.</p>
+    </header>
+    <nav></nav>
+    <main>
+        <section class="question">
+            <h3>Explain the 4 layers of caching in Next.js.</h3>
+            <ul>
+                <li><strong>Request Memoization:</strong> De-duplicates fetch requests within a single render pass.</li>
+                <li><strong>Data Cache:</strong> Persists fetch results across requests (server-side).</li>
+                <li><strong>Full Route Cache:</strong> Caches the HTML/RSC payload at build time (static).</li>
+                <li><strong>Router Cache:</strong> Client-side cache of visited routes for instant navigation.</li>
+            </ul>
+        </section>
+    </main>
+    <footer></footer>
+    <script>initLayout();</script>
+</body>
+</html>

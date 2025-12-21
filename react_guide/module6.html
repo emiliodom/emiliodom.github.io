@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Module 6: Global State Management</title>
-    <link rel="stylesheet" href="../assets/css/styles.css">
+    <link rel="icon" href="/assets/img/avatar-fallback.svg">
+    <link rel="stylesheet" href="/react_guide/styles.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
 </head>
 <body>
@@ -20,8 +21,11 @@
     <main>
         <h2>1. Core Concepts</h2>
         <p><strong>Global State:</strong> When data is needed by many disparate parts of the app (User Profile, Shopping Cart, Theme), Context can be slow or messy. We use libraries.</p>
-        <p><strong>Redux Toolkit (RTK):</strong> The industry standard. Uses a central "Store". You "dispatch" actions to modify the store. It's strict, verbose, but very predictable.</p>
-        <p><strong>Zustand:</strong> The modern favorite. Much simpler. Just a hook that returns your state and functions to update it. No complex providers needed.</p>
+        <p><strong>Redux Toolkit (RTK):</strong> The modern industry standard. It wraps Redux to reduce boilerplate.</p>
+        <div class="note" style="background: #fff3cd; padding: 1rem; border-left: 5px solid #ffc107; margin-bottom: 1rem;">
+            <strong>Legacy Context (Redux 4.x):</strong> Many enterprise codebases still use "plain" Redux (v4). You must understand <code>switch</code> statements in reducers, manual action creators, and immutable update patterns (<code>...state</code>). RTK handles this for you with Immer, but you should know what's happening under the hood.
+        </div>
+        <p><strong>Zustand:</strong> A lighter alternative gaining popularity for less complex apps.</p>
 
         <h3>1.1 Deep Dive: Prop Drilling vs. Composition</h3>
         <p>Before reaching for Redux, ask: "Can I solve this with Composition?"
@@ -93,6 +97,36 @@
             </div>
         </div>
 
+        <div class="jira-ticket">
+            <div class="jira-header">
+                <span class="jira-id">REQ-008</span>
+                <span class="jira-status">To Do</span>
+            </div>
+            <div class="jira-body">
+                <h3 class="jira-title">Complex State Management (Redux 4.x Legacy Support)</h3>
+                
+                <div class="jira-section">
+                    <span class="jira-label">User Story</span>
+                    <p>As a developer maintaining a legacy enterprise application, I need to understand and work with older Redux patterns while planning a migration to modern standards.</p>
+                </div>
+
+                <div class="jira-section">
+                    <span class="jira-label">Acceptance Criteria</span>
+                    <ul class="req-list">
+                        <li><strong>Legacy Implementation:</strong> Implement a feature using "Plain Redux" (v4 style):
+                            <ul>
+                                <li>Manual Action Types (constants).</li>
+                                <li>Switch-case Reducers.</li>
+                                <li>Immutable update patterns (spread operator hell).</li>
+                                <li><code>connect</code> HOC (Higher Order Component) for class components.</li>
+                            </ul>
+                        </li>
+                        <li><strong>Migration Plan:</strong> Document a strategy to incrementally migrate this legacy code to Redux Toolkit without breaking the app.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
         <h2>3. The Bug Hunt</h2>
         <div class="bug-hunt">
             <h3>🐛 Scenario: The Mutated State</h3>
@@ -118,6 +152,6 @@ return { ...state, items: state.items.push(newItem) }; // BUG!</code></pre>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-jsx.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-tsx.min.js"></script>
-    <script src="../assets/js/layout.js"></script>
+    <script src="/react_guide/layout.js"></script>
 </body>
 </html>

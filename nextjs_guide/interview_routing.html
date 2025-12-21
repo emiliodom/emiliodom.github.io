@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Routing Interview Questions - Next.js Guide</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Advanced Routing</h1>
+        <p>Interview Questions: Parallel Routes, Intercepting Routes, and Route Groups</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section class="qna">
+            <h3>Q1: What are Route Groups and how do they affect the URL structure?</h3>
+            <div class="answer">
+                <p><strong>Concept:</strong> Route Groups allow you to organize your route segments and project files into logical groups without affecting the URL path structure.</p>
+                <p><strong>Syntax:</strong> Wrap the folder name in parenthesis, e.g., <code>(marketing)</code> or <code>(shop)</code>.</p>
+                <p><strong>Use Case:</strong>
+                    <ul>
+                        <li>Organizing code (e.g., separating admin and user routes).</li>
+                        <li>Opting specific routes into different layouts (e.g., <code>(shop)/layout.js</code> vs <code>(marketing)/layout.js</code>).</li>
+                    </ul>
+                </p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q2: Explain Parallel Routes and their primary use case.</h3>
+            <div class="answer">
+                <p><strong>Concept:</strong> Parallel Routes allow you to simultaneously or conditionally render one or more pages within the same layout.</p>
+                <p><strong>Syntax:</strong> Defined using "slots" named with the <code>@folder</code> convention.</p>
+                <p><strong>Example:</strong> A dashboard layout can render <code>@team</code> and <code>@analytics</code> slots simultaneously. In <code>layout.js</code>, these are received as props.</p>
+                <pre><code class="language-javascript">export default function Layout({ children, team, analytics }) {
+  return (
+    <>
+      {children}
+      {team}
+      {analytics}
+    </>
+  )
+}</code></pre>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q3: What are Intercepting Routes?</h3>
+            <div class="answer">
+                <p><strong>Concept:</strong> Intercepting routes allow you to load a route from another part of your application within the current layout. This is useful when you want to display the content of a route without the user switching context.</p>
+                <p><strong>Syntax:</strong> <code>(.)folder</code> (same level), <code>(..)folder</code> (one level up), etc.</p>
+                <p><strong>Common Pattern:</strong> "Instagram-style" modals. When clicking a photo in a feed, it opens in a modal (intercepted). When refreshing the page or sharing the URL, it renders the full photo page.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+
+    <script>
+        initLayout();
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

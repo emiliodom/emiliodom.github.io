@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laravel Testing Interview Questions - Laravel Guide</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Testing in Laravel</h1>
+        <p>Interview Questions: PHPUnit, Pest, and Mocking</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section class="qna">
+            <h3>Q1: What is the difference between Feature and Unit tests in Laravel?</h3>
+            <div class="answer">
+                <p><strong>Unit Tests:</strong> Test a small, isolated piece of code (like a single method) without touching the database or external services. Fast execution.</p>
+                <p><strong>Feature Tests:</strong> Test a larger slice of the application, often starting from an HTTP request. They interact with the database, session, and other framework features.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q2: How do you test code that interacts with external APIs?</h3>
+            <div class="answer">
+                <p><strong>Mocking:</strong> You should never hit real external APIs in your test suite.</p>
+                <p><strong>Http::fake():</strong> Laravel provides a fluent way to mock the HTTP client.</p>
+                <pre><code class="language-php">Http::fake([
+    'github.com/*' => Http::response(['foo' => 'bar'], 200),
+]);</code></pre>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q3: What is Pest PHP?</h3>
+            <div class="answer">
+                <p><strong>Concept:</strong> A modern testing framework built on top of PHPUnit with a focus on simplicity and developer experience.</p>
+                <p><strong>Syntax:</strong> It uses a functional, Jest-like syntax (<code>it('does something', function () { ... })</code>) which is often more readable than the class-based structure of PHPUnit.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+
+    <script>
+        initLayout();
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

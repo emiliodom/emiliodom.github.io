@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 6: Database (Prisma) - Next.js Guide</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Module 6: Database Access</h1>
+        <p>Using Prisma ORM with Server Components</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section id="setup">
+            <h2>Setting up Prisma</h2>
+            <pre><code class="language-bash">npm install prisma --save-dev
+npm install @prisma/client
+npx prisma init</code></pre>
+            
+            <p>Define your schema in <code>prisma/schema.prisma</code>:</p>
+            <pre><code class="language-prisma">datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Post {
+  id        Int      @id @default(autoincrement())
+  title     String
+  content   String?
+  published Boolean  @default(false)
+}</code></pre>
+        </section>
+
+        <section id="singleton">
+            <h2>Prisma Client Singleton</h2>
+            <p>To prevent multiple instances of Prisma Client in development (due to hot reloading), use a singleton pattern.</p>
+            <pre><code class="language-javascript">// lib/prisma.js
+import { PrismaClient } from '@prisma/client'
+
+const prismaClientSingleton = () => {
+  return new PrismaClient()
+}
+
+const globalForPrisma = globalThis
+
+const prisma = globalForPrisma.prisma ?? prismaClientSingleton()
+
+export default prisma
+
+if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma</code></pre>
+        </section>
+
+        <section id="fetching">
+            <h2>Fetching Data</h2>
+            <p>Fetch data directly in Server Components. No <code>useEffect</code> needed.</p>
+            <pre><code class="language-javascript">// app/page.js
+import prisma from '@/lib/prisma'
+
+export default async function Home() {
+  const posts = await prisma.post.findMany({
+    where: { published: true },
+    orderBy: { id: 'desc' }
+  })
+
+  return (
+    <ul>
+      {posts.map(post => (
+        <li key={post.id}>{post.title}</li>
+      ))}
+    </ul>
+  )
+}</code></pre>
+        </section>
+
+        <section id="mutations">
+            <h2>Mutations</h2>
+            <p>Combine Prisma with Server Actions to mutate data.</p>
+            <pre><code class="language-javascript">// app/actions.js
+'use server'
+import prisma from '@/lib/prisma'
+import { revalidatePath } from 'next/cache'
+
+export async function createPost(formData) {
+  const title = formData.get('title')
+  
+  await prisma.post.create({
+    data: { title }
+  })
+  
+  revalidatePath('/')
+}</code></pre>
+        </section>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+
+    <script>
+        initLayout();
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

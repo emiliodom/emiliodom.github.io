@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Next.js Interview: Server Actions</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Server Actions & Mutations</h1>
+        <p>Handling form submissions and data updates in the App Router.</p>
+    </header>
+    <nav></nav>
+    <main>
+        <section class="question">
+            <h3>What are Server Actions and how do they differ from API Routes?</h3>
+            <p>Server Actions are asynchronous functions that run on the server but can be invoked from Client Components. Unlike API routes, they don't require manually creating a separate endpoint file; Next.js handles the RPC (Remote Procedure Call) layer automatically.</p>
+        </section>
+        <section class="question">
+            <h3>How do you handle pending states in Server Actions?</h3>
+            <p>Using the <code>useFormStatus</code> hook in a Client Component rendered inside the form. It provides a <code>pending</code> boolean.</p>
+        </section>
+    </main>
+    <footer></footer>
+    <script>initLayout();</script>
+</body>
+</html>

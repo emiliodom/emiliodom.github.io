@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>State Management Interview Questions - Next.js Guide</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>State Management</h1>
+        <p>Interview Questions: URL State, Context, and Server State</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section class="qna">
+            <h3>Q1: Why is URL State preferred over React State for filters and pagination?</h3>
+            <div class="answer">
+                <p><strong>Shareability:</strong> Users can copy and share the URL with the exact filters applied.</p>
+                <p><strong>Bookmarkability:</strong> Users can bookmark the search results.</p>
+                <p><strong>Server Rendering:</strong> The server can read the URL parameters (<code>searchParams</code>) and render the initial HTML with the correct data, avoiding a loading spinner on hydration.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q2: How do you share state between Server and Client Components?</h3>
+            <div class="answer">
+                <p>You cannot pass state directly from Client to Server (the boundary is one-way). However, you can pass data from Server to Client as props.</p>
+                <p><strong>Pattern:</strong></p>
+                <ol>
+                    <li>Fetch data in a Server Component.</li>
+                    <li>Pass it as a prop to a Client Component (Context Provider).</li>
+                    <li>The Client Component uses <code>useState</code> to initialize its state with the server data.</li>
+                </ol>
+                <p><strong>Note:</strong> Props passed from Server to Client must be serializable (JSON-like).</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q3: Is Redux or Zustand still relevant in Next.js App Router?</h3>
+            <div class="answer">
+                <p><strong>Less Relevant:</strong> Much of what we used global state for (server data caching) is now handled by Next.js fetch cache and React Query.</p>
+                <p><strong>Still Useful:</strong> For complex <em>client-only</em> state that doesn't need to persist in the URL, like a complex multi-step form wizard, a music player state, or a shopping cart that persists across navigation.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+
+    <script>
+        initLayout();
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

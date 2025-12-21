@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 1: Modern PHP & Setup</title>
+    <link rel="icon" href="/assets/img/avatar-fallback.svg">
+    <link rel="stylesheet" href="/laravel_guide/styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+</head>
+<body>
+    <header>
+        <h1>Module 1: Modern PHP & Setup</h1>
+        <p>PHP 8.2+, Docker (Sail), and Environment Configuration.</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <h2>1. Modern PHP (8.2+)</h2>
+        <p>Laravel 12 requires modern PHP. If you are still writing PHP 5 or 7 style code, you need to upgrade your mental model.</p>
+
+        <div class="highlight-box">
+            <h3>Key Features to Master</h3>
+            <ul>
+                <li><strong>Typed Properties:</strong> <code>public string $name;</code></li>
+                <li><strong>Constructor Promotion:</strong> <code>public function __construct(public string $name) {}</code></li>
+                <li><strong>Union Types:</strong> <code>public function find(int|string $id)</code></li>
+                <li><strong>Match Expressions:</strong> A cleaner <code>switch</code> statement.</li>
+                <li><strong>Readonly Classes:</strong> Immutable data objects (DTOs).</li>
+            </ul>
+        </div>
+
+        <h2>2. The Environment (Docker/Sail)</h2>
+        <p>The job requires knowledge of <strong>Linux</strong>, <strong>Nginx</strong>, <strong>MySQL</strong>, and <strong>Redis</strong>. The best way to simulate this locally is using <strong>Laravel Sail</strong>, which wraps Docker.</p>
+
+        <div class="task">
+            <h3>Task: Initialize the Project</h3>
+            <ol>
+                <li>Open your terminal (WSL2 on Windows, or native Terminal on Mac/Linux).</li>
+                <li>Run: <code>curl -s "https://laravel.build/laravel-senior-app?with=mysql,redis" | bash</code></li>
+                <li>Navigate to the folder: <code>cd laravel-senior-app</code></li>
+                <li>Start the environment: <code>./vendor/bin/sail up -d</code></li>
+            </ol>
+            <p><em>Note: This sets up a containerized environment with PHP, MySQL, and Redis, matching the job requirements.</em></p>
+        </div>
+
+        <h2>3. The Build Challenge: "Strict DTO"</h2>
+        <div class="task">
+            <h3>Requirements</h3>
+            <p>Create a plain PHP class (no Laravel yet) to demonstrate PHP 8.2 mastery.</p>
+            <ul>
+                <li>Create a class <code>UserData</code>.</li>
+                <li>It should be a <strong>readonly</strong> class.</li>
+                <li>Use <strong>Constructor Property Promotion</strong>.</li>
+                <li>Properties:
+                    <ul>
+                        <li><code>name</code> (string)</li>
+                        <li><code>email</code> (string)</li>
+                        <li><code>role</code> (Enum: 'Admin', 'User') - Create a PHP Enum for this.</li>
+                    </ul>
+                </li>
+                <li>Add a method <code>toArray()</code> that returns an associative array.</li>
+            </ul>
+        </div>
+
+        <div class="jira-ticket">
+            <div class="jira-header">
+                <span class="jira-id">INFRA-001</span>
+                <span class="jira-status">Configuration</span>
+            </div>
+            <div class="jira-body">
+                <h3 class="jira-title">Database & Redis Configuration</h3>
+                
+                <div class="jira-section">
+                    <span class="jira-label">User Story</span>
+                    <p>As a DevOps engineer, I need the application to connect to MySQL and Redis using environment variables.</p>
+                </div>
+
+                <div class="jira-section">
+                    <span class="jira-label">Acceptance Criteria</span>
+                    <ul class="req-list">
+                        <li>Verify <code>.env</code> file exists.</li>
+                        <li>Ensure <code>DB_CONNECTION=mysql</code> and <code>REDIS_CLIENT=phpredis</code>.</li>
+                        <li><strong>Challenge:</strong> Connect to the running MySQL container using a GUI tool (TablePlus, DBeaver) using the credentials in <code>.env</code>.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <h2>4. The Bug Hunt</h2>
+        <div class="bug-hunt">
+            <h3>🐛 Scenario: The Loose Type</h3>
+            <p><strong>The Setup:</strong></p>
+            <pre><code class="language-php">function add($a, $b) {
+    return $a + $b;
+}
+echo add("5 dogs", 10); // PHP used to allow this!</code></pre>
+            <p><strong>The Bug:</strong> In older PHP, this might output <code>15</code> with a warning. In PHP 8+, this is a <code>TypeError</code> or <code>ValueError</code> depending on strictness.</p>
+            <p><strong>The Task:</strong></p>
+            <ol>
+                <li>Add <code>declare(strict_types=1);</code> to the top of your file.</li>
+                <li>Type hint the function: <code>function add(int $a, int $b): int</code>.</li>
+                <li>Observe the error when passing a string. This is how we prevent bugs in Enterprise apps.</li>
+            </ol>
+        </div>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-php.min.js"></script>
+    <script src="/laravel_guide/layout.js"></script>
+</body>
+</html>

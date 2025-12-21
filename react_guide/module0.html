@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Module 0: JS Prerequisites</title>
-    <link rel="stylesheet" href="../assets/css/styles.css">
+    <link rel="icon" href="/assets/img/avatar-fallback.svg">
+    <link rel="stylesheet" href="/react_guide/styles.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
 </head>
 <body>
@@ -93,10 +94,20 @@ console.log(user.address.city); // What does this print?</code></pre>
             <ol>
                 <li>Explain <strong>Shallow Copy</strong> vs <strong>Deep Copy</strong>.</li>
                 <li>Fix the code so that <code>user</code> is not affected (use nested spread or <code>structuredClone</code>).</li>
+                <li>Explain why <code>updatedUser</code> is not a deep copy.</li>
+                <li>Fix it using <code>structuredClone()</code> or JSON parse/stringify.</li>
             </ol>
         </div>
 
-        <h2>4. Test on your own</h2>
+        <h2>4. Node.js Fundamentals</h2>
+        <p>Full-stack awareness is required. You don't need to be a backend expert, but you must understand the environment your React app interacts with.</p>
+        <ul>
+            <li><strong>Runtime:</strong> Node.js allows JS to run outside the browser (Server-side).</li>
+            <li><strong>NPM/Yarn:</strong> Managing dependencies in <code>package.json</code>.</li>
+            <li><strong>Scripts:</strong> How <code>npm run build</code> triggers a Node script to compile your React code.</li>
+        </ul>
+
+        <h2>5. Test on your own</h2>
         <div class="task">
             <h3>Verify your JS Knowledge</h3>
             <ul>
@@ -112,6 +123,6 @@ console.log(user.address.city); // What does this print?</code></pre>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
-    <script src="../assets/js/layout.js"></script>
+    <script src="/react_guide/layout.js"></script>
 </body>
 </html>

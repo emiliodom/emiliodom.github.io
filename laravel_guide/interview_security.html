@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laravel Security Interview Questions - Laravel Guide</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Security Best Practices</h1>
+        <p>Interview Questions: CSRF, XSS, SQL Injection, and Policies</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section class="qna">
+            <h3>Q1: How does Laravel protect against CSRF attacks?</h3>
+            <div class="answer">
+                <p><strong>Mechanism:</strong> Laravel automatically generates a CSRF "token" for each active user session. This token is verified by the <code>VerifyCsrfToken</code> middleware for all POST, PUT, PATCH, and DELETE requests.</p>
+                <p><strong>Usage:</strong> You must include <code>@csrf</code> in your Blade forms.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q2: How do you prevent SQL Injection in Laravel?</h3>
+            <div class="answer">
+                <p><strong>Eloquent/Query Builder:</strong> Laravel uses PDO parameter binding by default. This means inputs are never injected directly into the query string but are sent separately to the database driver.</p>
+                <p><strong>Risk:</strong> Raw queries (<code>DB::raw()</code>) are the only place where you are vulnerable if you manually concatenate strings instead of using bindings.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q3: What are Gates and Policies?</h3>
+            <div class="answer">
+                <p><strong>Gates:</strong> Closure-based authorization checks. Good for simple, unrelated actions (e.g., <code>Gate::allows('access-admin')</code>).</p>
+                <p><strong>Policies:</strong> Classes that organize authorization logic around a specific model (e.g., <code>PostPolicy</code> with methods like <code>view</code>, <code>create</code>, <code>update</code>).</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+
+    <script>
+        initLayout();
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

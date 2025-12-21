@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 2: Routing & Layouts - Next.js Guide</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Module 2: Routing & Layouts</h1>
+        <p>Mastering the File-System Based Router in the App Directory</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section id="file-conventions">
+            <h2>Special File Conventions</h2>
+            <p>The App Router uses specific file names to define UI and behavior.</p>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>File</th>
+                            <th>Purpose</th>
+                            <th>Component Type</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>page.js</code></td>
+                            <td>The UI for a route. Makes the path accessible.</td>
+                            <td>Server (default)</td>
+                        </tr>
+                        <tr>
+                            <td><code>layout.js</code></td>
+                            <td>Shared UI for a segment and its children. Preserves state on navigation.</td>
+                            <td>Server (default)</td>
+                        </tr>
+                        <tr>
+                            <td><code>template.js</code></td>
+                            <td>Similar to layout, but creates a new instance on navigation.</td>
+                            <td>Server (default)</td>
+                        </tr>
+                        <tr>
+                            <td><code>loading.js</code></td>
+                            <td>Loading UI (React Suspense boundary).</td>
+                            <td>Client or Server</td>
+                        </tr>
+                        <tr>
+                            <td><code>not-found.js</code></td>
+                            <td>UI for 404 errors.</td>
+                            <td>Client</td>
+                        </tr>
+                        <tr>
+                            <td><code>error.js</code></td>
+                            <td>Error UI (React Error Boundary). Must be a Client Component.</td>
+                            <td>Client</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="dynamic-routes">
+            <h2>Dynamic Routing</h2>
+            <p>Handle dynamic segments using square brackets.</p>
+            
+            <h3>1. Basic Dynamic Segment</h3>
+            <p><code>app/blog/[slug]/page.js</code> matches <code>/blog/hello-world</code></p>
+            <pre><code class="language-javascript">// app/blog/[slug]/page.js
+export default function BlogPost({ params }) {
+  return <div>Post ID: {params.slug}</div>
+}</code></pre>
+
+            <h3>2. Catch-all Segments</h3>
+            <p><code>app/docs/[...slug]/page.js</code> matches <code>/docs/a</code>, <code>/docs/a/b</code></p>
+            <pre><code class="language-javascript">// params.slug will be an array: ['a', 'b']</code></pre>
+
+            <h3>3. Optional Catch-all</h3>
+            <p><code>app/docs/[[...slug]]/page.js</code> also matches <code>/docs</code> (no params).</p>
+        </section>
+
+        <section id="advanced-routing">
+            <h2>Advanced Patterns</h2>
+            
+            <div class="card">
+                <h3>Route Groups <code>(folder)</code></h3>
+                <p>Organize routes without affecting the URL path. Useful for opting out of a layout.</p>
+                <ul>
+                    <li><code>app/(marketing)/about/page.js</code> -> <code>/about</code></li>
+                    <li><code>app/(shop)/cart/page.js</code> -> <code>/cart</code></li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>Parallel Routes <code>@folder</code></h3>
+                <p>Render multiple pages in the same layout simultaneously (e.g., Dashboards).</p>
+                <pre><code class="language-javascript">// app/layout.js
+export default function Layout({ children, team, analytics }) {
+  return (
+    <>
+      {children}
+      {team}      {/* mapped to app/@team/page.js */}
+      {analytics} {/* mapped to app/@analytics/page.js */}
+    </>
+  )
+}</code></pre>
+            </div>
+        </section>
+
+        <section id="navigation">
+            <h2>Navigation</h2>
+            <p>Use the <code>&lt;Link&gt;</code> component for client-side navigation.</p>
+            <pre><code class="language-javascript">import Link from 'next/link'
+
+export default function Nav() {
+  return (
+    <nav>
+      <Link href="/dashboard" prefetch={true}>Dashboard</Link>
+      <Link href={`/blog/${slug}`}>Post</Link>
+    </nav>
+  )
+}</code></pre>
+            <p><strong>Programmatic Navigation:</strong> Use <code>useRouter</code> from <code>next/navigation</code> (Client Components only) or <code>redirect</code> (Server Components).</p>
+        </section>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+
+    <script>
+        initLayout();
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

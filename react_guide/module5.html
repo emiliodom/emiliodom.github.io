@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Module 5: Advanced Patterns</title>
-    <link rel="stylesheet" href="../assets/css/styles.css">
+    <link rel="icon" href="/assets/img/avatar-fallback.svg">
+    <link rel="stylesheet" href="/react_guide/styles.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
 </head>
 <body>
@@ -84,6 +85,23 @@
             </div>
         </div>
 
+        <div class="jira-ticket">
+            <div class="jira-header">
+                <span class="jira-id">REQ-007</span>
+                <span class="jira-title">Complex State with useReducer</span>
+            </div>
+            <div class="jira-body">
+                <p><strong>User Story:</strong> As a developer, I need to manage a complex shopping cart state where multiple actions (add, remove, update quantity, clear) affect the same data.</p>
+                <p><strong>Acceptance Criteria:</strong></p>
+                <ul>
+                    <li>Create a `cartReducer` function.</li>
+                    <li>Handle actions: `ADD_ITEM`, `REMOVE_ITEM`, `UPDATE_QTY`, `CLEAR_CART`.</li>
+                    <li>Use `useReducer` in the `CartContext`.</li>
+                    <li>Ensure state updates are immutable.</li>
+                </ul>
+            </div>
+        </div>
+
         <h2>3. The Bug Hunt</h2>
         <div class="bug-hunt">
             <h3>🐛 Scenario: The Expensive Calculation</h3>
@@ -109,6 +127,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-jsx.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-tsx.min.js"></script>
-    <script src="../assets/js/layout.js"></script>
+    <script src="/react_guide/layout.js"></script>
 </body>
 </html>

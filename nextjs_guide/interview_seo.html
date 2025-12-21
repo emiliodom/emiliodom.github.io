@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SEO & Metadata Interview Questions - Next.js Guide</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>SEO & Metadata</h1>
+        <p>Interview Questions: Metadata API, Sitemaps, and Open Graph</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section class="qna">
+            <h3>Q1: How do you define Metadata in the App Router?</h3>
+            <div class="answer">
+                <p><strong>Static Metadata:</strong> Export a <code>metadata</code> object from a <code>layout.js</code> or <code>page.js</code> file.</p>
+                <pre><code class="language-javascript">export const metadata = {
+  title: 'My Page',
+  description: 'This is a description',
+}</code></pre>
+                <p><strong>Dynamic Metadata:</strong> Export a <code>generateMetadata</code> function.</p>
+                <pre><code class="language-javascript">export async function generateMetadata({ params }) {
+  const product = await getProduct(params.id)
+  return {
+    title: product.name,
+  }
+}</code></pre>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q2: How does Metadata merging work?</h3>
+            <div class="answer">
+                <p>Metadata is evaluated in order from the root layout down to the page.</p>
+                <ul>
+                    <li><strong>Inheritance:</strong> A page inherits metadata from its parent layout.</li>
+                    <li><strong>Overriding:</strong> If a page defines a property (e.g., <code>title</code>), it overrides the value from the layout.</li>
+                    <li><strong>Templates:</strong> You can define a <code>title.template</code> in the root layout (e.g., <code>%s | Acme Corp</code>) so child pages only need to provide the specific title part.</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q3: How do you generate a Sitemap and Robots.txt?</h3>
+            <div class="answer">
+                <p>Next.js supports special file conventions in the <code>app/</code> directory:</p>
+                <ul>
+                    <li><strong><code>sitemap.js</code> (or .ts):</strong> Export a default function that returns an array of URLs.</li>
+                    <li><strong><code>robots.js</code> (or .ts):</strong> Export a default function that returns the robots configuration object.</li>
+                </ul>
+                <p>These files are automatically converted into <code>sitemap.xml</code> and <code>robots.txt</code> at build time (or request time if dynamic).</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+
+    <script>
+        initLayout();
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

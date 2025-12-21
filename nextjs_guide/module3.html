@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 3: Server Actions - Next.js Guide</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Module 3: Server Actions</h1>
+        <p>Mutating Data directly from the Server</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section id="concept">
+            <h2>What are Server Actions?</h2>
+            <p>Server Actions are asynchronous functions that are executed on the server. They can be called from Server Components or Client Components to handle form submissions and data mutations.</p>
+            <div class="warning">
+                <strong>Security Note:</strong> Server Actions create a public HTTP endpoint. Always validate inputs and check authorization inside the action.
+            </div>
+        </section>
+
+        <section id="implementation">
+            <h2>Defining Actions</h2>
+            
+            <h3>1. Inline in Server Components</h3>
+            <pre><code class="language-javascript">// app/page.js (Server Component)
+export default function Page() {
+  async function createPost(formData) {
+    'use server' // Directive is crucial
+    const title = formData.get('title')
+    await db.post.create({ data: { title } })
+  }
+
+  return (
+    &lt;form action={createPost}&gt;
+      &lt;input type="text" name="title" /&gt;
+      &lt;button type="submit"&gt;Create&lt;/button&gt;
+    &lt;/form&gt;
+  )
+}</code></pre>
+
+            <h3>2. Separate File (Recommended for Reusability)</h3>
+            <pre><code class="language-javascript">// app/actions.js
+'use server'
+
+import { revalidatePath } from 'next/cache'
+import { redirect } from 'next/navigation'
+
+// Note: prevState is required when using useFormState
+export async function createPost(prevState, formData) {
+  const title = formData.get('title')
+  
+  // 1. Validate
+  if (!title) return { error: 'Title required' }
+
+  // 2. Mutate
+  await db.post.create({ data: { title } })
+
+  // 3. Revalidate Cache
+  revalidatePath('/posts')
+
+  // 4. Redirect
+  redirect('/posts')
+}</code></pre>
+        </section>
+
+        <section id="client-usage">
+            <h2>Using in Client Components</h2>
+            <p>You can import server actions into Client Components.</p>
+            <pre><code class="language-javascript">// app/ui/button.js
+'use client'
+
+import { createPost } from '@/app/actions'
+
+export default function Button() {
+  return (
+    &lt;button onClick={async () => {
+      await createPost(new FormData())
+    }}&gt;
+      Click me
+    &lt;/button&gt;
+  )
+}</code></pre>
+        </section>
+
+        <section id="pending-states">
+            <h2>Pending States</h2>
+            <p>Use <code>useFormStatus</code> to show loading indicators during form submission.</p>
+            <pre><code class="language-javascript">'use client'
+import { useFormStatus } from 'react-dom'
+
+function SubmitButton() {
+  const { pending } = useFormStatus()
+  
+  return (
+    &lt;button disabled={pending}&gt;
+      {pending ? 'Saving...' : 'Save'}
+    &lt;/button&gt;
+  )
+}</code></pre>
+        </section>
+
+        <section id="error-handling">
+            <h2>Error Handling</h2>
+            <p>Use <code>useFormState</code> (or <code>useActionState</code> in React 19) to handle return values and errors.</p>
+            <pre><code class="language-javascript">'use client'
+import { useFormState } from 'react-dom'
+import { createPost } from '@/app/actions'
+
+const initialState = { message: null, errors: {} }
+
+export default function Form() {
+  const [state, dispatch] = useFormState(createPost, initialState)
+
+  return (
+    &lt;form action={dispatch}&gt;
+      &lt;input name="title" /&gt;
+      {state?.errors?.title && &lt;p&gt;{state.errors.title}&lt;/p&gt;}
+      &lt;button&gt;Save&lt;/button&gt;
+    &lt;/form&gt;
+  )
+}</code></pre>
+        </section>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+
+    <script>
+        initLayout();
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

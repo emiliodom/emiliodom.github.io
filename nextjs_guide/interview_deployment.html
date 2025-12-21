@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deployment & Performance Interview Questions - Next.js Guide</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Deployment & Performance</h1>
+        <p>Interview Questions: Optimization, Vercel, and Auth</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section class="qna">
+            <h3>Q1: What is the Edge Runtime and when should you use it?</h3>
+            <div class="answer">
+                <p><strong>Concept:</strong> A lightweight runtime based on Web Standards (V8) that starts instantly and runs closer to the user (CDN edge locations). It does not support all Node.js APIs.</p>
+                <p><strong>Use Cases:</strong> Middleware (redirects, rewrites, auth checks), simple API routes, or personalized content that needs low latency.</p>
+                <p><strong>Trade-off:</strong> You cannot use libraries that rely on Node.js specific APIs (like <code>fs</code> or some database drivers) unless they are "Edge compatible".</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q2: How does <code>next/image</code> optimize performance?</h3>
+            <div class="answer">
+                <ul>
+                    <li><strong>Size Optimization:</strong> Automatically serves correctly sized images for each device (WebP/AVIF).</li>
+                    <li><strong>Visual Stability:</strong> Prevents Layout Shift (CLS) by requiring width/height or aspect ratio.</li>
+                    <li><strong>Lazy Loading:</strong> Images are only loaded when they enter the viewport (default behavior).</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q3: Explain how Middleware works in Next.js.</h3>
+            <div class="answer">
+                <p>Middleware runs <strong>before</strong> a request completes. It allows you to modify the response by rewriting, redirecting, modifying request headers, or responding directly.</p>
+                <p><strong>Common Use Case:</strong> Authentication. Checking if a user has a valid session cookie before allowing access to protected routes.</p>
+                <pre><code class="language-javascript">export function middleware(request) {
+  if (request.nextUrl.pathname.startsWith('/dashboard')) {
+    // Check auth...
+  }
+}</code></pre>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q4: How do you optimize fonts in Next.js?</h3>
+            <div class="answer">
+                <p>Using <code>next/font</code> (Google or Local):</p>
+                <ul>
+                    <li><strong>Self-hosting:</strong> Fonts are downloaded at build time and hosted with your other static assets. No external requests to Google.</li>
+                    <li><strong>Zero Layout Shift:</strong> Next.js uses a fallback font with size-adjust metrics to match the custom font, swapping it seamlessly once loaded.</li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+
+    <script>
+        initLayout();
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Next.js Competence Roadmap</title>
+    <link rel="icon" href="/assets/img/avatar-fallback.svg">
+    <link rel="stylesheet" href="/nextjs_guide/styles.css">
+</head>
+<body>
+    <header>
+        <h1>Next.js 14+ App Router: Zero to Production</h1>
+        <p>Mastering Server Components, Server Actions, and the Modern Web.</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <h2>Introduction</h2>
+        <p>React is the library. Next.js is the framework. This guide focuses on the <strong>App Router</strong> paradigm, which fundamentally changes how we build React applications by moving logic to the server.</p>
+
+        <div class="bug-hunt" style="background: #fff3cd; border-color: #ffeeba; color: #856404;">
+            <h3>⚠️ The Paradigm Shift</h3>
+            <ul>
+                <li><strong>Forget `useEffect` for data fetching:</strong> We fetch directly in async components.</li>
+                <li><strong>Forget `API Routes` for forms:</strong> We use Server Actions.</li>
+                <li><strong>Default is Server:</strong> Components are server-side by default. You must opt-in to client-side.</li>
+            </ul>
+        </div>
+
+        <div class="task" style="background: #d4edda; border-color: #c3e6cb; color: #155724;">
+            <h3>🎯 Expected Outcome</h3>
+            <p>By the end of this guide, you will be able to:</p>
+            <ul>
+                <li>Build full-stack applications without a separate backend API.</li>
+                <li>Understand the <strong>Network Boundary</strong> between Server and Client.</li>
+                <li>Implement <strong>Streaming</strong> and <strong>Suspense</strong> for instant UI feedback.</li>
+                <li>Manage database connections safely in a serverless environment.</li>
+                <li>Deploy to Vercel with Edge caching strategies.</li>
+            </ul>
+        </div>
+
+        <h3>How to use this guide</h3>
+        <ol>
+            <li><strong>Prerequisites:</strong> You must know React (Hooks, Props, State). If not, go to the <a href="/react_guide/index.html">React Guide</a> first.</li>
+            <li><strong>The "No-Copy" Rule:</strong> Type every line of code.</li>
+            <li><strong>Environment:</strong> We will use `create-next-app` with TypeScript and Tailwind CSS.</li>
+        </ol>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+    <script src="/nextjs_guide/layout.js"></script>
+</body>
+</html>

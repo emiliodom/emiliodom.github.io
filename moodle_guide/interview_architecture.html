@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moodle Architecture Interview Questions</title>
+    <link rel="stylesheet" href="../assets/css/moodle_styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="../assets/js/moodle_layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Architecture & Core</h1>
+        <p>Interview Questions: Lifecycle, Contexts, and File Structure</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section class="qna">
+            <h3>Q1: Explain the Moodle Request Lifecycle.</h3>
+            <div class="answer">
+                <p>1. <strong>config.php:</strong> The entry point loads the database configuration.</p>
+                <p>2. <strong>setup.php:</strong> Initializes the <code>$CFG</code>, <code>$DB</code>, <code>$SESSION</code>, <code>$USER</code>, <code>$PAGE</code>, and <code>$OUTPUT</code> globals.</p>
+                <p>3. <strong>Script Execution:</strong> The specific script (e.g., <code>course/view.php</code>) runs, checks permissions, and prepares data.</p>
+                <p>4. <strong>Output:</strong> The script calls <code>$OUTPUT->header()</code>, content, and <code>$OUTPUT->footer()</code> to render the page using the active theme.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q2: What is the purpose of the $PAGE global?</h3>
+            <div class="answer">
+                <p>The <code>$PAGE</code> global (instance of <code>moodle_page</code>) holds the state of the page being generated. It manages:</p>
+                <ul>
+                    <li>The URL and Context.</li>
+                    <li>The Title and Heading.</li>
+                    <li>Required JavaScript and CSS (Requirements Manager).</li>
+                    <li>Navigation and Breadcrumbs.</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q3: How does the Context system work?</h3>
+            <div class="answer">
+                <p>Contexts define the "scope" where a user has a specific role or capability. They are hierarchical:</p>
+                <p><code>System > Category > Course > Module > Block</code></p>
+                <p>Permissions are checked against a specific context instance using <code>has_capability()</code> or <code>require_capability()</code>.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+
+    <script>
+        initLayout();
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

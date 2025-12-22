@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 1: Moodle Architecture</title>
+    <link rel="stylesheet" href="../assets/css/moodle_styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="../assets/js/moodle_layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Module 1: Moodle Architecture</h1>
+        <p>Understanding the Core Structure and Lifecycle</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section>
+            <h2>1. Directory Structure</h2>
+            <p>Moodle's root directory contains several key folders:</p>
+            <ul>
+                <li><code>/admin</code>: Administration tools.</li>
+                <li><code>/auth</code>: Authentication plugins.</li>
+                <li><code>/blocks</code>: Side blocks.</li>
+                <li><code>/course</code>: Course management code.</li>
+                <li><code>/lib</code>: Core libraries and APIs.</li>
+                <li><code>/local</code>: Local customizations (best place for site-wide hacks).</li>
+                <li><code>/mod</code>: Activity modules (Assignment, Quiz, Forum).</li>
+                <li><code>/theme</code>: Visual themes.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2. The Global $PAGE and $OUTPUT</h2>
+            <p>Moodle uses global objects to manage the page state and rendering.</p>
+            <pre><code class="language-php">// Setting up the page
+$PAGE->set_url('/local/myplugin/index.php');
+$PAGE->set_context(context_system::instance());
+$PAGE->set_title('My Plugin Page');
+$PAGE->set_heading('Welcome to My Plugin');
+
+// Outputting content
+echo $OUTPUT->header();
+echo $OUTPUT->heading('Hello World');
+echo $OUTPUT->footer();</code></pre>
+        </section>
+
+        <section>
+            <h2>3. Contexts and Permissions</h2>
+            <p>Permissions in Moodle are hierarchical based on "Contexts".</p>
+            <ul>
+                <li><strong>System:</strong> Global level.</li>
+                <li><strong>Category:</strong> Course category.</li>
+                <li><strong>Course:</strong> Specific course.</li>
+                <li><strong>Module:</strong> Specific activity (e.g., a Quiz).</li>
+                <li><strong>Block:</strong> Specific block.</li>
+                <li><strong>User:</strong> User profile.</li>
+            </ul>
+            <pre><code class="language-php">$context = context_course::instance($courseid);
+require_capability('mod/quiz:view', $context);</code></pre>
+        </section>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+
+    <script>
+        initLayout();
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

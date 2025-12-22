@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 2: Plugin Development</title>
+    <link rel="stylesheet" href="../assets/css/moodle_styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="../assets/js/moodle_layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Module 2: Plugin Development</h1>
+        <p>Creating Custom Functionality</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section>
+            <h2>1. Anatomy of a Plugin</h2>
+            <p>Every plugin requires a <code>version.php</code> file to define its identity.</p>
+            <pre><code class="language-php">// version.php
+defined('MOODLE_INTERNAL') || die();
+
+$plugin->component = 'local_myplugin'; // Full name of the plugin
+$plugin->version   = 2023101000;       // YYYYMMDDXX
+$plugin->requires  = 2022112800;       // Requires Moodle 4.1+
+$plugin->maturity  = MATURITY_STABLE;
+$plugin->release   = 'v1.0';</code></pre>
+        </section>
+
+        <section>
+            <h2>2. Language Strings</h2>
+            <p>Strings are stored in <code>lang/en/local_myplugin.php</code>.</p>
+            <pre><code class="language-php">// lang/en/local_myplugin.php
+$string['pluginname'] = 'My Custom Plugin';
+$string['welcome'] = 'Welcome to my plugin!';</code></pre>
+            <p>Usage:</p>
+            <pre><code class="language-php">echo get_string('welcome', 'local_myplugin');</code></pre>
+        </section>
+
+        <section>
+            <h2>3. Database Tables (XMLDB)</h2>
+            <p>Database schemas are defined in <code>db/install.xml</code>. You can use the XMLDB editor in the admin panel to generate this file.</p>
+        </section>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+
+    <script>
+        initLayout();
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

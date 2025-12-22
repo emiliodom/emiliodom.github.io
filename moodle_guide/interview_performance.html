@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moodle Performance & Scale Interview Questions</title>
+    <link rel="stylesheet" href="../assets/css/moodle_styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="../assets/js/moodle_layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Performance & Scale</h1>
+        <p>Interview Questions: Caching, Sessions, and Optimization</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section class="qna">
+            <h3>Q1: How would you optimize Moodle for 500,000 users?</h3>
+            <div class="answer">
+                <ul>
+                    <li><strong>Caching:</strong> Configure MUC to use Redis for Application and Session caches.</li>
+                    <li><strong>Database:</strong> Use a Master-Slave replication setup. Offload read-heavy operations (reports) to the slave.</li>
+                    <li><strong>Web Servers:</strong> Load balance multiple web servers (Nginx/Apache) behind a proxy (HAProxy/AWS ALB).</li>
+                    <li><strong>Files:</strong> Use an external object store (S3) or a shared high-performance file system (NFS/EFS) for <code>moodledata</code>.</li>
+                    <li><strong>Cron:</strong> Ensure cron runs frequently (every minute) to process background tasks.</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q2: What is the Moodle Universal Cache (MUC)?</h3>
+            <div class="answer">
+                <p>MUC is Moodle's unified caching system. It allows administrators to configure different cache stores (File, Session, Redis, Memcached) for different cache definitions (Language strings, Database meta-data, Course contacts) without changing code.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+
+    <script>
+        initLayout();
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

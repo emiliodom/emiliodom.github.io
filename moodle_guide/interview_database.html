@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moodle Database & APIs Interview Questions</title>
+    <link rel="stylesheet" href="../assets/css/moodle_styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="../assets/js/moodle_layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Database & APIs</h1>
+        <p>Interview Questions: DML, XMLDB, and Forms</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section class="qna">
+            <h3>Q1: Why should you use the $DB global instead of raw SQL?</h3>
+            <div class="answer">
+                <p><strong>Abstraction:</strong> Moodle supports multiple databases (MySQL, PostgreSQL, MSSQL, Oracle). The <code>$DB</code> global (DML API) abstracts the specific SQL syntax, ensuring your code works across all supported databases.</p>
+                <p><strong>Security:</strong> It automatically handles parameter binding, preventing SQL injection.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q2: How do you create a form in Moodle?</h3>
+            <div class="answer">
+                <p>Extend the <code>moodleform</code> class and define the <code>definition()</code> method.</p>
+                <p>Use <code>$mform->addElement()</code> to add fields and <code>$mform->addRule()</code> for validation.</p>
+                <p>Instantiate the form class in your script and call <code>$form->get_data()</code> to retrieve submitted values.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+
+    <script>
+        initLayout();
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

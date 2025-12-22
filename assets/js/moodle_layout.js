@@ -1,15 +1,11 @@
 const navLinks = [
-    { href: "/laravel_guide/index.html", text: "Home" },
-    { href: "/laravel_guide/module1.html", text: "1. Modern PHP & Setup" },
-    { href: "/laravel_guide/module2.html", text: "2. Laravel 12 Core" },
-    { href: "/laravel_guide/module3.html", text: "3. Database & Eloquent" },
-    { href: "/laravel_guide/module4.html", text: "4. Livewire 3" },
-    { href: "/laravel_guide/module5.html", text: "5. Alpine & Tailwind" },
-    { href: "/laravel_guide/module6.html", text: "6. Filament Admin" },
-    { href: "/laravel_guide/module7.html", text: "7. Queues & Redis" },
-    { href: "/laravel_guide/module8.html", text: "8. Testing & CI/CD" },
-    { href: "/laravel_guide/capstone.html", text: "🏆 Capstone Project" },
-    { href: "/laravel_guide/interview_index.html", text: "📝 Interview Prep" }
+    { href: "/moodle_guide/index.html", text: "Home" },
+    { href: "/moodle_guide/module1.html", text: "1. Moodle Architecture" },
+    { href: "/moodle_guide/module2.html", text: "2. Plugin Development" },
+    { href: "/moodle_guide/module3.html", text: "3. Theme Development" },
+    { href: "/moodle_guide/module4.html", text: "4. Core APIs & Database" },
+    { href: "/moodle_guide/module5.html", text: "5. Security & Performance" },
+    { href: "/moodle_guide/interview_index.html", text: "📝 Interview Prep" }
 ];
 
 function initLayout() {
@@ -36,7 +32,7 @@ function initLayout() {
             a.href = link.href;
             a.textContent = link.text;
             if (window.location.pathname.endsWith(link.href)) {
-                a.style.backgroundColor = '#ff2d20'; // Laravel Red
+                a.style.backgroundColor = '#f98012'; // Moodle Orange
                 a.style.color = 'white';
             }
             nav.appendChild(a);
@@ -47,7 +43,7 @@ function initLayout() {
     const footer = document.querySelector('footer');
     if (footer) {
         footer.innerHTML = `
-            <p>Laravel TALL Stack Curriculum - Senior Developer Edition</p>
+            <p>Moodle Full Stack Developer Curriculum</p>
             <p>&copy; ${new Date().getFullYear()} Emilio. All rights reserved.</p>
         `;
     }

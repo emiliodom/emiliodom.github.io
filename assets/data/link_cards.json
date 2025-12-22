@@ -71,6 +71,13 @@
           "href": "/laravel_guide",
           "icon": "🐘",
           "external": true
+        },
+        {
+          "title": "Moodle Guide",
+          "description": "Architecture & Plugin Dev",
+          "href": "/moodle_guide",
+          "icon": "🎓",
+          "external": true
         }
       ]
     },

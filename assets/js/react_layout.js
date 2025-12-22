@@ -18,7 +18,7 @@ function initLayout() {
     // 0. Inject Global Nav (if not present)
     if (!document.querySelector('.site-nav')) {
         const script = document.createElement('script');
-        script.src = '/assets/js/global-nav.js';
+        script.src = '../assets/js/global-nav.js';
         document.head.appendChild(script);
     }
 

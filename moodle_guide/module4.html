@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 4: Core APIs & Database</title>
+    <link rel="stylesheet" href="../assets/css/moodle_styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="../assets/js/moodle_layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Module 4: Core APIs & Database</h1>
+        <p>Data Manipulation and Forms</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section>
+            <h2>1. Data Manipulation API (DML)</h2>
+            <p>Never write raw SQL queries unless absolutely necessary. Use the global <code>$DB</code> object.</p>
+            <pre><code class="language-php">global $DB;
+
+// Get a single record
+$user = $DB->get_record('user', ['id' => 1]);
+
+// Get records
+$courses = $DB->get_records('course', ['visible' => 1]);
+
+// Insert
+$record = new stdClass();
+$record->name = 'New Thing';
+$id = $DB->insert_record('my_table', $record);
+
+// Update
+$record->id = $id;
+$record->name = 'Updated Thing';
+$DB->update_record('my_table', $record);</code></pre>
+        </section>
+
+        <section>
+            <h2>2. Moodle Forms API</h2>
+            <p>Moodle uses a wrapper around PEAR HTML_QuickForm.</p>
+            <pre><code class="language-php">require_once($CFG->libdir.'/formslib.php');
+
+class simplehtml_form extends moodleform {
+    public function definition() {
+        $mform = $this->_form;
+
+        $mform->addElement('text', 'email', get_string('email'));
+        $mform->setType('email', PARAM_NOTAGS);
+        $mform->addRule('email', null, 'required', null, 'client');
+
+        $this->add_action_buttons();
+    }
+}</code></pre>
+        </section>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+
+    <script>
+        initLayout();
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moodle Plugin Development Interview Questions</title>
+    <link rel="stylesheet" href="../assets/css/moodle_styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="../assets/js/moodle_layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Plugin Development</h1>
+        <p>Interview Questions: Plugin Types, Versioning, and Upgrades</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section class="qna">
+            <h3>Q1: What are the essential files for a Moodle plugin?</h3>
+            <div class="answer">
+                <ul>
+                    <li><code>version.php</code>: Metadata (version, requires, component name).</li>
+                    <li><code>lang/en/pluginname.php</code>: Language strings.</li>
+                    <li><code>db/install.xml</code>: Database schema (optional).</li>
+                    <li><code>lib.php</code>: Core functions (optional, but common).</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q2: How do you perform a database upgrade in a plugin?</h3>
+            <div class="answer">
+                <p>1. Update the version number in <code>version.php</code>.</p>
+                <p>2. Add the upgrade logic in <code>db/upgrade.php</code> inside the <code>xmldb_pluginname_upgrade($oldversion)</code> function.</p>
+                <p>3. Use the <code>XMLDB</code> manager to add/modify tables or fields.</p>
+                <pre><code class="language-php">if ($oldversion < 2023101001) {
+    // Define field
+    $table = new xmldb_table('my_table');
+    $field = new xmldb_field('new_col', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+    
+    // Add field
+    if (!$dbman->field_exists($table, $field)) {
+        $dbman->add_field($table, $field);
+    }
+    
+    upgrade_plugin_savepoint(true, 2023101001, 'local_myplugin');
+}</code></pre>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+
+    <script>
+        initLayout();
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

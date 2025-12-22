@@ -43,4 +43,36 @@
     <priority>0.3</priority>
   </url>
 
+  <!-- React Guide -->
+  <url>
+    <loc>https://emiliodom.github.io/react_guide/index.html</loc>
+    <lastmod>2025-12-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Next.js Guide -->
+  <url>
+    <loc>https://emiliodom.github.io/nextjs_guide/index.html</loc>
+    <lastmod>2025-12-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Laravel Guide -->
+  <url>
+    <loc>https://emiliodom.github.io/laravel_guide/index.html</loc>
+    <lastmod>2025-12-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Moodle Guide -->
+  <url>
+    <loc>https://emiliodom.github.io/moodle_guide/index.html</loc>
+    <lastmod>2025-12-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
 </urlset>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 3: Theme Development</title>
+    <link rel="stylesheet" href="../assets/css/moodle_styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="../assets/js/moodle_layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Module 3: Theme Development</h1>
+        <p>Styling and User Experience</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section>
+            <h2>1. Theme Structure</h2>
+            <p>Themes reside in the <code>/theme</code> directory. Most modern themes inherit from <code>boost</code> (Bootstrap 4/5 based).</p>
+            <pre><code class="language-php">// config.php
+$THEME->name = 'mytheme';
+$THEME->parents = ['boost']; // Inherit from Boost
+$THEME->sheets = ['custom']; // Load custom.css
+$THEME->enable_dock = false;</code></pre>
+        </section>
+
+        <section>
+            <h2>2. Mustache Templates</h2>
+            <p>Moodle uses Mustache for templating. Override core templates by placing them in <code>/theme/mytheme/templates/</code>.</p>
+            <pre><code class="language-html">{{! theme/mytheme/templates/core/frontpage.mustache }}
+&lt;div class="my-custom-frontpage"&gt;
+    &lt;h1&gt;{{sitename}}&lt;/h1&gt;
+    {{{ output.main_content }}}
+&lt;/div&gt;</code></pre>
+        </section>
+
+        <section>
+            <h2>3. SCSS Compilation</h2>
+            <p>Moodle compiles SCSS on the fly. Define your SCSS variables and imports in <code>/theme/mytheme/scss/</code>.</p>
+        </section>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+
+    <script>
+        initLayout();
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

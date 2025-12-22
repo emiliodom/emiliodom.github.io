@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 5: Security & Performance</title>
+    <link rel="stylesheet" href="../assets/css/moodle_styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="../assets/js/moodle_layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Module 5: Security & Performance</h1>
+        <p>Scaling for 500k+ Users</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section>
+            <h2>1. Security: Input & Output</h2>
+            <p>Always clean input and escape output.</p>
+            <ul>
+                <li><strong>Input:</strong> Use <code>required_param()</code> and <code>optional_param()</code> with the correct <code>PARAM_*</code> type.</li>
+                <li><strong>Output:</strong> Use <code>s()</code>, <code>format_string()</code>, or <code>format_text()</code>.</li>
+            </ul>
+            <pre><code class="language-php">$id = required_param('id', PARAM_INT);
+$text = optional_param('text', '', PARAM_TEXT);
+
+echo s($text); // Escapes HTML entities</code></pre>
+        </section>
+
+        <section>
+            <h2>2. Caching (MUC)</h2>
+            <p>The Moodle Universal Cache (MUC) is critical for performance.</p>
+            <ul>
+                <li><strong>Request Cache:</strong> Stores data for the duration of a single request (static variables).</li>
+                <li><strong>Session Cache:</strong> Stores data for the user's session.</li>
+                <li><strong>Application Cache:</strong> Shared across all users (e.g., course settings). Use Redis for this in production.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3. Performance Tips</h2>
+            <ul>
+                <li><strong>Session Handling:</strong> Use Redis for sessions instead of the database or files.</li>
+                <li><strong>Cron:</strong> Ensure the cron job runs every minute.</li>
+                <li><strong>Database:</strong> Use a read replica for heavy reporting queries.</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+
+    <script>
+        initLayout();
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

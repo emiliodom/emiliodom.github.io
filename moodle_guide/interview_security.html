@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moodle Security Interview Questions</title>
+    <link rel="stylesheet" href="../assets/css/moodle_styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="../assets/js/moodle_layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Security</h1>
+        <p>Interview Questions: Validation, Capabilities, and XSS Prevention</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section class="qna">
+            <h3>Q1: How do you prevent SQL Injection in Moodle?</h3>
+            <div class="answer">
+                <p><strong>Never</strong> use variables directly in SQL strings. Always use the placeholders (<code>?</code> or named parameters) provided by the DML API (<code>$DB</code>).</p>
+                <pre><code class="language-php">// BAD
+$DB->get_record_sql("SELECT * FROM {user} WHERE id = $id");
+
+// GOOD
+$DB->get_record_sql("SELECT * FROM {user} WHERE id = ?", [$id]);</code></pre>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q2: Explain the difference between `required_param` and `optional_param`.</h3>
+            <div class="answer">
+                <p>These functions are used to retrieve data from <code>$_GET</code> or <code>$_POST</code> safely.</p>
+                <ul>
+                    <li><code>required_param($name, $type)</code>: Stops execution with an error if the parameter is missing. Use this for critical data (e.g., course ID).</li>
+                    <li><code>optional_param($name, $default, $type)</code>: Returns a default value if the parameter is missing.</li>
+                </ul>
+                <p>Both require a <code>PARAM_*</code> constant (e.g., <code>PARAM_INT</code>, <code>PARAM_TEXT</code>) to sanitize the input immediately.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q3: How do you check for permissions in a plugin?</h3>
+            <div class="answer">
+                <p>Use the Capabilities API. First, define the context, then check the capability.</p>
+                <pre><code class="language-php">$context = context_course::instance($courseid);
+
+// Throws an exception if user doesn't have permission (stops execution)
+require_capability('mod/myplugin:view', $context);
+
+// Returns boolean (good for conditional logic)
+if (has_capability('mod/myplugin:edit', $context)) {
+    // Show edit button
+}</code></pre>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+
+    <script>
+        initLayout();
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

@@ -1,4 +1,7 @@
-<!DOCTYPE html>
+
+import os
+
+content = """<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -187,22 +190,13 @@
         let score = 0;
         let answeredCount = 0;
 
-        function escapeHtml(text) {
-            return text
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;")
-                .replace(/'/g, "&#039;");
-        }
-
         function renderQuiz() {
             quizContainer.innerHTML = questions.map((q, index) => `
                 <div class="question" id="q-${index}" data-index="${index}">
-                    <h3>${index + 1}. ${escapeHtml(q.q)}</h3>
+                    <h3>${index + 1}. ${q.q}</h3>
                     <div class="options">
                         ${q.options.map((opt, i) => `
-                            <div class="option" onclick="handleSelection(${index}, ${i})">${escapeHtml(opt)}</div>
+                            <div class="option" onclick="handleSelection(${index}, ${i})">${opt}</div>
                         `).join('')}
                     </div>
                 </div>
@@ -247,16 +241,11 @@
             progressBar.style.width = `${percentage}%`;
         }
 
-        function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-        }
-
         initLayout();
-        shuffleArray(questions);
         renderQuiz();
     </script>
 </body>
-</html>
+</html>"""
+
+with open('/Users/emilio/Desktop/emiliodom.github.io/moodle_guide/quiz.html', 'w') as f:
+    f.write(content)

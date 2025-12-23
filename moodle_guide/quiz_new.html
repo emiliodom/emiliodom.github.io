@@ -187,22 +187,13 @@
         let score = 0;
         let answeredCount = 0;
 
-        function escapeHtml(text) {
-            return text
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;")
-                .replace(/'/g, "&#039;");
-        }
-
         function renderQuiz() {
             quizContainer.innerHTML = questions.map((q, index) => `
                 <div class="question" id="q-${index}" data-index="${index}">
-                    <h3>${index + 1}. ${escapeHtml(q.q)}</h3>
+                    <h3>${index + 1}. ${q.q}</h3>
                     <div class="options">
                         ${q.options.map((opt, i) => `
-                            <div class="option" onclick="handleSelection(${index}, ${i})">${escapeHtml(opt)}</div>
+                            <div class="option" onclick="handleSelection(${index}, ${i})">${opt}</div>
                         `).join('')}
                     </div>
                 </div>

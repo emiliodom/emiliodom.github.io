@@ -52,6 +52,205 @@
 }</code></pre>
             </div>
         </section>
+
+        <section class="qna">
+            <h3>Q3: What is the difference between a 'Block' and a 'Module'?</h3>
+            <div class="answer">
+                <p><strong>Modules (Activities/Resources):</strong> Located in <code>/mod</code>. They are the main content of a course (e.g., Quiz, Assignment, Page). They have grades, completion tracking, and occupy the central column.</p>
+                <p><strong>Blocks:</strong> Located in <code>/blocks</code>. They are small widgets that sit on the side (left/right) or dashboard (e.g., Calendar, Online Users). They provide auxiliary information or tools.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q4: How do you declare a new capability for your plugin?</h3>
+            <div class="answer">
+                <p>Capabilities are declared in <code>db/access.php</code>. You define the capability name (e.g., <code>local/myplugin:view</code>), the risk bitmask, the context level (e.g., <code>CONTEXT_SYSTEM</code>), and default permissions for archetypes (e.g., <code>'manager' => CAP_ALLOW</code>).</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q5: What is the purpose of 'db/services.php'?</h3>
+            <div class="answer">
+                <p><code>db/services.php</code> is used to register external web services functions. It defines the function name, class path, method name, description, and required capabilities. It allows your plugin to expose an API to external applications.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q6: How do you add a scheduled task to a plugin?</h3>
+            <div class="answer">
+                <p>1. Create a class in <code>classes/task/my_task.php</code> extending <code>\core\task\scheduled_task</code>.</p>
+                <p>2. Implement <code>get_name()</code> and <code>execute()</code>.</p>
+                <p>3. Register the task in <code>db/tasks.php</code> with its schedule (minute, hour, day, etc.).</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q7: What is the 'local' plugin type used for?</h3>
+            <div class="answer">
+                <p>The <code>local</code> plugin type (<code>/local</code>) is a catch-all for site-wide customizations that don't fit into other standard plugin types. It's ideal for background tasks, event observers, web services, or extending navigation globally.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q8: How do you include JavaScript in a plugin?</h3>
+            <div class="answer">
+                <p>The modern way is to create an AMD module in <code>amd/src/script.js</code>. Moodle compiles this to <code>amd/build/script.min.js</code>. In PHP, you load it using <code>$PAGE->requires->js_call_amd('pluginname/script', 'init', [$params]);</code>.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q9: How do you handle language strings in a plugin?</h3>
+            <div class="answer">
+                <p>Strings are stored in <code>lang/en/pluginname.php</code> as <code>$string['key'] = 'Value';</code>. In code, retrieve them using <code>get_string('key', 'pluginname')</code>. This supports internationalization (i18n).</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q10: What is 'db/events.php'?</h3>
+            <div class="answer">
+                <p><code>db/events.php</code> is used to register event observers. It maps an event class name (e.g., <code>\core\event\user_created</code>) to a callback function or method in your plugin that should execute when that event is triggered.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q11: How do you create a custom database table for a plugin?</h3>
+            <div class="answer">
+                <p>Use the XMLDB editor (in Site Admin > Development) to define the table structure. Save the XML to <code>db/install.xml</code>. Moodle will automatically create the table when the plugin is installed.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q12: What is the 'settings.php' file?</h3>
+            <div class="answer">
+                <p><code>settings.php</code> defines the configuration options for the plugin that appear in the Site Administration tree. You use <code>$settings->add()</code> to add fields like text boxes, checkboxes, or selects.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q13: How do you use the Moodle Form API?</h3>
+            <div class="answer">
+                <p>Create a class extending <code>moodleform</code> (usually in <code>classes/form/my_form.php</code> or <code>locallib.php</code>). Define the form fields in the <code>definition()</code> method using <code>$mform->addElement()</code>. Instantiate and display it in your script.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q14: What is the 'classes' directory for?</h3>
+            <div class="answer">
+                <p>The <code>classes</code> directory is for autoloaded PHP classes. Moodle uses a namespace mapping: a class <code>\plugintype_pluginname\output\renderer</code> maps to <code>plugintype/pluginname/classes/output/renderer.php</code>.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q15: How do you add a new page to Moodle via a plugin?</h3>
+            <div class="answer">
+                <p>Create a PHP script (e.g., <code>index.php</code>) in your plugin folder. Setup the page using <code>$PAGE->set_url()</code>, <code>$PAGE->set_context()</code>, check permissions, and output content using <code>$OUTPUT</code>.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q16: What is 'db/messages.php'?</h3>
+            <div class="answer">
+                <p><code>db/messages.php</code> defines message providers for the plugin. This allows the plugin to send notifications (email, popup, mobile) through Moodle's messaging system, which users can configure in their preferences.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q17: How do you uninstall a plugin properly?</h3>
+            <div class="answer">
+                <p>Usually, deleting the folder and letting Moodle detect it is enough. However, for cleanup, you can include a <code>db/uninstall.php</code> file to perform custom cleanup tasks (like removing external files) before the database tables are dropped.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q18: What is the 'auth' plugin type?</h3>
+            <div class="answer">
+                <p>Authentication plugins (<code>/auth</code>) handle user login and account creation. Examples include Manual, LDAP, SAML, and OAuth2. They implement methods to validate credentials and sync user data.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q19: What is the 'enrol' plugin type?</h3>
+            <div class="answer">
+                <p>Enrollment plugins (<code>/enrol</code>) handle how users are added to courses. Examples include Manual, Self, PayPal, and Cohort sync. They manage role assignments within the course context.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q20: What is the 'theme' plugin type?</h3>
+            <div class="answer">
+                <p>Theme plugins (<code>/theme</code>) control the visual appearance of the site. They use CSS (SCSS), Mustache templates, and renderers to override the default look and feel.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q21: How do you use 'Unit Tests' in a plugin?</h3>
+            <div class="answer">
+                <p>Unit tests are placed in <code>tests/</code> directory. They extend <code>advanced_testcase</code>. You run them using PHPUnit. They are essential for verifying the logic of your plugin functions and classes.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q22: What is 'db/mobile.php'?</h3>
+            <div class="answer">
+                <p><code>db/mobile.php</code> is used to configure support for the Moodle Mobile App. It can define handlers to display plugin content natively within the app or delegate to the browser.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q23: How do you restrict access to a plugin script?</h3>
+            <div class="answer">
+                <p>Use <code>require_login()</code> to ensure the user is authenticated. Then use <code>require_capability('plugintype/pluginname:capability', $context)</code> to ensure they have the specific permission needed.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q24: What is the 'repository' plugin type?</h3>
+            <div class="answer">
+                <p>Repository plugins (<code>/repository</code>) allow users to bring content into Moodle from external sources (e.g., Google Drive, Dropbox, Wikimedia) via the File Picker.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q25: What is the 'portfolio' plugin type?</h3>
+            <div class="answer">
+                <p>Portfolio plugins (<code>/portfolio</code>) allow users to export content (like forum posts or assignment submissions) from Moodle to external systems (e.g., Mahara, Google Docs).</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q26: How do you handle file uploads in a plugin form?</h3>
+            <div class="answer">
+                <p>Use the <code>filemanager</code> element in your form definition. In the processing logic, use <code>file_save_draft_area_files()</code> to move files from the draft area to permanent storage associated with the plugin record.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q27: What is 'db/renamedclasses.php'?</h3>
+            <div class="answer">
+                <p>This file is used when you refactor and rename classes. It maps old class names to new ones, allowing Moodle's class loader to find them and maintain backward compatibility during upgrades.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q28: How do you add a navigation node to the course menu?</h3>
+            <div class="answer">
+                <p>In your plugin's <code>lib.php</code>, implement the <code>_extend_navigation_course()</code> callback function. Use the passed navigation object to add a new node with a label and URL.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q29: What is the 'availability' plugin type?</h3>
+            <div class="answer">
+                <p>Availability plugins (<code>/availability/condition</code>) define conditions for restricting access to activities or sections (e.g., "Grade must be > 80%", "Date must be after X").</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q30: How do you validate form data?</h3>
+            <div class="answer">
+                <p>In your form class, override the <code>validation($data, $files)</code> method. Check the <code>$data</code> array for errors. Return an array of errors where keys are field names and values are error messages. If the array is empty, validation passes.</p>
+            </div>
+        </section>
     </main>
 
     <footer>

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 7: Power User & CLI</title>
+    <link rel="stylesheet" href="../assets/css/moodle_styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="../assets/js/moodle_layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Module 7: Power User & CLI</h1>
+        <p>Command Line Administration, Cron, and Advanced Configuration</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section>
+            <h2>1. The Moodle CLI</h2>
+            <p>Moodle provides powerful CLI tools in <code>admin/cli/</code>. These are essential for system administrators and developers.</p>
+            
+            <h3>Common Commands</h3>
+            <pre><code class="language-bash"># Run Cron (Essential)
+php admin/cli/cron.php
+
+# Clear Caches (The "Turn it off and on again" of Moodle)
+php admin/cli/purge_caches.php
+
+# Install Moodle
+php admin/cli/install.php --lang=en --wwwroot=... --dataroot=...
+
+# Maintenance Mode
+php admin/cli/maintenance.php --enable
+php admin/cli/maintenance.php --disable
+
+# Database Transfer (Migrate DBs)
+php admin/tool/dbtransfer/cli/migrate.php</code></pre>
+        </section>
+
+        <section>
+            <h2>2. Scheduled Tasks (Cron)</h2>
+            <p>Moodle's heartbeat is the Cron. It handles emails, forum posts, course completions, and cleanup.</p>
+            <ul>
+                <li><strong>Frequency:</strong> Should run every minute (<code>* * * * * php /path/to/moodle/admin/cli/cron.php</code>).</li>
+                <li><strong>Ad-hoc Tasks:</strong> One-off background tasks.</li>
+                <li><strong>Scheduled Tasks:</strong> Recurring tasks defined in <code>db/tasks.php</code> of plugins.</li>
+            </ul>
+            <pre><code class="language-php">// Defining a task in db/tasks.php
+$tasks = [
+    [
+        'classname' => 'local_myplugin\task\cleanup_task',
+        'blocking' => 0,
+        'minute' => '0',
+        'hour' => '2', // Run at 2 AM
+        'day' => '*',
+        'month' => '*',
+        'dayofweek' => '*',
+    ],
+];</code></pre>
+        </section>
+
+        <section>
+            <h2>3. config.php Tricks</h2>
+            <p>The <code>config.php</code> file can override database settings to force specific behaviors.</p>
+            <pre><code class="language-php">// Force Debugging (Don't do this in Prod!)
+$CFG->debug = 32767; // DEBUG_DEVELOPER
+$CFG->debugdisplay = 1;
+
+// Force Theme
+$CFG->theme = 'boost';
+
+// Prevent Plugin Installation via UI
+$CFG->disableupdateautodeploy = true;
+
+// Performance: Session Handling (Redis)
+$CFG->session_handler_class = '\core\session\redis';
+$CFG->session_redis_host = '127.0.0.1';</code></pre>
+        </section>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+    <script>
+        initLayout();
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

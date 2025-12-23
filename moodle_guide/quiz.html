@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moodle Final Quiz</title>
+    <link rel="stylesheet" href="../assets/css/moodle_styles.css">
+    <script src="../assets/js/moodle_layout.js"></script>
+    <style>
+        .quiz-container { max-width: 800px; margin: 0 auto; }
+        .question { background: var(--card-bg); padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid var(--card-border); }
+        .options { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
+        .option { padding: 10px; border: 1px solid var(--card-border); border-radius: 4px; cursor: pointer; transition: background 0.2s; }
+        .option:hover { background: var(--nav-bg); }
+        .option.selected { background: var(--link-color); color: white; }
+        .option.correct { background: #10b981; color: white; border-color: #059669; }
+        .option.incorrect { background: #ef4444; color: white; border-color: #b91c1c; }
+        #result { font-size: 1.5em; font-weight: bold; text-align: center; margin-top: 30px; display: none; }
+        .submit-btn { display: block; width: 100%; padding: 15px; background: var(--link-color); color: white; border: none; border-radius: 8px; font-size: 1.2em; cursor: pointer; margin-top: 20px; }
+        .submit-btn:hover { opacity: 0.9; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Final Assessment</h1>
+        <p>Test your knowledge of Moodle Architecture and Development.</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main class="quiz-container">
+        <div id="quiz"></div>
+        <button id="submit" class="submit-btn">Submit Answers</button>
+        <div id="result"></div>
+    </main>
+
+    <script>
+        const questions = [
+            {
+                q: "Which global object is used for all database interactions in Moodle?",
+                options: ["$DATABASE", "$DB", "$SQL", "$MOODLE_DB"],
+                answer: 1
+            },
+            {
+                q: "What is the correct file to define a plugin's version and dependencies?",
+                options: ["config.php", "version.php", "plugin.php", "manifest.xml"],
+                answer: 1
+            },
+            {
+                q: "Which function should be used to retrieve a required GET/POST parameter?",
+                options: ["$_GET['param']", "get_param()", "required_param()", "input_param()"],
+                answer: 2
+            },
+            {
+                q: "Where are language strings stored in a plugin?",
+                options: ["/lang/en/pluginname.php", "/languages/en.php", "/strings.php", "/locales/en/strings.php"],
+                answer: 0
+            },
+            {
+                q: "What is the purpose of the 'upgrade.php' file in the 'db' folder?",
+                options: ["To upgrade Moodle core", "To handle database schema changes for the plugin", "To update the plugin version number", "To install the plugin"],
+                answer: 1
+            },
+            {
+                q: "Which templating engine does Moodle use for the frontend?",
+                options: ["Blade", "Twig", "Mustache", "Smarty"],
+                answer: 2
+            },
+            {
+                q: "What is MUC?",
+                options: ["Moodle User Control", "Moodle Universal Cache", "Moodle Unified Core", "Moodle Update Center"],
+                answer: 1
+            },
+            {
+                q: "How should you execute a scheduled task manually from the CLI?",
+                options: ["php admin/cli/cron.php", "php admin/tool/task/cli/schedule_task.php --execute=...", "php admin/cli/run_task.php", "Both A and B"],
+                answer: 3
+            },
+            {
+                q: "Which constant prevents direct access to library files?",
+                options: ["MOODLE_INTERNAL", "MOODLE_ACCESS", "DirectAccess", "MOODLE_LIB"],
+                answer: 0
+            },
+            {
+                q: "What is the recommended way to include JavaScript in a Moodle page?",
+                options: ["<script> tags", "AMD Modules (RequireJS)", "jQuery directly", "Inline JS"],
+                answer: 1
+            },
+            {
+                q: "What is the purpose of `sesskey()` in Moodle forms?",
+                options: ["To encrypt the form data", "To prevent Cross-Site Request Forgery (CSRF)", "To authenticate the user", "To track the session ID"],
+                answer: 1
+            },
+            {
+                q: "Which function cleans a parameter to ensure it is safe to use?",
+                options: ["clean_param()", "sanitize_input()", "safe_string()", "filter_var()"],
+                answer: 0
+            },
+            {
+                q: "What is the difference between the 'Request' cache and 'Session' cache?",
+                options: ["Request cache persists across pages, Session cache does not", "Request cache lives only for the current page load, Session cache lives for the user login duration", "They are the same", "Session cache is shared by all users"],
+                answer: 1
+            },
+            {
+                q: "When should you use `$DB->get_record_sql()` instead of `$DB->get_record()`?",
+                options: ["Always", "When you need to join tables or use complex conditions", "When fetching a single field", "When updating a record"],
+                answer: 1
+            },
+            {
+                q: "Which method is used to render a Mustache template in PHP?",
+                options: ["$OUTPUT->render()", "$OUTPUT->render_from_template()", "$PAGE->render()", "Mustache::render()"],
+                answer: 1
+            },
+            {
+                q: "What does `$THEME->parents` define in `config.php`?",
+                options: ["The parent directory of the theme", "The themes this theme inherits styles and templates from", "The admin users of the theme", "The allowed child themes"],
+                answer: 1
+            },
+            {
+                q: "How do you trigger an event in Moodle?",
+                options: ["Event::trigger()", "\\core\\event\\base::create()->trigger()", "trigger_event()", "$EVENT->fire()"],
+                answer: 1
+            },
+            {
+                q: "What is the main difference between Adhoc tasks and Scheduled tasks?",
+                options: ["Adhoc tasks run once when triggered; Scheduled tasks run periodically", "Adhoc tasks are for admins only", "Scheduled tasks cannot fail", "Adhoc tasks do not use the cron"],
+                answer: 0
+            },
+            {
+                q: "Where should you define external functions for a Web Service?",
+                options: ["externallib.php", "lib.php", "services.php", "db/services.php"],
+                answer: 0
+            }
+        ];
+
+        const quizContainer = document.getElementById('quiz');
+        const submitBtn = document.getElementById('submit');
+        const resultDiv = document.getElementById('result');
+
+        function renderQuiz() {
+            quizContainer.innerHTML = questions.map((q, index) => `
+                <div class="question" data-index="${index}">
+                    <h3>${index + 1}. ${q.q}</h3>
+                    <div class="options">
+                        ${q.options.map((opt, i) => `
+                            <div class="option" onclick="selectOption(${index}, ${i})">${opt}</div>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        const userAnswers = new Array(questions.length).fill(null);
+
+        window.selectOption = (qIndex, oIndex) => {
+            userAnswers[qIndex] = oIndex;
+            const options = document.querySelectorAll(`.question[data-index="${qIndex}"] .option`);
+            options.forEach((opt, i) => {
+                if (i === oIndex) opt.classList.add('selected');
+                else opt.classList.remove('selected');
+            });
+        };
+
+        submitBtn.onclick = () => {
+            let score = 0;
+            questions.forEach((q, index) => {
+                const options = document.querySelectorAll(`.question[data-index="${index}"] .option`);
+                const selected = userAnswers[index];
+                
+                if (selected === q.answer) {
+                    score++;
+                    options[selected].classList.add('correct');
+                } else {
+                    if (selected !== null) options[selected].classList.add('incorrect');
+                    options[q.answer].classList.add('correct');
+                }
+            });
+
+            resultDiv.style.display = 'block';
+            resultDiv.textContent = `You scored ${score} out of ${questions.length}`;
+            window.scrollTo(0, document.body.scrollHeight);
+        };
+
+        initLayout();
+        renderQuiz();
+    </script>
+</body>
+</html>

@@ -41,6 +41,276 @@
 });</code></pre>
             </div>
         </section>
+
+        <section class="qna">
+            <h3>Q3: Explain the role of `config.php` in a Moodle theme.</h3>
+            <div class="answer">
+                <p>The `config.php` file is the heart of a Moodle theme. It defines:</p>
+                <ul>
+                    <li><strong>$THEME->name:</strong> The internal name of the theme.</li>
+                    <li><strong>$THEME->parents:</strong> Which themes this theme inherits from (e.g., `['boost']`).</li>
+                    <li><strong>$THEME->sheets:</strong> List of CSS/SCSS files to include.</li>
+                    <li><strong>$THEME->layouts:</strong> Defines different page layouts (e.g., frontpage, course, admin) and maps them to layout files.</li>
+                    <li><strong>$THEME->rendererfactory:</strong> Controls how renderers are overridden.</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q4: How does Moodle handle SCSS compilation?</h3>
+            <div class="answer">
+                <p>Moodle uses a PHP-based SCSS compiler. In a theme based on Boost, you typically define a `scss` function in `lib.php` or configure `$THEME->scss` in `config.php`.</p>
+                <p>Moodle compiles the SCSS (including Bootstrap variables and Moodle core styles) into a single cached CSS file. When "Theme Designer Mode" is enabled, this compilation happens on every request; otherwise, it is cached.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q5: What is a Renderer in Moodle and why would you override it?</h3>
+            <div class="answer">
+                <p>A Renderer (Output Class) is a PHP class responsible for generating HTML. Core components use renderers to output their interface.</p>
+                <p>You override a renderer in a theme to change the HTML structure of a component without modifying core code. This is done by creating a class in your theme that extends the core renderer and defining it in `$THEME->rendererfactory` or following the naming convention `theme_mytheme_renderer_componentname`.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q6: How do you pass data from PHP to a Mustache template?</h3>
+            <div class="answer">
+                <p>Data is passed as a context array or object (stdClass) to the `render_from_template` method of the output manager.</p>
+                <pre><code class="language-php">$data = [
+    'title' => 'Hello World',
+    'items' => ['A', 'B', 'C']
+];
+echo $OUTPUT->render_from_template('local_myplugin/mytemplate', $data);</code></pre>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q7: What are "Template Helpers" in Moodle Mustache?</h3>
+            <div class="answer">
+                <p>Moodle provides specific helpers to perform logic or fetch core data within templates:</p>
+                <ul>
+                    <li><code>{{#str}}key, component, a{{/str}}</code>: Fetches a language string.</li>
+                    <li><code>{{#pix}}icon, component, alt{{/pix}}</code>: Renders an icon.</li>
+                    <li><code>{{#quote}}content{{/quote}}</code>: Escapes JSON content.</li>
+                    <li><code>{{#shortentext}}text, length{{/shortentext}}</code>: Truncates text.</li>
+                    <li><code>{{#userdate}}timestamp, format{{/userdate}}</code>: Formats a timestamp.</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q8: How do you include a JavaScript module in a Mustache template?</h3>
+            <div class="answer">
+                <p>You use the `{{#js}}` helper at the end of the template. This ensures the JS runs after the DOM elements are rendered.</p>
+                <pre><code class="language-html">{{#js}}
+require(['local_myplugin/myscript'], function(MyScript) {
+    MyScript.init();
+});
+{{/js}}</code></pre>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q9: What is the difference between `Boost` and `Classic` themes?</h3>
+            <div class="answer">
+                <p><strong>Boost</strong> is based on Bootstrap 4 (and moving to 5). It uses a flat navigation drawer (or top nav in newer versions) and is the modern standard for Moodle themes.</p>
+                <p><strong>Classic</strong> is a legacy-style theme that retains the "block" regions on both left and right sides and uses a more traditional navigation bar. It is also based on Bootstrap but mimics older Moodle layouts.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q10: How do you add a new region (block area) to a theme layout?</h3>
+            <div class="answer">
+                <p>1. Edit the layout file (e.g., `layout/columns2.php`).</p>
+                <p>2. Use `$OUTPUT->blocks('region-name')` to render the region in the HTML.</p>
+                <p>3. Register the region in `config.php` under `$THEME->layouts` for the specific page types where it should appear.</p>
+                <p>4. Define the region name in the language file so it appears nicely in the UI.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q11: What is "Theme Designer Mode"?</h3>
+            <div class="answer">
+                <p>It is a setting in <em>Site administration > Appearance > Themes > Theme settings</em>.</p>
+                <p>When enabled, Moodle does not cache CSS or JavaScript. This is essential for development so you can see changes immediately, but it significantly degrades performance and should never be used in production.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q12: How do you use FontAwesome icons in Moodle?</h3>
+            <div class="answer">
+                <p>Moodle core includes FontAwesome. You can use them in HTML via standard classes (e.g., `<i class="fa fa-cog"></i>`).</p>
+                <p>In Mustache templates, it is better to use the `{{#pix}}` helper if mapping to Moodle core icons, or direct HTML if specific FA icons are needed that aren't mapped.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q13: What is the purpose of `lib.php` in a theme folder?</h3>
+            <div class="answer">
+                <p>It contains theme-specific PHP functions. Common uses include:</p>
+                <ul>
+                    <li><code>theme_mytheme_get_main_scss_content()</code>: To inject dynamic SCSS variables.</li>
+                    <li><code>theme_mytheme_pluginfile()</code>: To serve files (like logos) uploaded to theme settings.</li>
+                    <li><code>theme_mytheme_page_init()</code>: To run code before the page is fully set up.</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q14: How do you create a settings page for your theme?</h3>
+            <div class="answer">
+                <p>Create a `settings.php` file in your theme root. Use the global `$ADMIN` object to add a `admin_settingpage`.</p>
+                <p>You can add settings like text boxes, file uploads (for logos), color pickers, and checkboxes. These values are then accessible via `get_config('theme_mytheme', 'settingname')`.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q15: Explain the "Cascade" in Moodle Themes.</h3>
+            <div class="answer">
+                <p>Moodle themes can inherit from parent themes. If a file (template, layout, CSS) is not found in the current theme, Moodle looks in the parent theme, and finally in the core.</p>
+                <p>For example, if `theme_child` inherits from `theme_boost`, and you request a forum template, Moodle checks `theme_child`, then `theme_boost`, then `mod_forum`.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q16: How do you debug JavaScript in Moodle?</h3>
+            <div class="answer">
+                <p>1. Enable "Debug messages" to DEVELOPER.</p>
+                <p>2. Disable "Cache all javascript" in Theme Settings.</p>
+                <p>3. Use `console.log()` in your AMD modules.</p>
+                <p>4. Use the browser's Developer Tools (Sources tab) to set breakpoints. Note that with RequireJS, files are loaded asynchronously.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q17: What is Grunt and why is it used in Moodle themes?</h3>
+            <div class="answer">
+                <p>Grunt is a JavaScript task runner. In Moodle, it is used to:</p>
+                <ul>
+                    <li>Compile AMD modules (transpile ES6 to ES5, minify).</li>
+                    <li>Compile SCSS to CSS (optional, usually done by PHP in dev).</li>
+                    <li>Lint CSS (Stylelint) and JS (ESLint).</li>
+                </ul>
+                <p>You run `grunt` or `grunt watch` in the Moodle root directory.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q18: How do you handle internationalization (i18n) in JavaScript?</h3>
+            <div class="answer">
+                <p>You cannot use `get_string()` directly in JS. Instead, you must pre-load strings.</p>
+                <p><strong>Method 1 (AMD):</strong> Use the `core/str` module.</p>
+                <pre><code class="language-javascript">require(['core/str'], function(str) {
+    str.get_string('submit', 'core').then(function(s) {
+        console.log(s);
+    });
+});</code></pre>
+                <p><strong>Method 2 (Mustache):</strong> Use `{{#str}}` helper, which renders the string server-side.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q19: What are "Fragments" in Moodle?</h3>
+            <div class="answer">
+                <p>Fragments allow you to load a piece of Moodle content (usually a Mustache template + data) via AJAX.</p>
+                <p>They are useful for dynamic interfaces where you need to render a part of a page (like a modal content or a form) without reloading the whole page. You use `core/fragment` in JS to fetch them.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q20: How do you override a core CSS class without using `!important`?</h3>
+            <div class="answer">
+                <p>Increase the specificity of your CSS selector. Since your theme's CSS is loaded after core CSS, using the same specificity usually works, but nesting it inside the `body` or a specific region ID is safer.</p>
+                <p>Example: Instead of `.btn-primary { ... }`, use `body#page-mod-forum-view .btn-primary { ... }`.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q21: What is the `outputcomponents` folder in a theme?</h3>
+            <div class="answer">
+                <p>It is a deprecated location for renderers in older themes. Modern themes should place renderer overrides in `classes/output/` or simply `classes/` following the autoloading standard.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q22: How do you customize the login page?</h3>
+            <div class="answer">
+                <p>The login page uses a specific layout. You can:</p>
+                <p>1. Customize the `login` layout file in your theme.</p>
+                <p>2. Override the `core/login` mustache template.</p>
+                <p>3. Use CSS to style the existing login form.</p>
+                <p>4. Add instructions via <em>Site administration > Plugins > Authentication > Manage authentication</em>.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q23: What is the difference between `require` and `define` in AMD?</h3>
+            <div class="answer">
+                <p><strong>define:</strong> Used to define a module that can be reused. It returns an object or function.</p>
+                <p><strong>require:</strong> Used to load dependencies and execute code immediately, usually as the entry point of a script.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q24: How do you use ES6 syntax in Moodle JavaScript?</h3>
+            <div class="answer">
+                <p>You can write ES6 code in your `.js` files (e.g., `amd/src/myscript.js`).</p>
+                <p>You <strong>must</strong> run `grunt` (specifically the `amd` task) to transpile this code into ES5 compatible code in `amd/build/myscript.min.js`. Moodle serves the files from `amd/build/`.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q25: How do you add a custom font to Moodle?</h3>
+            <div class="answer">
+                <p>1. Place font files in `theme/mytheme/fonts/`.</p>
+                <p>2. In your SCSS file, use `@font-face` to load them.</p>
+                <p>3. Ensure you use the correct relative path or the `[[font:theme|filename]]` placeholder if processing via Moodle's CSS compiler.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q26: What is the `user_preference` in the context of UI?</h3>
+            <div class="answer">
+                <p>It allows you to store small UI states for a user, like "sidebar collapsed" or "preferred view mode".</p>
+                <p>You can set it via the `core_user/repository` module in JS or `set_user_preference()` in PHP. This ensures the UI state persists across sessions.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q27: How do you ensure your theme is accessible (WCAG)?</h3>
+            <div class="answer">
+                <p>1. Use semantic HTML (headings, lists, landmarks).</p>
+                <p>2. Ensure sufficient color contrast.</p>
+                <p>3. Support keyboard navigation (focus states).</p>
+                <p>4. Use ARIA attributes where necessary (e.g., for dynamic content).</p>
+                <p>5. Use the "Accessibility toolkit" plugin or browser tools like Lighthouse to audit.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q28: What is the `pix` folder in a theme?</h3>
+            <div class="answer">
+                <p>It stores images and icons. If you place an icon with the same name as a core icon (e.g., `pix/t/locked.png`) in your theme, Moodle will use your version instead of the core version throughout the site.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q29: How do you create a "Child Theme"?</h3>
+            <div class="answer">
+                <p>1. Create a new folder `theme/childname`.</p>
+                <p>2. Create `config.php` and set `$THEME->parents = ['parenttheme'];`.</p>
+                <p>3. Create `version.php`.</p>
+                <p>4. You only need to include the files you want to override (CSS, templates, renderers). Everything else falls back to the parent.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q30: What is the `core/modal` module?</h3>
+            <div class="answer">
+                <p>It is the standard way to create pop-up modals in Moodle.</p>
+                <p>There are subtypes like `core/modal_save_cancel`. You use the `ModalFactory` to create one and `ModalEvents` to listen for actions (like closing or saving).</p>
+            </div>
+        </section>
     </main>
 
     <footer>

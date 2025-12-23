@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moodle Administration Interview Questions</title>
+    <link rel="stylesheet" href="../assets/css/moodle_styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="../assets/js/moodle_layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Administration & Security</h1>
+        <p>Interview Questions: Roles, Auth, Enrolment, and Web Services</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section class="qna">
+            <h3>Q1: What is the difference between Authentication and Enrolment?</h3>
+            <div class="answer">
+                <p><strong>Authentication (Auth):</strong> Verifying who the user is (Logging in). Examples: Manual, LDAP, OAuth2.</p>
+                <p><strong>Enrolment:</strong> Giving a user access to a specific course. Examples: Manual, Self, Cohort Sync.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q2: Explain the concept of 'Context' in Moodle permissions.</h3>
+            <div class="answer">
+                <p>Contexts are the levels at which roles can be assigned. They are hierarchical:</p>
+                <p>System > Category > Course > Module (Activity) > Block.</p>
+                <p>A permission granted at a higher level (e.g., Category) cascades down to lower levels (e.g., Course) unless overridden.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q3: How do you enable the Moodle Mobile App for your site?</h3>
+            <div class="answer">
+                <p>1. Go to <em>Site administration > General > Advanced features</em> and enable "Web services".</p>
+                <p>2. Go to <em>Site administration > Mobile app > Mobile settings</em> and enable "Enable web services for mobile devices".</p>
+                <p>3. Ensure the site is accessible via HTTPS.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q4: What is a 'Cohort' and how is it different from a 'Group'?</h3>
+            <div class="answer">
+                <p><strong>Cohort:</strong> A site-wide or category-wide collection of users. Used for bulk enrolment into multiple courses (Cohort Sync).</p>
+                <p><strong>Group:</strong> A collection of users <em>within</em> a specific course. Used to separate students for activities, grading, or visibility.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q5: How would you debug a "White Screen of Death" in Moodle?</h3>
+            <div class="answer">
+                <p>1. Check the web server error logs (Apache/Nginx logs).</p>
+                <p>2. Enable debugging in <code>config.php</code>:</p>
+                <pre><code class="language-php">$CFG->debug = 32767; // DEBUG_DEVELOPER
+$CFG->debugdisplay = 1;</code></pre>
+                <p>3. Purge caches via CLI: <code>php admin/cli/purge_caches.php</code>.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q6: What are 'Scheduled Tasks' and how do you manage them?</h3>
+            <div class="answer">
+                <p>Scheduled tasks are background jobs (like sending forum emails or syncing enrolments) that run via the system Cron.</p>
+                <p>You manage them in <em>Site administration > Server > Tasks > Scheduled tasks</em>. You can change their frequency (minute, hour, day) or run them immediately via the "Run now" link (if enabled) or CLI.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q7: How do you restrict a course to a specific set of IP addresses?</h3>
+            <div class="answer">
+                <p>There is no native "Course IP restriction" setting. However, you can:</p>
+                <p>1. Use a plugin like "Restrict by IP" availability condition.</p>
+                <p>2. Configure the web server (Nginx/Apache) to restrict access to the specific course URL pattern.</p>
+                <p>3. Use the "Require IP" setting in Quiz settings for assessments.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q8: What is the purpose of 'Maintenance Mode'?</h3>
+            <div class="answer">
+                <p>It prevents non-admin users from logging in or accessing the site. It is used during upgrades, backups, or server maintenance to ensure data consistency.</p>
+                <p>Enable via CLI: <code>php admin/cli/maintenance.php --enable</code>.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q9: How do you add a new language pack to Moodle?</h3>
+            <div class="answer">
+                <p>Go to <em>Site administration > Language > Language packs</em>. Select the language from the list and click "Install selected language pack". Moodle downloads it from the official repository to <code>moodledata/lang</code>.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q10: What is a 'Web Service Token'?</h3>
+            <div class="answer">
+                <p>A token is a unique string that acts as a key for an external application to access Moodle's API on behalf of a specific user. It replaces the need to send a username and password with every request.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q11: How do you handle a user who has forgotten their password but the email is not arriving?</h3>
+            <div class="answer">
+                <p>1. Check <em>Site administration > Server > Email > Mail settings</em> to ensure SMTP is configured correctly.</p>
+                <p>2. Check the "Mail" logs in Moodle or the server's mail log.</p>
+                <p>3. As an admin, you can manually reset their password in their profile settings.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q12: What is the 'Guest' role?</h3>
+            <div class="answer">
+                <p>The Guest role allows users to view course content without being enrolled or (optionally) without being logged in. Guests cannot post in forums, take quizzes, or receive grades.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q13: How do you bulk upload users?</h3>
+            <div class="answer">
+                <p>Use <em>Site administration > Users > Accounts > Upload users</em>. You upload a CSV file with columns like <code>username, password, firstname, lastname, email</code>. You can also include enrolment fields like <code>course1, role1</code>.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q14: What is 'Role switching'?</h3>
+            <div class="answer">
+                <p>It allows a user with higher permissions (like a Teacher or Admin) to temporarily view the course as a user with lower permissions (like a Student) to test visibility and access.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q15: How do you backup a single course?</h3>
+            <div class="answer">
+                <p>Go to the course, click "More" (or the gear icon) > "Course reuse" > "Backup". Follow the wizard to select which activities, blocks, and user data to include. The result is a <code>.mbz</code> file.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q16: What is the 'Front Page' in Moodle context?</h3>
+            <div class="answer">
+                <p>The Front Page is the landing page of the site (course ID 1). It has its own settings, roles, and backup procedure. It is technically a course but behaves differently regarding enrolments.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q17: How do you force all users to change their password?</h3>
+            <div class="answer">
+                <p>Go to <em>Site administration > Users > Accounts > Bulk user actions</em>. Select all users, then choose "Force password change" from the action dropdown.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q18: What are 'Filters' in Moodle?</h3>
+            <div class="answer">
+                <p>Filters process text content before it is displayed. Examples include:</p>
+                <ul>
+                    <li><strong>Multimedia plugins:</strong> Converts URLs (like YouTube) into embedded players.</li>
+                    <li><strong>MathJax:</strong> Renders LaTeX equations.</li>
+                    <li><strong>Activity names auto-linking:</strong> Links text to activities with the same name.</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q19: How do you set the default timezone for the site?</h3>
+            <div class="answer">
+                <p>Go to <em>Site administration > Location > Location settings</em>. Set the "Default timezone". Users can override this in their profile unless "Force timezone" is enabled.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q20: What is 'Cron' and why is it critical?</h3>
+            <div class="answer">
+                <p>Cron is a script (<code>admin/cli/cron.php</code>) that must be executed regularly (every minute) by the server. It handles forum emails, course completion calculations, backup tasks, and system cleanup. Without it, Moodle will not function correctly.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q21: How do you transfer a Moodle site to a new server?</h3>
+            <div class="answer">
+                <p>1. Put the site in Maintenance Mode.</p>
+                <p>2. Dump the database (SQL).</p>
+                <p>3. Copy the Moodle code directory.</p>
+                <p>4. Copy the <code>moodledata</code> directory.</p>
+                <p>5. Restore files and DB on the new server.</p>
+                <p>6. Update <code>config.php</code> with new paths/URLs.</p>
+                <p>7. Use the "Search and replace" tool (<code>admin/tool/replace/index.php</code>) if the URL changed.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q22: What is 'Badges' in Moodle?</h3>
+            <div class="answer">
+                <p>Badges are digital credentials compatible with the Open Badges standard. They can be awarded at the Site level (for system-wide criteria) or Course level (for completing activities or the course).</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q23: How do you manage 'Log stores'?</h3>
+            <div class="answer">
+                <p>Go to <em>Site administration > Plugins > Logging > Manage log stores</em>. You can enable/disable stores like "Standard log" (DB), "Legacy log", or "External database log". Disabling unused stores improves performance.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q24: What is the 'Recycle Bin'?</h3>
+            <div class="answer">
+                <p>When enabled, deleted courses and activities are moved to the Recycle Bin for a configurable period (default 7 days) before being permanently deleted. This allows for restoration of accidental deletions.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q25: How do you customize the 'User Profile' fields?</h3>
+            <div class="answer">
+                <p>Go to <em>Site administration > Users > Accounts > User profile fields</em>. You can add custom fields (text, checkbox, dropdown, date) that appear on user profiles and signup forms.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q26: What is 'Competency-based education' (CBE) in Moodle?</h3>
+            <div class="answer">
+                <p>It allows you to define Competency Frameworks and link them to courses and activities. Students can be rated on competencies, and learning plans can be created to track progress.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q27: How do you enable 'HTTPS' on Moodle?</h3>
+            <div class="answer">
+                <p>1. Install an SSL certificate on the web server.</p>
+                <p>2. Change <code>$CFG->wwwroot</code> in <code>config.php</code> to use <code>https://</code>.</p>
+                <p>3. Run the "HTTP to HTTPS migration tool" (<code>admin/tool/httpsreplace/index.php</code>) to fix embedded content links.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q28: What is 'External Services' security?</h3>
+            <div class="answer">
+                <p>When using Web Services, you should:</p>
+                <p>1. Create a specific user for the service.</p>
+                <p>2. Create a custom Role with <em>only</em> the required capabilities.</p>
+                <p>3. Enable "IP restriction" for the token if possible.</p>
+                <p>4. Set an expiration date for the token.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q29: How do you view 'Site-wide reports'?</h3>
+            <div class="answer">
+                <p>Go to <em>Site administration > Reports</em>. Useful reports include:</p>
+                <ul>
+                    <li><strong>Logs:</strong> Activity logs.</li>
+                    <li><strong>Live logs:</strong> Real-time activity.</li>
+                    <li><strong>Performance overview:</strong> System health check.</li>
+                    <li><strong>Security overview:</strong> Security configuration audit.</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q30: What is the 'XMLDB Editor'?</h3>
+            <div class="answer">
+                <p>A developer tool built into Moodle (<em>Site administration > Development > XMLDB editor</em>) used to create and edit <code>install.xml</code> files for plugins. It helps define database tables in a DB-agnostic way.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+
+    <script>
+        initLayout();
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

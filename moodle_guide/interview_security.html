@@ -59,6 +59,195 @@ if (has_capability('mod/myplugin:edit', $context)) {
 }</code></pre>
             </div>
         </section>
+
+        <section class="qna">
+            <h3>Q4: What is 'sesskey' and why is it important?</h3>
+            <div class="answer">
+                <p>A <code>sesskey</code> (Session Key) is a token used to prevent Cross-Site Request Forgery (CSRF). It is generated for each user session. Any script that performs an action (POST request) must check <code>require_sesskey()</code> to ensure the request originated from the user and not a malicious site.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q5: How do you prevent Cross-Site Scripting (XSS)?</h3>
+            <div class="answer">
+                <p>Moodle provides output cleaning functions. Always use <code>s()</code> for plain text attributes and <code>format_string()</code> or <code>format_text()</code> for content. When outputting HTML, use <code>$OUTPUT</code> renderers or Mustache templates which auto-escape variables by default.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q6: What is 'PARAM_CLEANHTML'?</h3>
+            <div class="answer">
+                <p>It is a parameter type used with <code>optional_param</code> or <code>required_param</code>. It uses HTML Purifier to remove malicious scripts (like <code>&lt;script&gt;</code> tags) while preserving safe HTML formatting. Use it for rich text editor content.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q7: What is 'require_login()'?</h3>
+            <div class="answer">
+                <p>It ensures that a user is logged in before accessing a page. If not, it redirects them to the login page. It also sets up the global <code>$USER</code> object. It should be called at the top of almost every script.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q8: How do you securely handle file downloads?</h3>
+            <div class="answer">
+                <p>Do not link directly to files in <code>moodledata</code>. Use <code>pluginfile.php</code>. In your plugin's <code>lib.php</code>, implement the <code>_pluginfile()</code> callback function to check permissions (e.g., <code>has_capability</code>) before serving the file content.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q9: What is 'is_siteadmin()'?</h3>
+            <div class="answer">
+                <p>A function that checks if the current user is a site administrator. Admins have all capabilities by default. Use this check sparingly; prefer capability checks (<code>has_capability</code>) to allow for role delegation.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q10: What is 'PARAM_INT'?</h3>
+            <div class="answer">
+                <p>A parameter type that casts the input to an integer. It is crucial for IDs. If the input is not an integer, it strips non-numeric characters or returns 0, preventing SQL injection via ID fields.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q11: How do you secure a cron task?</h3>
+            <div class="answer">
+                <p>Cron tasks run in the background, often as the admin user or without a specific user. Ensure your task logic does not rely on <code>$USER</code> or <code>$PAGE</code> context unless explicitly set. Use <code>cron_setup_user()</code> if you need to impersonate a user securely.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q12: What is 'ignore_missing' in capability checks?</h3>
+            <div class="answer">
+                <p>When defining capabilities in <code>access.php</code>, you can set archetypes. If you check a capability that doesn't exist, Moodle might throw an error. <code>has_capability</code> handles this gracefully, but <code>require_capability</code> is strict.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q13: What is 'MOODLE_INTERNAL'?</h3>
+            <div class="answer">
+                <p>A constant defined in the main Moodle entry points. Most include files check <code>defined('MOODLE_INTERNAL') || die();</code> to prevent direct access to library files via the browser, which could expose paths or errors.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q14: How do you sanitize a URL?</h3>
+            <div class="answer">
+                <p>Use <code>clean_param($url, PARAM_URL)</code> or <code>new moodle_url($url)</code>. This ensures the URL is valid and prevents javascript: protocol injection attacks.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q15: What is 'PARAM_TEXT'?</h3>
+            <div class="answer">
+                <p>A parameter type that strips all HTML tags. It is useful for plain text inputs like names or titles where no formatting is allowed.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q16: How do you prevent 'Privilege Escalation'?</h3>
+            <div class="answer">
+                <p>Always check capabilities in the correct context. Do not check <code>CONTEXT_SYSTEM</code> if the action is only for a specific course. Ensure that form submissions (POST) re-verify permissions, not just the page load (GET).</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q17: What is 'https_required()'?</h3>
+            <div class="answer">
+                <p>A function (or <code>$CFG->wwwroot</code> setting) that ensures the site is accessed via HTTPS. Moodle now strongly recommends or enforces HTTPS to protect session cookies and data in transit.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q18: How do you handle passwords?</h3>
+            <div class="answer">
+                <p>Never store passwords in plain text. Moodle uses <code>password_hash()</code> (bcrypt) to hash passwords. Use <code>hash_internal_user_password()</code> to generate hashes and <code>validate_internal_user_password()</code> to check them.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q19: What is 'security_key' in external services?</h3>
+            <div class="answer">
+                <p>When using Web Services, a token is generated for the external app. This token acts as the password. It must be kept secret and can be restricted by IP address or expiration date.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q20: What is 'riskbitmask'?</h3>
+            <div class="answer">
+                <p>In <code>access.php</code>, capabilities have a <code>riskbitmask</code> (e.g., <code>RISK_XSS</code>, <code>RISK_CONFIG</code>). This warns admins that assigning this capability might allow the user to perform dangerous actions (like inserting XSS or changing site config).</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q21: How do you prevent 'Session Fixation'?</h3>
+            <div class="answer">
+                <p>Moodle automatically regenerates the session ID upon login (<code>session_regenerate_id</code>). This prevents an attacker from tricking a user into using a known session ID.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q22: What is 'login_https'?</h3>
+            <div class="answer">
+                <p>An older setting to use HTTPS only for the login page. Modern practice is to use HTTPS for the entire site (Always-On SSL) to protect the session cookie at all times.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q23: How do you validate a file upload type?</h3>
+            <div class="answer">
+                <p>In the form definition, use the <code>accepted_types</code> option for the filemanager element (e.g., <code>['.pdf', '.docx']</code>). Moodle validates the extension and MIME type.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q24: What is 'user_not_fully_set_up()'?</h3>
+            <div class="answer">
+                <p>A check to see if the user has completed their profile (e.g., agreed to site policy). Moodle restricts access until these steps are completed.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q25: How do you prevent 'Brute Force' attacks?</h3>
+            <div class="answer">
+                <p>Moodle has a built-in account lockout mechanism. If a user fails login multiple times (configurable threshold), their account is temporarily locked.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q26: What is 'PARAM_NOTAGS'?</h3>
+            <div class="answer">
+                <p>Similar to <code>PARAM_TEXT</code>, it strips HTML tags. It is strictly for data that should not contain any markup.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q27: How do you secure a Web Service API?</h3>
+            <div class="answer">
+                <p>Ensure the service function checks capabilities (<code>validate_context</code>). Do not rely solely on the token. The token authenticates the user, but the code must authorize the action.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q28: What is 'clean_text()'?</h3>
+            <div class="answer">
+                <p>A legacy function, now largely replaced by <code>format_text()</code>. It was used to clean dangerous HTML. <code>format_text()</code> does this automatically if the format requires it.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q29: How do you handle 'Guest' access securely?</h3>
+            <div class="answer">
+                <p>Guest access allows unauthenticated users to view content. Ensure your plugin checks <code>isguestuser()</code> if you need to restrict features (like posting to a forum) that guests should not do.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q30: What is 'config_plugins' table?</h3>
+            <div class="answer">
+                <p>It stores plugin configuration. While not a security feature per se, sensitive data (like API keys) stored here should be handled carefully. Moodle does not encrypt these values by default.</p>
+            </div>
+        </section>
     </main>
 
     <footer>

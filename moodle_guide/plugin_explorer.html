@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moodle Plugin Code Explorer</title>
+    <link rel="stylesheet" href="../assets/css/moodle_styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="../assets/js/moodle_layout.js"></script>
+    <style>
+        .explorer-container {
+            display: flex;
+            height: 600px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-top: 20px;
+        }
+        .file-tree {
+            width: 250px;
+            background: #f5f5f5;
+            border-right: 1px solid #ddd;
+            overflow-y: auto;
+            padding: 10px;
+        }
+        .code-viewer {
+            flex: 1;
+            background: #1e1e1e;
+            overflow-y: auto;
+            position: relative;
+        }
+        .file-item {
+            cursor: pointer;
+            padding: 5px 10px;
+            font-family: monospace;
+            font-size: 14px;
+            color: #333;
+        }
+        .file-item:hover {
+            background: #e0e0e0;
+        }
+        .file-item.active {
+            background: #f98012;
+            color: white;
+        }
+        .folder-item {
+            font-weight: bold;
+            margin-top: 5px;
+            padding-left: 5px;
+            color: #555;
+        }
+        .code-viewer pre {
+            margin: 0;
+            padding: 15px;
+        }
+        .explanation-panel {
+            padding: 15px;
+            background: #fff3e0;
+            border-bottom: 1px solid #ddd;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Plugin Code Explorer</h1>
+        <p>Interactive visualization of a standard Moodle 'local' plugin structure.</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section>
+            <h2>Explore: local_awesome</h2>
+            <p>Click on files in the tree to see the code and an explanation of its purpose. This represents a typical <code>local</code> plugin named <code>local_awesome</code>.</p>
+            
+            <div class="explorer-container">
+                <div class="file-tree" id="fileTree">
+                    <!-- Populated by JS -->
+                </div>
+                <div class="code-viewer">
+                    <div id="explanationPanel" class="explanation-panel">
+                        Select a file to view its code and purpose.
+                    </div>
+                    <pre><code id="codeDisplay" class="language-php">// Select a file from the left...</code></pre>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            initLayout();
+            renderFileTree();
+        });
+
+        const pluginFiles = [
+            {
+                name: 'version.php',
+                path: 'version.php',
+                type: 'file',
+                content: `<?php
+defined('MOODLE_INTERNAL') || die();
+
+$plugin->component = 'local_awesome'; // Full name of the plugin (type_name).
+$plugin->version   = 2023101000;      // The current module version (YYYYMMDDXX).
+$plugin->requires  = 2022112800;      // Requires this Moodle version.
+$plugin->maturity  = MATURITY_STABLE; // MATURITY_ALPHA, MATURITY_BETA, MATURITY_RC, MATURITY_STABLE.
+$plugin->release   = 'v1.0.0';`,
+                explanation: "<strong>version.php</strong>: Mandatory file. Defines the plugin's identity, version, and dependencies. Moodle uses this to detect updates."
+            },
+            {
+                name: 'lang/en/local_awesome.php',
+                path: 'lang/en/local_awesome.php',
+                type: 'file',
+                content: `<?php
+$string['pluginname'] = 'Awesome Local Plugin';
+$string['hello'] = 'Hello, World!';
+$string['task_cleanup'] = 'Cleanup Task';`,
+                explanation: "<strong>lang/en/local_awesome.php</strong>: Language strings. Moodle supports multi-language sites. Never hardcode strings; use <code>get_string('key', 'component')</code>."
+            },
+            {
+                name: 'lib.php',
+                path: 'lib.php',
+                type: 'file',
+                content: `<?php
+defined('MOODLE_INTERNAL') || die();
+
+/**
+ * Hook for navigation changes.
+ */
+function local_awesome_extend_navigation(global_navigation $nav) {
+    $node = $nav->add(get_string('pluginname', 'local_awesome'), 
+        new moodle_url('/local/awesome/index.php'));
+}
+
+/**
+ * Cron job hook (legacy, prefer classes/task).
+ */
+function local_awesome_cron() {
+    mtrace('Doing awesome stuff...');
+}`,
+                explanation: "<strong>lib.php</strong>: Contains global functions and standard Moodle hooks (like navigation extension). Functions here must be prefixed with the plugin name."
+            },
+            {
+                name: 'settings.php',
+                path: 'settings.php',
+                type: 'file',
+                content: `<?php
+defined('MOODLE_INTERNAL') || die();
+
+if ($hassiteconfig) {
+    $settings = new admin_settingpage('local_awesome', get_string('pluginname', 'local_awesome'));
+    
+    $settings->add(new admin_setting_configcheckbox(
+        'local_awesome/enable_feature',
+        get_string('enable_feature', 'local_awesome'),
+        get_string('enable_feature_desc', 'local_awesome'),
+        0
+    ));
+
+    $ADMIN->add('localplugins', $settings);
+}`,
+                explanation: "<strong>settings.php</strong>: Defines admin settings (Site Administration > Plugins). Uses <code>admin_settingpage</code> and various setting types."
+            },
+            {
+                name: 'db/access.php',
+                path: 'db/access.php',
+                type: 'file',
+                content: `<?php
+defined('MOODLE_INTERNAL') || die();
+
+$capabilities = [
+    'local/awesome:view' => [
+        'captype' => 'read',
+        'contextlevel' => CONTEXT_SYSTEM,
+        'archetypes' => [
+            'user' => CAP_ALLOW,
+            'guest' => CAP_PROHIBIT,
+        ],
+    ],
+];`,
+                explanation: "<strong>db/access.php</strong>: Defines capabilities (permissions). Administrators can assign these permissions to roles."
+            },
+            {
+                name: 'db/install.xml',
+                path: 'db/install.xml',
+                type: 'file',
+                content: `<!-- XMLDB file representing the database structure -->
+<XMLDB PATH="local/awesome/db" VERSION="20231010" COMMENT="XMLDB file for local_awesome">
+  <TABLES>
+    <TABLE NAME="local_awesome_logs" COMMENT="Stores logs">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="action" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+    </TABLE>
+  </TABLES>
+</XMLDB>`,
+                explanation: "<strong>db/install.xml</strong>: Defines the database schema. Moodle uses XMLDB to be database-agnostic (works with MySQL, Postgres, etc.). Edit this using the XMLDB editor in Moodle."
+            },
+            {
+                name: 'classes/task/cleanup_task.php',
+                path: 'classes/task/cleanup_task.php',
+                type: 'file',
+                content: `<?php
+namespace local_awesome\\task;
+
+class cleanup_task extends \\core\\task\\scheduled_task {
+    public function get_name() {
+        return get_string('task_cleanup', 'local_awesome');
+    }
+
+    public function execute() {
+        global $DB;
+        mtrace('Cleaning up old logs...');
+        // Logic here
+    }
+}`,
+                explanation: "<strong>classes/task/cleanup_task.php</strong>: A scheduled task (Cron). Uses namespaces for autoloading. This class maps to <code>local_awesome\\task\\cleanup_task</code>."
+            },
+            {
+                name: 'templates/dashboard.mustache',
+                path: 'templates/dashboard.mustache',
+                type: 'file',
+                content: `<div class="awesome-dashboard">
+    <h3>{{title}}</h3>
+    <ul>
+    {{#items}}
+        <li>{{name}} - {{status}}</li>
+    {{/items}}
+    </ul>
+    {{^items}}
+        <p>No items found.</p>
+    {{/items}}
+</div>`,
+                explanation: "<strong>templates/dashboard.mustache</strong>: A Mustache template for the view layer. Logic-less templates that separate HTML from PHP."
+            },
+            {
+                name: 'index.php',
+                path: 'index.php',
+                type: 'file',
+                content: `<?php
+require_once('../../config.php');
+
+require_login();
+$context = context_system::instance();
+require_capability('local/awesome:view', $context);
+
+$PAGE->set_url(new moodle_url('/local/awesome/index.php'));
+$PAGE->set_context($context);
+$PAGE->set_title('Awesome Plugin');
+$PAGE->set_heading('Awesome Plugin Dashboard');
+
+echo $OUTPUT->header();
+
+$template_data = [
+    'title' => 'My Dashboard',
+    'items' => [
+        ['name' => 'Item 1', 'status' => 'Active'],
+        ['name' => 'Item 2', 'status' => 'Pending']
+    ]
+];
+
+echo $OUTPUT->render_from_template('local_awesome/dashboard', $template_data);
+
+echo $OUTPUT->footer();`,
+                explanation: "<strong>index.php</strong>: The main entry point page. Bootstraps Moodle, checks permissions, sets up the page, and renders output."
+            }
+        ];
+
+        function renderFileTree() {
+            const tree = document.getElementById('fileTree');
+            
+            // Simple grouping for display
+            const groups = {
+                'Root': [],
+                'lang/en': [],
+                'db': [],
+                'classes/task': [],
+                'templates': []
+            };
+
+            pluginFiles.forEach(file => {
+                if (file.path.startsWith('lang/')) groups['lang/en'].push(file);
+                else if (file.path.startsWith('db/')) groups['db'].push(file);
+                else if (file.path.startsWith('classes/')) groups['classes/task'].push(file);
+                else if (file.path.startsWith('templates/')) groups['templates'].push(file);
+                else groups['Root'].push(file);
+            });
+
+            for (const [group, files] of Object.entries(groups)) {
+                if (files.length === 0) continue;
+                
+                if (group !== 'Root') {
+                    const folder = document.createElement('div');
+                    folder.className = 'folder-item';
+                    folder.textContent = '📁 ' + group;
+                    tree.appendChild(folder);
+                }
+
+                files.forEach(file => {
+                    const div = document.createElement('div');
+                    div.className = 'file-item';
+                    div.textContent = (group === 'Root' ? '📄 ' : '  📄 ') + file.name.split('/').pop();
+                    div.onclick = () => loadFile(file, div);
+                    tree.appendChild(div);
+                });
+            }
+        }
+
+        function loadFile(file, element) {
+            // Update active state
+            document.querySelectorAll('.file-item').forEach(el => el.classList.remove('active'));
+            element.classList.add('active');
+
+            // Update content
+            const codeBlock = document.getElementById('codeDisplay');
+            codeBlock.textContent = file.content;
+            
+            // Re-highlight
+            delete codeBlock.dataset.highlighted;
+            hljs.highlightElement(codeBlock);
+
+            // Update explanation
+            document.getElementById('explanationPanel').innerHTML = file.explanation;
+        }
+    </script>
+</body>
+</html>

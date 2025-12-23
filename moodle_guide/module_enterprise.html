@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 8: Enterprise & CI/CD</title>
+    <link rel="stylesheet" href="../assets/css/moodle_styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="../assets/js/moodle_layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Module 8: Enterprise & CI/CD</h1>
+        <p>Managing Moodle at Scale: Upgrades, Deployment, and Testing</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section>
+            <h2>1. Continuous Integration / Continuous Delivery (CI/CD)</h2>
+            <p>In an enterprise environment, you never edit code on the server. Use a pipeline.</p>
+            
+            <h3>Typical Pipeline Steps</h3>
+            <ol>
+                <li><strong>Linting:</strong> PHPCS with Moodle Standard (<code>moodle-cs</code>).</li>
+                <li><strong>Unit Tests:</strong> PHPUnit tests for backend logic.</li>
+                <li><strong>Behat Tests:</strong> BDD tests for UI interactions.</li>
+                <li><strong>Build:</strong> Compile SCSS, minify JS (Grunt).</li>
+                <li><strong>Deploy:</strong> Push code to servers (Git pull or artifact deployment).</li>
+                <li><strong>Post-Deploy:</strong> Run <code>admin/cli/upgrade.php</code> and <code>admin/cli/purge_caches.php</code>.</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>2. Moodle Upgrades</h2>
+            <p>Upgrading Moodle is a critical process. Always backup DB and Dataroot first.</p>
+            <pre><code class="language-bash"># 1. Put site in maintenance mode
+php admin/cli/maintenance.php --enable
+
+# 2. Backup Database
+mysqldump -u user -p moodle > moodle_backup.sql
+
+# 3. Update Code (Git)
+git fetch
+git checkout MOODLE_403_STABLE
+
+# 4. Run Upgrade Script
+php admin/cli/upgrade.php --non-interactive
+
+# 5. Disable Maintenance
+php admin/cli/maintenance.php --disable</code></pre>
+        </section>
+
+        <section>
+            <h2>3. High Availability Architecture</h2>
+            <p>For 500k+ users, a single server won't suffice.</p>
+            <ul>
+                <li><strong>Load Balancer:</strong> Nginx/HAProxy distributing traffic.</li>
+                <li><strong>Web Servers:</strong> Multiple stateless PHP-FPM nodes.</li>
+                <li><strong>Database Cluster:</strong> Master-Slave replication (PostgreSQL or MySQL).</li>
+                <li><strong>Shared Storage:</strong> NFS or S3 (via object storage plugin) for <code>moodledata</code>.</li>
+                <li><strong>Cache Store:</strong> Redis Cluster for MUC (Application and Session caches).</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+    <script>
+        initLayout();
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

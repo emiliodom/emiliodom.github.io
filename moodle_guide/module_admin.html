@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 9: Site Administration</title>
+    <link rel="stylesheet" href="../assets/css/moodle_styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="../assets/js/moodle_layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Module 9: Site Administration</h1>
+        <p>Managing Users, Courses, Roles, and Web Services</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section>
+            <h2>1. Users & Authentication</h2>
+            <p>Authentication (Auth) is how a user logs in. Moodle supports multiple simultaneous methods.</p>
+            <ul>
+                <li><strong>Manual Accounts:</strong> Created by admin.</li>
+                <li><strong>Email-based Self-registration:</strong> Users sign up themselves.</li>
+                <li><strong>LDAP / Active Directory:</strong> Sync users from an enterprise directory.</li>
+                <li><strong>OAuth2:</strong> Login with Google, Microsoft, or Facebook.</li>
+                <li><strong>SAML (SSO):</strong> Enterprise Single Sign-On (often requires a plugin like `auth_saml2`).</li>
+            </ul>
+            <p><em>Tip:</em> Use "Bulk user actions" to message, confirm, or delete users en masse.</p>
+        </section>
+
+        <section>
+            <h2>2. Courses & Enrolment</h2>
+            <p>Enrolment is how a user gets access to a course. A user can be authenticated (logged in) but not enrolled in anything.</p>
+            <ul>
+                <li><strong>Manual Enrolment:</strong> Teacher/Admin adds users one by one.</li>
+                <li><strong>Self Enrolment:</strong> Users click "Enrol me" (can be protected by a key).</li>
+                <li><strong>Cohort Sync:</strong> Automatically enrols members of a system-wide group (Cohort).</li>
+                <li><strong>Guest Access:</strong> View-only access without enrolment.</li>
+                <li><strong>External Database:</strong> Sync enrolments from an SIS/MIS.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3. Roles & Permissions</h2>
+            <p>Moodle's permission system is granular and context-based.</p>
+            <h3>The Context Hierarchy</h3>
+            <ol>
+                <li><strong>System:</strong> Global permissions (Site Admin).</li>
+                <li><strong>Category:</strong> Permissions apply to all courses in a category.</li>
+                <li><strong>Course:</strong> Teacher/Student roles.</li>
+                <li><strong>Module (Activity):</strong> Specific permissions for a single quiz or forum.</li>
+                <li><strong>Block:</strong> Permissions for a specific side block.</li>
+            </ol>
+            <p><strong>Capabilities:</strong> Specific actions (e.g., `mod/forum:viewdiscussion`).<br>
+            <strong>Roles:</strong> A collection of capabilities (e.g., "Student", "Teacher").</p>
+        </section>
+
+        <section>
+            <h2>4. Web Services & Mobile</h2>
+            <p>To connect external apps (like the Moodle Mobile App) or integrate with other systems, use Web Services.</p>
+            <ol>
+                <li><strong>Enable Web Services:</strong> <em>Site admin > Advanced features</em>.</li>
+                <li><strong>Protocols:</strong> Enable REST (recommended) or SOAP.</li>
+                <li><strong>External Services:</strong> Define which functions are available.</li>
+                <li><strong>Tokens:</strong> Generate a token for the external application to authenticate.</li>
+            </ol>
+            <pre><code class="language-bash"># Example REST Call
+curl "https://moodle.example.com/webservice/rest/server.php?wstoken=YOUR_TOKEN&wsfunction=core_course_get_courses&moodlewsrestformat=json"</code></pre>
+        </section>
+
+        <section>
+            <h2>5. Site-wide Settings</h2>
+            <p>Key configurations that affect the entire installation:</p>
+            <ul>
+                <li><strong>Language:</strong> Install language packs via <em>Site admin > Language</em>.</li>
+                <li><strong>Location:</strong> Set default timezone and country in <em>Location settings</em>.</li>
+                <li><strong>Front Page:</strong> Configure the landing page items (news, courses) in <em>Front page settings</em>.</li>
+                <li><strong>Appearance:</strong> Customize logos, colors, and navigation in <em>Themes</em>.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>6. Server & Security Tools</h2>
+            <ul>
+                <li><strong>Cron:</strong> The heartbeat of Moodle. Must run every minute. Checks for emails, cleanup, and sync tasks.</li>
+                <li><strong>Debugging:</strong> <em>Development > Debugging</em>. Set to "Developer" to see PHP errors.</li>
+                <li><strong>Purge Caches:</strong> Clears MUC, Theme, and JS caches. Use when changes aren't showing up.</li>
+                <li><strong>Scheduled Tasks:</strong> Fine-tune when specific background jobs run.</li>
+                <li><strong>IP Blocker:</strong> Restrict access to specific IP ranges.</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+    <script>
+        initLayout();
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

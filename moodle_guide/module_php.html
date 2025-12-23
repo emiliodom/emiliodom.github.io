@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 2: PHP for Moodle Developers</title>
+    <link rel="stylesheet" href="../assets/css/moodle_styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="../assets/js/moodle_layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Module 2: PHP for Moodle Developers</h1>
+        <p>Moodle Coding Style, Global Objects, and Helper Functions</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section>
+            <h2>1. Moodle Coding Style</h2>
+            <p>Moodle has a strict coding style (based on PSR-12 but with specifics). Key rules:</p>
+            <ul>
+                <li><strong>Indentation:</strong> 4 spaces (no tabs).</li>
+                <li><strong>Line Length:</strong> 132 characters max.</li>
+                <li><strong>Naming:</strong>
+                    <ul>
+                        <li>Classes: <code>snake_case</code> (e.g., <code>local_myplugin_observer</code>).</li>
+                        <li>Methods: <code>camelCase</code>.</li>
+                        <li>Variables: <code>snake_case</code> (no camelCase for vars).</li>
+                        <li>Constants: <code>UPPER_CASE</code>.</li>
+                    </ul>
+                </li>
+                <li><strong>Boilerplate:</strong> Every file must start with <code>defined('MOODLE_INTERNAL') || die();</code> unless it's an entry point (like index.php).</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>2. Global Objects</h2>
+            <p>Moodle relies heavily on global objects. You must declare them with <code>global $VAR;</code> inside functions.</p>
+            <table class="api-table">
+                <tr>
+                    <th>Variable</th>
+                    <th>Description</th>
+                </tr>
+                <tr>
+                    <td><code>$DB</code></td>
+                    <td>The Database Manager (DML). Used for all database queries.</td>
+                </tr>
+                <tr>
+                    <td><code>$CFG</code></td>
+                    <td>Configuration object. Holds site settings (e.g., <code>$CFG->wwwroot</code>, <code>$CFG->dataroot</code>).</td>
+                </tr>
+                <tr>
+                    <td><code>$USER</code></td>
+                    <td>The current logged-in user object.</td>
+                </tr>
+                <tr>
+                    <td><code>$PAGE</code></td>
+                    <td>The Page setup object. Controls title, layout, and requirements.</td>
+                </tr>
+                <tr>
+                    <td><code>$OUTPUT</code></td>
+                    <td>The Output renderer. Used to generate HTML (headers, footers, buttons).</td>
+                </tr>
+                <tr>
+                    <td><code>$SESSION</code></td>
+                    <td>The custom Moodle session object.</td>
+                </tr>
+            </table>
+        </section>
+
+        <section>
+            <h2>3. Essential Helper Functions</h2>
+            <p>Moodle provides thousands of helper functions in <code>lib/moodlelib.php</code> and <code>lib/weblib.php</code>.</p>
+            
+            <h3>Input Handling</h3>
+            <pre><code class="language-php">// Get parameters from GET/POST
+$id = required_param('id', PARAM_INT);      // Dies if missing
+$action = optional_param('action', 'view', PARAM_ALPHA); // Default 'view'
+
+// PARAM Types are crucial for security
+// PARAM_INT, PARAM_TEXT, PARAM_NOTAGS, PARAM_EMAIL, PARAM_BOOL</code></pre>
+
+            <h3>Output Handling</h3>
+            <pre><code class="language-php">// String formatting
+echo s($user_input);          // Escape HTML (like htmlspecialchars)
+echo format_string($name);    // Format short text (titles)
+echo format_text($content);   // Format long text (HTML editor content)
+
+// Language strings
+echo get_string('pluginname', 'local_myplugin');
+echo get_string('welcome', 'local_myplugin', $a_object); // With variables</code></pre>
+
+            <h3>Debugging</h3>
+            <pre><code class="language-php">// Print object to screen (only if debug mode is on)
+debugging('Something went wrong', DEBUG_DEVELOPER);
+
+// Dump variable (like var_dump but formatted)
+print_object($some_array);</code></pre>
+        </section>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+    <script>
+        initLayout();
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

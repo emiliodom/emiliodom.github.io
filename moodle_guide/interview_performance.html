@@ -39,6 +39,202 @@
                 <p>MUC is Moodle's unified caching system. It allows administrators to configure different cache stores (File, Session, Redis, Memcached) for different cache definitions (Language strings, Database meta-data, Course contacts) without changing code.</p>
             </div>
         </section>
+
+        <section class="qna">
+            <h3>Q3: How do you profile a slow page in Moodle?</h3>
+            <div class="answer">
+                <p>Enable 'Performance info' in Site Administration. This shows DB query counts, RAM usage, and execution time in the footer. For deeper analysis, use XHProf or Tideways to generate a flame graph of function calls.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q4: What is 'session handling' in Moodle?</h3>
+            <div class="answer">
+                <p>Moodle supports different session drivers. By default, it uses files. For high availability, use Redis or Memcached to store sessions, allowing users to switch between web servers without logging out.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q5: How do you optimize database queries?</h3>
+            <div class="answer">
+                <p>Avoid N+1 queries (querying inside a loop). Use <code>get_records_sql</code> with <code>IN (...)</code> clauses. Ensure tables have proper indexes on columns used in WHERE and JOIN clauses. Use <code>EXPLAIN</code> to analyze query plans.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q6: What is the 'Theme Designer Mode'?</h3>
+            <div class="answer">
+                <p>A setting that prevents Moodle from caching theme CSS and JS. It is essential for development but <strong>must</strong> be disabled in production, as it severely degrades performance.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q7: How does 'Cron' impact performance?</h3>
+            <div class="answer">
+                <p>A long-running cron can block other tasks. Moodle's task system allows parallel execution. Offloading heavy tasks (like backups or report generation) to ad-hoc tasks ensures the main cron loop finishes quickly.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q8: What is 'JavaScript caching'?</h3>
+            <div class="answer">
+                <p>Moodle minifies and concatenates JavaScript files into cached bundles. This reduces the number of HTTP requests and file sizes, speeding up page load times for users.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q9: What is 'Language caching'?</h3>
+            <div class="answer">
+                <p>Moodle compiles language strings into a binary format or caches them in memory. This avoids parsing thousands of PHP language files on every request.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q10: How do you handle large file uploads?</h3>
+            <div class="answer">
+                <p>Configure PHP's <code>upload_max_filesize</code> and <code>post_max_size</code>. For very large files, use repository plugins (like Google Drive) to link files instead of storing them in Moodle, or configure the web server (Nginx/Apache) to handle large bodies efficiently.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q11: What is 'Read-Only' database connection?</h3>
+            <div class="answer">
+                <p>Moodle can be configured with a separate database connection for read operations (<code>$CFG->dboptions['readonly']</code>). This allows distributing the load to a read replica database server.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q12: What is 'Purge all caches'?</h3>
+            <div class="answer">
+                <p>A heavy operation that clears all MUC stores, theme caches, and JS caches. It causes a temporary performance spike as caches rebuild. Avoid doing this on a live production site during peak hours.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q13: How do you optimize 'Backup and Restore'?</h3>
+            <div class="answer">
+                <p>Enable 'Async backups'. This offloads the backup process to an ad-hoc task, preventing the user's browser from timing out and reducing the load on the web server process.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q14: What is 'PHP Opcache'?</h3>
+            <div class="answer">
+                <p>A PHP extension that caches compiled bytecode. It is mandatory for Moodle performance. Ensure <code>opcache.memory_consumption</code> is large enough to hold all Moodle scripts.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q15: What is 'dmllib' caching?</h3>
+            <div class="answer">
+                <p>The database layer caches table metadata (column names, types) to avoid querying the database schema on every request. This is stored in the MUC.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q16: How do you reduce 'Time to First Byte' (TTFB)?</h3>
+            <div class="answer">
+                <p>Optimize PHP execution time. Use efficient code, minimize DB queries, use caching effectively, and ensure the server hardware (CPU/RAM) is adequate.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q17: What is 'X-Sendfile'?</h3>
+            <div class="answer">
+                <p>A web server feature (Apache/Nginx) that allows PHP to delegate file serving to the web server. Moodle supports this (<code>$CFG->xsendfile</code>), significantly improving performance when serving files from <code>moodledata</code>.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q18: How do you monitor Moodle performance?</h3>
+            <div class="answer">
+                <p>Use tools like New Relic, Nagios, or Zabbix. Monitor CPU, RAM, Disk I/O, Database connections, and specific Moodle metrics (cron delay, failed tasks).</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q19: What is 'Course caching'?</h3>
+            <div class="answer">
+                <p>Moodle caches the course structure (sections, modules) in the <code>course_modinfo</code> cache. This speeds up the display of course pages. Rebuilding this cache (e.g., after bulk editing) can be expensive.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q20: How do you handle 'Session Locking'?</h3>
+            <div class="answer">
+                <p>PHP locks the session file during a request. If a user opens multiple tabs, requests are serialized. Moodle's read-only session support (for some pages) helps, but using Redis for sessions is generally faster and handles locking better.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q21: What is 'Filter caching'?</h3>
+            <div class="answer">
+                <p>Text filters (like TeX or Auto-link) can be expensive. Moodle caches the filtered result of text to avoid re-processing it every time the page is viewed.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q22: How do you optimize 'Gradebook' performance?</h3>
+            <div class="answer">
+                <p>The gradebook can be slow in large courses. Moodle uses 'Grade history' and aggregation tasks. Ensure 'Grade export' and 'Grade report' settings are optimized, and avoid excessive grade items.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q23: What is 'Asset minification'?</h3>
+            <div class="answer">
+                <p>The process of removing whitespace and comments from CSS and JS files. Moodle does this automatically. Ensure your custom plugins use the AMD structure so their JS is also minified.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q24: How do you handle 'Log' table growth?</h3>
+            <div class="answer">
+                <p>The <code>mdl_logstore_standard_log</code> table grows rapidly. Configure 'Log retention' settings to delete old logs automatically. Consider using an external log store (Splunk, ELK) for long-term retention.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q25: What is 'Temp' directory usage?</h3>
+            <div class="answer">
+                <p>Moodle uses <code>moodledata/temp</code> for backups, restores, and file processing. Ensure this partition has enough space and high I/O performance.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q26: How do you optimize 'User Enrolment' sync?</h3>
+            <div class="answer">
+                <p>When syncing thousands of users (e.g., LDAP/Database sync), run the task via CLI, not the web interface. Use the 'Flat file' enrolment for bulk updates if real-time sync is too slow.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q27: What is 'Database Clustering'?</h3>
+            <div class="answer">
+                <p>Using technologies like Galera Cluster or PostgreSQL clustering to provide high availability and load balancing for the database layer.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q28: How do you optimize 'Images'?</h3>
+            <div class="answer">
+                <p>Moodle automatically resizes user-uploaded images. However, encourage users to optimize images before upload. Use a CDN to serve static assets and images to reduce load on the Moodle server.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q29: What is 'Lazy Loading'?</h3>
+            <div class="answer">
+                <p>Loading resources (like images or course content) only when they scroll into view. Moodle 4.0+ implements lazy loading for course activities to improve initial page load speed.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q30: What is 'PHP-FPM'?</h3>
+            <div class="answer">
+                <p>FastCGI Process Manager. It is the recommended way to run PHP with Nginx or Apache. It handles high loads better than mod_php by maintaining a pool of worker processes.</p>
+            </div>
+        </section>
     </main>
 
     <footer>

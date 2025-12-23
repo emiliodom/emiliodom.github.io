@@ -36,6 +36,202 @@
                 <p>Instantiate the form class in your script and call <code>$form->get_data()</code> to retrieve submitted values.</p>
             </div>
         </section>
+
+        <section class="qna">
+            <h3>Q3: What is the difference between get_record() and get_records()?</h3>
+            <div class="answer">
+                <p><code>$DB->get_record()</code> returns a single object (stdClass) representing one row. It throws an error if more than one row is found. <code>$DB->get_records()</code> returns an array of objects, indexed by the first field (usually 'id').</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q4: How do you perform a transaction in Moodle?</h3>
+            <div class="answer">
+                <p>Use <code>$transaction = $DB->start_delegated_transaction();</code> at the start. Perform your DB operations. If everything is successful, call <code>$transaction->allow_commit();</code>. If an exception occurs, the transaction is rolled back automatically.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q5: What is the purpose of the 'id' field in Moodle tables?</h3>
+            <div class="answer">
+                <p>Every table in Moodle must have an <code>id</code> field as the primary key. It is an auto-incrementing integer. Moodle's DML API relies on this convention for updates and deletes.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q6: How do you insert a record into the database?</h3>
+            <div class="answer">
+                <p>Create a standard object (<code>stdClass</code>) with properties matching the table column names. Then call <code>$id = $DB->insert_record('table_name', $record_object);</code>. It returns the new ID.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q7: How do you update a record?</h3>
+            <div class="answer">
+                <p>Create an object that includes the <code>id</code> of the record to update and the fields to change. Call <code>$DB->update_record('table_name', $record_object);</code>.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q8: What is 'get_record_sql()'?</h3>
+            <div class="answer">
+                <p>It allows you to fetch a single record using a custom SQL query. It is useful for complex joins that standard methods can't handle. Always use placeholders (<code>?</code> or <code>:name</code>) for parameters.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q9: How do you handle large datasets efficiently?</h3>
+            <div class="answer">
+                <p>Use <code>$DB->get_recordset()</code> instead of <code>get_records()</code>. It returns an iterator (RecordSet) that fetches rows one by one, preventing memory exhaustion when processing thousands of records.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q10: What is the 'datalib.php' file?</h3>
+            <div class="answer">
+                <p><code>lib/datalib.php</code> contains the core database functions and the DML API implementation. It defines the <code>moodle_database</code> abstract class and its drivers.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q11: How do you check if a table exists?</h3>
+            <div class="answer">
+                <p>Use the database manager: <code>$dbman = $DB->get_manager();</code> then <code>$dbman->table_exists('table_name');</code>. This is part of the DDL API.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q12: What are 'params' in DB calls?</h3>
+            <div class="answer">
+                <p>Params are values passed to SQL queries to replace placeholders. They are passed as an array. Moodle sanitizes these values to prevent SQL injection. Example: <code>$DB->get_record('user', ['username' => 'admin']);</code>.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q13: How do you delete records?</h3>
+            <div class="answer">
+                <p>Use <code>$DB->delete_records('table_name', ['field' => 'value']);</code>. To delete a specific record by ID, use <code>$DB->delete_records('table_name', ['id' => $id]);</code>.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q14: What is 'count_records()'?</h3>
+            <div class="answer">
+                <p>It returns the number of records matching specific criteria. <code>$DB->count_records('table_name', ['field' => 'value']);</code>. It is more efficient than fetching all records and counting the array.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q15: How do you execute arbitrary SQL that doesn't return records?</h3>
+            <div class="answer">
+                <p>Use <code>$DB->execute($sql, $params);</code>. This is typically used for UPDATE or DELETE statements with complex logic, but standard DML methods are preferred when possible.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q16: What is the 'XMLDB Editor'?</h3>
+            <div class="answer">
+                <p>A built-in tool (Site Admin > Development > XMLDB editor) that allows developers to visually create and edit database tables. It generates the <code>install.xml</code> file and the PHP code needed for upgrades.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q17: How do you add an index to a table?</h3>
+            <div class="answer">
+                <p>In <code>install.xml</code>, define a KEY or INDEX. For upgrades, use <code>$dbman->add_key()</code> or <code>$dbman->add_index()</code> within <code>upgrade.php</code>.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q18: What is 'sql_compare_text()'?</h3>
+            <div class="answer">
+                <p>A cross-database helper function used when comparing text fields (CLOBs) in SQL conditions, as different databases handle text comparison differently (e.g., Oracle vs MySQL).</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q19: What is 'sql_concat()'?</h3>
+            <div class="answer">
+                <p>A helper function to concatenate strings in SQL in a cross-database compatible way. <code>$DB->sql_concat('firstname', "' '", 'lastname')</code>.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q20: How do you get the 'in' clause SQL?</h3>
+            <div class="answer">
+                <p>Use <code>$DB->get_in_or_equal($array_of_values)</code>. It returns an array containing the SQL fragment (e.g., <code>IN (?,?,?)</code>) and the parameters to pass to the query.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q21: What is 'get_fieldset_select()'?</h3>
+            <div class="answer">
+                <p>It returns an array of values from a single field (column) for records matching a selection. Useful for getting a list of IDs: <code>$ids = $DB->get_fieldset_select('user', 'id', 'deleted = 0');</code>.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q22: How do you debug SQL queries?</h3>
+            <div class="answer">
+                <p>Enable 'Debug messages' to DEVELOPER level. Moodle will print SQL errors. You can also use <code>$DB->set_debug(true);</code> temporarily in code to output all executed queries.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q23: What is 'record_exists()'?</h3>
+            <div class="answer">
+                <p>A boolean check to see if a record exists. <code>if ($DB->record_exists('user', ['username' => 'guest'])) { ... }</code>. Efficient as it limits the query to 1 row.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q24: How do you handle 'LIKE' queries?</h3>
+            <div class="answer">
+                <p>Use <code>$DB->sql_like('fieldname', ':param')</code>. It handles case-sensitivity differences and escape characters across databases.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q25: What is 'fix_course_sortorder()'?</h3>
+            <div class="answer">
+                <p>A function that rebuilds the course sortorder. It is sometimes needed after manually manipulating course records in the database (which you should avoid doing).</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q26: How do you get the current user's ID?</h3>
+            <div class="answer">
+                <p>From the global <code>$USER</code> object: <code>$USER->id</code>. Never query the database to find the current user if the global is available.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q27: What is 'get_course()'?</h3>
+            <div class="answer">
+                <p>A helper function to retrieve a course object by ID. It is a wrapper around <code>$DB->get_record('course', ...)</code> but may include caching or additional checks.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q28: How do you use 'set_field()'?</h3>
+            <div class="answer">
+                <p>A shortcut to update a single field of a record. <code>$DB->set_field('user', 'confirmed', 1, ['id' => $userid]);</code>.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q29: What is 'get_records_menu()'?</h3>
+            <div class="answer">
+                <p>Returns an associative array where the first field is the key and the second is the value. Useful for populating dropdown menus (select boxes) in forms.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q30: What is the 'install.xml' file structure?</h3>
+            <div class="answer">
+                <p>It contains <code>&lt;TABLES&gt;</code>, which contain <code>&lt;TABLE&gt;</code> elements. Tables have <code>&lt;FIELDS&gt;</code> and <code>&lt;KEYS&gt;</code> (Primary/Foreign) and <code>&lt;INDEXES&gt;</code>. It defines the schema in a DB-agnostic XML format.</p>
+            </div>
+        </section>
     </main>
 
     <footer>

@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>React Real-World Use Cases</title>
+    <link rel="stylesheet" href="../assets/css/react_styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <script src="../assets/js/react_layout.js"></script>
+    <style>
+        .jira-ticket {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            margin-bottom: 30px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .jira-header {
+            background: #f4f5f7;
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--card-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        [data-theme="dark"] .jira-header {
+            background: #2d3748;
+        }
+        .jira-id {
+            font-family: monospace;
+            font-weight: bold;
+            color: #0052cc;
+            margin-right: 10px;
+        }
+        .jira-title {
+            font-weight: 600;
+            font-size: 1.1em;
+            flex-grow: 1;
+        }
+        .jira-meta {
+            display: flex;
+            gap: 10px;
+            font-size: 0.85em;
+        }
+        .badge {
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .badge-high { background: #ff5630; color: white; }
+        .badge-medium { background: #ffab00; color: black; }
+        .badge-story { background: #36b37e; color: white; }
+        
+        .jira-content {
+            padding: 20px;
+        }
+        .section-title {
+            font-size: 0.9em;
+            text-transform: uppercase;
+            color: #6b778c;
+            font-weight: bold;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            border-bottom: 2px solid var(--card-border);
+            padding-bottom: 5px;
+        }
+        .section-title:first-child { margin-top: 0; }
+        
+        .dev-solution {
+            background: rgba(16, 185, 129, 0.05);
+            border-left: 4px solid #10b981;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        .dev-solution h4 {
+            color: #059669;
+            margin-top: 0;
+        }
+        
+        .code-block {
+            padding: 0;
+            border-radius: 4px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.9em;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+        
+        .requirements-list {
+            list-style-type: disc;
+            padding-left: 20px;
+        }
+        .requirements-list li { margin-bottom: 5px; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>React Real-World Use Cases</h1>
+        <p>Practical scenarios bridging theory and enterprise application.</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section class="intro">
+            <p>This section presents common enterprise scenarios formatted as Jira tickets. Each case includes the business requirement, technical constraints, and a senior-level implementation strategy.</p>
+        </section>
+
+        <!-- Use Case 1: Performance Optimization -->
+        <div class="jira-ticket">
+            <div class="jira-header">
+                <div>
+                    <span class="jira-id">RCT-101</span>
+                    <span class="jira-title">Fix Typing Lag in Large Form</span>
+                </div>
+                <div class="jira-meta">
+                    <span class="badge badge-high">High Priority</span>
+                    <span class="badge badge-story">Performance</span>
+                </div>
+            </div>
+            <div class="jira-content">
+                <div class="section-title">Description</div>
+                <p>Users are reporting significant lag when typing in the "Comments" field of the main dashboard. The dashboard contains a heavy chart component that seems to re-render on every keystroke.</p>
+                
+                <div class="section-title">Acceptance Criteria</div>
+                <ul class="requirements-list">
+                    <li>Typing must be instant (60fps).</li>
+                    <li>The Chart component must NOT re-render when typing in the input.</li>
+                </ul>
+
+                <div class="dev-solution">
+                    <h4>👨‍💻 Senior Developer Solution</h4>
+                    <p><strong>Strategy:</strong> The state is likely lifted too high, causing the entire parent to re-render. We can push the state down or use `React.memo`.</p>
+                    
+                    <div class="code-block">
+                        <pre><code class="language-tsx">// ❌ Bad Code
+function Dashboard() {
+    const [text, setText] = useState('');
+    return (
+        &lt;&gt;
+            &lt;input value={text} onChange={e =&gt; setText(e.target.value)} /&gt;
+            &lt;HeavyChart /&gt; {/* Re-renders on every keystroke! */}
+        &lt;/&gt;
+    );
+}
+
+// ✅ Good Code (Push State Down)
+function CommentInput() {
+    const [text, setText] = useState('');
+    return &lt;input value={text} onChange={e =&gt; setText(e.target.value)} /&gt;;
+}
+
+function Dashboard() {
+    return (
+        &lt;&gt;
+            &lt;CommentInput /&gt;
+            &lt;HeavyChart /&gt; {/* Never re-renders when typing! */}
+        &lt;/&gt;
+    );
+}</code></pre>
+                    </div>
+                    <p><strong>Key Takeaway:</strong> Keep state as close to where it's used as possible. "Push State Down" is often better than `memo`.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Use Case 2: Custom Hook Logic -->
+        <div class="jira-ticket">
+            <div class="jira-header">
+                <div>
+                    <span class="jira-id">RCT-205</span>
+                    <span class="jira-title">Implement useDebounce Hook</span>
+                </div>
+                <div class="jira-meta">
+                    <span class="badge badge-medium">Medium</span>
+                    <span class="badge badge-story">Feature</span>
+                </div>
+            </div>
+            <div class="jira-content">
+                <div class="section-title">Description</div>
+                <p>We need to implement a search bar that queries the API. Currently, it fires a request on every keystroke, spamming the server. We need to wait until the user stops typing for 500ms.</p>
+                
+                <div class="section-title">Acceptance Criteria</div>
+                <ul class="requirements-list">
+                    <li>Create a generic `useDebounce` hook.</li>
+                    <li>API call should only fire 500ms after last keystroke.</li>
+                </ul>
+
+                <div class="dev-solution">
+                    <h4>👨‍💻 Senior Developer Solution</h4>
+                    <p><strong>Strategy:</strong> Use `useEffect` and `setTimeout` to delay the value update.</p>
+                    
+                    <div class="code-block">
+                        <pre><code class="language-tsx">import { useState, useEffect } from 'react';
+
+function useDebounce&lt;T&gt;(value: T, delay: number): T {
+    const [debouncedValue, setDebouncedValue] = useState(value);
+
+    useEffect(() =&gt; {
+        const handler = setTimeout(() =&gt; {
+            setDebouncedValue(value);
+        }, delay);
+
+        // Cleanup function runs if value changes before delay is over
+        return () =&gt; {
+            clearTimeout(handler);
+        };
+    }, [value, delay]);
+
+    return debouncedValue;
+}
+
+// Usage
+const debouncedSearch = useDebounce(searchTerm, 500);
+useEffect(() =&gt; {
+    if (debouncedSearch) api.search(debouncedSearch);
+}, [debouncedSearch]);</code></pre>
+                    </div>
+                    <p><strong>Key Takeaway:</strong> Cleanup functions in `useEffect` are crucial for cancelling pending timers or requests.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Use Case 3: Context API vs Props Drilling -->
+        <div class="jira-ticket">
+            <div class="jira-header">
+                <div>
+                    <span class="jira-id">RCT-310</span>
+                    <span class="jira-title">Global Theme Management</span>
+                </div>
+                <div class="jira-meta">
+                    <span class="badge badge-medium">Medium</span>
+                    <span class="badge badge-story">Architecture</span>
+                </div>
+            </div>
+            <div class="jira-content">
+                <div class="section-title">Description</div>
+                <p>We are passing `theme="dark"` prop through 5 layers of components just to reach a button. This is unmaintainable.</p>
+                
+                <div class="section-title">Acceptance Criteria</div>
+                <ul class="requirements-list">
+                    <li>Implement a `ThemeProvider`.</li>
+                    <li>Allow any component to access `theme` and `toggleTheme`.</li>
+                    <li>Persist preference in localStorage.</li>
+                </ul>
+
+                <div class="dev-solution">
+                    <h4>👨‍💻 Senior Developer Solution</h4>
+                    <p><strong>Strategy:</strong> Use React Context API to broadcast state globally.</p>
+                    
+                    <div class="code-block">
+                        <pre><code class="language-tsx">const ThemeContext = createContext({ theme: 'light', toggle: () =&gt; {} });
+
+export function ThemeProvider({ children }) {
+    const [theme, setTheme] = useState('light');
+    
+    const toggle = () =&gt; {
+        setTheme(prev =&gt; prev === 'light' ? 'dark' : 'light');
+    };
+
+    return (
+        &lt;ThemeContext.Provider value={{ theme, toggle }}&gt;
+            &lt;div className={theme}&gt;{children}&lt;/div&gt;
+        &lt;/ThemeContext.Provider&gt;
+    );
+}
+
+// Usage in deep component
+function ThemedButton() {
+    const { theme, toggle } = useContext(ThemeContext);
+    return &lt;button onClick={toggle}&gt;Current: {theme}&lt;/button&gt;;
+}</code></pre>
+                    </div>
+                    <p><strong>Key Takeaway:</strong> Context is perfect for global "app state" like themes, user sessions, and language settings. Avoid it for high-frequency updates.</p>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+    <script>
+        initLayout();
+    </script>
+</body>
+</html>

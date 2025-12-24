@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Migration & Legacy Interview Questions</title>
+    <link rel="stylesheet" href="../assets/css/wordpress_styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <script src="../assets/js/wordpress_layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Migration & Legacy Interview Questions</h1>
+        <p>Refactoring, Data Migration, and Handling Technical Debt.</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section class="intro">
+            <p>Real-world jobs often involve inheriting a mess. These questions test the ability to clean up legacy code and migrate data safely.</p>
+        </section>
+
+        <div class="interview-question">
+            <h3>1. How do you approach refactoring a legacy "Spaghetti Code" theme?</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong></p>
+                <ol>
+                    <li><strong>Audit:</strong> Understand what the code does. Use tools like PHPCS.</li>
+                    <li><strong>Environment:</strong> Set up a local dev environment with debug logging enabled.</li>
+                    <li><strong>Incremental:</strong> Don't rewrite everything at once. Pick one template or feature.</li>
+                    <li><strong>Extract Logic:</strong> Move logic out of template files (`header.php`, `page.php`) into classes or services.</li>
+                    <li><strong>Templating:</strong> Introduce a template engine (like Timber) or at least `get_template_part` to break up huge files.</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="interview-question">
+            <h3>2. How do you migrate 10,000 posts from an old CMS to WordPress?</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong></p>
+                <ul>
+                    <li><strong>WP-CLI:</strong> The most robust way. Write a script that parses the source data (CSV/JSON/XML) and uses `wp_insert_post()` to create content.</li>
+                    <li><strong>WP All Import:</strong> A powerful plugin for CSV/XML imports if coding a custom script isn't feasible.</li>
+                    <li><strong>Direct SQL:</strong> Risky. Bypasses hooks and validation. Only for experts who know the schema perfectly.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="interview-question">
+            <h3>3. How do you handle URL redirects during a migration?</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong> Preserving SEO is critical.</p>
+                <ul>
+                    <li><strong>Map:</strong> Create a mapping of Old URL -> New URL.</li>
+                    <li><strong>Implementation:</strong>
+                        <ul>
+                            <li><strong>Nginx/Apache:</strong> Fastest. Handle redirects at the server level.</li>
+                            <li><strong>Plugin:</strong> "Redirection" or "Safe Redirect Manager" for manageable lists.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Regex:</strong> Use pattern matching for bulk redirects (e.g., `/blog/2023/*` -> `/news/*`).</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="interview-question">
+            <h3>4. What is "Search and Replace" in the context of WordPress migration?</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong> WordPress stores serialized data in the database (arrays/objects converted to strings). Standard text search/replace breaks serialization (because string lengths change).</p>
+                <p><strong>Solution:</strong> Always use `wp search-replace` (WP-CLI) or a serialization-aware tool (like "Better Search Replace" plugin) when changing domains (e.g., `staging.site.com` -> `site.com`).</p>
+            </div>
+        </div>
+
+        <div class="interview-question">
+            <h3>5. How do you debug a "White Screen of Death" on a legacy site?</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong></p>
+                <ol>
+                    <li><strong>Enable Debugging:</strong> Set `WP_DEBUG`, `WP_DEBUG_LOG`, `WP_DEBUG_DISPLAY` to true in `wp-config.php`.</li>
+                    <li><strong>Check Logs:</strong> Look at `wp-content/debug.log` or server error logs.</li>
+                    <li><strong>Deactivate Plugins:</strong> Rename `plugins` folder to `plugins_old` to disable all plugins and see if the site loads.</li>
+                    <li><strong>Switch Theme:</strong> Switch to a default theme (Twenty Twenty-Four).</li>
+                </ol>
+            </div>
+        </div>
+
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+    <script>
+        initLayout();
+    </script>
+</body>
+</html>

@@ -3,6 +3,8 @@ const globalNavLinks = [
     { href: "/react_guide/", text: "React" },
     { href: "/nextjs_guide/", text: "Next.js" },
     { href: "/laravel_guide/", text: "Laravel" },
+    { href: "/python_guide/", text: "Python" },
+    { href: "/devops_guide/", text: "DevOps" },
     { href: "/moodle_guide/", text: "Moodle" },
     { href: "/greetings/", text: "Greetings" }
 ];

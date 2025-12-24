@@ -241,8 +241,33 @@ class cleanup_task extends \\core\\task\\scheduled_task {
     {{^items}}
         <p>No items found.</p>
     {{/items}}
+    <button id="load-more-btn">Load More</button>
 </div>`,
                 explanation: "<strong>templates/dashboard.mustache</strong>: A Mustache template for the view layer. Logic-less templates that separate HTML from PHP."
+            },
+            {
+                name: 'amd/src/ui.js',
+                path: 'amd/src/ui.js',
+                type: 'file',
+                content: `define(['jquery', 'core/notification', 'core/ajax'], function($, Notification, Ajax) {
+    
+    return {
+        init: function() {
+            $('#load-more-btn').on('click', function() {
+                var promise = Ajax.call([{
+                    methodname: 'local_awesome_get_more_items',
+                    args: {}
+                }])[0];
+
+                promise.done(function(response) {
+                    console.log('Data loaded', response);
+                    // Update UI...
+                }).fail(Notification.exception);
+            });
+        }
+    };
+});`,
+                explanation: "<strong>amd/src/ui.js</strong>: Modern JavaScript module (AMD). Moodle compiles this to <code>amd/build/ui.min.js</code>. It uses core modules like <code>core/ajax</code> and <code>core/notification</code>."
             },
             {
                 name: 'index.php',
@@ -260,6 +285,9 @@ $PAGE->set_context($context);
 $PAGE->set_title('Awesome Plugin');
 $PAGE->set_heading('Awesome Plugin Dashboard');
 
+// Load the JS module
+$PAGE->requires->js_call_amd('local_awesome/ui', 'init');
+
 echo $OUTPUT->header();
 
 $template_data = [
@@ -273,7 +301,7 @@ $template_data = [
 echo $OUTPUT->render_from_template('local_awesome/dashboard', $template_data);
 
 echo $OUTPUT->footer();`,
-                explanation: "<strong>index.php</strong>: The main entry point page. Bootstraps Moodle, checks permissions, sets up the page, and renders output."
+                explanation: "<strong>index.php</strong>: The main entry point page. Bootstraps Moodle, checks permissions, sets up the page, loads JS, and renders output."
             }
         ];
 
@@ -286,7 +314,8 @@ echo $OUTPUT->footer();`,
                 'lang/en': [],
                 'db': [],
                 'classes/task': [],
-                'templates': []
+                'templates': [],
+                'amd/src': []
             };
 
             pluginFiles.forEach(file => {
@@ -294,6 +323,7 @@ echo $OUTPUT->footer();`,
                 else if (file.path.startsWith('db/')) groups['db'].push(file);
                 else if (file.path.startsWith('classes/')) groups['classes/task'].push(file);
                 else if (file.path.startsWith('templates/')) groups['templates'].push(file);
+                else if (file.path.startsWith('amd/')) groups['amd/src'].push(file);
                 else groups['Root'].push(file);
             });
 

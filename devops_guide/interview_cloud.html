@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cloud (AWS/Azure) Interview Questions - DevOps Guide</title>
+    <link rel="icon" href="../assets/img/avatar-fallback.svg">
+    <link rel="stylesheet" href="../assets/css/devops_styles.css">
+    <script src="../assets/js/devops_layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Cloud Questions</h1>
+        <p>AWS, Azure, and Cloud Architecture.</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <div class="interview-card">
+            <h3>1. VPC Peering vs Transit Gateway</h3>
+            <p><strong>Question:</strong> When would you use VPC Peering vs Transit Gateway in AWS?</p>
+            <div class="answer">
+                <p><strong>VPC Peering:</strong> Simple, 1:1 connection between two VPCs. Non-transitive.<br><strong>Transit Gateway:</strong> Hub-and-spoke model for connecting many VPCs and on-prem networks. Simplifies management at scale.</p>
+            </div>
+        </div>
+
+        <div class="interview-card">
+            <h3>2. S3 Consistency Model</h3>
+            <p><strong>Question:</strong> What is the consistency model of Amazon S3?</p>
+            <div class="answer">
+                <p>S3 now provides strong read-after-write consistency for all requests.</p>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+    <script>
+        initLayout();
+    </script>
+</body>
+</html>

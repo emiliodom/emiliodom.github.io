@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WordPress Real-World Use Cases</title>
+    <link rel="stylesheet" href="../assets/css/wordpress_styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <script src="../assets/js/wordpress_layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>WordPress Enterprise Use Cases</h1>
+        <p>High-Scale Scenarios: AWS, Gutenberg, and Headless Integrations.</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section class="intro">
+            <p>These scenarios reflect the challenges of running WordPress at enterprise scale, moving beyond simple theme development into full-stack engineering.</p>
+        </section>
+
+        <!-- Use Case 1: Custom Gutenberg Block -->
+        <div class="jira-ticket">
+            <div class="jira-header">
+                <div>
+                    <span class="jira-id">WP-101</span>
+                    <span class="jira-title">Develop "Product Showcase" Gutenberg Block</span>
+                </div>
+                <div class="jira-meta">
+                    <span class="badge badge-high">High Priority</span>
+                    <span class="badge badge-story">Frontend</span>
+                </div>
+            </div>
+            <div class="jira-content">
+                <div class="section-title">Description</div>
+                <p>Marketing needs a custom block to showcase products fetched from an external API (NocoDB). The block must be editable in Gutenberg but render using Twig/Timber on the frontend.</p>
+                
+                <div class="section-title">Acceptance Criteria</div>
+                <ul class="requirements-list">
+                    <li>Block allows selecting a "Product Category".</li>
+                    <li>Fetches live data from NocoDB API.</li>
+                    <li>Renders using `views/blocks/product-showcase.twig`.</li>
+                    <li>Uses SCSS for styling.</li>
+                </ul>
+
+                <div class="dev-solution">
+                    <h4>👨‍💻 Senior Developer Solution</h4>
+                    <p><strong>Strategy:</strong> Use ACF Blocks for rapid development, bridging the gap between React-based Gutenberg and PHP/Twig rendering.</p>
+                    
+                    <div class="code-block">
+                        <pre><code class="language-php">// app/Blocks/ProductShowcase.php
+add_action('acf/init', function() {
+    acf_register_block_type([
+        'name'            => 'product-showcase',
+        'title'           => __('Product Showcase'),
+        'render_callback' => 'my_block_render_callback',
+        'category'        => 'formatting',
+        'icon'            => 'cart',
+        'keywords'        => ['product', 'shop'],
+    ]);
+});
+
+function my_block_render_callback($block, $content = '', $is_preview = false) {
+    $context = Timber::context();
+    $context['block'] = $block;
+    $context['fields'] = get_fields();
+    
+    // Fetch from NocoDB (cached)
+    $category_id = $context['fields']['category_id'];
+    $context['products'] = Cache::remember("products_{$category_id}", 3600, function() use ($category_id) {
+        return Http::get("https://noco.db/api/v1/products?cat={$category_id}")->json();
+    });
+
+    Timber::render('views/blocks/product-showcase.twig', $context);
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Use Case 2: AWS Fargate Deployment -->
+        <div class="jira-ticket">
+            <div class="jira-header">
+                <div>
+                    <span class="jira-id">WP-205</span>
+                    <span class="jira-title">Containerize & Deploy to AWS Fargate</span>
+                </div>
+                <div class="jira-meta">
+                    <span class="badge badge-high">Critical</span>
+                    <span class="badge badge-story">DevOps</span>
+                </div>
+            </div>
+            <div class="jira-content">
+                <div class="section-title">Description</div>
+                <p>We are migrating from a VPS to AWS Fargate for auto-scaling. We need a Dockerfile that handles Nginx, PHP-FPM, and ensures assets are served correctly.</p>
+                
+                <div class="section-title">Acceptance Criteria</div>
+                <ul class="requirements-list">
+                    <li>Multi-stage Docker build.</li>
+                    <li>Nginx + PHP-FPM in a single container (or sidecar pattern).</li>
+                    <li>Uploads must be offloaded to S3 (stateless container).</li>
+                    <li>GitLab CI pipeline to build and push to ECR.</li>
+                </ul>
+
+                <div class="dev-solution">
+                    <h4>👨‍💻 Senior Developer Solution</h4>
+                    <p><strong>Strategy:</strong> Use a multi-stage build to keep the image light. Use `s3-uploads` plugin for stateless media handling.</p>
+                    
+                    <div class="code-block">
+                        <pre><code class="language-dockerfile"># Dockerfile
+FROM composer:2 as vendor
+COPY composer.json composer.lock ./
+RUN composer install --no-dev --optimize-autoloader
+
+FROM php:8.2-fpm-alpine
+# Install extensions (Redis, Postgres, GD)
+RUN apk add --no-cache postgresql-dev \
+    && docker-php-ext-install pdo pdo_pgsql bcmath opcache
+
+# Copy Nginx config
+COPY .docker/nginx.conf /etc/nginx/nginx.conf
+
+# Copy App Code
+WORKDIR /var/www/html
+COPY . .
+COPY --from=vendor /app/vendor ./vendor
+
+# Start Nginx & PHP-FPM
+CMD ["sh", "-c", "php-fpm -D && nginx -g 'daemon off;'"]</code></pre>
+                    </div>
+                    <p><strong>Key Takeaway:</strong> Fargate requires stateless containers. All user uploads must go to S3, and sessions/cache must go to Redis.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Use Case 3: High Performance with Redis & Postgres -->
+        <div class="jira-ticket">
+            <div class="jira-header">
+                <div>
+                    <span class="jira-id">WP-310</span>
+                    <span class="jira-title">Optimize Database & Object Cache</span>
+                </div>
+                <div class="jira-meta">
+                    <span class="badge badge-medium">Medium</span>
+                    <span class="badge badge-story">Performance</span>
+                </div>
+            </div>
+            <div class="jira-content">
+                <div class="section-title">Description</div>
+                <p>The site is experiencing high latency under load. We are moving from MySQL to PostgreSQL (for enterprise compliance) and need to implement aggressive Redis caching.</p>
+                
+                <div class="section-title">Acceptance Criteria</div>
+                <ul class="requirements-list">
+                    <li>Configure `pg4wp` for PostgreSQL support.</li>
+                    <li>Implement Redis Object Cache.</li>
+                    <li>Cache complex Twig fragments.</li>
+                </ul>
+
+                <div class="dev-solution">
+                    <h4>👨‍💻 Senior Developer Solution</h4>
+                    <p><strong>Strategy:</strong> Use `pg4wp` drop-in driver. Wrap expensive Timber renders in cache keys.</p>
+                    
+                    <div class="code-block">
+                        <pre><code class="language-php">// config/application.php (Bedrock)
+$env_config = [
+    'DB_TYPE' => 'pgsql',
+    'CACHE_DRIVER' => 'redis',
+    'REDIS_HOST' => env('REDIS_HOST'),
+];
+
+// views/index.twig
+{% cache 'home_hero_section' 600 %}
+    <section class="hero">
+        <!-- Expensive queries here -->
+        {% for item in expensive_query %}
+            {{ item.title }}
+        {% endfor %}
+    </section>
+{% endcache %}</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+    <script>
+        initLayout();
+    </script>
+</body>
+</html>

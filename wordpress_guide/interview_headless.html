@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Headless WordPress Interview Questions</title>
+    <link rel="stylesheet" href="../assets/css/wordpress_styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <script src="../assets/js/wordpress_layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Headless WordPress Interview Questions</h1>
+        <p>Decoupled architectures, REST API, GraphQL, and Next.js integration.</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section class="intro">
+            <p>Headless WordPress uses WP as a CMS backend and a modern JS framework (like Next.js) for the frontend. This approach is popular for high-performance, omnichannel experiences.</p>
+        </section>
+
+        <div class="interview-question">
+            <h3>1. What are the pros and cons of Headless WordPress?</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong></p>
+                <ul>
+                    <li><strong>Pros:</strong>
+                        <ul>
+                            <li><strong>Performance:</strong> Static generation (SSG) or Edge rendering.</li>
+                            <li><strong>Security:</strong> The CMS is hidden/decoupled from the frontend.</li>
+                            <li><strong>Developer Experience:</strong> Use modern tools (React, Vue) instead of PHP templates.</li>
+                            <li><strong>Omnichannel:</strong> Serve data to Web, App, Watch, etc.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Cons:</strong>
+                        <ul>
+                            <li><strong>Complexity:</strong> Requires managing two stacks (WP + Node).</li>
+                            <li><strong>Plugin Compatibility:</strong> Visual plugins (sliders, forms) won't work out of the box.</li>
+                            <li><strong>Previewing:</strong> Requires custom setup to preview drafts.</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="interview-question">
+            <h3>2. REST API vs WPGraphQL: Which would you choose and why?</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong></p>
+                <ul>
+                    <li><strong>REST API:</strong> Built-in. Good for simple integrations. Can suffer from over-fetching (getting too much data) or under-fetching (needing multiple requests).</li>
+                    <li><strong>WPGraphQL:</strong> Community standard for Headless. Allows you to query exactly what you need in a single request. Strongly typed. Generally preferred for complex Headless sites.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="interview-question">
+            <h3>3. How do you handle authentication in a Headless setup?</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong> Since the frontend is on a different domain/port, standard cookies might not work easily.</p>
+                <ul>
+                    <li><strong>JWT (JSON Web Tokens):</strong> Most common. Plugin issues a token on login, frontend sends it in `Authorization` header.</li>
+                    <li><strong>Application Passwords:</strong> Good for scripts, not for user sessions.</li>
+                    <li><strong>Faust.js / Next.js Auth:</strong> Wrappers that handle cookie-based auth proxying for a seamless experience.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="interview-question">
+            <h3>4. How do you handle "Preview Mode" in Headless WordPress?</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong></p>
+                <ol>
+                    <li>WordPress generates a special preview URL with a secret token.</li>
+                    <li>The frontend (Next.js) has an API route that verifies the token.</li>
+                    <li>If valid, it sets a cookie to bypass Static Generation and fetch draft content directly from WordPress.</li>
+                    <li>The page renders the draft content.</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="interview-question">
+            <h3>5. How do you handle forms (e.g., Gravity Forms, CF7) in Headless?</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong> You cannot render the form shortcode directly.</p>
+                <ul>
+                    <li><strong>Option A:</strong> Rebuild the form in React and submit data to the form plugin's REST API endpoint.</li>
+                    <li><strong>Option B:</strong> Use a headless-specific library (like `gravityforms-headless`) that exposes form schema via API, allowing you to render fields dynamically in React.</li>
+                </ul>
+            </div>
+        </div>
+
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+    <script>
+        initLayout();
+    </script>
+</body>
+</html>

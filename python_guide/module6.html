@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 6: Machine Learning Basics - Python Guide</title>
+    <link rel="icon" href="../assets/img/avatar-fallback.svg">
+    <link rel="stylesheet" href="../assets/css/python_styles.css">
+    <script src="../assets/js/python_layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Module 6: Machine Learning Basics</h1>
+        <p>Introduction to building predictive models using Scikit-Learn.</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <h2>6.1 Scikit-Learn Overview</h2>
+        <p>Scikit-learn is a free software machine learning library for the Python programming language. It features various classification, regression and clustering algorithms.</p>
+
+        <h2>6.2 Supervised Learning</h2>
+        <p>Supervised learning involves training a model on labeled data. Common algorithms include Linear Regression, Decision Trees, and Support Vector Machines.</p>
+        <pre><code>from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import train_test_split
+
+# X = features, y = target
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+
+model = LinearRegression()
+model.fit(X_train, y_train)
+predictions = model.predict(X_test)</code></pre>
+
+        <h2>6.3 Unsupervised Learning</h2>
+        <p>Unsupervised learning involves training a model on data without labels. Common algorithms include K-Means Clustering and PCA.</p>
+
+        <h2>6.4 Model Evaluation</h2>
+        <p>Evaluating model performance is crucial. Metrics depend on the problem type (e.g., Accuracy for classification, MSE for regression).</p>
+
+        <div class="task">
+            <h3>🎯 Practical Exercise</h3>
+            <p>Train a simple classifier on the Iris dataset using Scikit-Learn and evaluate its accuracy.</p>
+        </div>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+    <script>
+        initLayout();
+    </script>
+</body>
+</html>

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timber & Twig Interview Questions</title>
+    <link rel="stylesheet" href="../assets/css/wordpress_styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <script src="../assets/js/wordpress_layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Timber & Twig Interview Questions</h1>
+        <p>Assessing knowledge of MVC patterns and Templating in WordPress.</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section class="intro">
+            <p>Timber separates PHP logic from HTML markup using the Twig template engine. This is a standard in enterprise WordPress development to maintain clean, readable codebases.</p>
+        </section>
+
+        <div class="interview-question">
+            <h3>1. Why use Timber instead of standard WordPress PHP templates?</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong></p>
+                <ul>
+                    <li><strong>Separation of Concerns:</strong> Logic stays in PHP files, presentation stays in Twig files.</li>
+                    <li><strong>Cleaner Syntax:</strong> Twig is concise (`{{ post.title }}` vs `&lt;?php the_title(); ?&gt;`).</li>
+                    <li><strong>Security:</strong> Twig auto-escapes output by default, reducing XSS risks.</li>
+                    <li><strong>Inheritance:</strong> Twig's `extends` and `block` features allow for powerful layout inheritance (DRY).</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="interview-question">
+            <h3>2. How do you pass data from a PHP file to a Twig view?</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong> You create a context array and pass it to `Timber::render()`.</p>
+                <pre><code class="language-php">// single.php
+$context = Timber::context();
+$context['post'] = Timber::get_post();
+$context['custom_message'] = 'Hello World';
+
+Timber::render('single.twig', $context);</code></pre>
+            </div>
+        </div>
+
+        <div class="interview-question">
+            <h3>3. Explain Template Inheritance in Twig.</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong> It allows you to define a base skeleton (layout) and override specific blocks in child templates.</p>
+                <pre><code class="language-twig">{# base.twig #}
+&lt;html&gt;
+    &lt;body&gt;
+        {% block content %}{% endblock %}
+    &lt;/body&gt;
+&lt;/html&gt;
+
+{# single.twig #}
+{% extends "base.twig" %}
+
+{% block content %}
+    &lt;h1&gt;{{ post.title }}&lt;/h1&gt;
+    &lt;div&gt;{{ post.content }}&lt;/div&gt;
+{% endblock %}</code></pre>
+            </div>
+        </div>
+
+        <div class="interview-question">
+            <h3>4. How do you add custom functionality (functions/filters) to Twig?</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong> You hook into `timber/twig` filter.</p>
+                <pre><code class="language-php">add_filter('timber/twig', function($twig) {
+    // Adding a function
+    $twig->addFunction(new Twig\TwigFunction('my_function', function($text) {
+        return 'Custom: ' . $text;
+    }));
+
+    // Adding a filter
+    $twig->addFilter(new Twig\TwigFilter('price_format', function($price) {
+        return '$' . number_format($price, 2);
+    }));
+
+    return $twig;
+});</code></pre>
+            </div>
+        </div>
+
+        <div class="interview-question">
+            <h3>5. What is the difference between `Timber::get_post()` and `get_post()`?</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong></p>
+                <ul>
+                    <li>`get_post()` returns a standard `WP_Post` object (raw data).</li>
+                    <li>`Timber::get_post()` returns a `Timber\Post` object. This object wraps the raw data and adds useful methods (e.g., `$post->thumbnail`, `$post->link`, `$post->terms`) that make accessing related data intuitive in Twig.</li>
+                </ul>
+            </div>
+        </div>
+
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+    <script>
+        initLayout();
+    </script>
+</body>
+</html>

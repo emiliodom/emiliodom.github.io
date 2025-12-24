@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Testing Interview Questions - Python Guide</title>
+    <link rel="icon" href="../assets/img/avatar-fallback.svg">
+    <link rel="stylesheet" href="../assets/css/python_styles.css">
+    <script src="../assets/js/python_layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Testing Questions</h1>
+        <p>Unit testing, integration testing, and TDD.</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <div class="interview-card">
+            <h3>1. Mocking</h3>
+            <p><strong>Question:</strong> What is mocking and when should you use it?</p>
+            <div class="answer">
+                <p>Mocking is creating a fake version of an external service or object to test behavior in isolation. Use it when the real object is impractical to incorporate into the unit test (e.g., database calls, API requests).</p>
+                <pre><code>from unittest.mock import MagicMock
+# ... usage example</code></pre>
+            </div>
+        </div>
+
+        <div class="interview-card">
+            <h3>2. Pytest Fixtures</h3>
+            <p><strong>Question:</strong> What are pytest fixtures?</p>
+            <div class="answer">
+                <p>Fixtures are functions, which will run before each test function to which it is applied. They are used to feed some data to the tests such as database connections, URLs to test, or some sort of input data.</p>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+    <script>
+        initLayout();
+    </script>
+</body>
+</html>

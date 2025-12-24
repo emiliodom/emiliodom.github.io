@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gutenberg & React Interview Questions</title>
+    <link rel="stylesheet" href="../assets/css/wordpress_styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <script src="../assets/js/wordpress_layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Gutenberg & React Interview Questions</h1>
+        <p>Assessing proficiency with the Block Editor, React, and Modern JS in WordPress.</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section class="intro">
+            <p>The Block Editor (Gutenberg) is the present and future of WordPress. These questions test the ability to build custom blocks and extend the editor.</p>
+        </section>
+
+        <div class="interview-question">
+            <h3>1. What is the difference between Static and Dynamic Blocks?</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong></p>
+                <ul>
+                    <li><strong>Static Blocks:</strong> The HTML is generated in JavaScript (the `save` function) and saved directly into the `post_content` in the database. If you change the HTML structure later, existing blocks may break (validation error).</li>
+                    <li><strong>Dynamic Blocks:</strong> The `save` function returns `null`. The HTML is rendered on the server-side via PHP (`render_callback`). This is ideal for content that changes frequently (e.g., "Latest Posts") or complex logic.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="interview-question">
+            <h3>2. How do you register a custom block?</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong> Modern registration uses `block.json` metadata file.</p>
+                <ol>
+                    <li>Create `block.json` defining name, attributes, and scripts.</li>
+                    <li>Register it in PHP:</li>
+                </ol>
+                <pre><code class="language-php">function register_my_block() {
+    register_block_type( __DIR__ . '/build' );
+}
+add_action( 'init', 'register_my_block' );</code></pre>
+            </div>
+        </div>
+
+        <div class="interview-question">
+            <h3>3. Explain Block Attributes and how they relate to React State.</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong> Attributes are the data model for a block. They are similar to React state, but they persist to the database.</p>
+                <ul>
+                    <li>They are defined in `block.json`.</li>
+                    <li>They are passed as props to the `Edit` component.</li>
+                    <li>Updating them via `setAttributes` triggers a re-render of the editor UI.</li>
+                </ul>
+                <pre><code class="language-json">"attributes": {
+    "content": {
+        "type": "string",
+        "source": "html",
+        "selector": "p"
+    }
+}</code></pre>
+            </div>
+        </div>
+
+        <div class="interview-question">
+            <h3>4. What is `wp.data` and how is it used?</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong> `wp.data` is a centralized data registry built on top of Redux. It manages the state of the editor.</p>
+                <ul>
+                    <li><strong>`useSelect`:</strong> Retrieves data (like `useSelector` in Redux). E.g., getting the current post title.</li>
+                    <li><strong>`useDispatch`:</strong> Dispatches actions (like `useDispatch` in Redux). E.g., updating a post meta value.</li>
+                </ul>
+                <pre><code class="language-javascript">const { title } = useSelect( ( select ) => {
+    return {
+        title: select( 'core/editor' ).getEditedPostAttribute( 'title' )
+    };
+} );</code></pre>
+            </div>
+        </div>
+
+        <div class="interview-question">
+            <h3>5. How do you create a custom sidebar plugin for the Block Editor?</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong> You use the `PluginSidebar` component from `@wordpress/edit-post`.</p>
+                <pre><code class="language-javascript">import { registerPlugin } from '@wordpress/plugins';
+import { PluginSidebar } from '@wordpress/edit-post';
+
+const MySidebar = () => (
+    &lt;PluginSidebar name="my-sidebar" title="My Settings"&gt;
+        &lt;div&gt;Sidebar Content Here&lt;/div&gt;
+    &lt;/PluginSidebar&gt;
+);
+
+registerPlugin( 'my-sidebar-plugin', { render: MySidebar } );</code></pre>
+            </div>
+        </div>
+
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+    <script>
+        initLayout();
+    </script>
+</body>
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitoring & SRE Interview Questions - DevOps Guide</title>
+    <link rel="icon" href="../assets/img/avatar-fallback.svg">
+    <link rel="stylesheet" href="../assets/css/devops_styles.css">
+    <script src="../assets/js/devops_layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Monitoring & SRE Questions</h1>
+        <p>Observability, SLIs/SLOs, and Incident Management.</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <div class="interview-card">
+            <h3>1. Golden Signals</h3>
+            <p><strong>Question:</strong> What are the "Four Golden Signals" of monitoring?</p>
+            <div class="answer">
+                <p>Latency, Traffic, Errors, and Saturation.</p>
+            </div>
+        </div>
+
+        <div class="interview-card">
+            <h3>2. Push vs Pull Monitoring</h3>
+            <p><strong>Question:</strong> Compare Push vs Pull based monitoring systems.</p>
+            <div class="answer">
+                <p><strong>Pull (Prometheus):</strong> The server scrapes metrics from agents. Better for knowing if an agent is down.<br><strong>Push (Graphite/InfluxDB):</strong> Agents send metrics to the server. Better for short-lived jobs or behind firewalls.</p>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+    <script>
+        initLayout();
+    </script>
+</body>
+</html>

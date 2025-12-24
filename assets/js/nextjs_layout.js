@@ -1,5 +1,6 @@
 const navLinks = [
     { href: "/nextjs_guide/index.html", text: "Home" },
+    { href: "/nextjs_guide/use_cases.html", text: "💼 Real World Use Cases" },
     { href: "/nextjs_guide/module1.html", text: "1. App Router & RSC" },
     { href: "/nextjs_guide/module2.html", text: "2. Routing & Layouts" },
     { href: "/nextjs_guide/module3.html", text: "3. Server Actions" },
@@ -8,6 +9,7 @@ const navLinks = [
     { href: "/nextjs_guide/module6.html", text: "6. Database (Prisma)" },
     { href: "/nextjs_guide/module7.html", text: "7. Auth (NextAuth)" },
     { href: "/nextjs_guide/module8.html", text: "8. Deployment" },
+    { href: "/nextjs_guide/quiz.html", text: "✅ Final Quiz" },
     { href: "/nextjs_guide/capstone.html", text: "🏆 Capstone Project" },
     { href: "/nextjs_guide/interview_index.html", text: "📝 Interview Prep" }
 ];

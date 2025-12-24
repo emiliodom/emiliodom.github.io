@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security (DevSecOps) Interview Questions - DevOps Guide</title>
+    <link rel="icon" href="../assets/img/avatar-fallback.svg">
+    <link rel="stylesheet" href="../assets/css/devops_styles.css">
+    <script src="../assets/js/devops_layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Security Questions</h1>
+        <p>Securing pipelines, containers, and cloud infrastructure.</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <div class="interview-card">
+            <h3>1. Secrets Management</h3>
+            <p><strong>Question:</strong> How do you handle secrets in a CI/CD pipeline?</p>
+            <div class="answer">
+                <p>Never store secrets in code. Use environment variables injected by the CI system (e.g., GitHub Actions Secrets, Jenkins Credentials) or fetch them from a secrets manager (Vault, AWS Secrets Manager) at runtime.</p>
+            </div>
+        </div>
+
+        <div class="interview-card">
+            <h3>2. Container Security</h3>
+            <p><strong>Question:</strong> How do you secure a Docker container?</p>
+            <div class="answer">
+                <p>Use minimal base images (Alpine/Distroless), run as non-root user, scan images for vulnerabilities, limit resources (CPU/RAM), and use read-only filesystems where possible.</p>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+    <script>
+        initLayout();
+    </script>
+</body>
+</html>

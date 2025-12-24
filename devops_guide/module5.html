@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 5: Infrastructure as Code (Terraform) - DevOps Guide</title>
+    <link rel="icon" href="../assets/img/avatar-fallback.svg">
+    <link rel="stylesheet" href="../assets/css/devops_styles.css">
+    <script src="../assets/js/devops_layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Module 5: Infrastructure as Code (Terraform)</h1>
+        <p>Provisioning and managing infrastructure using declarative configuration files.</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <h2>5.1 Introduction to IaC</h2>
+        <p>Infrastructure as Code (IaC) is the managing and provisioning of computer data centers through machine-readable definition files, rather than physical hardware configuration or interactive configuration tools.</p>
+
+        <h2>5.2 Terraform Basics</h2>
+        <p>Terraform is an open-source infrastructure as code software tool created by HashiCorp. Users define and provide data center infrastructure using a declarative configuration language known as HashiCorp Configuration Language (HCL).</p>
+        <pre><code>provider "aws" {
+  region = "us-west-2"
+}
+
+resource "aws_instance" "example" {
+  ami           = "ami-0c55b159cbfafe1f0"
+  instance_type = "t2.micro"
+}</code></pre>
+
+        <h2>5.3 State Management</h2>
+        <p>Terraform stores state about your managed infrastructure and configuration. This state is used by Terraform to map real world resources to your configuration, keep track of metadata, and to improve performance for large infrastructures.</p>
+
+        <h2>5.4 Modules</h2>
+        <p>Modules are containers for multiple resources that are used together. A module consists of a collection of .tf and/or .tf.json files kept together in a directory.</p>
+
+        <div class="task">
+            <h3>🎯 Practical Exercise</h3>
+            <p>Write a Terraform configuration to provision an AWS EC2 instance and an S3 bucket. Use a remote backend to store the state file.</p>
+        </div>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+    <script>
+        initLayout();
+    </script>
+</body>
+</html>

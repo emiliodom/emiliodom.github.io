@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moodle Enterprise & DevOps Interview Questions</title>
+    <link rel="stylesheet" href="../assets/css/moodle_styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="../assets/js/moodle_layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Enterprise & DevOps</h1>
+        <p>Interview Questions: CI/CD, Scaling, and High Availability</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section class="qna">
+            <h3>Q1: How do you handle Moodle deployments in a load-balanced environment?</h3>
+            <div class="answer">
+                <p>In a load-balanced environment (multiple web servers), you must ensure:</p>
+                <ul>
+                    <li><strong>Code Consistency:</strong> All servers must run the exact same code version (use Git or immutable artifacts).</li>
+                    <li><strong>Shared Dataroot:</strong> <code>moodledata</code> must be on a shared file system (NFS, EFS, or GlusterFS) so all nodes can access files.</li>
+                    <li><strong>Centralized Cache:</strong> Use Redis or Memcached for MUC (Moodle Universal Cache) and Sessions, so users don't lose session data when switching nodes.</li>
+                    <li><strong>Database:</strong> Use a separate database server (or cluster), not localhost.</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q2: What is the difference between `git pull` and a proper CI/CD pipeline for Moodle?</h3>
+            <div class="answer">
+                <p><strong>Git Pull:</strong> Risky on production. Can leave the site in a broken state if merge conflicts occur or if dependencies (composer/npm) aren't updated. It also keeps `.git` metadata on the server (security risk).</p>
+                <p><strong>CI/CD Pipeline:</strong> Builds the artifact in a safe environment (runs tests, compiles SCSS/JS, installs vendor deps), and deploys the ready-to-run code to production. It ensures zero downtime (with blue/green deployment) and rollback capabilities.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q3: How do you upgrade a massive Moodle site (1TB+ DB) with minimal downtime?</h3>
+            <div class="answer">
+                <p>Standard upgrades can take hours. Strategies to minimize downtime:</p>
+                <ul>
+                    <li><strong>Test Upgrade:</strong> Always run a dry run on a staging copy to measure time and catch errors.</li>
+                    <li><strong>CLI Upgrade:</strong> Always use <code>php admin/cli/upgrade.php</code> instead of the web UI (avoids timeouts).</li>
+                    <li><strong>Delta Migration:</strong> If migrating servers, sync the bulk of data while the site is live, then do a final "catch-up" sync during a short maintenance window.</li>
+                    <li><strong>Parallel Processing:</strong> Some database schema changes can be run in parallel if you know what you are doing (advanced).</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q4: Explain the role of Redis in a high-performance Moodle setup.</h3>
+            <div class="answer">
+                <p>Redis is an in-memory data structure store used for:</p>
+                <ul>
+                    <li><strong>Application Cache (MUC):</strong> Stores configuration, language strings, and database schema info to reduce DB hits.</li>
+                    <li><strong>Session Cache:</strong> Stores user sessions. Essential for load balancing (sticky sessions are not reliable enough).</li>
+                </ul>
+                <p>Configuration in <code>config.php</code>:</p>
+                <pre><code class="language-php">$CFG->session_handler_class = '\core\session\redis';
+$CFG->session_redis_host = '127.0.0.1';</code></pre>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q5: What is "Cron" in Moodle and why is it critical?</h3>
+            <div class="answer">
+                <p>The Cron script (<code>admin/cli/cron.php</code>) is the heartbeat of Moodle. It processes:</p>
+                <ul>
+                    <li>Forum email notifications.</li>
+                    <li>Course completion calculations.</li>
+                    <li>Assignment grading workflows.</li>
+                    <li>System cleanup (temp files, old sessions).</li>
+                </ul>
+                <p>If Cron stops, the site may appear to work, but emails won't send and students won't get grades. It should run <strong>every minute</strong>.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q6: How do you automate testing for a custom Moodle plugin?</h3>
+            <div class="answer">
+                <p>We use two main tools:</p>
+                <ul>
+                    <li><strong>PHPUnit:</strong> For backend logic (classes, functions). Requires a separate test database.</li>
+                    <li><strong>Behat:</strong> For frontend/acceptance testing. Simulates a user clicking through the site.</li>
+                </ul>
+                <p>These should be run in a CI pipeline (GitHub Actions / Jenkins) on every commit.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q7: What are "Adhoc Tasks" vs "Scheduled Tasks"?</h3>
+            <div class="answer">
+                <p><strong>Scheduled Tasks:</strong> Run on a regular schedule (e.g., "Every day at 2 AM"). Defined in <code>db/tasks.php</code>.</p>
+                <p><strong>Adhoc Tasks:</strong> One-off background jobs created dynamically by code (e.g., "Process this specific video file now"). They are picked up by the cron as soon as possible. Better for performance than doing heavy work during a user's HTTP request.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q8: How do you secure `moodledata`?</h3>
+            <div class="answer">
+                <p>1. <strong>Location:</strong> It must be located <strong>outside</strong> the web root (public_html) so files cannot be accessed directly via URL.</p>
+                <p>2. <strong>Permissions:</strong> The web server user (www-data) needs read/write access, but other users should have none.</p>
+                <p>3. <strong>Execution:</strong> Prevent script execution in this directory (e.g., no .php files should run from here).</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+    <script>
+        initLayout();
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

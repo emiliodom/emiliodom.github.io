@@ -59,6 +59,114 @@ class simplehtml_form extends moodleform {
     }
 }</code></pre>
         </section>
+
+        <section>
+            <h2>3. Events API</h2>
+            <p>Moodle uses an event-driven architecture. You can trigger events or listen for them (Observers).</p>
+            
+            <h3>Triggering an Event</h3>
+            <pre><code class="language-php">$event = \local_myplugin\event\something_happened::create([
+    'context' => $context,
+    'objectid' => $record->id
+]);
+$event->trigger();</code></pre>
+
+            <h3>Listening (Observer)</h3>
+            <p>Define the observer in <code>db/events.php</code>:</p>
+            <pre><code class="language-php">$observers = [
+    [
+        'eventname' => '\core\event\course_completed',
+        'callback'  => 'local_myplugin\observer::course_completed',
+    ],
+];</code></pre>
+        </section>
+
+        <section>
+            <h2>4. File API</h2>
+            <p>Handling files in Moodle is complex because of the secure storage system (files are hashed and stored in <code>moodledata/filedir</code>).</p>
+            <pre><code class="language-php">// Saving a file from a form
+$mform->save_stored_file('attachment', $context->id, 'local_myplugin', 'attachment', $itemid);
+
+// Serving a file (pluginfile.php)
+function local_myplugin_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options=array()) {
+    // Check permissions...
+    send_stored_file($file, 0, 0, $forcedownload, $options);
+}</code></pre>
+        </section>
+
+        <section>
+            <h2>5. Navigation API</h2>
+            <p>You can inject links into the primary navigation, user menu, or course settings menu using hooks in <code>lib.php</code>.</p>
+            <pre><code class="language-php">// lib.php
+function local_myplugin_extend_navigation(global_navigation $nav) {
+    $mainnode = $nav->add(get_string('pluginname', 'local_myplugin'));
+    $mainnode->add('My Dashboard', new moodle_url('/local/myplugin/index.php'));
+}
+
+function local_myplugin_extend_settings_navigation(settings_navigation $nav, context $context) {
+    if ($context->contextlevel == CONTEXT_COURSE) {
+        $coursenode = $nav->get('courseadmin');
+        $coursenode->add('My Plugin Settings', new moodle_url('/local/myplugin/settings.php'));
+    }
+}</code></pre>
+        </section>
+
+        <section>
+            <h2>6. Web Services API (Server)</h2>
+            <p>To expose your plugin's functionality to external apps (like the Mobile App), define functions in <code>classes/external.php</code> and register them in <code>db/services.php</code>.</p>
+            <pre><code class="language-php">// classes/external.php
+use external_api;
+use external_function_parameters;
+use external_single_structure;
+use external_value;
+
+class local_myplugin_external extends external_api {
+    
+    public static function get_data_parameters() {
+        return new external_function_parameters([
+            'id' => new external_value(PARAM_INT, 'The ID')
+        ]);
+    }
+
+    public static function get_data($id) {
+        // Validate parameters
+        $params = self::validate_parameters(self::get_data_parameters(), ['id' => $id]);
+        
+        // Logic...
+        return ['result' => 'Success'];
+    }
+
+    public static function get_data_returns() {
+        return new external_single_structure([
+            'result' => new external_value(PARAM_TEXT, 'Result status')
+        ]);
+    }
+}</code></pre>
+        </section>
+
+        <section>
+            <h2>6. Output Components (Templatable)</h2>
+            <p>Modern Moodle development separates logic from presentation using the <code>templatable</code> interface.</p>
+            <pre><code class="language-php">// 1. Create a class that holds the data for the template
+class my_widget implements \renderable, \templatable {
+    public function export_for_template(\renderer_base $output) {
+        return [
+            'title' => 'My Widget',
+            'items' => ['A', 'B', 'C']
+        ];
+    }
+}
+
+// 2. Render it in your script
+$widget = new my_widget();
+echo $OUTPUT->render($widget);
+
+// 3. Create the template (templates/my_widget.mustache)
+// &lt;div class="widget"&gt;
+//   &lt;h3&gt;{{title}}&lt;/h3&gt;
+//   &lt;ul&gt;{{#items}}&lt;li&gt;{{.}}&lt;/li&gt;{{/items}}&lt;/ul&gt;
+// &lt;/div&gt;</code></pre>
+        </section>
     </main>
 
     <footer>

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 2: Timber & Twig</title>
+    <link rel="stylesheet" href="../assets/css/wordpress_styles.css">
+    <script src="../assets/js/wordpress_layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Module 2: Timber & Twig</h1>
+        <p>Separating Logic from Views.</p>
+    </header>
+    <nav></nav>
+    <main>
+        <h2>The MVC Pattern</h2>
+        <p>Stop writing PHP inside your HTML. Timber allows you to write clean, maintainable code by separating the Controller (PHP) from the View (Twig).</p>
+        
+        <h3>Key Concepts</h3>
+        <ul>
+            <li><strong>Context:</strong> The data passed to the view.</li>
+            <li><strong>Twig Syntax:</strong> `{{ post.title }}` instead of `&lt;?php the_title(); ?&gt;`.</li>
+            <li><strong>Inheritance:</strong> `{% extends "base.twig" %}`.</li>
+        </ul>
+    </main>
+    <footer></footer>
+    <script>initLayout();</script>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Core Python Interview Questions</title>
+    <link rel="stylesheet" href="../assets/css/python_styles.css">
+    <script src="../assets/js/python_layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Core Python Questions</h1>
+        <p>Essential knowledge for every Python developer.</p>
+    </header>
+
+    <nav></nav>
+
+    <main>
+        <div class="question-card">
+            <h3>1. What is the difference between a list and a tuple?</h3>
+            <p><strong>Answer:</strong></p>
+            <ul>
+                <li><strong>Mutability:</strong> Lists are mutable (can be changed), tuples are immutable (cannot be changed).</li>
+                <li><strong>Syntax:</strong> Lists use <code>[]</code>, tuples use <code>()</code>.</li>
+                <li><strong>Performance:</strong> Tuples are slightly faster and consume less memory.</li>
+                <li><strong>Use Case:</strong> Use lists for collections that change; use tuples for fixed data records.</li>
+            </ul>
+        </div>
+
+        <div class="question-card">
+            <h3>2. Explain `*args` and `**kwargs`.</h3>
+            <p><strong>Answer:</strong></p>
+            <ul>
+                <li><code>*args</code> allows passing a variable number of <em>positional</em> arguments (received as a tuple).</li>
+                <li><code>**kwargs</code> allows passing a variable number of <em>keyword</em> arguments (received as a dictionary).</li>
+            </ul>
+            <pre><code>def func(*args, **kwargs):
+    print(args)   # (1, 2)
+    print(kwargs) # {'a': 3}
+
+func(1, 2, a=3)</code></pre>
+        </div>
+
+        <div class="question-card">
+            <h3>3. How does Python handle memory management?</h3>
+            <p><strong>Answer:</strong> Python uses a private heap containing all Python objects and data structures. The management of this private heap is ensured internally by the <em>Python memory manager</em>.</p>
+            <ul>
+                <li><strong>Reference Counting:</strong> The primary mechanism. When an object's reference count drops to zero, it is deallocated.</li>
+                <li><strong>Garbage Collector:</strong> A cyclic garbage collector handles reference cycles that reference counting cannot catch.</li>
+            </ul>
+        </div>
+
+        <div class="question-card">
+            <h3>4. What are Python decorators?</h3>
+            <p><strong>Answer:</strong> A decorator is a design pattern in Python that allows a user to add new functionality to an existing object without modifying its structure. It is usually a function that takes another function as an argument and extends its behavior.</p>
+        </div>
+    </main>
+
+    <footer></footer>
+    <script>initLayout();</script>
+</body>
+</html>

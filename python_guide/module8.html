@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 8: Database Interaction - Python Guide</title>
+    <link rel="icon" href="../assets/img/avatar-fallback.svg">
+    <link rel="stylesheet" href="../assets/css/python_styles.css">
+    <script src="../assets/js/python_layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Module 8: Database Interaction</h1>
+        <p>Working with SQL and NoSQL databases effectively.</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <h2>8.1 SQLAlchemy ORM</h2>
+        <p>SQLAlchemy is the Python SQL toolkit and Object Relational Mapper that gives application developers the full power and flexibility of SQL.</p>
+        <pre><code>from sqlalchemy import create_engine, Column, Integer, String
+from sqlalchemy.ext.declarative import declarative_base
+
+Base = declarative_base()
+
+class User(Base):
+    __tablename__ = 'users'
+    id = Column(Integer, primary_key=True)
+    name = Column(String)</code></pre>
+
+        <h2>8.2 Django ORM</h2>
+        <p>Django's built-in ORM is powerful and easy to use, abstracting away much of the SQL complexity.</p>
+
+        <h2>8.3 Raw SQL & Migrations</h2>
+        <p>When to use raw SQL for performance. Managing database schema changes using tools like Alembic (for SQLAlchemy) or Django Migrations.</p>
+
+        <h2>8.4 NoSQL with Python</h2>
+        <p>Interacting with NoSQL databases like MongoDB (using PyMongo or Motor) and Redis.</p>
+
+        <div class="task">
+            <h3>🎯 Practical Exercise</h3>
+            <p>Create a simple data model using SQLAlchemy, generate a migration script using Alembic, and apply it to a SQLite database.</p>
+        </div>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+    <script>
+        initLayout();
+    </script>
+</body>
+</html>

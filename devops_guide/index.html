@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevOps & Cloud Native Roadmap</title>
+    <link rel="icon" href="../assets/img/avatar-fallback.svg">
+    <link rel="stylesheet" href="../assets/css/devops_styles.css">
+    <script src="../assets/js/devops_layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>DevOps: Docker & Kubernetes</h1>
+        <p>Containerization, Orchestration, and CI/CD Pipelines.</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <h2>Introduction</h2>
+        <p>This guide focuses on the essential tools for modern deployment: Docker for containerization and Kubernetes for orchestration.</p>
+
+        <div class="crash-course" style="background: #e6f7ff; border-left: 5px solid #099cec; padding: 15px; margin: 20px 0;">
+            <h3>🚀 DevOps Crash Course</h3>
+            <p>Essential commands you'll use daily:</p>
+            <pre><code class="language-bash"># Docker
+docker build -t my-app .
+docker run -p 8080:80 my-app
+
+# Kubernetes
+kubectl get pods
+kubectl logs -f my-pod
+kubectl apply -f deployment.yaml</code></pre>
+        </div>
+
+        <div class="task">
+            <h3>🎯 Expected Outcome</h3>
+            <p>By the end of this guide, you will be able to:</p>
+            <ul>
+                <li>Write optimized <strong>Dockerfiles</strong> and manage multi-container apps with <strong>Docker Compose</strong>.</li>
+                <li>Deploy and manage applications on <strong>Kubernetes</strong> clusters.</li>
+                <li>Understand K8s primitives: Pods, Services, Deployments, Ingress.</li>
+                <li>Implement CI/CD workflows for containerized applications.</li>
+            </ul>
+        </div>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+    <script>
+        initLayout();
+    </script>
+</body>
+</html>

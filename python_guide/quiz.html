@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Final Quiz</title>
+    <link rel="stylesheet" href="../assets/css/python_styles.css">
+    <script src="../assets/js/python_layout.js"></script>
+    <style>
+        .quiz-container { max-width: 800px; margin: 0 auto; padding-bottom: 50px; }
+        .question { background: var(--card-bg); padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid var(--card-border); }
+        .question h3 { margin-top: 0; font-size: 1.1em; }
+        .options { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
+        .option { 
+            padding: 12px; 
+            border: 1px solid var(--card-border); 
+            border-radius: 4px; 
+            cursor: pointer; 
+            transition: background 0.2s; 
+            word-break: break-word;
+            white-space: normal;
+            line-height: 1.4;
+        }
+        .option:hover { background: var(--nav-bg); }
+        .options.answered .option { cursor: default; pointer-events: none; }
+        .option.correct { background: #10b981; color: white; border-color: #059669; }
+        .option.incorrect { background: #ef4444; color: white; border-color: #b91c1c; }
+        .option.dimmed { opacity: 0.6; }
+        #score-panel {
+            position: sticky;
+            top: 20px;
+            background: var(--card-bg);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--card-border);
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        #score-display { font-weight: bold; font-size: 1.2em; }
+        .progress-bar { height: 10px; background: #e5e7eb; border-radius: 5px; width: 200px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--link-color); width: 0%; transition: width 0.3s; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Python Final Assessment</h1>
+        <p>Test your knowledge from Beginner to Senior Python Developer.</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main class="quiz-container">
+        <div id="score-panel">
+            <div id="score-display">Score: 0 / 0</div>
+            <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+        </div>
+        <div id="quiz"></div>
+    </main>
+
+    <script>
+        const questions = [
+            // --- Beginner (20) ---
+            { q: "What is Python?", options: ["A compiled language", "An interpreted, high-level language", "A low-level language", "A database"], answer: 1 },
+            { q: "How do you print to the console?", options: ["console.log()", "print()", "echo", "System.out.println()"], answer: 1 },
+            { q: "How do you define a function?", options: ["function myFunc()", "def myFunc():", "func myFunc()", "void myFunc()"], answer: 1 },
+            { q: "What is a list?", options: ["An ordered, mutable collection", "An unordered collection", "A key-value pair", "A fixed-size array"], answer: 0 },
+            { q: "How do you access the last element of a list?", options: ["list[last]", "list[-1]", "list.last()", "list[len(list)]"], answer: 1 },
+            { q: "What is a tuple?", options: ["A mutable list", "An immutable ordered collection", "A dictionary", "A set"], answer: 1 },
+            { q: "What is a dictionary?", options: ["A collection of key-value pairs", "A list of words", "A sorted list", "A database"], answer: 0 },
+            { q: "How do you iterate over a list?", options: ["for x in list:", "foreach x in list", "loop x in list", "while list.next()"], answer: 0 },
+            { q: "What is the correct file extension for Python files?", options: [".py", ".python", ".pt", ".p"], answer: 0 },
+            { q: "How do you comment a single line?", options: ["// comment", "# comment", "/* comment */", "-- comment"], answer: 1 },
+            { q: "What is indentation used for?", options: ["Styling only", "Defining code blocks (scope)", "Nothing", "Comments"], answer: 1 },
+            { q: "What is 'None'?", options: ["Zero", "A null value object", "An empty string", "False"], answer: 1 },
+            { q: "How do you check the type of a variable?", options: ["typeof(x)", "type(x)", "x.type", "checkType(x)"], answer: 1 },
+            { q: "What is a module?", options: ["A file containing Python code", "A function", "A class", "A variable"], answer: 0 },
+            { q: "How do you import a module?", options: ["import math", "include math", "require math", "using math"], answer: 0 },
+            { q: "What is the 'len()' function?", options: ["Returns the length of an object", "Returns the size in bytes", "Returns the type", "Returns the value"], answer: 0 },
+            { q: "How do you convert a string to an integer?", options: ["int()", "str()", "float()", "parse()"], answer: 0 },
+            { q: "What is slicing?", options: ["Cutting a string/list into parts", "Deleting a variable", "Formatting code", "Running code"], answer: 0 },
+            { q: "What is a set?", options: ["An unordered collection of unique elements", "A list with duplicates", "A dictionary", "A tuple"], answer: 0 },
+            { q: "What is the 'range()' function?", options: ["Generates a sequence of numbers", "Finds the range of data", "Sorts a list", "Random number"], answer: 0 },
+
+            // --- Intermediate (20) ---
+            { q: "What is a list comprehension?", options: ["A concise way to create lists", "A way to understand lists", "A list error", "A loop"], answer: 0 },
+            { q: "What is a lambda function?", options: ["An anonymous inline function", "A large function", "A class method", "A variable"], answer: 0 },
+            { q: "What is *args?", options: ["Allows passing variable number of positional arguments", "A pointer", "Multiplication", "A keyword argument"], answer: 0 },
+            { q: "What is **kwargs?", options: ["Allows passing variable number of keyword arguments", "Exponentiation", "A pointer", "A list"], answer: 0 },
+            { q: "What is a decorator?", options: ["A function that modifies the behavior of another function", "A design pattern", "A styling tool", "A comment"], answer: 0 },
+            { q: "What is a generator?", options: ["A function that yields values one at a time", "A power source", "A list creator", "A random number generator"], answer: 0 },
+            { q: "What is the 'yield' keyword?", options: ["Pauses function execution and returns a value", "Stops the function", "Returns a value and exits", "Throws an error"], answer: 0 },
+            { q: "What is a virtual environment?", options: ["An isolated Python environment", "A virtual machine", "A simulator", "A game"], answer: 0 },
+            { q: "What is pip?", options: ["The package installer for Python", "A game", "A variable", "A function"], answer: 0 },
+            { q: "What is the difference between 'is' and '=='?", options: ["'is' checks identity, '==' checks equality", "They are the same", "'is' checks equality", "'==' checks identity"], answer: 0 },
+            { q: "What is a docstring?", options: ["A string literal used for documentation", "A doctor string", "A variable", "A comment"], answer: 0 },
+            { q: "What is exception handling?", options: ["Managing errors using try-except", "Ignoring errors", "Fixing bugs", "Logging"], answer: 0 },
+            { q: "What is the 'with' statement used for?", options: ["Context management (e.g., opening files)", "Loops", "Conditions", "Functions"], answer: 0 },
+            { q: "What is a class?", options: ["A blueprint for creating objects", "A function", "A module", "A variable"], answer: 0 },
+            { q: "What is 'self'?", options: ["A reference to the current instance of the class", "A keyword", "A global variable", "A module"], answer: 0 },
+            { q: "What is inheritance?", options: ["A class deriving properties from another class", "Receiving money", "Copying code", "Importing modules"], answer: 0 },
+            { q: "What is polymorphism?", options: ["Different classes responding to the same method call", "Many shapes", "Changing types", "Encryption"], answer: 0 },
+            { q: "What is the '__init__' method?", options: ["The constructor method", "The initializer", "The start function", "The main function"], answer: 0 },
+            { q: "What is a static method?", options: ["A method that belongs to the class, not the instance", "A method that doesn't change", "A private method", "A global function"], answer: 0 },
+            { q: "What is the Global Interpreter Lock (GIL)?", options: ["A mutex that allows only one thread to hold control of the Python interpreter", "A security feature", "A database lock", "A file lock"], answer: 0 },
+
+            // --- Senior (20) ---
+            { q: "What is a metaclass?", options: ["A class of a class (defines how a class behaves)", "A super class", "A meta tag", "A large class"], answer: 0 },
+            { q: "How does Python handle memory management?", options: ["Reference counting and garbage collection", "Manual allocation", "Stack only", "No management"], answer: 0 },
+            { q: "What is the difference between deep copy and shallow copy?", options: ["Deep copy copies objects recursively, shallow copy copies references", "Shallow copy is slower", "Deep copy is faster", "No difference"], answer: 0 },
+            { q: "What is AsyncIO?", options: ["A library to write concurrent code using async/await", "A database", "A file reader", "A threading library"], answer: 0 },
+            { q: "What is the difference between threading and multiprocessing in Python?", options: ["Threading is limited by GIL, multiprocessing uses separate processes", "Threading is faster", "Multiprocessing is slower", "No difference"], answer: 0 },
+            { q: "What is a context manager?", options: ["An object that defines runtime context (enter/exit)", "A manager", "A variable", "A function"], answer: 0 },
+            { q: "How do you create a custom context manager?", options: ["Implement __enter__ and __exit__ methods", "Use @contextmanager decorator", "Both A and B", "Use try-finally"], answer: 2 },
+            { q: "What is monkey patching?", options: ["Dynamic modification of a class or module at runtime", "Patching a monkey", "Fixing bugs", "Updating code"], answer: 0 },
+            { q: "What is the purpose of '__slots__'?", options: ["To save memory by preventing the creation of __dict__", "To create slots", "To limit attributes", "To speed up access"], answer: 0 },
+            { q: "What is a descriptor?", options: ["An object attribute with binding behavior (get/set/delete)", "A description", "A variable", "A function"], answer: 0 },
+            { q: "What is the MRO (Method Resolution Order)?", options: ["The order in which base classes are searched for a member", "A sorting algorithm", "A list", "A function"], answer: 0 },
+            { q: "What is the difference between @staticmethod and @classmethod?", options: ["Class method takes 'cls' as first arg, static method takes nothing", "Static method takes 'self'", "Class method is faster", "No difference"], answer: 0 },
+            { q: "What is pickling?", options: ["Serializing a Python object structure", "Preserving food", "Compressing files", "Encrypting data"], answer: 0 },
+            { q: "What is WSGI/ASGI?", options: ["Interface specifications for web servers and Python web apps", "Web frameworks", "Databases", "Protocols"], answer: 0 },
+            { q: "How do you profile Python code?", options: ["cProfile module", "time module", "print statements", "All of the above"], answer: 0 },
+            { q: "What is Type Hinting?", options: ["Annotating types for static analysis", "Enforcing types at runtime", "Comments", "Variables"], answer: 0 },
+            { q: "What is the 'collections' module?", options: ["Specialized container datatypes (Counter, deque, etc.)", "A list of items", "A database", "A garbage collector"], answer: 0 },
+            { q: "What is the 'itertools' module?", options: ["Functions creating iterators for efficient looping", "Tools for items", "A list tool", "A loop tool"], answer: 0 },
+            { q: "What is the difference between __str__ and __repr__?", options: ["__str__ is for end-users, __repr__ is for developers (debugging)", "They are the same", "__str__ is for debugging", "__repr__ is for users"], answer: 0 },
+            { q: "How do you handle circular imports?", options: ["Import inside functions or restructure code", "Ignore them", "Use global variables", "Delete files"], answer: 0 },
+
+            // --- Advanced (20) ---
+            { q: "What is a metaclass?", options: ["A class of a class", "A super class", "A subclass", "A function"], answer: 0 },
+            { q: "What is the difference between __new__ and __init__?", options: ["__new__ creates the object, __init__ initializes it", "They are the same", "__init__ creates, __new__ initializes", "__new__ is deprecated"], answer: 0 },
+            { q: "What is monkey patching?", options: ["Dynamic modification of a class or module at runtime", "A game", "Fixing bugs", "Updating Python"], answer: 0 },
+            { q: "What is the purpose of __slots__?", options: ["To save memory by preventing __dict__ creation", "To create slots for variables", "To speed up loops", "To define methods"], answer: 0 },
+            { q: "What is a context manager?", options: ["An object that defines runtime context (enter/exit)", "A manager class", "A database connection", "A file handler"], answer: 0 },
+            { q: "What is the 'async' keyword?", options: ["Defines a coroutine", "Starts a thread", "Imports a library", "Defines a class"], answer: 0 },
+            { q: "What is the 'await' keyword?", options: ["Pauses execution until a coroutine completes", "Stops the program", "Waits for user input", "Sleeps for a second"], answer: 0 },
+            { q: "What is the difference between a thread and a process?", options: ["Threads share memory, processes do not", "Processes share memory", "They are the same", "Threads are slower"], answer: 0 },
+            { q: "What is the 'multiprocessing' module?", options: ["Allows spawning processes", "Allows threading", "Allows async", "Allows networking"], answer: 0 },
+            { q: "What is a descriptor?", options: ["An object with binding behavior (get/set/delete)", "A description", "A file", "A variable"], answer: 0 },
+            { q: "What is the MRO (Method Resolution Order)?", options: ["The order in which base classes are searched", "Alphabetical order", "Random order", "Creation order"], answer: 0 },
+            { q: "What is a weak reference?", options: ["A reference that doesn't prevent garbage collection", "A broken link", "A pointer", "A variable"], answer: 0 },
+            { q: "What is the 'collections' module?", options: ["High-performance container datatypes", "A list of books", "A database", "A garbage collector"], answer: 0 },
+            { q: "What is 'functools'?", options: ["Higher-order functions and operations on callable objects", "Functional programming", "Functions tools", "A game"], answer: 0 },
+            { q: "What is 'itertools'?", options: ["Functions creating iterators for efficient looping", "Iteration tools", "A loop", "A list"], answer: 0 },
+            { q: "What is pickling?", options: ["Serializing a Python object structure", "Preserving food", "Compressing files", "Encrypting data"], answer: 0 },
+            { q: "What is the difference between deep copy and shallow copy?", options: ["Deep copy copies objects recursively, shallow copy copies references", "They are the same", "Shallow copy is recursive", "Deep copy is faster"], answer: 0 },
+            { q: "What is a closure?", options: ["A function object that remembers values in enclosing scopes", "A closed function", "A loop", "A variable"], answer: 0 },
+            { q: "What is duck typing?", options: ["Checking behavior rather than type", "Checking type", "A bird", "A game"], answer: 0 },
+            { q: "What is the 'abc' module?", options: ["Abstract Base Classes", "Alphabet", "A basic class", "A variable"], answer: 0 }
+        ];
+
+        // Shuffle questions
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        const quizContainer = document.getElementById('quiz');
+        const scoreDisplay = document.getElementById('score-display');
+        const progressBar = document.getElementById('progress');
+        
+        let shuffledQuestions = shuffle([...questions]);
+        let score = 0;
+        let answeredCount = 0;
+
+        function renderQuiz() {
+            quizContainer.innerHTML = '';
+            shuffledQuestions.forEach((q, index) => {
+                const qEl = document.createElement('div');
+                qEl.className = 'question';
+                qEl.innerHTML = `
+                    <h3>${index + 1}. ${q.q}</h3>
+                    <div class="options" id="opt-${index}">
+                        ${q.options.map((opt, i) => `
+                            <div class="option" onclick="checkAnswer(${index}, ${i}, ${q.answer})">${opt}</div>
+                        `).join('')}
+                    </div>
+                `;
+                quizContainer.appendChild(qEl);
+            });
+            updateScore();
+        }
+
+        window.checkAnswer = function(qIndex, selected, correct) {
+            const optionsDiv = document.getElementById(`opt-${qIndex}`);
+            if (optionsDiv.classList.contains('answered')) return;
+
+            optionsDiv.classList.add('answered');
+            const options = optionsDiv.getElementsByClassName('option');
+            
+            if (selected === correct) {
+                options[selected].classList.add('correct');
+                score++;
+            } else {
+                options[selected].classList.add('incorrect');
+                options[correct].classList.add('correct');
+            }
+
+            // Dim others
+            for (let i = 0; i < options.length; i++) {
+                if (i !== selected && i !== correct) {
+                    options[i].classList.add('dimmed');
+                }
+            }
+
+            answeredCount++;
+            updateScore();
+        };
+
+        function updateScore() {
+            scoreDisplay.textContent = `Score: ${score} / ${questions.length}`;
+            const percent = (answeredCount / questions.length) * 100;
+            progressBar.style.width = `${percent}%`;
+        }
+
+        renderQuiz();
+    </script>
+</body>
+</html>

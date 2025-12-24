@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Web Frameworks Interview Questions</title>
+    <link rel="stylesheet" href="../assets/css/python_styles.css">
+    <script src="../assets/js/python_layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Web Frameworks (Django/FastAPI)</h1>
+        <p>Building scalable web applications.</p>
+    </header>
+
+    <nav></nav>
+
+    <main>
+        <div class="question-card">
+            <h3>1. Django vs FastAPI: When to choose which?</h3>
+            <p><strong>Answer:</strong></p>
+            <ul>
+                <li><strong>Django:</strong> "Batteries-included". Best for full-stack apps, rapid prototyping, projects needing a built-in Admin, ORM, and Auth. Monolithic structure.</li>
+                <li><strong>FastAPI:</strong> Microservices, high-performance APIs, AsyncIO support, modern type hinting. Best for building APIs, ML model serving, and high-concurrency apps.</li>
+            </ul>
+        </div>
+
+        <div class="question-card">
+            <h3>2. Explain the Django Request/Response Cycle.</h3>
+            <p><strong>Answer:</strong></p>
+            <ol>
+                <li>Request comes to <code>wsgi.py</code> / <code>asgi.py</code>.</li>
+                <li>Passed to <code>Middlewares</code> (Security, Session, etc.).</li>
+                <li>URL Dispatcher (<code>urls.py</code>) matches the route.</li>
+                <li>View (<code>views.py</code>) processes logic (talks to Models/DB).</li>
+                <li>View returns a Response (HTML template or JSON).</li>
+            </ol>
+        </div>
+
+        <div class="question-card">
+            <h3>3. How does FastAPI handle concurrency?</h3>
+            <p><strong>Answer:</strong> FastAPI is built on top of <strong>Starlette</strong> and <strong>Pydantic</strong>. It uses Python's <code>async</code> and <code>await</code> syntax to handle concurrency. It runs on an ASGI server (like Uvicorn), allowing it to handle many requests simultaneously without blocking I/O operations.</p>
+        </div>
+
+        <div class="question-card">
+            <h3>4. What is the N+1 problem in ORMs?</h3>
+            <p><strong>Answer:</strong> It happens when code executes N additional query statements to fetch the same data that could have been retrieved when executing the primary query.</p>
+            <p><strong>Fix:</strong> Use <code>select_related</code> (JOIN) or <code>prefetch_related</code> (separate query + Python join) in Django.</p>
+        </div>
+    </main>
+
+    <footer></footer>
+    <script>initLayout();</script>
+</body>
+</html>

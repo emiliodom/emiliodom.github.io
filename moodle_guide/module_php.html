@@ -102,6 +102,18 @@ debugging('Something went wrong', DEBUG_DEVELOPER);
 // Dump variable (like var_dump but formatted)
 print_object($some_array);</code></pre>
         </section>
+
+        <section>
+            <h2>4. Modern PHP in Moodle</h2>
+            <p>While Moodle has a lot of legacy code, modern versions (4.1+) support PHP 8.1 features.</p>
+            <ul>
+                <li><strong>Namespaces:</strong> All new plugins should use namespaces.
+                    <br><code>local/myplugin/classes/observer.php</code> -> <code>namespace local_myplugin; class observer {}</code>
+                </li>
+                <li><strong>Type Hinting:</strong> Use strict types in your new classes.</li>
+                <li><strong>Autoloading:</strong> Classes in <code>classes/</code> folder are automatically loaded.</li>
+            </ul>
+        </section>
     </main>
 
     <footer>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Design Interview Questions - Python Guide</title>
+    <link rel="icon" href="../assets/img/avatar-fallback.svg">
+    <link rel="stylesheet" href="../assets/css/python_styles.css">
+    <script src="../assets/js/python_layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>System Design Questions</h1>
+        <p>Architecting scalable Python applications.</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <div class="interview-card">
+            <h3>1. Design a URL Shortener</h3>
+            <p><strong>Question:</strong> How would you design a URL shortener like bit.ly?</p>
+            <div class="answer">
+                <p>Key concepts:</p>
+                <ul>
+                    <li><strong>API:</strong> create_short_url(long_url), get_long_url(short_url)</li>
+                    <li><strong>Database:</strong> Relational (mapping ID to URL) or NoSQL (Key-Value store like Redis/DynamoDB).</li>
+                    <li><strong>Encoding:</strong> Base62 encoding of a unique ID.</li>
+                    <li><strong>Scalability:</strong> Load balancers, caching frequently accessed URLs.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="interview-card">
+            <h3>2. Rate Limiting</h3>
+            <p><strong>Question:</strong> How would you implement a rate limiter for an API?</p>
+            <div class="answer">
+                <p>Strategies:</p>
+                <ul>
+                    <li><strong>Token Bucket Algorithm:</strong> Allow a burst of traffic but limit average rate.</li>
+                    <li><strong>Leaky Bucket:</strong> Process requests at a constant rate.</li>
+                    <li><strong>Implementation:</strong> Redis is commonly used to store counters with expiration times.</li>
+                </ul>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+    <script>
+        initLayout();
+    </script>
+</body>
+</html>

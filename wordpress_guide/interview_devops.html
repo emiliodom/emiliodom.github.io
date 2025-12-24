@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevOps & Deployment Interview Questions</title>
+    <link rel="stylesheet" href="../assets/css/wordpress_styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <script src="../assets/js/wordpress_layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>DevOps & Deployment Interview Questions</h1>
+        <p>CI/CD, Docker, AWS, and Modern Workflow.</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section class="intro">
+            <p>Enterprise WordPress is rarely just "FTPing files". These questions cover the modern deployment pipeline and infrastructure.</p>
+        </section>
+
+        <div class="interview-question">
+            <h3>1. Why use Composer with WordPress?</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong> Composer is a PHP dependency manager.</p>
+                <ul>
+                    <li>It allows you to manage WordPress Core, Plugins, and Themes as dependencies (packages).</li>
+                    <li>It ensures all developers and servers are running the exact same versions (via `composer.lock`).</li>
+                    <li>It enables PSR-4 autoloading.</li>
+                    <li>It keeps the git repository clean (you don't commit core or vendor files).</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="interview-question">
+            <h3>2. Explain the concept of "Immutable Infrastructure" or "Stateless" WordPress.</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong> In a stateless setup (like AWS Fargate or Kubernetes), the server container can be destroyed and replaced at any time without losing data.</p>
+                <ul>
+                    <li><strong>Code:</strong> Baked into the Docker image. Cannot be changed at runtime (no plugin updates via WP Admin).</li>
+                    <li><strong>Media:</strong> Offloaded to S3 (since local disk is ephemeral).</li>
+                    <li><strong>Database:</strong> External RDS/MySQL service.</li>
+                    <li><strong>Logs:</strong> Streamed to CloudWatch/Datadog.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="interview-question">
+            <h3>3. How do you handle database changes (migrations) in a CI/CD pipeline?</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong> Database sync is the hardest part of WP deployment.</p>
+                <ul>
+                    <li><strong>Code First:</strong> We deploy code, not database dumps.</li>
+                    <li><strong>Update Scripts:</strong> Use `wp-cli` scripts to run updates post-deploy (e.g., `wp core update-db`, `wp plugin update`).</li>
+                    <li><strong>Content Freeze:</strong> For major migrations, freeze editing on Prod, pull DB to Staging, merge, push back (rare and risky).</li>
+                    <li><strong>Ideally:</strong> Content flows Down (Prod -> Dev), Code flows Up (Dev -> Prod).</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="interview-question">
+            <h3>4. What is Bedrock?</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong> Bedrock is a modern WordPress boilerplate by Roots.io.</p>
+                <ul>
+                    <li>Folder structure improved (Web root separated from config).</li>
+                    <li>Dependency management with Composer.</li>
+                    <li>Environment variables (`.env`) for configuration (DB credentials, keys).</li>
+                    <li>Security improvements (non-root web folder).</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="interview-question">
+            <h3>5. How do you offload media to S3?</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong> Using a plugin like WP Offload Media or S3-Uploads.</p>
+                <ul>
+                    <li>When an image is uploaded, the plugin sends it to an AWS S3 bucket.</li>
+                    <li>It rewrites the URL in the database to point to the S3 (or CDN) URL.</li>
+                    <li>This removes the dependency on local server storage, enabling auto-scaling.</li>
+                </ul>
+            </div>
+        </div>
+
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+    <script>
+        initLayout();
+    </script>
+</body>
+</html>

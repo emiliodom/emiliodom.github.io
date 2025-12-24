@@ -1,13 +1,15 @@
 const navLinks = [
     { href: "/laravel_guide/index.html", text: "Home" },
+    { href: "/laravel_guide/use_cases.html", text: "💼 Real World Use Cases" },
     { href: "/laravel_guide/module1.html", text: "1. Modern PHP & Setup" },
     { href: "/laravel_guide/module2.html", text: "2. Laravel 12 Core" },
     { href: "/laravel_guide/module3.html", text: "3. Database & Eloquent" },
     { href: "/laravel_guide/module4.html", text: "4. Livewire 3" },
     { href: "/laravel_guide/module5.html", text: "5. Alpine & Tailwind" },
     { href: "/laravel_guide/module6.html", text: "6. Filament Admin" },
-    { href: "/laravel_guide/module7.html", text: "7. Queues & Redis" },
-    { href: "/laravel_guide/module8.html", text: "8. Testing & CI/CD" },
+    { href: "/laravel_guide/module7.html", text: "7. Testing" },
+    { href: "/laravel_guide/module8.html", text: "8. Deployment" },
+    { href: "/laravel_guide/quiz.html", text: "✅ Final Quiz" },
     { href: "/laravel_guide/capstone.html", text: "🏆 Capstone Project" },
     { href: "/laravel_guide/interview_index.html", text: "📝 Interview Prep" }
 ];

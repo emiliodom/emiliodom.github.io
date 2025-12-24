@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Performance & Scaling Interview Questions</title>
+    <link rel="stylesheet" href="../assets/css/wordpress_styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <script src="../assets/js/wordpress_layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Performance & Scaling Interview Questions</h1>
+        <p>Optimizing WordPress for High Traffic, Caching strategies, and Database tuning.</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section class="intro">
+            <p>Performance is the #1 concern for enterprise clients. These questions test knowledge of caching layers, database optimization, and profiling.</p>
+        </section>
+
+        <div class="interview-question">
+            <h3>1. Explain the different layers of caching in a WordPress stack.</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong></p>
+                <ul>
+                    <li><strong>Browser Cache:</strong> Static assets (CSS, JS, Images) stored in the user's browser.</li>
+                    <li><strong>Page Cache (Varnish/Nginx/Plugin):</strong> Stores the fully rendered HTML of a page. The fastest way to serve content.</li>
+                    <li><strong>Object Cache (Redis/Memcached):</strong> Stores database query results (e.g., `get_option`, `get_post_meta`) in memory to avoid hitting MySQL.</li>
+                    <li><strong>Opcode Cache (OPcache):</strong> Stores compiled PHP bytecode in memory so PHP doesn't have to re-compile scripts on every request.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="interview-question">
+            <h3>2. What is the N+1 Query Problem and how do you fix it in WordPress?</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong> It happens when code executes one query to fetch a list of items, and then an additional query for <em>each</em> item in that list.</p>
+                <p><strong>Example:</strong> Looping through 100 posts and getting the author name for each.</p>
+                <p><strong>Fix:</strong></p>
+                <ul>
+                    <li>Use functions that cache data automatically (WordPress core does this for many things).</li>
+                    <li>Use `update_post_caches()` or `WP_Query` with `cache_results => true`.</li>
+                    <li>Prefetch data. For example, if you need meta for 100 posts, fetch all meta in one query using `update_meta_cache()`.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="interview-question">
+            <h3>3. How do you optimize a slow `WP_Query`?</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong></p>
+                <ul>
+                    <li><strong>Limit fields:</strong> Use `'fields' => 'ids'` if you only need IDs.</li>
+                    <li><strong>No Found Rows:</strong> Use `'no_found_rows' => true` to skip counting total results (pagination) if not needed.</li>
+                    <li><strong>Avoid Meta Queries:</strong> Complex `meta_query` (especially with `LIKE` or multiple joins) kills performance. Use custom tables or search indexes (Elasticsearch) instead.</li>
+                    <li><strong>Cache Results:</strong> Ensure Object Cache is active.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="interview-question">
+            <h3>4. What are Transients and when should you use them?</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong> Transients are a standardized way to store cached data in the database (or Object Cache) with an expiration time.</p>
+                <p><strong>Use Case:</strong> Storing the result of an expensive external API call (e.g., Instagram feed) or a complex calculation.</p>
+                <pre><code class="language-php">$data = get_transient('my_api_data');
+if (false === $data) {
+    $data = remote_api_call();
+    set_transient('my_api_data', $data, 12 * HOUR_IN_SECONDS);
+}</code></pre>
+            </div>
+        </div>
+
+        <div class="interview-question">
+            <h3>5. How would you debug a slow loading page?</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong></p>
+                <ol>
+                    <li><strong>Query Monitor:</strong> Use this plugin to see slow queries, PHP errors, and hook execution times.</li>
+                    <li><strong>New Relic:</strong> For production profiling to pinpoint specific functions or external calls causing delays.</li>
+                    <li><strong>WP-CLI:</strong> `wp profile` commands.</li>
+                    <li><strong>Check Logs:</strong> PHP error logs and server access logs.</li>
+                </ol>
+            </div>
+        </div>
+
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+    <script>
+        initLayout();
+    </script>
+</body>
+</html>

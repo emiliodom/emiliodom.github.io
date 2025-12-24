@@ -66,6 +66,62 @@ php admin/cli/maintenance.php --disable</code></pre>
                 <li><strong>Cache Store:</strong> Redis Cluster for MUC (Application and Session caches).</li>
             </ul>
         </section>
+
+        <section>
+            <h2>4. Automated Testing</h2>
+            <p>Enterprise quality assurance relies on automated tests, not manual clicking.</p>
+            
+            <h3>PHPUnit (Unit & Integration Tests)</h3>
+            <p>Tests PHP classes and logic. Requires a separate test database.</p>
+            <pre><code class="language-bash"># Initialize Test DB
+php admin/tool/phpunit/cli/init.php
+
+# Run all tests in a plugin
+vendor/bin/phpunit --group=local_myplugin</code></pre>
+
+            <h3>Data Generators</h3>
+            <p>Don't manually insert records in tests. Use the Data Generator to create courses, users, and enrolments instantly.</p>
+            <pre><code class="language-php">$generator = $this->getDataGenerator();
+$course = $generator->create_course();
+$user = $generator->create_user();
+$generator->enrol_user($user->id, $course->id, 'student');
+$module = $generator->create_module('forum', ['course' => $course->id]);</code></pre>
+
+            <h3>Behat (Acceptance Tests)</h3>
+            <p>Tests the UI by simulating a real browser. Written in Gherkin syntax (Given/When/Then).</p>
+            <pre><code class="language-gherkin">Feature: User login
+  In order to access the course
+  As a student
+  I need to be able to log in
+
+  Scenario: Login with valid credentials
+    Given I am on the homepage
+    When I follow "Log in"
+    And I set the following fields to these values:
+      | Username | student1 |
+      | Password | Moodle@123 |
+    And I press "Log in"
+    Then I should see "My courses"</code></pre>
+            <pre><code class="language-bash"># Run Behat
+vendor/bin/behat --tags=@local_myplugin</code></pre>
+        </section>
+
+        <section>
+            <h2>5. Docker for Development</h2>
+            <p>Stop using XAMPP/MAMP. Use <a href="https://github.com/moodlehq/moodle-docker" target="_blank">moodle-docker</a> for a consistent environment.</p>
+            <pre><code class="language-bash"># 1. Clone moodle-docker
+git clone https://github.com/moodlehq/moodle-docker.git
+
+# 2. Configure environment
+export MOODLE_DOCKER_WWWROOT=/path/to/moodle
+export MOODLE_DOCKER_DB=pgsql
+
+# 3. Start containers
+bin/moodle-docker-compose up -d
+
+# 4. Run tests inside container
+bin/moodle-docker-compose exec webserver php admin/tool/phpunit/cli/init.php</code></pre>
+        </section>
     </main>
 
     <footer>

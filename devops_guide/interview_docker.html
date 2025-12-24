@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Docker Interview Questions - DevOps Guide</title>
+    <link rel="stylesheet" href="../assets/css/devops_styles.css">
+    <script src="../assets/js/devops_layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Docker & Containerization Interview Questions</h1>
+        <p>Deep dive into container internals, optimization, and security.</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section class="question">
+            <h2>1. Explain the difference between a Docker Image and a Container.</h2>
+            <div class="answer">
+                <p><strong>Concept:</strong> Think of a <strong>Class</strong> vs. an <strong>Object</strong> in OOP.</p>
+                <ul>
+                    <li><strong>Image:</strong> A read-only template with instructions for creating a Docker container. It consists of multiple layers.</li>
+                    <li><strong>Container:</strong> A runnable instance of an image. It adds a thin read/write layer on top of the image layers.</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="question">
+            <h2>2. How do Docker layers work and why are they important?</h2>
+            <div class="answer">
+                <p>Docker images are built from a series of layers. Each instruction in a <code>Dockerfile</code> creates a layer.</p>
+                <ul>
+                    <li><strong>Caching:</strong> Layers are cached. If you change one line in your Dockerfile, only that layer and subsequent layers are rebuilt.</li>
+                    <li><strong>Efficiency:</strong> Layers are shared between images. If multiple images use the same base image (e.g., `ubuntu:20.04`), that base layer is stored only once on disk.</li>
+                </ul>
+                <p><strong>Optimization Tip:</strong> Order your Dockerfile instructions from least frequently changed to most frequently changed to maximize cache hits.</p>
+            </div>
+        </section>
+
+        <section class="question">
+            <h2>3. What is a Multi-Stage Build?</h2>
+            <div class="answer">
+                <p>Multi-stage builds allow you to use multiple `FROM` statements in a single Dockerfile. Each `FROM` instruction starts a new stage.</p>
+                <p><strong>Benefit:</strong> You can copy artifacts from one stage to another, leaving behind all the build tools and intermediate files in the final image. This drastically reduces image size.</p>
+                <pre><code># Build Stage
+FROM golang:1.16 AS builder
+WORKDIR /app
+COPY . .
+RUN go build -o myapp
+
+# Final Stage
+FROM alpine:latest
+WORKDIR /root/
+COPY --from=builder /app/myapp .
+CMD ["./myapp"]</code></pre>
+            </div>
+        </section>
+
+        <section class="question">
+            <h2>4. Explain Docker Networking modes.</h2>
+            <div class="answer">
+                <ul>
+                    <li><strong>Bridge (default):</strong> Containers are connected to a private internal network. They can talk to each other via IP.</li>
+                    <li><strong>Host:</strong> The container shares the host's networking namespace. No port mapping is required. Performance is better, but security is lower.</li>
+                    <li><strong>None:</strong> No networking. Useful for batch jobs that don't need network access.</li>
+                    <li><strong>Overlay:</strong> Used for multi-host networking (Swarm/Kubernetes).</li>
+                </ul>
+            </div>
+        </section>
+
+        <div class="navigation-buttons">
+            <a href="interview_index.html" class="btn">Back to Interview Index</a>
+            <a href="interview_k8s.html" class="btn">Next: Kubernetes Questions</a>
+        </div>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+    <script>
+        initLayout();
+    </script>
+</body>
+</html>

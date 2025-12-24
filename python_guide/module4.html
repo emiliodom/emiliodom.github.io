@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 4: Testing & Quality - Python Guide</title>
+    <link rel="icon" href="../assets/img/avatar-fallback.svg">
+    <link rel="stylesheet" href="../assets/css/python_styles.css">
+    <script src="../assets/js/python_layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Module 4: Testing & Quality</h1>
+        <p>Ensuring your code is reliable, maintainable, and bug-free.</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <h2>4.1 Pytest Framework</h2>
+        <p><code>pytest</code> is a mature full-featured Python testing tool that helps you write better programs. It is widely preferred over the built-in <code>unittest</code> module due to its simple syntax and powerful features.</p>
+
+        <h2>4.2 Fixtures and Mocking</h2>
+        <p><strong>Fixtures:</strong> Functions that run before (and sometimes after) tests to set up state (e.g., database connections).</p>
+        <p><strong>Mocking:</strong> Replacing parts of your system under test with mock objects and making assertions about how they have been used.</p>
+
+        <h2>4.3 Type Hinting (Mypy)</h2>
+        <p>Python is dynamically typed, but type hints allow you to check your code for type errors before running it. <code>mypy</code> is a static type checker for Python.</p>
+        <pre><code>def greeting(name: str) -> str:
+    return 'Hello ' + name</code></pre>
+
+        <h2>4.4 Linting and Formatting</h2>
+        <p>Tools like <strong>Black</strong> (formatter) and <strong>Flake8</strong> or <strong>Ruff</strong> (linters) help maintain code quality and consistency across a team.</p>
+
+        <div class="task">
+            <h3>🎯 Practical Exercise</h3>
+            <p>Write a unit test for a calculator function using <code>pytest</code>. Use a fixture to provide sample data.</p>
+        </div>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+    <script>
+        initLayout();
+    </script>
+</body>
+</html>

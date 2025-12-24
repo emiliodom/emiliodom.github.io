@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WordPress Engineering Quiz</title>
+    <link rel="stylesheet" href="../assets/css/wordpress_styles.css">
+    <script src="../assets/js/wordpress_layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Final Assessment</h1>
+        <p>Test your knowledge of Enterprise WordPress Engineering.</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <div class="quiz-container">
+            <div class="question">
+                <h3>1. Why use Bedrock over a standard WordPress installation?</h3>
+                <label><input type="radio" name="q1" value="a"> It comes with more themes pre-installed.</label>
+                <label><input type="radio" name="q1" value="b"> It uses Composer for dependency management and separates config from code.</label>
+                <label><input type="radio" name="q1" value="c"> It is faster because it doesn't use PHP.</label>
+            </div>
+
+            <div class="question">
+                <h3>2. In Timber, what is the role of the Context?</h3>
+                <label><input type="radio" name="q2" value="a"> To store global variables passed to every Twig template.</label>
+                <label><input type="radio" name="q2" value="b"> To connect to the database.</label>
+                <label><input type="radio" name="q2" value="c"> To register new post types.</label>
+            </div>
+
+            <div class="question">
+                <h3>3. Which hook is used to register a custom Gutenberg block in PHP (ACF)?</h3>
+                <label><input type="radio" name="q3" value="a"> init</label>
+                <label><input type="radio" name="q3" value="b"> acf/init</label>
+                <label><input type="radio" name="q3" value="c"> wp_enqueue_scripts</label>
+            </div>
+
+            <div class="question">
+                <h3>4. When deploying to AWS Fargate, where should user uploads be stored?</h3>
+                <label><input type="radio" name="q4" value="a"> In the container's /var/www/html/wp-content/uploads folder.</label>
+                <label><input type="radio" name="q4" value="b"> In the database.</label>
+                <label><input type="radio" name="q4" value="c"> Offloaded to an S3 bucket because containers are ephemeral.</label>
+            </div>
+
+            <div class="question">
+                <h3>5. What is the benefit of using Redis Object Cache?</h3>
+                <label><input type="radio" name="q5" value="a"> It makes images load faster.</label>
+                <label><input type="radio" name="q5" value="b"> It persists database query results in memory, reducing SQL load.</label>
+                <label><input type="radio" name="q5" value="c"> It replaces the MySQL database entirely.</label>
+            </div>
+
+            <button onclick="checkQuiz()">Submit Answers</button>
+            <div id="result" style="margin-top: 20px; font-weight: bold;"></div>
+        </div>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+    <script>
+        initLayout();
+        function checkQuiz() {
+            const answers = {
+                q1: 'b',
+                q2: 'a',
+                q3: 'b',
+                q4: 'c',
+                q5: 'b'
+            };
+            let score = 0;
+            let total = 5;
+            
+            for (let q in answers) {
+                const selected = document.querySelector(`input[name="${q}"]:checked`);
+                if (selected && selected.value === answers[q]) {
+                    score++;
+                }
+            }
+            
+            const resultDiv = document.getElementById('result');
+            resultDiv.textContent = `You scored ${score} out of ${total}.`;
+            if (score === total) {
+                resultDiv.style.color = 'green';
+                resultDiv.textContent += " Excellent work! You are ready for enterprise projects.";
+            } else {
+                resultDiv.style.color = 'red';
+                resultDiv.textContent += " Review the modules and try again.";
+            }
+        }
+    </script>
+</body>
+</html>

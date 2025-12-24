@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Database Interview Questions - Python Guide</title>
+    <link rel="icon" href="../assets/img/avatar-fallback.svg">
+    <link rel="stylesheet" href="../assets/css/python_styles.css">
+    <script src="../assets/js/python_layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Database Questions</h1>
+        <p>SQL, NoSQL, and ORM knowledge.</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <div class="interview-card">
+            <h3>1. N+1 Problem</h3>
+            <p><strong>Question:</strong> What is the N+1 problem in ORMs and how do you fix it?</p>
+            <div class="answer">
+                <p>The N+1 problem occurs when code needs to load the children of a parent-child relationship (the "one"), and then issues N additional queries to load the children.</p>
+                <p><strong>Fix:</strong> Use eager loading (e.g., <code>select_related</code> or <code>prefetch_related</code> in Django, <code>joinedload</code> in SQLAlchemy) to fetch data in a single query.</p>
+            </div>
+        </div>
+
+        <div class="interview-card">
+            <h3>2. ACID Properties</h3>
+            <p><strong>Question:</strong> Explain ACID properties in databases.</p>
+            <div class="answer">
+                <ul>
+                    <li><strong>Atomicity:</strong> All or nothing.</li>
+                    <li><strong>Consistency:</strong> Database remains in a valid state.</li>
+                    <li><strong>Isolation:</strong> Concurrent transactions don't interfere.</li>
+                    <li><strong>Durability:</strong> Committed transactions are permanent.</li>
+                </ul>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+    <script>
+        initLayout();
+    </script>
+</body>
+</html>

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CI/CD Interview Questions - DevOps Guide</title>
+    <link rel="stylesheet" href="../assets/css/devops_styles.css">
+    <script src="../assets/js/devops_layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>CI/CD & Automation Interview Questions</h1>
+        <p>Pipelines, Infrastructure as Code, and Deployment Strategies.</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section class="question">
+            <h2>1. What is the difference between Continuous Delivery and Continuous Deployment?</h2>
+            <div class="answer">
+                <ul>
+                    <li><strong>Continuous Delivery:</strong> Code changes are automatically built, tested, and prepared for a release to production. However, the final deployment to production is a <strong>manual</strong> step (approval gate).</li>
+                    <li><strong>Continuous Deployment:</strong> Every change that passes all stages of your production pipeline is released to your customers <strong>automatically</strong>. There is no human intervention.</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="question">
+            <h2>2. Explain Blue/Green Deployment vs. Canary Deployment.</h2>
+            <div class="answer">
+                <ul>
+                    <li><strong>Blue/Green:</strong> You have two identical environments. Blue is running production. You deploy the new version to Green. Once tested, you switch the router to point to Green. Instant rollback is possible by switching back.</li>
+                    <li><strong>Canary:</strong> You roll out the update to a small subset of users (e.g., 5%) first. If metrics look good, you gradually increase the percentage until 100% of traffic is on the new version. Reduces risk of a total outage.</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="question">
+            <h2>3. What is Infrastructure as Code (IaC)?</h2>
+            <div class="answer">
+                <p>IaC is the practice of managing and provisioning infrastructure through machine-readable definition files, rather than physical hardware configuration or interactive configuration tools.</p>
+                <p><strong>Tools:</strong> Terraform, Ansible, CloudFormation, Pulumi.</p>
+                <p><strong>Benefits:</strong> Consistency, Version Control, Speed, and Reduced Human Error.</p>
+            </div>
+        </section>
+
+        <section class="question">
+            <h2>4. How do you secure a CI/CD pipeline?</h2>
+            <div class="answer">
+                <ul>
+                    <li><strong>Secrets Management:</strong> Never store credentials in code. Use vault solutions (HashiCorp Vault, GitHub Secrets, AWS Secrets Manager).</li>
+                    <li><strong>Least Privilege:</strong> The CI/CD runner should only have the permissions necessary to perform the deployment, not full admin access.</li>
+                    <li><strong>Image Scanning:</strong> Scan container images for vulnerabilities before deploying them.</li>
+                    <li><strong>Code Analysis:</strong> Run SAST (Static Application Security Testing) tools during the build process.</li>
+                </ul>
+            </div>
+        </section>
+
+        <div class="navigation-buttons">
+            <a href="interview_k8s.html" class="btn">Back: Kubernetes Questions</a>
+            <a href="interview_index.html" class="btn">Back to Index</a>
+        </div>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+    <script>
+        initLayout();
+    </script>
+</body>
+</html>

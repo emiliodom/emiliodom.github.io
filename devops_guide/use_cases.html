@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevOps Real-World Use Cases</title>
+    <link rel="stylesheet" href="../assets/css/devops_styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <script src="../assets/js/devops_layout.js"></script>
+    <style>
+        .jira-ticket {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            margin-bottom: 30px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .jira-header {
+            background: #f4f5f7;
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--card-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        [data-theme="dark"] .jira-header {
+            background: #2d3748;
+        }
+        .jira-id {
+            font-family: monospace;
+            font-weight: bold;
+            color: #0052cc;
+            margin-right: 10px;
+        }
+        .jira-title {
+            font-weight: 600;
+            font-size: 1.1em;
+            flex-grow: 1;
+        }
+        .jira-meta {
+            display: flex;
+            gap: 10px;
+            font-size: 0.85em;
+        }
+        .badge {
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .badge-high { background: #ff5630; color: white; }
+        .badge-medium { background: #ffab00; color: black; }
+        .badge-story { background: #36b37e; color: white; }
+        
+        .jira-content {
+            padding: 20px;
+        }
+        .section-title {
+            font-size: 0.9em;
+            text-transform: uppercase;
+            color: #6b778c;
+            font-weight: bold;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            border-bottom: 2px solid var(--card-border);
+            padding-bottom: 5px;
+        }
+        .section-title:first-child { margin-top: 0; }
+        
+        .dev-solution {
+            background: rgba(16, 185, 129, 0.05);
+            border-left: 4px solid #10b981;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        .dev-solution h4 {
+            color: #059669;
+            margin-top: 0;
+        }
+        
+        .code-block {
+            padding: 0;
+            border-radius: 4px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.9em;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+        
+        .requirements-list {
+            list-style-type: disc;
+            padding-left: 20px;
+        }
+        .requirements-list li { margin-bottom: 5px; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>DevOps Real-World Use Cases</h1>
+        <p>Practical scenarios bridging theory and enterprise infrastructure.</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section class="intro">
+            <p>This section presents common enterprise scenarios formatted as Jira tickets. Each case includes the business requirement, technical constraints, and a senior-level implementation strategy.</p>
+        </section>
+
+        <!-- Use Case 1: Docker Optimization -->
+        <div class="jira-ticket">
+            <div class="jira-header">
+                <div>
+                    <span class="jira-id">OPS-101</span>
+                    <span class="jira-title">Reduce Production Image Size</span>
+                </div>
+                <div class="jira-meta">
+                    <span class="badge badge-high">High Priority</span>
+                    <span class="badge badge-story">Optimization</span>
+                </div>
+            </div>
+            <div class="jira-content">
+                <div class="section-title">Description</div>
+                <p>Our current Node.js production image is 1.2GB. This slows down deployments and autoscaling. We need to reduce it to under 200MB.</p>
+                
+                <div class="section-title">Acceptance Criteria</div>
+                <ul class="requirements-list">
+                    <li>Final image size < 200MB.</li>
+                    <li>Must not contain source code (only build artifacts).</li>
+                    <li>Must not contain devDependencies.</li>
+                </ul>
+
+                <div class="dev-solution">
+                    <h4>👨‍💻 Senior DevOps Solution</h4>
+                    <p><strong>Strategy:</strong> Use Multi-Stage Builds. Stage 1 installs all dependencies and builds the app. Stage 2 copies only the necessary artifacts to a lightweight Alpine image.</p>
+                    
+                    <div class="code-block">
+                        <pre><code class="language-dockerfile"># Stage 1: Builder
+FROM node:18 AS builder
+WORKDIR /app
+COPY package*.json ./
+# Install ALL dependencies (including dev) for building
+RUN npm ci
+COPY . .
+RUN npm run build
+
+# Stage 2: Runner
+FROM node:18-alpine
+WORKDIR /app
+ENV NODE_ENV=production
+# Copy only package files to install prod dependencies
+COPY package*.json ./
+RUN npm ci --only=production
+# Copy built artifacts from builder
+COPY --from=builder /app/dist ./dist
+# Run as non-root user for security
+USER node
+CMD ["node", "dist/main.js"]</code></pre>
+                    </div>
+                    <p><strong>Key Takeaway:</strong> Multi-stage builds separate the build environment (heavy) from the runtime environment (light), drastically reducing attack surface and size.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Use Case 2: Kubernetes Self-Healing -->
+        <div class="jira-ticket">
+            <div class="jira-header">
+                <div>
+                    <span class="jira-id">OPS-205</span>
+                    <span class="jira-title">Implement Liveness & Readiness Probes</span>
+                </div>
+                <div class="jira-meta">
+                    <span class="badge badge-medium">Medium</span>
+                    <span class="badge badge-story">Reliability</span>
+                </div>
+            </div>
+            <div class="jira-content">
+                <div class="section-title">Description</div>
+                <p>During high load, our API sometimes freezes but the container stays "Running", so K8s doesn't restart it. Also, during startup, traffic is sent before the DB connection is ready, causing 500 errors.</p>
+                
+                <div class="section-title">Acceptance Criteria</div>
+                <ul class="requirements-list">
+                    <li>Restart container if application freezes (Deadlock).</li>
+                    <li>Do not send traffic until DB connection is established.</li>
+                </ul>
+
+                <div class="dev-solution">
+                    <h4>👨‍💻 Senior DevOps Solution</h4>
+                    <p><strong>Strategy:</strong> Configure `livenessProbe` to restart dead containers and `readinessProbe` to control traffic flow.</p>
+                    
+                    <div class="code-block">
+                        <pre><code class="language-yaml">apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-api
+spec:
+  template:
+    spec:
+      containers:
+      - name: api
+        image: my-api:v1
+        # Liveness: Restart if this fails (App is dead)
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        # Readiness: Remove from load balancer if this fails (App is busy/starting)
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 10</code></pre>
+                    </div>
+                    <p><strong>Key Takeaway:</strong> Liveness keeps the app running. Readiness keeps the app serving traffic only when it's actually capable.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Use Case 3: CI/CD Pipeline -->
+        <div class="jira-ticket">
+            <div class="jira-header">
+                <div>
+                    <span class="jira-id">OPS-310</span>
+                    <span class="jira-title">Automate Testing and Docker Push</span>
+                </div>
+                <div class="jira-meta">
+                    <span class="badge badge-medium">Medium</span>
+                    <span class="badge badge-story">Automation</span>
+                </div>
+            </div>
+            <div class="jira-content">
+                <div class="section-title">Description</div>
+                <p>Developers are manually building and pushing Docker images. This is error-prone. We need a GitHub Actions pipeline that runs tests and pushes to registry only on main branch.</p>
+                
+                <div class="section-title">Acceptance Criteria</div>
+                <ul class="requirements-list">
+                    <li>Run unit tests on every PR.</li>
+                    <li>Build and Push Docker image ONLY on merge to `main`.</li>
+                    <li>Tag image with commit SHA.</li>
+                </ul>
+
+                <div class="dev-solution">
+                    <h4>👨‍💻 Senior DevOps Solution</h4>
+                    <p><strong>Strategy:</strong> Use GitHub Actions with conditional jobs.</p>
+                    
+                    <div class="code-block">
+                        <pre><code class="language-yaml">name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Run Tests
+      run: npm install && npm test
+
+  build-and-push:
+    needs: test
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Login to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_USER }}
+        password: ${{ secrets.DOCKER_TOKEN }}
+    - name: Build and Push
+      run: |
+        docker build -t myapp:${{ github.sha }} .
+        docker push myapp:${{ github.sha }}</code></pre>
+                    </div>
+                    <p><strong>Key Takeaway:</strong> `needs: test` ensures we never push a broken image. `if: github.ref == ...` ensures we only deploy from the stable branch.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Use Case 4: Terraform Infrastructure -->
+        <div class="jira-ticket">
+            <div class="jira-header">
+                <div>
+                    <span class="jira-id">OPS-401</span>
+                    <span class="jira-title">Provision AWS VPC with Terraform</span>
+                </div>
+                <div class="jira-meta">
+                    <span class="badge badge-high">High Priority</span>
+                    <span class="badge badge-story">Infrastructure</span>
+                </div>
+            </div>
+            <div class="jira-content">
+                <div class="section-title">Description</div>
+                <p>We need a reproducible network environment in AWS. Manually clicking in the console is not scalable. We need a Terraform module to provision a VPC with public and private subnets.</p>
+                
+                <div class="section-title">Acceptance Criteria</div>
+                <ul class="requirements-list">
+                    <li>Create 1 VPC (10.0.0.0/16).</li>
+                    <li>Create 2 Public Subnets (for Load Balancers).</li>
+                    <li>Create 2 Private Subnets (for App Servers).</li>
+                    <li>Configure Internet Gateway and NAT Gateway.</li>
+                </ul>
+
+                <div class="dev-solution">
+                    <h4>👨‍💻 Senior DevOps Solution</h4>
+                    <p><strong>Strategy:</strong> Use the official AWS VPC module for best practices and minimal code.</p>
+                    
+                    <div class="code-block">
+                        <pre><code class="language-hcl">module "vpc" {
+  source = "terraform-aws-modules/vpc/aws"
+
+  name = "my-vpc"
+  cidr = "10.0.0.0/16"
+
+  azs             = ["us-east-1a", "us-east-1b"]
+  private_subnets = ["10.0.1.0/24", "10.0.2.0/24"]
+  public_subnets  = ["10.0.101.0/24", "10.0.102.0/24"]
+
+  enable_nat_gateway = true
+  enable_vpn_gateway = false
+
+  tags = {
+    Terraform = "true"
+    Environment = "dev"
+  }
+}</code></pre>
+                    </div>
+                    <p><strong>Key Takeaway:</strong> Don't reinvent the wheel. Using community modules speeds up development and ensures standard compliance.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Use Case 5: Ansible Configuration -->
+        <div class="jira-ticket">
+            <div class="jira-header">
+                <div>
+                    <span class="jira-id">OPS-505</span>
+                    <span class="jira-title">Automate Nginx Configuration Updates</span>
+                </div>
+                <div class="jira-meta">
+                    <span class="badge badge-medium">Medium</span>
+                    <span class="badge badge-story">Configuration</span>
+                </div>
+            </div>
+            <div class="jira-content">
+                <div class="section-title">Description</div>
+                <p>We have 50 web servers. Updating `nginx.conf` manually is impossible. We need an Ansible playbook to push the new config and reload Nginx without downtime.</p>
+                
+                <div class="section-title">Acceptance Criteria</div>
+                <ul class="requirements-list">
+                    <li>Copy `nginx.conf` to all web servers.</li>
+                    <li>Validate the configuration before reloading.</li>
+                    <li>Reload Nginx service only if config changed.</li>
+                </ul>
+
+                <div class="dev-solution">
+                    <h4>👨‍💻 Senior DevOps Solution</h4>
+                    <p><strong>Strategy:</strong> Use Ansible `template` module and `handlers` for efficient updates.</p>
+                    
+                    <div class="code-block">
+                        <pre><code class="language-yaml">---
+- name: Update Nginx Configuration
+  hosts: webservers
+  become: yes
+  tasks:
+    - name: Copy Nginx config
+      template:
+        src: templates/nginx.conf.j2
+        dest: /etc/nginx/nginx.conf
+        validate: 'nginx -t -c %s'
+      notify: Reload Nginx
+
+  handlers:
+    - name: Reload Nginx
+      service:
+        name: nginx
+        state: reloaded</code></pre>
+                    </div>
+                    <p><strong>Key Takeaway:</strong> The `validate` parameter prevents breaking the server with a bad config. `handlers` ensure the service only reloads when necessary.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Use Case 6: Monitoring Alerting -->
+        <div class="jira-ticket">
+            <div class="jira-header">
+                <div>
+                    <span class="jira-id">OPS-602</span>
+                    <span class="jira-title">Setup High CPU Alerting</span>
+                </div>
+                <div class="jira-meta">
+                    <span class="badge badge-high">High Priority</span>
+                    <span class="badge badge-story">Monitoring</span>
+                </div>
+            </div>
+            <div class="jira-content">
+                <div class="section-title">Description</div>
+                <p>We had an outage because a server stuck at 100% CPU for 2 hours unnoticed. We need a Prometheus alert rule to notify us via Slack.</p>
+                
+                <div class="section-title">Acceptance Criteria</div>
+                <ul class="requirements-list">
+                    <li>Trigger alert if CPU usage > 80% for more than 5 minutes.</li>
+                    <li>Send notification to #ops-alerts channel.</li>
+                </ul>
+
+                <div class="dev-solution">
+                    <h4>👨‍💻 Senior DevOps Solution</h4>
+                    <p><strong>Strategy:</strong> Define a Prometheus AlertRule.</p>
+                    
+                    <div class="code-block">
+                        <pre><code class="language-yaml">groups:
+- name: host-alerts
+  rules:
+  - alert: HighCPUUsage
+    expr: 100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[2m])) * 100) > 80
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High CPU usage detected on {{ $labels.instance }}"
+      description: "CPU usage is above 80% (current value: {{ $value }})"</code></pre>
+                    </div>
+                    <p><strong>Key Takeaway:</strong> The `for: 5m` clause prevents flapping alerts caused by temporary spikes.</p>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+    <script>
+        initLayout();
+    </script>
+</body>
+</html>

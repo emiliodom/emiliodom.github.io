@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 3: Concurrency & AsyncIO - Python Guide</title>
+    <link rel="icon" href="../assets/img/avatar-fallback.svg">
+    <link rel="stylesheet" href="../assets/css/python_styles.css">
+    <script src="../assets/js/python_layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Module 3: Concurrency & AsyncIO</h1>
+        <p>Writing efficient code that can handle multiple tasks at once.</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <h2>3.1 Threading vs Multiprocessing</h2>
+        <p>Python offers two main ways to achieve parallelism:</p>
+        <ul>
+            <li><strong>Threading:</strong> Good for I/O-bound tasks. Limited by the Global Interpreter Lock (GIL).</li>
+            <li><strong>Multiprocessing:</strong> Good for CPU-bound tasks. Bypasses the GIL by creating separate processes.</li>
+        </ul>
+
+        <h2>3.2 The `asyncio` Library</h2>
+        <p><code>asyncio</code> is a library to write concurrent code using the <code>async/await</code> syntax. It is used as a foundation for multiple Python asynchronous frameworks (like FastAPI).</p>
+        <pre><code>import asyncio
+
+async def main():
+    print('Hello ...')
+    await asyncio.sleep(1)
+    print('... World!')
+
+asyncio.run(main())</code></pre>
+
+        <h2>3.3 Event Loops and Coroutines</h2>
+        <p>The event loop is the core of every asyncio application. It runs asynchronous tasks and callbacks, performs network IO operations, and runs subprocesses.</p>
+
+        <div class="task">
+            <h3>🎯 Practical Exercise</h3>
+            <p>Write a script that fetches data from 3 different URLs concurrently using <code>aiohttp</code> and <code>asyncio</code>.</p>
+        </div>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+    <script>
+        initLayout();
+    </script>
+</body>
+</html>

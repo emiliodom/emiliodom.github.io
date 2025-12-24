@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laravel Real-World Use Cases</title>
+    <link rel="stylesheet" href="../assets/css/laravel_styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <script src="../assets/js/laravel_layout.js"></script>
+    <style>
+        .jira-ticket {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            margin-bottom: 30px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .jira-header {
+            background: #f4f5f7;
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--card-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        [data-theme="dark"] .jira-header {
+            background: #2d3748;
+        }
+        .jira-id {
+            font-family: monospace;
+            font-weight: bold;
+            color: #0052cc;
+            margin-right: 10px;
+        }
+        .jira-title {
+            font-weight: 600;
+            font-size: 1.1em;
+            flex-grow: 1;
+        }
+        .jira-meta {
+            display: flex;
+            gap: 10px;
+            font-size: 0.85em;
+        }
+        .badge {
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .badge-high { background: #ff5630; color: white; }
+        .badge-medium { background: #ffab00; color: black; }
+        .badge-story { background: #36b37e; color: white; }
+        
+        .jira-content {
+            padding: 20px;
+        }
+        .section-title {
+            font-size: 0.9em;
+            text-transform: uppercase;
+            color: #6b778c;
+            font-weight: bold;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            border-bottom: 2px solid var(--card-border);
+            padding-bottom: 5px;
+        }
+        .section-title:first-child { margin-top: 0; }
+        
+        .dev-solution {
+            background: rgba(16, 185, 129, 0.05);
+            border-left: 4px solid #10b981;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        .dev-solution h4 {
+            color: #059669;
+            margin-top: 0;
+        }
+        
+        .code-block {
+            padding: 0;
+            border-radius: 4px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.9em;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+        
+        .requirements-list {
+            list-style-type: disc;
+            padding-left: 20px;
+        }
+        .requirements-list li { margin-bottom: 5px; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Laravel Real-World Use Cases</h1>
+        <p>Practical scenarios bridging theory and enterprise application.</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section class="intro">
+            <p>This section presents common enterprise scenarios formatted as Jira tickets. Each case includes the business requirement, technical constraints, and a senior-level implementation strategy.</p>
+        </section>
+
+        <!-- Use Case 1: N+1 Query Problem -->
+        <div class="jira-ticket">
+            <div class="jira-header">
+                <div>
+                    <span class="jira-id">LAR-101</span>
+                    <span class="jira-title">Optimize Dashboard Loading Time</span>
+                </div>
+                <div class="jira-meta">
+                    <span class="badge badge-high">High Priority</span>
+                    <span class="badge badge-story">Performance</span>
+                </div>
+            </div>
+            <div class="jira-content">
+                <div class="section-title">Description</div>
+                <p>The admin dashboard takes 8 seconds to load. Debugbar shows 150+ database queries. This is happening because we are iterating over 50 users and fetching their latest order individually.</p>
+                
+                <div class="section-title">Acceptance Criteria</div>
+                <ul class="requirements-list">
+                    <li>Reduce query count to < 5.</li>
+                    <li>Load time < 500ms.</li>
+                </ul>
+
+                <div class="dev-solution">
+                    <h4>👨‍💻 Senior Developer Solution</h4>
+                    <p><strong>Strategy:</strong> This is a classic N+1 problem. We need to Eager Load the relationships using `with()`.</p>
+                    
+                    <div class="code-block">
+                        <pre><code class="language-php">// ❌ Bad Code (N+1)
+$users = User::all();
+foreach ($users as $user) {
+    echo $user->latestOrder->total; // Triggers 1 query per user
+}
+
+// ✅ Good Code (Eager Loading)
+$users = User::with('latestOrder')->get(); // 2 Queries total
+foreach ($users as $user) {
+    echo $user->latestOrder->total; // No extra queries
+}</code></pre>
+                    </div>
+                    <p><strong>Key Takeaway:</strong> Always use `with()` when you know you will access the relationship data.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Use Case 2: Queued Jobs -->
+        <div class="jira-ticket">
+            <div class="jira-header">
+                <div>
+                    <span class="jira-id">LAR-205</span>
+                    <span class="jira-title">Offload Report Generation</span>
+                </div>
+                <div class="jira-meta">
+                    <span class="badge badge-medium">Medium</span>
+                    <span class="badge badge-story">UX</span>
+                </div>
+            </div>
+            <div class="jira-content">
+                <div class="section-title">Description</div>
+                <p>Users are clicking "Generate Monthly Report" and the browser spins for 30 seconds until it times out. We need to make this asynchronous.</p>
+                
+                <div class="section-title">Acceptance Criteria</div>
+                <ul class="requirements-list">
+                    <li>User clicks button -> gets "Report processing started" message immediately.</li>
+                    <li>Report generates in background.</li>
+                    <li>User receives email when done.</li>
+                </ul>
+
+                <div class="dev-solution">
+                    <h4>👨‍💻 Senior Developer Solution</h4>
+                    <p><strong>Strategy:</strong> Dispatch a Job to a Queue (Redis/Database) and return a response immediately.</p>
+                    
+                    <div class="code-block">
+                        <pre><code class="language-php">// Controller
+public function store() {
+    GenerateReportJob::dispatch(auth()->user());
+    return back()->with('status', 'Report is generating in the background!');
+}
+
+// Job Class
+class GenerateReportJob implements ShouldQueue {
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+
+    public function handle() {
+        // Heavy processing...
+        $path = ReportService::generate($this->user);
+        
+        // Notify user
+        Mail::to($this->user)->send(new ReportReady($path));
+    }
+}</code></pre>
+                    </div>
+                    <p><strong>Key Takeaway:</strong> Never block the web request for tasks that take longer than 1-2 seconds.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Use Case 3: Service Pattern -->
+        <div class="jira-ticket">
+            <div class="jira-header">
+                <div>
+                    <span class="jira-id">LAR-310</span>
+                    <span class="jira-title">Refactor Fat Controller</span>
+                </div>
+                <div class="jira-meta">
+                    <span class="badge badge-medium">Medium</span>
+                    <span class="badge badge-story">Refactor</span>
+                </div>
+            </div>
+            <div class="jira-content">
+                <div class="section-title">Description</div>
+                <p>The `OrderController::store` method is 400 lines long. It handles validation, payment processing, inventory updates, and email notifications. It's impossible to test.</p>
+                
+                <div class="section-title">Acceptance Criteria</div>
+                <ul class="requirements-list">
+                    <li>Extract business logic to a Service class.</li>
+                    <li>Controller should only handle HTTP request/response.</li>
+                </ul>
+
+                <div class="dev-solution">
+                    <h4>👨‍💻 Senior Developer Solution</h4>
+                    <p><strong>Strategy:</strong> Implement the Service Pattern. Move logic to `OrderService`.</p>
+                    
+                    <div class="code-block">
+                        <pre><code class="language-php">// OrderController.php
+public function store(OrderRequest $request, OrderService $service) {
+    $order = $service->createOrder($request->validated(), auth()->user());
+    return redirect()->route('orders.show', $order);
+}
+
+// OrderService.php
+class OrderService {
+    public function createOrder(array $data, User $user) {
+        DB::transaction(function() use ($data, $user) {
+            $order = Order::create([...]);
+            PaymentGateway::charge($user, $data['amount']);
+            Inventory::decrement($data['product_id']);
+            // ...
+        });
+        return $order;
+    }
+}</code></pre>
+                    </div>
+                    <p><strong>Key Takeaway:</strong> Controllers should be skinny. Services contain the business logic and can be reused (e.g., by an API controller or CLI command).</p>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+    <script>
+        initLayout();
+    </script>
+</body>
+</html>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algorithms Interview Questions - Python Guide</title>
+    <link rel="icon" href="../assets/img/avatar-fallback.svg">
+    <link rel="stylesheet" href="../assets/css/python_styles.css">
+    <script src="../assets/js/python_layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Algorithms & Data Structures</h1>
+        <p>Common algorithmic challenges in Python interviews.</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <div class="interview-card">
+            <h3>1. Reverse a Linked List</h3>
+            <p><strong>Question:</strong> How do you reverse a singly linked list in Python?</p>
+            <div class="answer">
+                <p>Iterative approach:</p>
+                <pre><code>class ListNode:
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
+
+def reverseList(head):
+    prev = None
+    curr = head
+    while curr:
+        next_temp = curr.next
+        curr.next = prev
+        prev = curr
+        curr = next_temp
+    return prev</code></pre>
+            </div>
+        </div>
+
+        <div class="interview-card">
+            <h3>2. Binary Search</h3>
+            <p><strong>Question:</strong> Implement binary search on a sorted array.</p>
+            <div class="answer">
+                <pre><code>def binary_search(arr, target):
+    left, right = 0, len(arr) - 1
+    while left <= right:
+        mid = (left + right) // 2
+        if arr[mid] == target:
+            return mid
+        elif arr[mid] < target:
+            left = mid + 1
+        else:
+            right = mid - 1
+    return -1</code></pre>
+            </div>
+        </div>
+
+        <div class="interview-card">
+            <h3>3. Two Sum</h3>
+            <p><strong>Question:</strong> Given an array of integers, return indices of the two numbers such that they add up to a specific target.</p>
+            <div class="answer">
+                <pre><code>def two_sum(nums, target):
+    seen = {}
+    for i, num in enumerate(nums):
+        complement = target - num
+        if complement in seen:
+            return [seen[complement], i]
+        seen[num] = i
+    return []</code></pre>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+    <script>
+        initLayout();
+    </script>
+</body>
+</html>

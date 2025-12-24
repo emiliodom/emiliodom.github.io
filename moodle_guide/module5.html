@@ -51,6 +51,58 @@ echo s($text); // Escapes HTML entities</code></pre>
                 <li><strong>Database:</strong> Use a read replica for heavy reporting queries.</li>
             </ul>
         </section>
+
+        <section>
+            <h2>4. Capability Checks</h2>
+            <p>Never assume a user can do something. Always check permissions.</p>
+            <pre><code class="language-php">$context = context_course::instance($course->id);
+
+// Check if user has capability
+if (!has_capability('mod/quiz:view', $context)) {
+    print_error('nopermission');
+}
+
+// Or enforce it (stops execution if false)
+require_capability('mod/quiz:view', $context);</code></pre>
+        </section>
+
+        <section>
+            <h2>5. SQL Injection Prevention</h2>
+            <p>Moodle's DML API handles parameter binding automatically. Never concatenate variables into SQL strings.</p>
+            <pre><code class="language-php">// BAD (Vulnerable)
+$DB->get_records_sql("SELECT * FROM {user} WHERE username = '$name'");
+
+// GOOD (Safe)
+$DB->get_records_sql("SELECT * FROM {user} WHERE username = ?", [$name]);
+// OR
+$DB->get_records_sql("SELECT * FROM {user} WHERE username = :name", ['name' => $name]);</code></pre>
+        </section>
+
+        <section>
+            <h2>6. CSRF Protection (Sesskey)</h2>
+            <p>Cross-Site Request Forgery (CSRF) is prevented using a session key (<code>sesskey</code>).</p>
+            <ul>
+                <li><strong>Forms:</strong> Moodle forms automatically include a hidden <code>sesskey</code> field.</li>
+                <li><strong>Manual Links:</strong> Append <code>?sesskey=...</code> to URLs that perform actions (e.g., delete).</li>
+                <li><strong>Validation:</strong> The receiving script must call <code>require_sesskey()</code> (or <code>confirm_sesskey()</code>) to verify the token.</li>
+            </ul>
+            <pre><code class="language-php">// In a form
+$mform->addElement('hidden', 'sesskey', sesskey());
+
+// In a script processing a POST request
+require_sesskey();</code></pre>
+        </section>
+
+        <section>
+            <h2>7. Session Locking</h2>
+            <p>To prevent race conditions, Moodle locks the user's session while a request is processing. This means a user cannot load two pages simultaneously (the second one waits).</p>
+            <ul>
+                <li><strong>Problem:</strong> Long-running reports block the user's interface.</li>
+                <li><strong>Solution:</strong> Release the session lock early if you don't need to write to the session anymore.</li>
+            </ul>
+            <pre><code class="language-php">\core\session\manager::write_close();
+// Now perform long-running task...</code></pre>
+        </section>
     </main>
 
     <footer>

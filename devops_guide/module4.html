@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 4: CI/CD Pipelines - DevOps Guide</title>
+    <link rel="icon" href="../assets/img/avatar-fallback.svg">
+    <link rel="stylesheet" href="../assets/css/devops_styles.css">
+    <script src="../assets/js/devops_layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Module 4: CI/CD Pipelines</h1>
+        <p>Automating the software delivery process.</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <h2>4.1 CI/CD Concepts</h2>
+        <p><strong>Continuous Integration (CI):</strong> The practice of merging all developers' working copies to a shared mainline several times a day.</p>
+        <p><strong>Continuous Delivery (CD):</strong> An approach in which teams produce software in short cycles, ensuring that the software can be reliably released at any time.</p>
+
+        <h2>4.2 GitHub Actions</h2>
+        <p>GitHub Actions makes it easy to automate all your software workflows, now with world-class CI/CD. Build, test, and deploy your code right from GitHub.</p>
+        <pre><code>name: CI
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Run a one-line script
+      run: echo Hello, world!</code></pre>
+
+        <h2>4.3 Jenkins & GitLab CI</h2>
+        <p><strong>Jenkins:</strong> The leading open source automation server, Jenkins provides hundreds of plugins to support building, deploying and automating any project.</p>
+        <p><strong>GitLab CI:</strong> A tool built into GitLab for software development through the continuous methodologies.</p>
+
+        <h2>4.4 GitOps (ArgoCD)</h2>
+        <p>GitOps is a way of implementing Continuous Deployment for cloud native applications. It focuses on a developer-centric experience when operating infrastructure, by using tools developers are already familiar with, including Git and Continuous Deployment tools.</p>
+
+        <div class="task">
+            <h3>🎯 Practical Exercise</h3>
+            <p>Create a GitHub Action workflow that runs tests on every push to the repository. If possible, add a step to build a Docker image.</p>
+        </div>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+    <script>
+        initLayout();
+    </script>
+</body>
+</html>

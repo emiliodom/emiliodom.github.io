@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevOps Interview Prep - Master Index</title>
+    <link rel="stylesheet" href="../assets/css/devops_styles.css">
+    <script src="../assets/js/devops_layout.js"></script>
+    <style>
+        .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; margin-top: 20px; }
+        .card { background: var(--card-bg); border: 1px solid var(--card-border); padding: 20px; border-radius: 8px; transition: transform 0.2s, box-shadow 0.2s; height: 100%; }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .card-link { text-decoration: none; color: inherit; }
+        .card h3 { margin-top: 0; color: var(--link-color); }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>DevOps Interview Preparation</h1>
+        <p>Targeted questions, scenarios, and deep dives for Senior DevOps roles.</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section class="intro">
+            <p>Select a topic below to drill into specific interview questions. Each section includes theory, practical scenarios, and troubleshooting guides.</p>
+        </section>
+
+        <div class="card-grid">
+            <a href="interview_docker.html" class="card-link">
+                <div class="card">
+                    <h3>1. Docker & Containers</h3>
+                    <p>Images, Layers, Networking, and Multi-stage Builds.</p>
+                </div>
+            </a>
+
+            <a href="interview_k8s.html" class="card-link">
+                <div class="card">
+                    <h3>2. Kubernetes (K8s)</h3>
+                    <p>Architecture, Pods, Services, Ingress, and Helm.</p>
+                </div>
+            </a>
+
+            <a href="interview_cicd.html" class="card-link">
+                <div class="card">
+                    <h3>3. CI/CD & Automation</h3>
+                    <p>Pipelines, GitHub Actions, Jenkins, and IaC.</p>
+                </div>
+            </a>
+
+            <a href="interview_terraform.html" class="card-link">
+                <div class="card">
+                    <h3>4. Terraform (IaC)</h3>
+                    <p>State management, Modules, Providers, and HCL best practices.</p>
+                </div>
+            </a>
+
+            <a href="interview_ansible.html" class="card-link">
+                <div class="card">
+                    <h3>5. Ansible (Config Mgmt)</h3>
+                    <p>Playbooks, Roles, Inventory, and Idempotency.</p>
+                </div>
+            </a>
+
+            <a href="interview_linux.html" class="card-link">
+                <div class="card">
+                    <h3>6. Linux Internals</h3>
+                    <p>Kernel, Boot Process, File Systems, and Bash Scripting.</p>
+                </div>
+            </a>
+
+            <a href="interview_networking.html" class="card-link">
+                <div class="card">
+                    <h3>7. Networking</h3>
+                    <p>OSI Model, TCP/IP, DNS, Load Balancing, and VPNs.</p>
+                </div>
+            </a>
+
+            <a href="interview_cloud.html" class="card-link">
+                <div class="card">
+                    <h3>8. Cloud Architecture</h3>
+                    <p>AWS/Azure services, High Availability, and Disaster Recovery.</p>
+                </div>
+            </a>
+
+            <a href="interview_monitoring.html" class="card-link">
+                <div class="card">
+                    <h3>9. Monitoring & SRE</h3>
+                    <p>Prometheus, Grafana, SLIs/SLOs, and Incident Response.</p>
+                </div>
+            </a>
+
+            <a href="interview_security.html" class="card-link">
+                <div class="card">
+                    <h3>10. DevSecOps</h3>
+                    <p>Container Security, IAM, Secrets Management, and Compliance.</p>
+                </div>
+            </a>
+        </div>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+    <script>
+        initLayout();
+    </script>
+</body>
+</html>

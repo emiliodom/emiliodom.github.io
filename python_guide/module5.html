@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 5: Data Science & Analysis - Python Guide</title>
+    <link rel="icon" href="../assets/img/avatar-fallback.svg">
+    <link rel="stylesheet" href="../assets/css/python_styles.css">
+    <script src="../assets/js/python_layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Module 5: Data Science & Analysis</h1>
+        <p>Leveraging Python's powerful ecosystem for data manipulation and visualization.</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <h2>5.1 NumPy Basics</h2>
+        <p>NumPy is the fundamental package for scientific computing in Python. It provides a high-performance multidimensional array object and tools for working with these arrays.</p>
+        <pre><code>import numpy as np
+
+# Creating arrays
+a = np.array([1, 2, 3])
+b = np.zeros((2, 2))
+
+# Vectorized operations
+c = a * 2  # [2, 4, 6]</code></pre>
+
+        <h2>5.2 Pandas for Data Manipulation</h2>
+        <p>Pandas provides high-performance, easy-to-use data structures and data analysis tools. The DataFrame is the primary data structure.</p>
+        <pre><code>import pandas as pd
+
+# Creating a DataFrame
+df = pd.DataFrame({
+    'Name': ['Alice', 'Bob'],
+    'Age': [25, 30]
+})
+
+# Filtering
+adults = df[df['Age'] > 18]</code></pre>
+
+        <h2>5.3 Data Visualization with Matplotlib</h2>
+        <p>Matplotlib is a plotting library for the Python programming language and its numerical mathematics extension NumPy.</p>
+        <pre><code>import matplotlib.pyplot as plt
+
+x = [1, 2, 3, 4]
+y = [10, 20, 25, 30]
+
+plt.plot(x, y)
+plt.title("Simple Plot")
+plt.show()</code></pre>
+
+        <h2>5.4 Exploratory Data Analysis (EDA)</h2>
+        <p>EDA is an approach to analyzing data sets to summarize their main characteristics, often with visual methods.</p>
+
+        <div class="task">
+            <h3>🎯 Practical Exercise</h3>
+            <p>Load a CSV file using Pandas, clean missing values, and create a simple bar chart visualizing the distribution of a categorical column.</p>
+        </div>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+    <script>
+        initLayout();
+    </script>
+</body>
+</html>

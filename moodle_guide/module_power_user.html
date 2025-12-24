@@ -81,6 +81,56 @@ $CFG->disableupdateautodeploy = true;
 $CFG->session_handler_class = '\core\session\redis';
 $CFG->session_redis_host = '127.0.0.1';</code></pre>
         </section>
+
+        <section>
+            <h2>4. Ad-hoc Tasks</h2>
+            <p>Unlike scheduled tasks which run on a schedule, Ad-hoc tasks are "fire and forget" background jobs. They are perfect for heavy processing triggered by a user action (e.g., generating a certificate, processing a CSV upload).</p>
+            <pre><code class="language-php">// 1. Create a task class extending \core\task\adhoc_task
+namespace local_myplugin\task;
+
+class generate_report extends \core\task\adhoc_task {
+    public function execute() {
+        $data = $this->get_custom_data();
+        // Long running process here...
+        mtrace("Report generated for user: " . $data->userid);
+    }
+}
+
+// 2. Queue the task from anywhere in your code
+$task = new \local_myplugin\task\generate_report();
+$task->set_custom_data(['userid' => $USER->id]);
+\core\task\manager::queue_adhoc_task($task);</code></pre>
+        </section>
+
+        <section>
+            <h2>5. CLI Backup & Restore</h2>
+            <p>For large courses, the web interface often times out. Use the CLI tools for reliable backups and migrations.</p>
+            <pre><code class="language-bash"># Backup a specific course
+php admin/cli/backup.php --courseid=10 --destination=/var/www/backups/
+
+# Restore a course
+php admin/cli/restore.php --file=/var/www/backups/backup.mbz --categoryid=1
+
+# Backup the entire site (Code + DB + Moodledata)
+# Note: Moodle doesn't have a single command for this. 
+# You typically script: tar moodledata, mysqldump db, tar code.</code></pre>
+        </section>
+
+        <section>
+            <h2>6. Performance Tuning</h2>
+            <p>Optimizing Moodle for high concurrency involves several layers of caching.</p>
+            <ul>
+                <li><strong>PHP Opcache:</strong> Essential. Caches compiled PHP bytecode.</li>
+                <li><strong>MUC (Moodle Universal Cache):</strong> Configure backends in <code>cache/admin.php</code>. Use Redis for application and session caches.</li>
+                <li><strong>Database:</strong> Tune your PostgreSQL/MySQL buffers.</li>
+            </ul>
+            <pre><code class="language-php">// config.php: Redis for MUC (Application Cache)
+$CFG->session_handler_class = '\core\session\redis';
+$CFG->session_redis_host = '127.0.0.1';
+$CFG->session_redis_prefix = 'moodle_prod_sess_';
+$CFG->session_redis_acquire_lock_timeout = 120;
+$CFG->session_redis_lock_expire = 7200;</code></pre>
+        </section>
     </main>
 
     <footer>

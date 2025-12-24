@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linux Internals Interview Questions - DevOps Guide</title>
+    <link rel="icon" href="../assets/img/avatar-fallback.svg">
+    <link rel="stylesheet" href="../assets/css/devops_styles.css">
+    <script src="../assets/js/devops_layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Linux Internals Questions</h1>
+        <p>OS concepts, kernel, and shell scripting.</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <div class="interview-card">
+            <h3>1. Load Average</h3>
+            <p><strong>Question:</strong> What does "load average" mean in the output of <code>top</code> or <code>uptime</code>?</p>
+            <div class="answer">
+                <p>It represents the average number of processes waiting for CPU time over the last 1, 5, and 15 minutes. A load average higher than the number of CPU cores indicates a bottleneck.</p>
+            </div>
+        </div>
+
+        <div class="interview-card">
+            <h3>2. Inodes</h3>
+            <p><strong>Question:</strong> What is an inode?</p>
+            <div class="answer">
+                <p>An inode (index node) is a data structure in a Unix-style file system that describes a file-system object like a file or a directory. It stores attributes (permissions, owner, size) and disk block locations, but not the filename.</p>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+    <script>
+        initLayout();
+    </script>
+</body>
+</html>

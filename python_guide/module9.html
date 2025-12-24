@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 9: Packaging & Distribution - Python Guide</title>
+    <link rel="icon" href="../assets/img/avatar-fallback.svg">
+    <link rel="stylesheet" href="../assets/css/python_styles.css">
+    <script src="../assets/js/python_layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Module 9: Packaging & Distribution</h1>
+        <p>Sharing your code and managing dependencies professionally.</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <h2>9.1 Dependency Management</h2>
+        <p>Tools like <code>pip</code>, <code>virtualenv</code>, and modern alternatives like <code>Poetry</code> and <code>Pipenv</code> help manage project dependencies and environments.</p>
+
+        <h2>9.2 Creating Packages</h2>
+        <p>Structuring your project for distribution. Understanding <code>setup.py</code> and <code>pyproject.toml</code>.</p>
+
+        <h2>9.3 Publishing to PyPI</h2>
+        <p>The process of building wheels and source distributions and uploading them to the Python Package Index (PyPI).</p>
+
+        <h2>9.4 Dockerizing Python Apps</h2>
+        <p>Best practices for creating Docker images for Python applications. Multi-stage builds to reduce image size.</p>
+        <pre><code>FROM python:3.9-slim
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+COPY . .
+CMD ["python", "app.py"]</code></pre>
+
+        <div class="task">
+            <h3>🎯 Practical Exercise</h3>
+            <p>Create a <code>pyproject.toml</code> for a sample project and build a distributable wheel file.</p>
+        </div>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+    <script>
+        initLayout();
+    </script>
+</body>
+</html>

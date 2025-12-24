@@ -1,8 +1,9 @@
 const navLinks = [
     { href: "/react_guide/index.html", text: "Home" },
+    { href: "/react_guide/use_cases.html", text: "💼 Real World Use Cases" },
     { href: "/react_guide/module0.html", text: "0. JS Prep" },
-    { href: "/react_guide/module1.html", text: "1. Fundamentals" },
-    { href: "/react_guide/module2.html", text: "2. Hooks & Lifecycle" },
+    { href: "/react_guide/module1.html", text: "1. React Basics" },
+    { href: "/react_guide/module2.html", text: "2. Hooks Deep Dive" },
     { href: "/react_guide/module3.html", text: "3. Routing & API" },
     { href: "/react_guide/module4.html", text: "4. State & Forms" },
     { href: "/react_guide/module5.html", text: "5. Advanced Patterns" },
@@ -11,7 +12,8 @@ const navLinks = [
     { href: "/react_guide/module8.html", text: "8. Pro Workflow" },
     { href: "/react_guide/module9.html", text: "9. Perf & Security" },
     { href: "/react_guide/capstone.html", text: "Capstone" },
-    { href: "/react_guide/interview_index.html", text: "Interview Index" }
+    { href: "/react_guide/interview_index.html", text: "Interview Index" },
+    { href: "/react_guide/quiz.html", text: "✅ Final Quiz" }
 ];
 
 function initLayout() {

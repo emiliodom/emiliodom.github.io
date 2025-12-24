@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WordPress Core Architecture Interview Questions</title>
+    <link rel="stylesheet" href="../assets/css/wordpress_styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <script src="../assets/js/wordpress_layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>WordPress Core Architecture Interview Questions</h1>
+        <p>Deep dive into Hooks, Database Schema, and the Request Lifecycle.</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section class="intro">
+            <p>Understanding the core architecture is what separates a "site builder" from a WordPress Engineer. These questions cover the internal mechanisms of WordPress.</p>
+        </section>
+
+        <div class="interview-question">
+            <h3>1. Explain the WordPress Request Lifecycle (Loading Sequence).</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong> A high-level overview of what happens when a request hits WordPress:</p>
+                <ol>
+                    <li><strong>index.php:</strong> Entry point.</li>
+                    <li><strong>wp-blog-header.php:</strong> Loads the environment.</li>
+                    <li><strong>wp-load.php:</strong> Bootstraps WordPress (config, db).</li>
+                    <li><strong>wp-settings.php:</strong> Loads core libraries, plugins, and the active theme's `functions.php`.</li>
+                    <li><strong>init hook:</strong> Core is fully loaded.</li>
+                    <li><strong>wp() (Main Query):</strong> Parses the URL and runs the main database query to determine what content to show.</li>
+                    <li><strong>template_redirect:</strong> Decides which template file to load.</li>
+                    <li><strong>template-loader.php:</strong> Loads the template (e.g., `single.php`).</li>
+                    <li><strong>Shutdown:</strong> PHP execution ends.</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="interview-question">
+            <h3>2. What is the difference between `actions` and `filters`?</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong> Both are "Hooks", but they serve different purposes:</p>
+                <ul>
+                    <li><strong>Actions (`do_action` / `add_action`):</strong> Events where you can "do" something at a specific point (e.g., echo HTML, send an email, update DB). They do not return a value.</li>
+                    <li><strong>Filters (`apply_filters` / `add_filter`):</strong> Used to modify data. They take a variable, modify it, and <strong>must return</strong> it.</li>
+                </ul>
+                <pre><code class="language-php">// Action: Do something
+add_action('wp_footer', function() {
+    echo '&lt;!-- Analytics Code --&gt;';
+});
+
+// Filter: Modify data
+add_filter('the_title', function($title) {
+    return 'Prefix: ' . $title;
+});</code></pre>
+            </div>
+        </div>
+
+        <div class="interview-question">
+            <h3>3. Describe the WordPress Database Schema. What are the core tables?</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong> WordPress uses a relational database (MySQL/MariaDB). Key tables include:</p>
+                <ul>
+                    <li>`wp_posts`: Stores posts, pages, attachments, nav menu items, and revisions.</li>
+                    <li>`wp_postmeta`: Key-value storage for extra post data (custom fields).</li>
+                    <li>`wp_users` & `wp_usermeta`: User data.</li>
+                    <li>`wp_options`: Site configuration and settings.</li>
+                    <li>`wp_terms`, `wp_term_taxonomy`, `wp_term_relationships`: Categories, tags, and custom taxonomies.</li>
+                </ul>
+                <p><strong>Follow-up:</strong> Why is `wp_postmeta` often a performance bottleneck? (Answer: It's an EAV - Entity Attribute Value - table, making complex filtering slow and inefficient).</p>
+            </div>
+        </div>
+
+        <div class="interview-question">
+            <h3>4. What is the Template Hierarchy?</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong> The logic WordPress uses to decide which theme file to render for a given request. It searches from specific to generic.</p>
+                <p><strong>Example for a Single Post:</strong></p>
+                <ol>
+                    <li>`single-{post_type}-{slug}.php`</li>
+                    <li>`single-{post_type}.php`</li>
+                    <li>`single.php`</li>
+                    <li>`singular.php`</li>
+                    <li>`index.php` (Fallback)</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="interview-question">
+            <h3>5. How does the Rewrite API work?</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong> The Rewrite API maps incoming URLs (Permalinks) to database queries.</p>
+                <ul>
+                    <li>WordPress uses regex to match the URL structure.</li>
+                    <li>It converts the match into "Query Variables" (e.g., `index.php?p=123`).</li>
+                    <li>These variables are passed to `WP_Query` to fetch content.</li>
+                </ul>
+                <p><strong>Important:</strong> You must flush rewrite rules (`flush_rewrite_rules()`) after adding new custom post types or rewrite rules, but <strong>never</strong> on every page load (only on plugin activation).</p>
+            </div>
+        </div>
+
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+    <script>
+        initLayout();
+    </script>
+</body>
+</html>

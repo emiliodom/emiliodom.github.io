@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enterprise Security Interview Questions</title>
+    <link rel="stylesheet" href="../assets/css/wordpress_styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <script src="../assets/js/wordpress_layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Enterprise Security Interview Questions</h1>
+        <p>Sanitization, Validation, Nonces, and Hardening techniques.</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section class="intro">
+            <p>Security is non-negotiable. These questions ensure a candidate knows how to write secure code and protect a WordPress installation.</p>
+        </section>
+
+        <div class="interview-question">
+            <h3>1. What is the difference between Sanitization and Validation?</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong></p>
+                <ul>
+                    <li><strong>Sanitization (Cleaning):</strong> Happens on <strong>Input</strong> (saving data). It cleans data to make it safe for the database. E.g., `sanitize_text_field()`, `sanitize_email()`.</li>
+                    <li><strong>Escaping (Output):</strong> Happens on <strong>Output</strong> (displaying data). It ensures data is safe to render in the browser. E.g., `esc_html()`, `esc_attr()`.</li>
+                    <li><strong>Validation (Checking):</strong> Checking if data meets criteria. E.g., `is_email()`.</li>
+                </ul>
+                <p><strong>Mantra:</strong> "Sanitize early, Escape late."</p>
+            </div>
+        </div>
+
+        <div class="interview-question">
+            <h3>2. What is a Nonce and why is it important?</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong> "Number used ONCE". It protects against CSRF (Cross-Site Request Forgery) attacks.</p>
+                <p>It ensures that a request (like submitting a form or clicking a link) originated from a user who intended to perform that action on your site, not from a malicious script on another site.</p>
+                <pre><code class="language-php">// Creating
+wp_nonce_field('my_action', 'my_nonce_name');
+
+// Verifying
+if (!isset($_POST['my_nonce_name']) || !wp_verify_nonce($_POST['my_nonce_name'], 'my_action')) {
+    die('Security check failed');
+}</code></pre>
+            </div>
+        </div>
+
+        <div class="interview-question">
+            <h3>3. How do you prevent SQL Injection in WordPress?</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong></p>
+                <ul>
+                    <li><strong>Never</strong> use raw variables in SQL queries.</li>
+                    <li>Use the `wpdb->prepare()` method. It mimics `sprintf()` and safely quotes data.</li>
+                </ul>
+                <pre><code class="language-php">global $wpdb;
+// ❌ Bad
+$wpdb->query("SELECT * FROM wp_users WHERE user_login = '$username'");
+
+// ✅ Good
+$wpdb->query(
+    $wpdb->prepare("SELECT * FROM wp_users WHERE user_login = %s", $username)
+);</code></pre>
+            </div>
+        </div>
+
+        <div class="interview-question">
+            <h3>4. What are Capabilities and Roles?</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong></p>
+                <ul>
+                    <li><strong>Role:</strong> A group of capabilities (e.g., Administrator, Editor, Subscriber).</li>
+                    <li><strong>Capability:</strong> A specific permission to do something (e.g., `edit_posts`, `manage_options`).</li>
+                </ul>
+                <p><strong>Best Practice:</strong> Always check for capabilities (`current_user_can('edit_posts')`), never check for roles (`current_user_can('administrator')` is bad practice because roles can be renamed or modified).</p>
+            </div>
+        </div>
+
+        <div class="interview-question">
+            <h3>5. How would you harden a WordPress installation?</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong></p>
+                <ul>
+                    <li><strong>Updates:</strong> Keep Core, Plugins, and Themes updated.</li>
+                    <li><strong>Passwords:</strong> Enforce strong passwords / 2FA.</li>
+                    <li><strong>File Permissions:</strong> Restrict write access to files (only `wp-content/uploads` should be writable by the server).</li>
+                    <li><strong>Disable XML-RPC:</strong> If not used, to prevent brute force attacks.</li>
+                    <li><strong>Limit Login Attempts:</strong> Prevent brute forcing.</li>
+                    <li><strong>WAF:</strong> Use a Web Application Firewall (Cloudflare, Wordfence).</li>
+                </ul>
+            </div>
+        </div>
+
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+    <script>
+        initLayout();
+    </script>
+</body>
+</html>

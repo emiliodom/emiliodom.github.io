@@ -64,6 +64,43 @@ echo $OUTPUT->footer();</code></pre>
             <pre><code class="language-php">$context = context_course::instance($courseid);
 require_capability('mod/quiz:view', $context);</code></pre>
         </section>
+
+        <section>
+            <h2>4. The Request Lifecycle</h2>
+            <p>Every Moodle page follows a similar lifecycle:</p>
+            <ol>
+                <li><strong>Bootstrap:</strong> <code>require('config.php')</code> loads database settings and core libraries.</li>
+                <li><strong>Session Init:</strong> User session is started or resumed.</li>
+                <li><strong>Auth Check:</strong> <code>require_login()</code> ensures the user is authenticated.</li>
+                <li><strong>Setup:</strong> <code>$PAGE</code> object is configured (URL, Context, Title).</li>
+                <li><strong>Logic:</strong> The script performs its specific logic (DB queries, processing).</li>
+                <li><strong>Output:</strong> <code>$OUTPUT->header()</code> starts the HTML output, followed by content and footer.</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>5. The Component System (Frankenstyle)</h2>
+            <p>Moodle uses a strict naming convention called "Frankenstyle" to manage thousands of plugins without collision.</p>
+            <p>Format: <code>[plugin_type]_[plugin_name]</code></p>
+            <ul>
+                <li><strong>mod_forum:</strong> Activity module (Forum).</li>
+                <li><strong>block_html:</strong> Block (HTML block).</li>
+                <li><strong>auth_ldap:</strong> Authentication plugin (LDAP).</li>
+                <li><strong>local_myplugin:</strong> Local plugin (Custom).</li>
+                <li><strong>theme_boost:</strong> Theme (Boost).</li>
+            </ul>
+            <p>This prefix is used in function names (<code>mod_forum_view</code>), language strings, and CSS classes.</p>
+        </section>
+
+        <section>
+            <h2>6. File Storage Internals</h2>
+            <p>Moodle does <strong>not</strong> store uploaded files with their original names in the file system. This prevents directory traversal attacks and filename collisions.</p>
+            <ul>
+                <li><strong>Content-Addressable Storage:</strong> Files are renamed to the SHA1 hash of their content.</li>
+                <li><strong>Directory Hashing:</strong> A file with hash <code>abcde...</code> is stored in <code>moodledata/filedir/ab/cd/abcde...</code>.</li>
+                <li><strong>Database:</strong> The <code>mdl_files</code> table stores the metadata (filename, path, mime type) and links it to the content hash.</li>
+            </ul>
+        </section>
     </main>
 
     <footer>

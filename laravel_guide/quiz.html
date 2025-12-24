@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laravel Final Quiz</title>
+    <link rel="stylesheet" href="../assets/css/laravel_styles.css">
+    <script src="../assets/js/laravel_layout.js"></script>
+    <style>
+        .quiz-container { max-width: 800px; margin: 0 auto; padding-bottom: 50px; }
+        .question { background: var(--card-bg); padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid var(--card-border); }
+        .question h3 { margin-top: 0; font-size: 1.1em; }
+        .options { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
+        .option { 
+            padding: 12px; 
+            border: 1px solid var(--card-border); 
+            border-radius: 4px; 
+            cursor: pointer; 
+            transition: background 0.2s; 
+            word-break: break-word;
+            white-space: normal;
+            line-height: 1.4;
+        }
+        .option:hover { background: var(--nav-bg); }
+        .options.answered .option { cursor: default; pointer-events: none; }
+        .option.correct { background: #10b981; color: white; border-color: #059669; }
+        .option.incorrect { background: #ef4444; color: white; border-color: #b91c1c; }
+        .option.dimmed { opacity: 0.6; }
+        #score-panel {
+            position: sticky;
+            top: 20px;
+            background: var(--card-bg);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--card-border);
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        #score-display { font-weight: bold; font-size: 1.2em; }
+        .progress-bar { height: 10px; background: #e5e7eb; border-radius: 5px; width: 200px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--link-color); width: 0%; transition: width 0.3s; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Laravel Final Assessment</h1>
+        <p>Test your knowledge from Beginner to Senior Laravel Developer.</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main class="quiz-container">
+        <div id="score-panel">
+            <div id="score-display">Score: 0 / 0</div>
+            <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+        </div>
+        <div id="quiz"></div>
+    </main>
+
+    <script>
+        const questions = [
+            // --- Beginner (20) ---
+            { q: "What is Laravel?", options: ["A PHP framework", "A JavaScript library", "A database", "A CSS framework"], answer: 0 },
+            { q: "Which command creates a new Laravel project?", options: ["laravel new app", "php artisan create", "composer create-project", "Both A and C"], answer: 3 },
+            { q: "What is Artisan?", options: ["The command-line interface for Laravel", "A database tool", "A templating engine", "A testing framework"], answer: 0 },
+            { q: "Where are routes defined in Laravel?", options: ["routes/web.php", "app/routes.php", "config/routes.php", "public/index.php"], answer: 0 },
+            { q: "What is Blade?", options: ["Laravel's templating engine", "A database ORM", "A routing system", "A security feature"], answer: 0 },
+            { q: "How do you display a variable in Blade?", options: ["{{ $var }}", "<?= $var ?>", "{!! $var !!}", "All of the above"], answer: 3 },
+            { q: "What is Eloquent?", options: ["Laravel's ORM", "A validation library", "A migration tool", "A caching system"], answer: 0 },
+            { q: "How do you retrieve all records from a model?", options: ["Model::all()", "Model::get()", "Model::fetch()", "Model::select()"], answer: 0 },
+            { q: "What is a Migration?", options: ["Version control for the database", "Moving files", "Upgrading Laravel", "Deploying code"], answer: 0 },
+            { q: "Which command runs migrations?", options: ["php artisan migrate", "php artisan db:seed", "php artisan make:migration", "php artisan schema:update"], answer: 0 },
+            { q: "What is Middleware?", options: ["Code that runs before/after a request", "A database driver", "A frontend framework", "A testing tool"], answer: 0 },
+            { q: "How do you create a controller?", options: ["php artisan make:controller", "php artisan create:controller", "php artisan new:controller", "php artisan controller:make"], answer: 0 },
+            { q: "What is the purpose of the .env file?", options: ["Environment configuration", "Database storage", "Public assets", "Routing logic"], answer: 0 },
+            { q: "How do you access configuration values?", options: ["config('app.name')", "Config::get('app.name')", "env('APP_NAME')", "All of the above"], answer: 3 },
+            { q: "What is a Seeder?", options: ["A class to populate the database with test data", "A migration tool", "A validation rule", "A routing method"], answer: 0 },
+            { q: "How do you validate a request?", options: ["$request->validate()", "Validator::make()", "FormRequest", "All of the above"], answer: 3 },
+            { q: "What is Mass Assignment?", options: ["Assigning multiple attributes to a model at once", "Assigning roles", "Bulk email", "Database replication"], answer: 0 },
+            { q: "Which property protects against Mass Assignment?", options: ["$fillable or $guarded", "$hidden", "$casts", "$dates"], answer: 0 },
+            { q: "What is a Relationship in Eloquent?", options: ["Defining how tables are connected", "Friendship between users", "Server connection", "Route linking"], answer: 0 },
+            { q: "How do you define a One-to-Many relationship?", options: ["hasMany() / belongsTo()", "hasOne() / belongsTo()", "belongsToMany()", "morphMany()"], answer: 0 },
+
+            // --- Intermediate (20) ---
+            { q: "What is a Service Provider?", options: ["The central place to configure the application", "A third-party API", "A hosting provider", "A database service"], answer: 0 },
+            { q: "What is the Service Container?", options: ["A dependency injection container", "A Docker container", "A service wrapper", "A storage folder"], answer: 0 },
+            { q: "How do you register a binding in the container?", options: ["$this->app->bind()", "$this->app->register()", "$this->app->singleton()", "Both A and C"], answer: 3 },
+            { q: "What is a Facade?", options: ["A static interface to classes in the service container", "A design pattern", "A frontend component", "A database table"], answer: 0 },
+            { q: "What is Route Model Binding?", options: ["Automatically injecting model instances into routes", "Binding routes to views", "Binding routes to controllers", "Binding models to database"], answer: 0 },
+            { q: "What is a Job in Laravel?", options: ["A task that can be queued", "A cron job", "A controller method", "A database query"], answer: 0 },
+            { q: "How do you dispatch a job?", options: ["Job::dispatch()", "dispatch(new Job)", "Both A and B", "Job::run()"], answer: 2 },
+            { q: "What is a Queue?", options: ["A list of jobs to be processed asynchronously", "A waiting line", "A database table", "A cache store"], answer: 0 },
+            { q: "What is an Event?", options: ["Something that happened in the application", "A calendar item", "A scheduled task", "A log entry"], answer: 0 },
+            { q: "What is a Listener?", options: ["A class that handles an event", "A server process", "A database trigger", "A user action"], answer: 0 },
+            { q: "What is a Policy?", options: ["A class to organize authorization logic", "A privacy policy", "A configuration file", "A middleware"], answer: 0 },
+            { q: "How do you check authorization in a controller?", options: ["$this->authorize()", "Gate::allows()", "User::can()", "All of the above"], answer: 3 },
+            { q: "What is a Scope in Eloquent?", options: ["A reusable query constraint", "A variable scope", "A permission level", "A view area"], answer: 0 },
+            { q: "What is an Accessor?", options: ["A method to format an attribute when retrieving it", "A method to set an attribute", "A database column", "A permission"], answer: 0 },
+            { q: "What is a Mutator?", options: ["A method to format an attribute before saving it", "A method to get an attribute", "A zombie", "A migration"], answer: 0 },
+            { q: "What is Soft Deleting?", options: ["Marking a record as deleted without removing it", "Deleting gently", "Deleting files", "Deleting cache"], answer: 0 },
+            { q: "How do you enable Soft Deletes?", options: ["Use SoftDeletes trait", "Add deleted_at column", "Both A and B", "Config setting"], answer: 2 },
+            { q: "What is API Resource?", options: ["A transformation layer for JSON responses", "A database resource", "An external API", "A route group"], answer: 0 },
+            { q: "What is Laravel Mix/Vite?", options: ["A build tool for assets", "A music mixer", "A database tool", "A testing tool"], answer: 0 },
+            { q: "What is Livewire?", options: ["A full-stack framework for dynamic UIs", "A JavaScript library", "A database driver", "A CSS framework"], answer: 0 },
+
+            // --- Senior (20) ---
+            { q: "What is the Repository Pattern?", options: ["Decoupling business logic from data access", "A git repository", "A database backup", "A folder structure"], answer: 0 },
+            { q: "How do you implement Caching in Laravel?", options: ["Cache::put() / Cache::get()", "Cache::remember()", "Cache tags", "All of the above"], answer: 3 },
+            { q: "What is the N+1 problem?", options: ["Executing N+1 queries to fetch related data", "A math problem", "A server error", "A routing issue"], answer: 0 },
+            { q: "How do you solve the N+1 problem?", options: ["Eager loading (with())", "Lazy loading", "Caching", "Indexing"], answer: 0 },
+            { q: "What is Horizontal Scaling?", options: ["Adding more servers", "Adding more CPU/RAM", "Optimizing code", "Database sharding"], answer: 0 },
+            { q: "How does Laravel handle sessions in a load-balanced environment?", options: ["Using a shared driver like Redis or Database", "Using file storage", "Using cookies only", "It doesn't"], answer: 0 },
+            { q: "What is a Polymorphic Relationship?", options: ["A model can belong to more than one other model on a single association", "Many-to-Many", "One-to-One", "Self-referencing"], answer: 0 },
+            { q: "What is Dependency Injection?", options: ["Passing dependencies into a class rather than creating them inside", "Installing packages", "Database injection", "Code injection"], answer: 0 },
+            { q: "What is the purpose of the 'defer' property in a Service Provider?", options: ["To delay loading until needed", "To disable the provider", "To prioritize the provider", "To cache the provider"], answer: 0 },
+            { q: "How do you secure a Laravel API?", options: ["Sanctum / Passport", "Rate Limiting", "HTTPS", "All of the above"], answer: 3 },
+            { q: "What is Laravel Horizon?", options: ["A dashboard for Redis queues", "A frontend framework", "A database tool", "A deployment tool"], answer: 0 },
+            { q: "What is Laravel Telescope?", options: ["A debug assistant", "A star gazing tool", "A testing tool", "A migration tool"], answer: 0 },
+            { q: "What is Laravel Octane?", options: ["A performance booster using Swoole/RoadRunner", "A fuel type", "A database engine", "A cache driver"], answer: 0 },
+            { q: "How do you handle database transactions?", options: ["DB::transaction()", "DB::beginTransaction() / commit() / rollBack()", "Both A and B", "Try-catch block"], answer: 2 },
+            { q: "What is a Trait?", options: ["A mechanism for code reuse in single inheritance languages", "A class type", "A variable", "A database column"], answer: 0 },
+            { q: "What is the difference between 'singleton' and 'bind'?", options: ["Singleton creates one instance, bind creates a new one each time", "Bind is faster", "Singleton is deprecated", "No difference"], answer: 0 },
+            { q: "How do you optimize an Eloquent query?", options: ["Select specific columns", "Use indexes", "Chunk results", "All of the above"], answer: 3 },
+            { q: "What is a Macro in Laravel?", options: ["Extending core classes with custom methods", "A keyboard shortcut", "A database trigger", "A view component"], answer: 0 },
+            { q: "What is the purpose of 'php artisan optimize'?", options: ["To cache configuration and routes", "To delete files", "To run migrations", "To update composer"], answer: 0 },
+            { q: "How do you implement Multi-Tenancy?", options: ["Single DB with tenant_id", "Database per tenant", "Tenancy for Laravel package", "All of the above"], answer: 3 }
+        ];
+
+        // Shuffle questions
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        const quizContainer = document.getElementById('quiz');
+        const scoreDisplay = document.getElementById('score-display');
+        const progressBar = document.getElementById('progress');
+        
+        let shuffledQuestions = shuffle([...questions]);
+        let score = 0;
+        let answeredCount = 0;
+
+        function renderQuiz() {
+            quizContainer.innerHTML = '';
+            shuffledQuestions.forEach((q, index) => {
+                const qEl = document.createElement('div');
+                qEl.className = 'question';
+                qEl.innerHTML = `
+                    <h3>${index + 1}. ${q.q}</h3>
+                    <div class="options" id="opt-${index}">
+                        ${q.options.map((opt, i) => `
+                            <div class="option" onclick="checkAnswer(${index}, ${i}, ${q.answer})">${opt}</div>
+                        `).join('')}
+                    </div>
+                `;
+                quizContainer.appendChild(qEl);
+            });
+            updateScore();
+        }
+
+        window.checkAnswer = function(qIndex, selected, correct) {
+            const optionsDiv = document.getElementById(`opt-${qIndex}`);
+            if (optionsDiv.classList.contains('answered')) return;
+
+            optionsDiv.classList.add('answered');
+            const options = optionsDiv.getElementsByClassName('option');
+            
+            if (selected === correct) {
+                options[selected].classList.add('correct');
+                score++;
+            } else {
+                options[selected].classList.add('incorrect');
+                options[correct].classList.add('correct');
+            }
+
+            // Dim others
+            for (let i = 0; i < options.length; i++) {
+                if (i !== selected && i !== correct) {
+                    options[i].classList.add('dimmed');
+                }
+            }
+
+            answeredCount++;
+            updateScore();
+        };
+
+        function updateScore() {
+            scoreDisplay.textContent = `Score: ${score} / ${questions.length}`;
+            const percent = (answeredCount / questions.length) * 100;
+            progressBar.style.width = `${percent}%`;
+        }
+
+        renderQuiz();
+    </script>
+</body>
+</html>

@@ -8,6 +8,8 @@ const navLinks = [
     { href: "/moodle_guide/module5.html", text: "6. Security & Performance" },
     { href: "/moodle_guide/module_power_user.html", text: "7. Power User & CLI" },
     { href: "/moodle_guide/module_enterprise.html", text: "8. Enterprise & CI/CD" },
+    { href: "/moodle_guide/module_admin.html", text: "9. Site Administration" },
+    { href: "/moodle_guide/use_cases.html", text: "10. Real-World Use Cases" },
     { href: "/moodle_guide/plugin_explorer.html", text: "💻 Code Explorer" },
     { href: "/moodle_guide/quiz.html", text: "✅ Final Quiz" },
     { href: "/moodle_guide/interview_index.html", text: "📝 Interview Prep" }

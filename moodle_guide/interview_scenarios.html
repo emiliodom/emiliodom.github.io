@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moodle Scenario-Based Interview Questions</title>
+    <link rel="stylesheet" href="../assets/css/moodle_styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="../assets/js/moodle_layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Scenario-Based Questions</h1>
+        <p>System Design and Problem Solving for Senior Developers</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section class="qna">
+            <h3>Scenario 1: The "Slow Report" Problem</h3>
+            <p><strong>Question:</strong> A client complains that a custom report plugin you built times out when run for the entire university (50,000 students). It works fine for small courses. How do you fix it?</p>
+            <div class="answer">
+                <p><strong>Analysis:</strong> The script is likely hitting PHP's <code>max_execution_time</code> or memory limit due to loading all records at once.</p>
+                <p><strong>Solution:</strong></p>
+                <ol>
+                    <li><strong>Use RecordSets:</strong> Replace <code>$DB->get_records()</code> with <code>$DB->get_recordset()</code> to iterate row-by-row instead of loading everything into RAM.</li>
+                    <li><strong>Ad-hoc Task:</strong> Move the generation to a background Ad-hoc task. The user clicks "Generate", and receives a notification when it's ready.</li>
+                    <li><strong>Pagination:</strong> If it must be on-screen, implement pagination using Moodle's <code>table_sql</code> class.</li>
+                    <li><strong>Read Replica:</strong> If the query is complex, direct it to the read-only database replica.</li>
+                </ol>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Scenario 2: External System Integration</h3>
+            <p><strong>Question:</strong> The university wants to automatically enrol students into Moodle courses based on data from their SIS (Student Information System). The SIS exposes a REST API. How do you design this?</p>
+            <div class="answer">
+                <p><strong>Design:</strong></p>
+                <ol>
+                    <li><strong>Plugin Type:</strong> Create an <code>enrol</code> plugin (e.g., <code>enrol_sis</code>) or a <code>local</code> plugin with a scheduled task.</li>
+                    <li><strong>Synchronization:</strong> Use a Scheduled Task running nightly.</li>
+                    <li><strong>Logic:</strong>
+                        <ul>
+                            <li>Fetch data from SIS API.</li>
+                            <li>Check if the user exists (create if not).</li>
+                            <li>Check if the course exists (create if not).</li>
+                            <li>Call <code>enrol_try_internal_enrol()</code> or use the manual enrolment plugin instance to enrol the user.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Optimization:</strong> Use the "Delta" approach—only fetch changes since the last run, rather than the full dataset every night.</li>
+                </ol>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Scenario 3: The "Hacked" Site</h3>
+            <p><strong>Question:</strong> You inherit a Moodle site that has been compromised. Spam forum posts are appearing. What are your immediate steps?</p>
+            <div class="answer">
+                <ol>
+                    <li><strong>Maintenance Mode:</strong> Immediately put the site in maintenance mode via CLI.</li>
+                    <li><strong>Check Accounts:</strong> Look for new admin accounts or modified permissions in <code>mdl_role_assignments</code>.</li>
+                    <li><strong>Code Integrity:</strong> Use <code>git status</code> to check for modified core files. If not using git, compare against a fresh Moodle download.</li>
+                    <li><strong>Uploads:</strong> Check <code>moodledata</code> and <code>/pix</code> folders for executable PHP files (webshells).</li>
+                    <li><strong>Logs:</strong> Analyze web server access logs for suspicious POST requests.</li>
+                    <li><strong>Patch:</strong> Update Moodle to the latest security release.</li>
+                </ol>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Scenario 4: Custom Dashboard</h3>
+            <p><strong>Question:</strong> A client wants a completely custom dashboard for students, different from the standard Moodle Dashboard. It needs to show progress bars, upcoming deadlines, and a custom "Gamification" score.</p>
+            <div class="answer">
+                <p><strong>Approach:</strong></p>
+                <ol>
+                    <li><strong>Theme vs. Plugin:</strong> Do not hack the core dashboard. Create a <code>local</code> plugin or a custom <code>block</code>.</li>
+                    <li><strong>Page Override:</strong> In the theme config, you can override the layout for the dashboard page, or redirect the user to a custom page in your local plugin upon login.</li>
+                    <li><strong>Data Aggregation:</strong>
+                        <ul>
+                            <li><strong>Progress:</strong> Use <code>\core_completion\progress</code> API.</li>
+                            <li><strong>Deadlines:</strong> Query the <code>mdl_event</code> table (Calendar API).</li>
+                            <li><strong>Gamification:</strong> Store points in a custom table in your plugin.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Frontend:</strong> Use a Mustache template and an AMD module to render the charts (e.g., ChartJS) asynchronously.</li>
+                </ol>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Scenario 5: High Availability Session Issue</h3>
+            <p><strong>Question:</strong> You deployed Moodle on two web servers behind a load balancer. Users report being logged out randomly as they navigate pages. What is wrong?</p>
+            <div class="answer">
+                <p><strong>Diagnosis:</strong> Sessions are likely stored on the local file system of each server (default behavior). When a user hits Server A, they get a session. If the next request goes to Server B, that server doesn't know the session.</p>
+                <p><strong>Fix:</strong></p>
+                <ol>
+                    <li><strong>Shared Storage:</strong> Configure <code>$CFG->session_handler_class</code> to use Redis, Memcached, or the Database.</li>
+                    <li><strong>Sticky Sessions:</strong> Alternatively, configure the Load Balancer for "Sticky Sessions" (Session Affinity), though shared storage is the more robust cloud-native solution.</li>
+                </ol>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Scenario 6: The Disappearing File</h3>
+            <p><strong>Question:</strong> You built a form with a file manager element. The user uploads a file, saves the form, and sees the success message. But when they reload the page, the file is gone. What step did you miss?</p>
+            <div class="answer">
+                <p><strong>Diagnosis:</strong> The file is likely still in the "draft" area. Moodle file uploads go to a temporary draft area first.</p>
+                <p><strong>Fix:</strong> You must process the files upon form submission.</p>
+                <ol>
+                    <li><strong>Draft Area:</strong> When the form loads, prepare the draft area using <code>file_prepare_standard_filemanager()</code>.</li>
+                    <li><strong>Save:</strong> On submit, use <code>file_save_draft_area_files()</code> to move the file from the draft area to the permanent file area (e.g., <code>mod_myplugin</code>, <code>attachment</code>, <code>$id</code>).</li>
+                    <li><strong>Database:</strong> Update the database record to reference the new item ID if necessary (though usually the item ID is constant).</li>
+                </ol>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+
+    <script>
+        initLayout();
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

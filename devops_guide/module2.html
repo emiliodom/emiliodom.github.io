@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 2: Kubernetes Basics - DevOps Guide</title>
+    <link rel="icon" href="../assets/img/avatar-fallback.svg">
+    <link rel="stylesheet" href="../assets/css/devops_styles.css">
+    <script src="../assets/js/devops_layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Module 2: Kubernetes Basics</h1>
+        <p>Orchestrating containerized applications at scale.</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <h2>2.1 Architecture: Control Plane & Nodes</h2>
+        <p>Kubernetes (K8s) follows a client-server architecture:</p>
+        <ul>
+            <li><strong>Control Plane:</strong> Manages the cluster (API Server, Scheduler, Controller Manager, etcd).</li>
+            <li><strong>Nodes:</strong> Worker machines that run the applications (Kubelet, Kube-proxy, Container Runtime).</li>
+        </ul>
+
+        <h2>2.2 Pods, Deployments, and Services</h2>
+        <p><strong>Pods:</strong> The smallest deployable units in K8s. A pod represents a single instance of a running process.</p>
+        <p><strong>Deployments:</strong> Manage the creation and scaling of Pods (ReplicaSets).</p>
+        <p><strong>Services:</strong> An abstract way to expose an application running on a set of Pods as a network service.</p>
+
+        <h2>2.3 ConfigMaps and Secrets</h2>
+        <p>Decouple configuration artifacts from image content to keep containerized applications portable.</p>
+        <ul>
+            <li><strong>ConfigMap:</strong> Stores non-confidential data in key-value pairs.</li>
+            <li><strong>Secret:</strong> Stores sensitive information, such as passwords, OAuth tokens, and ssh keys.</li>
+        </ul>
+
+        <div class="task">
+            <h3>🎯 Practical Exercise</h3>
+            <p>Deploy a simple Nginx server to a local Kubernetes cluster (like Minikube or Docker Desktop) using a Deployment and expose it via a Service.</p>
+        </div>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+    <script>
+        initLayout();
+    </script>
+</body>
+</html>

@@ -22,6 +22,23 @@
         <h2>Introduction</h2>
         <p>This curriculum is tailored to the requirements of a <strong>Senior Laravel Developer</strong> role. It assumes you know the basics of web development and focuses on the specific stack: <strong>T</strong>ailwind, <strong>A</strong>lpine.js, <strong>L</strong>aravel, <strong>L</strong>ivewire (TALL), plus <strong>Filament</strong> for admin panels.</p>
 
+        <div class="crash-course" style="background: #fff5f5; border-left: 5px solid #ff2d20; padding: 15px; margin: 20px 0;">
+            <h3>🚀 Laravel Crash Course</h3>
+            <p>The MVC basics in 30 seconds:</p>
+            <pre><code class="language-php">// routes/web.php
+Route::get('/users', [UserController::class, 'index']);
+
+// app/Http/Controllers/UserController.php
+public function index() {
+    return view('users.index', ['users' => User::all()]);
+}
+
+// resources/views/users/index.blade.php
+@foreach ($users as $user)
+    &lt;div&gt;{{ $user->name }}&lt;/div&gt;
+@endforeach</code></pre>
+        </div>
+
         <div class="bug-hunt" style="background: #fff3cd; border-color: #ffeeba; color: #856404;">
             <h3>⚠️ Job Profile Requirements</h3>
             <ul>

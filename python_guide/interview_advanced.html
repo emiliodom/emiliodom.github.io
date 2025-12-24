@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Python Interview Questions</title>
+    <link rel="stylesheet" href="../assets/css/python_styles.css">
+    <script src="../assets/js/python_layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Advanced Python Questions</h1>
+        <p>Deep dives into internals and advanced features.</p>
+    </header>
+
+    <nav></nav>
+
+    <main>
+        <div class="question-card">
+            <h3>1. What is the Global Interpreter Lock (GIL)?</h3>
+            <p><strong>Answer:</strong> The GIL is a mutex that protects access to Python objects, preventing multiple threads from executing Python bytecodes at once. This means that in CPython, multi-threading is not suitable for CPU-bound tasks, only for I/O-bound tasks.</p>
+        </div>
+
+        <div class="question-card">
+            <h3>2. Explain Generators and the `yield` keyword.</h3>
+            <p><strong>Answer:</strong> Generators are functions that return an iterable set of items, one at a time, in a special way. When an iteration over a set of items starts using the for statement, the generator is run. Once the generator's function code reaches a "yield" statement, the generator yields its execution back to the for loop, returning a new value from the set.</p>
+            <p><strong>Benefit:</strong> Memory efficiency (lazy evaluation).</p>
+        </div>
+
+        <div class="question-card">
+            <h3>3. What are Metaclasses?</h3>
+            <p><strong>Answer:</strong> A metaclass is a class of a class. A class defines how an instance of the class behaves, while a metaclass defines how a class behaves. A class is an instance of a metaclass.</p>
+            <p>In Python, everything is an object, including classes. <code>type</code> is the default metaclass.</p>
+        </div>
+
+        <div class="question-card">
+            <h3>4. What is the difference between `__new__` and `__init__`?</h3>
+            <p><strong>Answer:</strong></p>
+            <ul>
+                <li><code>__new__</code> is a static method responsible for <em>creating</em> a new instance of a class. It returns the instance.</li>
+                <li><code>__init__</code> is an instance method responsible for <em>initializing</em> the created instance. It returns None.</li>
+            </ul>
+        </div>
+    </main>
+
+    <footer></footer>
+    <script>initLayout();</script>
+</body>
+</html>

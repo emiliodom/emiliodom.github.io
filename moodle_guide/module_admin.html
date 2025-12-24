@@ -94,6 +94,40 @@ curl "https://moodle.example.com/webservice/rest/server.php?wstoken=YOUR_TOKEN&w
                 <li><strong>IP Blocker:</strong> Restrict access to specific IP ranges.</li>
             </ul>
         </section>
+
+        <section>
+            <h2>7. Plugin Management</h2>
+            <p>Moodle is modular. You can extend functionality with plugins from the Moodle Plugins Directory or custom-built ones.</p>
+            <ul>
+                <li><strong>Install:</strong> <em>Site administration > Plugins > Install plugins</em> (Upload ZIP).</li>
+                <li><strong>Overview:</strong> <em>Site administration > Plugins > Plugins overview</em>. Check for updates and verify versions.</li>
+                <li><strong>Uninstall:</strong> Always uninstall via the Overview page to ensure database tables are dropped correctly.</li>
+                <li><strong>Disk:</strong> Plugins live in the <code>/moodle/</code> directory (e.g., <code>/mod/</code>, <code>/blocks/</code>, <code>/local/</code>).</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>8. Privacy & GDPR</h2>
+            <p>Moodle includes a robust toolset for data privacy compliance (GDPR).</p>
+            <ul>
+                <li><strong>Policy Tool:</strong> Define site policy and require user consent.</li>
+                <li><strong>Data Registry:</strong> Map data purposes to contexts (e.g., "Course data is kept for 1 year").</li>
+                <li><strong>Data Requests:</strong> Users can request to export or delete their data. Admins approve/deny these requests in <em>Site administration > Privacy and policies > Data requests</em>.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>9. Language Customization</h2>
+            <p>Don't hack the core code to change a text string! Use the Language Customization tool.</p>
+            <ol>
+                <li>Go to <em>Site administration > Language > Language customization</em>.</li>
+                <li>Select the language pack (e.g., English (en)).</li>
+                <li>"Open language pack for editing".</li>
+                <li>Search for the string (e.g., "Log in").</li>
+                <li>Enter your custom string (e.g., "Sign In") and save to the local language pack.</li>
+            </ol>
+            <p>This creates a file in <code>moodledata/lang/xx_local/</code> which persists across upgrades.</p>
+        </section>
     </main>
 
     <footer>

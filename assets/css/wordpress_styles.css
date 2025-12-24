@@ -1,0 +1,144 @@
+:root {
+    --bg-color: #ffffff;
+    --text-color: #333333;
+    --header-border: #333333;
+    --nav-bg: #f4f4f4;
+    --link-color: #21759b; /* WordPress Blue */
+    --task-bg: #e2e3e5;
+    --task-border: #383d41;
+    --bug-bg: #f8d7da;
+    --bug-border: #721c24;
+    --code-bg: #f4f4f4;
+    --footer-border: #cccccc;
+    --footer-text: #666666;
+    --card-bg: #ffffff;
+    --card-border: #e2e8f0;
+    --card-shadow: rgba(0, 0, 0, 0.1);
+    --ticket-header-bg: #f1f5f9;
+    --ticket-border: #cbd5e1;
+}
+
+[data-theme="dark"] {
+    --bg-color: #1e293b;
+    --text-color: #e2e8f0;
+    --header-border: #94a3b8;
+    --nav-bg: #334155;
+    --link-color: #60a5fa;
+    --task-bg: #334155;
+    --task-border: #94a3b8;
+    --bug-bg: #450a0a;
+    --bug-border: #f87171;
+    --code-bg: #0f172a;
+    --footer-border: #475569;
+    --footer-text: #94a3b8;
+    --card-bg: #1e293b;
+    --card-border: #475569;
+    --card-shadow: rgba(0, 0, 0, 0.5);
+    --ticket-header-bg: #334155;
+    --ticket-border: #475569;
+}
+
+body { font-family: system-ui, -apple-system, sans-serif; line-height: 1.6; max-width: 900px; margin: 0 auto; padding: 20px; color: var(--text-color); background-color: var(--bg-color); transition: background-color 0.3s, color 0.3s; }
+header { border-bottom: 2px solid var(--header-border); padding-bottom: 20px; margin-bottom: 20px; }
+nav { background: var(--nav-bg); padding: 10px; border-radius: 5px; margin-bottom: 20px; display: flex; flex-wrap: wrap; gap: 10px; }
+nav a { text-decoration: none; color: var(--link-color); font-weight: bold; padding: 5px 10px; border-radius: 4px; transition: background-color 0.2s; }
+nav a:hover { text-decoration: underline; background-color: rgba(0,0,0,0.05); }
+[data-theme="dark"] nav a:hover { background-color: rgba(255,255,255,0.1); }
+
+.task { background: var(--task-bg); border-left: 5px solid var(--task-border); padding: 15px; margin: 20px 0; border-radius: 0 5px 5px 0; }
+.bug-hunt { background: var(--bug-bg); border-left: 5px solid var(--bug-border); padding: 15px; margin: 20px 0; border-radius: 0 5px 5px 0; }
+.crash-course { background: #f0f9ff; border-left: 5px solid #21759b; padding: 15px; margin: 20px 0; }
+[data-theme="dark"] .crash-course { background: #1e3a8a; border-left: 5px solid #60a5fa; color: #e2e8f0; }
+
+code { background: var(--code-bg); padding: 2px 5px; border-radius: 3px; font-family: 'Consolas', 'Monaco', monospace; font-size: 0.9em; color: var(--text-color); }
+pre { background: var(--code-bg); padding: 15px; border-radius: 5px; overflow-x: auto; border: 1px solid var(--card-border); }
+
+/* Jira Ticket Styles */
+.jira-ticket {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    margin-bottom: 30px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px var(--card-shadow);
+}
+.jira-header {
+    background: var(--ticket-header-bg);
+    padding: 15px 20px;
+    border-bottom: 1px solid var(--ticket-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.jira-id {
+    font-family: monospace;
+    font-weight: bold;
+    color: var(--link-color);
+    margin-right: 10px;
+}
+.jira-title {
+    font-weight: 600;
+    font-size: 1.1em;
+    flex-grow: 1;
+}
+.jira-meta {
+    display: flex;
+    gap: 10px;
+    font-size: 0.85em;
+}
+.badge {
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+.badge-high { background: #ff5630; color: white; }
+.badge-medium { background: #ffab00; color: black; }
+.badge-story { background: #36b37e; color: white; }
+
+.jira-content {
+    padding: 20px;
+}
+.section-title {
+    font-size: 0.9em;
+    text-transform: uppercase;
+    color: #6b778c;
+    font-weight: bold;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    border-bottom: 2px solid var(--card-border);
+    padding-bottom: 5px;
+}
+.section-title:first-child { margin-top: 0; }
+
+.dev-solution {
+    background: rgba(16, 185, 129, 0.05);
+    border-left: 4px solid #10b981;
+    padding: 15px;
+    margin-top: 20px;
+}
+[data-theme="dark"] .dev-solution {
+    background: rgba(16, 185, 129, 0.1);
+}
+.dev-solution h4 {
+    color: #059669;
+    margin-top: 0;
+}
+[data-theme="dark"] .dev-solution h4 {
+    color: #34d399;
+}
+
+.code-block {
+    padding: 0;
+    border-radius: 4px;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.9em;
+    overflow-x: auto;
+    margin: 10px 0;
+}
+
+.requirements-list {
+    list-style-type: disc;
+    padding-left: 20px;
+}
+.requirements-list li { margin-bottom: 5px; }

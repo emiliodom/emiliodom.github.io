@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PHP & Modern WP Interview Questions</title>
+    <link rel="stylesheet" href="../assets/css/wordpress_styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <script src="../assets/js/wordpress_layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>PHP & Modern WP Interview Questions</h1>
+        <p>Assessing knowledge of PHP 8+, OOP, and Modern WordPress Standards.</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section class="intro">
+            <p>Modern WordPress development relies heavily on modern PHP features. These questions test a candidate's ability to write clean, object-oriented code within the WordPress ecosystem.</p>
+        </section>
+
+        <div class="interview-question">
+            <h3>1. Explain the difference between `require`, `include`, `require_once`, and `include_once`. When would you use each?</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong></p>
+                <ul>
+                    <li>`require`: Includes a file; throws a fatal error (E_COMPILE_ERROR) and stops script execution if the file is missing.</li>
+                    <li>`include`: Includes a file; emits a warning (E_WARNING) but continues script execution if the file is missing.</li>
+                    <li>`_once` variants: Check if the file has already been included. If so, they do not include it again.</li>
+                </ul>
+                <p><strong>Best Practice:</strong> In modern WordPress (Bedrock/Composer), we rarely use these manually for classes (due to autoloading). However, for template partials or config files, `require_once` is safest for critical dependencies, while `include` is acceptable for optional templates.</p>
+            </div>
+        </div>
+
+        <div class="interview-question">
+            <h3>2. How does PSR-4 Autoloading work, and how do you implement it in a WordPress plugin?</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong> PSR-4 maps namespaces to file paths. It allows classes to be loaded automatically without manual `require` statements.</p>
+                <p><strong>Implementation:</strong></p>
+                <ol>
+                    <li>Define the mapping in `composer.json`:</li>
+                </ol>
+                <pre><code class="language-json">{
+    "autoload": {
+        "psr-4": {
+            "MyPlugin\\": "src/"
+        }
+    }
+}</code></pre>
+                <ol start="2">
+                    <li>Run `composer dump-autoload`.</li>
+                    <li>Require `vendor/autoload.php` in your main plugin file.</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="interview-question">
+            <h3>3. What are PHP Namespaces and why are they critical in WordPress development?</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong> Namespaces encapsulate items (classes, interfaces, functions, constants) to prevent name collisions. In the global WordPress scope, generic class names like `Event` or `User` will conflict with other plugins.</p>
+                <pre><code class="language-php">namespace MyAgency\ClientProject\Utils;
+
+class DateFormatter { ... }
+
+// Usage
+use MyAgency\ClientProject\Utils\DateFormatter;
+$formatter = new DateFormatter();</code></pre>
+            </div>
+        </div>
+
+        <div class="interview-question">
+            <h3>4. Explain Dependency Injection (DI) and why it's preferred over global state or Singletons.</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong> DI is a design pattern where dependencies are passed into a class (usually via the constructor) rather than the class creating them or accessing them globally.</p>
+                <p><strong>Benefits:</strong></p>
+                <ul>
+                    <li><strong>Testability:</strong> You can easily mock dependencies.</li>
+                    <li><strong>Decoupling:</strong> Classes don't need to know how to construct their dependencies.</li>
+                    <li><strong>Clarity:</strong> Dependencies are explicit in the constructor signature.</li>
+                </ul>
+                <pre><code class="language-php">// ❌ Bad (Hidden Dependency)
+class OrderService {
+    public function process() {
+        global $wpdb; // Hidden dependency
+        // ...
+    }
+}
+
+// ✅ Good (Dependency Injection)
+class OrderService {
+    protected $db;
+    
+    public function __construct(wpdb $db) {
+        $this->db = $db;
+    }
+}</code></pre>
+            </div>
+        </div>
+
+        <div class="interview-question">
+            <h3>5. What are Traits in PHP and give a practical WordPress use case?</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong> Traits are a mechanism for code reuse in single inheritance languages like PHP. They allow you to reuse methods freely in several independent classes.</p>
+                <p><strong>Use Case:</strong> A `Loggable` trait that adds logging capabilities to various services (OrderService, UserService, PaymentGateway) without them sharing a common ancestor.</p>
+                <pre><code class="language-php">trait Loggable {
+    public function log($message) {
+        error_log("[MyPlugin] " . $message);
+    }
+}
+
+class PaymentGateway {
+    use Loggable;
+    
+    public function pay() {
+        $this->log("Processing payment...");
+    }
+}</code></pre>
+            </div>
+        </div>
+
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+    <script>
+        initLayout();
+    </script>
+</body>
+</html>

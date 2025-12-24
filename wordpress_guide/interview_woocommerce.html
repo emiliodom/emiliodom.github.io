@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WooCommerce Scale Interview Questions</title>
+    <link rel="stylesheet" href="../assets/css/wordpress_styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <script src="../assets/js/wordpress_layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>WooCommerce Scale Interview Questions</h1>
+        <p>High-traffic stores, Custom Checkout, and Order Management.</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section class="intro">
+            <p>WooCommerce powers huge stores. Scaling it requires specific knowledge about how it handles sessions, orders, and product data.</p>
+        </section>
+
+        <div class="interview-question">
+            <h3>1. Why is caching tricky with WooCommerce?</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong> You cannot cache dynamic pages like Cart, Checkout, and My Account.</p>
+                <ul>
+                    <li><strong>Cookie Exclusion:</strong> Caching rules must exclude pages where the `woocommerce_items_in_cart` cookie is present.</li>
+                    <li><strong>Fragment Caching:</strong> For the "Mini Cart" in the header, use AJAX to load it dynamically so the rest of the page can remain cached static HTML.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="interview-question">
+            <h3>2. What is HPOS (High Performance Order Storage)?</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong> A major architectural change in WooCommerce.</p>
+                <ul>
+                    <li><strong>Old Way:</strong> Orders were stored in `wp_posts` and `wp_postmeta`. This was slow and bloated the main content tables.</li>
+                    <li><strong>HPOS:</strong> Orders are stored in custom, dedicated tables (`wc_orders`, `wc_order_addresses`, etc.).</li>
+                    <li><strong>Benefit:</strong> Massive performance gain (up to 30% faster) and better scalability.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="interview-question">
+            <h3>3. How do you customize the Checkout process?</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong></p>
+                <ul>
+                    <li><strong>Hooks:</strong> Use actions like `woocommerce_before_checkout_form` or filters like `woocommerce_checkout_fields` to add/remove fields.</li>
+                    <li><strong>Templates:</strong> Override `checkout/form-checkout.php` (use sparingly).</li>
+                    <li><strong>Blocks:</strong> The new Cart & Checkout Blocks allow React-based customization.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="interview-question">
+            <h3>4. How do you handle inventory synchronization with an ERP?</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong> Usually via a scheduled task (CRON) or Webhooks.</p>
+                <ul>
+                    <li><strong>Inbound (ERP -> Woo):</strong> A script runs every X minutes, fetches stock levels from ERP API, and updates WooCommerce products via CRUD methods (`$product->set_stock_quantity()`).</li>
+                    <li><strong>Outbound (Woo -> ERP):</strong> Hook into `woocommerce_payment_complete` to send order data to the ERP immediately.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="interview-question">
+            <h3>5. What is the difference between Simple, Variable, and Grouped products?</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong></p>
+                <ul>
+                    <li><strong>Simple:</strong> Single item, one price, one SKU.</li>
+                    <li><strong>Variable:</strong> A product with variations (Size, Color). Each variation is technically a child post with its own price, stock, and SKU.</li>
+                    <li><strong>Grouped:</strong> A collection of simple products sold together on one page.</li>
+                </ul>
+            </div>
+        </div>
+
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+    <script>
+        initLayout();
+    </script>
+</body>
+</html>

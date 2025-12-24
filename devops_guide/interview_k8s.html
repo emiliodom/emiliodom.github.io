@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kubernetes Interview Questions - DevOps Guide</title>
+    <link rel="stylesheet" href="../assets/css/devops_styles.css">
+    <script src="../assets/js/devops_layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Kubernetes (K8s) Interview Questions</h1>
+        <p>Mastering orchestration, pods, services, and troubleshooting.</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section class="question">
+            <h2>1. What is a Pod in Kubernetes?</h2>
+            <div class="answer">
+                <p>A <strong>Pod</strong> is the smallest deployable unit in Kubernetes. It represents a single instance of a running process in your cluster.</p>
+                <ul>
+                    <li>Usually contains one container (e.g., your app).</li>
+                    <li>Can contain multiple tightly coupled containers (sidecars) that share storage and network (localhost).</li>
+                    <li>Pods are ephemeral; they are created and destroyed, not "restarted" in place.</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="question">
+            <h2>2. Explain the difference between a Deployment and a StatefulSet.</h2>
+            <div class="answer">
+                <ul>
+                    <li><strong>Deployment:</strong> Best for stateless applications (e.g., web servers). Pods are interchangeable. If one dies, it's replaced by a new, identical one with a random name hash.</li>
+                    <li><strong>StatefulSet:</strong> Best for stateful applications (e.g., databases). Pods have sticky identities (web-0, web-1) and stable network IDs. Volumes persist even if the Pod is rescheduled.</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="question">
+            <h2>3. What is a Service and what are the types?</h2>
+            <div class="answer">
+                <p>A <strong>Service</strong> is an abstraction that defines a logical set of Pods and a policy to access them (load balancing).</p>
+                <ul>
+                    <li><strong>ClusterIP (default):</strong> Exposes the service on an internal IP. Only accessible within the cluster.</li>
+                    <li><strong>NodePort:</strong> Exposes the service on each Node's IP at a static port.</li>
+                    <li><strong>LoadBalancer:</strong> Exposes the service externally using a cloud provider's load balancer.</li>
+                    <li><strong>ExternalName:</strong> Maps the service to the contents of the `externalName` field (e.g., `foo.bar.example.com`).</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="question">
+            <h2>4. How does Kubernetes handle configuration and secrets?</h2>
+            <div class="answer">
+                <ul>
+                    <li><strong>ConfigMaps:</strong> Store non-confidential data in key-value pairs. Can be consumed as environment variables, command-line arguments, or configuration files in a volume.</li>
+                    <li><strong>Secrets:</strong> Similar to ConfigMaps but intended for sensitive data (passwords, tokens, keys). Data is stored base64 encoded (not encrypted by default, though encryption at rest can be enabled).</li>
+                </ul>
+            </div>
+        </section>
+
+        <div class="navigation-buttons">
+            <a href="interview_docker.html" class="btn">Back: Docker Questions</a>
+            <a href="interview_cicd.html" class="btn">Next: CI/CD Questions</a>
+        </div>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+    <script>
+        initLayout();
+    </script>
+</body>
+</html>

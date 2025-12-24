@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 6: Configuration Management (Ansible) - DevOps Guide</title>
+    <link rel="icon" href="../assets/img/avatar-fallback.svg">
+    <link rel="stylesheet" href="../assets/css/devops_styles.css">
+    <script src="../assets/js/devops_layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Module 6: Configuration Management (Ansible)</h1>
+        <p>Automating software provisioning, configuration management, and application-deployment.</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <h2>6.1 Ansible Overview</h2>
+        <p>Ansible is an open-source software provisioning, configuration management, and application-deployment tool enabling infrastructure as code. It runs on many Unix-like systems, and can configure both Unix-like systems as well as Microsoft Windows.</p>
+
+        <h2>6.2 Playbooks and Roles</h2>
+        <p>Playbooks are Ansible's configuration, deployment, and orchestration language. They can describe a policy you want your remote systems to enforce, or a set of steps in a general IT process.</p>
+        <pre><code>---
+- name: Install Nginx
+  hosts: webservers
+  become: yes
+  tasks:
+    - name: Ensure Nginx is installed
+      apt:
+        name: nginx
+        state: present</code></pre>
+
+        <h2>6.3 Inventory Management</h2>
+        <p>Ansible works against multiple managed nodes or "hosts" in your infrastructure at the same time, using a list or group of lists known as inventory.</p>
+
+        <h2>6.4 Ansible Galaxy</h2>
+        <p>Ansible Galaxy is a repository for Ansible Roles that are available to drop directly into your Playbooks to streamline your automation projects.</p>
+
+        <div class="task">
+            <h3>🎯 Practical Exercise</h3>
+            <p>Create an Ansible playbook to install and configure a LAMP stack (Linux, Apache, MySQL, PHP) on a remote server.</p>
+        </div>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+    <script>
+        initLayout();
+    </script>
+</body>
+</html>

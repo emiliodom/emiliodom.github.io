@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moodle Full Stack Use Cases</title>
+    <link rel="stylesheet" href="../assets/css/moodle_styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <script src="../assets/js/moodle_layout.js"></script>
+    <style>
+        .jira-ticket {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            margin-bottom: 30px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .jira-header {
+            background: #f4f5f7; /* Jira light grey */
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--card-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        [data-theme="dark"] .jira-header {
+            background: #2d3748;
+        }
+        .jira-id {
+            font-family: monospace;
+            font-weight: bold;
+            color: #0052cc; /* Jira Blue */
+            margin-right: 10px;
+        }
+        .jira-title {
+            font-weight: 600;
+            font-size: 1.1em;
+            flex-grow: 1;
+        }
+        .jira-meta {
+            display: flex;
+            gap: 10px;
+            font-size: 0.85em;
+        }
+        .badge {
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .badge-high { background: #ff5630; color: white; }
+        .badge-medium { background: #ffab00; color: black; }
+        .badge-story { background: #36b37e; color: white; }
+        
+        .jira-content {
+            padding: 20px;
+        }
+        .section-title {
+            font-size: 0.9em;
+            text-transform: uppercase;
+            color: #6b778c;
+            font-weight: bold;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            border-bottom: 2px solid var(--card-border);
+            padding-bottom: 5px;
+        }
+        .section-title:first-child { margin-top: 0; }
+        
+        .dev-solution {
+            background: rgba(16, 185, 129, 0.05); /* Light green tint */
+            border-left: 4px solid #10b981;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        .dev-solution h4 {
+            color: #059669;
+            margin-top: 0;
+        }
+        
+        .code-block {
+            /* Removed custom background since highlight.js handles it */
+            padding: 0;
+            border-radius: 4px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.9em;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+        
+        .requirements-list {
+            list-style-type: disc;
+            padding-left: 20px;
+        }
+        .requirements-list li { margin-bottom: 5px; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Real-World Use Cases</h1>
+        <p>Full Stack Scenarios: From Jira Ticket to Senior Developer Solution</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main class="container">
+        
+        <!-- Case 1: Custom Plugin -->
+        <div class="jira-ticket">
+            <div class="jira-header">
+                <span class="jira-id">MDL-101</span>
+                <span class="jira-title">Course Completion Certificate Generator</span>
+                <div class="jira-meta">
+                    <span class="badge badge-story">Story</span>
+                    <span class="badge badge-medium">Medium</span>
+                </div>
+            </div>
+            <div class="jira-content">
+                <div class="section-title">Product Requirements</div>
+                <p><strong>User Story:</strong> As a student, I want to download a PDF certificate automatically when I complete a course, so I can prove my attendance.</p>
+                <ul class="requirements-list">
+                    <li>Certificate must be generated as PDF.</li>
+                    <li>Must include Student Name, Course Name, and Date.</li>
+                    <li>Only accessible if "Course Completion" criteria are met.</li>
+                    <li>Admin should be able to upload a background image.</li>
+                </ul>
+
+                <div class="section-title">Technical Challenge</div>
+                <p>Generating PDFs in PHP can be resource-intensive. We need to hook into Moodle's completion tracking system and ensure the file is served securely (not publicly accessible).</p>
+
+                <div class="dev-solution">
+                    <h4>👨‍💻 Senior Developer Solution</h4>
+                    <p><strong>Architecture:</strong> Create a `local_certificate` plugin or a `mod_certificate` activity. Using `mod_certificate` is better for course placement.</p>
+                    
+                    <p><strong>Implementation Steps:</strong></p>
+                    <ol>
+                        <li><strong>Library:</strong> Use Moodle's built-in `TCPDF` wrapper (`$pdf = new pdf();`).</li>
+                        <li><strong>Access Control:</strong> In `view.php`, check `$completion = $info->get_data($cm, true);` before generating.</li>
+                        <li><strong>File Serving:</strong> Use `send_temp_file()` or `pluginfile.php` API to deliver the PDF.</li>
+                    </ol>
+
+                    <pre><code class="language-php">
+// mod/certificate/view.php
+require_once('../../config.php');
+require_once($CFG->libdir . '/pdflib.php');
+$id = required_param('id', PARAM_INT);
+$cm = get_coursemodule_from_id('certificate', $id, 0, false, MUST_EXIST);
+$course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
+require_login($course, true, $cm);
+
+// Check completion
+$completion = new completion_info($course);
+if (!$completion->is_course_complete($USER->id)) {
+    print_error('notcompleted', 'mod_certificate');
+}
+
+// Generate PDF
+$doc = new pdf();
+$doc->AddPage();
+$doc->SetFont('helvetica', 'B', 20);
+$doc->Write(0, 'Certificate of Completion');
+$doc->Ln(20);
+$doc->SetFont('helvetica', '', 14);
+$doc->Write(0, 'This is to certify that ' . fullname($USER) . ' has completed the course.');
+$doc->Output('certificate.pdf', 'D');
+                    </code></pre>
+                    <p><strong>Optimization:</strong> Cache the generated PDF in Moodle's `filedir` so it doesn't regenerate on every click. Use Adhoc Task to email it upon completion event `\core\event\course_completed`.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Case 2: Payment Integration -->
+        <div class="jira-ticket">
+            <div class="jira-header">
+                <span class="jira-id">MDL-102</span>
+                <span class="jira-title">Unlock Grades Only After Payment</span>
+                <div class="jira-meta">
+                    <span class="badge badge-story">Story</span>
+                    <span class="badge badge-high">High</span>
+                </div>
+            </div>
+            <div class="jira-content">
+                <div class="section-title">Product Requirements</div>
+                <p><strong>User Story:</strong> As a university admin, I want students to see their final grades only if they have paid their tuition fees.</p>
+                <ul class="requirements-list">
+                    <li>Integrate with external Payment Gateway (Stripe/PayPal).</li>
+                    <li>If unpaid, the Gradebook view should show a "Payment Required" message.</li>
+                    <li>Payment status is stored in a custom user profile field or external DB.</li>
+                </ul>
+
+                <div class="section-title">Technical Challenge</div>
+                <p>Moodle's Gradebook is core functionality. Modifying core code is forbidden. We need a non-intrusive way to intercept the grade display.</p>
+
+                <div class="dev-solution">
+                    <h4>👨‍💻 Senior Developer Solution</h4>
+                    <p><strong>Architecture:</strong> We cannot easily "hide" the gradebook without core hacks. The best approach is a <strong>Report Plugin</strong> or a <strong>Theme Override</strong>, but the most robust way is a <strong>Core Report Callback</strong> or restricting access to the course itself. However, for *just* grades:</p>
+                    <p><strong>Better Approach:</strong> Use a <strong>local plugin</strong> that subscribes to the event `\core\event\user_graded` (for notifications) or intercepting the UI via a <strong>Theme Renderer Override</strong> for the grade report.</p>
+                    
+                    <p><strong>Solution: Override the Grade Report Renderer</strong></p>
+                    <pre><code class="language-php">
+// theme/university/renderers.php
+namespace theme_university\output;
+use core_grades\output\general_action_bar;
+
+class core_grades_renderer extends general_action_bar {
+    public function render_grade_report($report) {
+        global $USER, $DB;
+        
+        // Check custom profile field for payment status
+        // Assuming fieldid 5 is 'paid_status'
+        $has_paid = $DB->get_field('user_info_data', 'data', ['userid'=>$USER->id, 'fieldid'=>5]); 
+        
+        if ($has_paid !== '1') {
+            return $this->output->notification('🔒 Grades are locked until tuition fees are settled.', 'warning');
+        }
+        
+        return parent::render_grade_report($report);
+    }
+}
+                    </code></pre>
+                    <p><strong>Note:</strong> This is tricky. A safer backend approach is to use <strong>Availability API</strong>. Create a custom availability condition `availability_payment`. Teachers add this restriction to the "Final Exam" or the Course Section containing grades.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Case 3: University Survey -->
+        <div class="jira-ticket">
+            <div class="jira-header">
+                <span class="jira-id">MDL-103</span>
+                <span class="jira-title">Mandatory Course Evaluation to View Grades</span>
+                <div class="jira-meta">
+                    <span class="badge badge-story">Story</span>
+                    <span class="badge badge-medium">Medium</span>
+                </div>
+            </div>
+            <div class="jira-content">
+                <div class="section-title">Product Requirements</div>
+                <p><strong>User Story:</strong> Students must complete the "End of Course Survey" before they can view their final grade or download their certificate.</p>
+                <ul class="requirements-list">
+                    <li>Survey is a Moodle "Feedback" activity.</li>
+                    <li>Grades/Certificate activity must be hidden/unavailable until Feedback is submitted.</li>
+                </ul>
+
+                <div class="section-title">Technical Challenge</div>
+                <p>Standard Moodle "Restrict Access" allows unlocking based on activity completion. This is a configuration task, but if we need a custom logic (e.g., "Survey from external system"), we need code.</p>
+
+                <div class="dev-solution">
+                    <h4>👨‍💻 Senior Developer Solution</h4>
+                    <p><strong>Architecture:</strong> Use Moodle's <strong>Availability API</strong> (`availability_custom`).</p>
+                    
+                    <p><strong>Implementation:</strong></p>
+                    <ol>
+                        <li>If using standard Feedback module: No code needed! Set "Restrict Access" on the Certificate: "Must match: Activity Completion 'Course Feedback' is marked complete".</li>
+                        <li>If using <strong>External Survey Tool</strong> (e.g., SurveyMonkey): Build a custom availability plugin `availability_externalsurvey`.</li>
+                    </ol>
+
+                    <pre><code class="language-php">
+// availability/condition/externalsurvey/classes/condition.php
+namespace availability_externalsurvey;
+
+class condition extends \core_availability\condition {
+    public function is_available($not, \core_availability\info $info, $grabthelot, $userid) {
+        // Check Moodle Cache first
+        $cache = \cache::make('availability_externalsurvey', 'status');
+        $status = $cache->get($userid);
+
+        if ($status === false) {
+            // Call External API
+            $status = \local_integration\api::check_survey_status($userid, $this->courseid);
+            $cache->set($userid, $status);
+        }
+
+        return $status === 'completed';
+    }
+    
+    public function get_description($full, $not, \core_availability\info $info) {
+        return "You must complete the external survey to access this.";
+    }
+}
+                    </code></pre>
+                    <p><strong>Optimization:</strong> Cache the external API response in MUC (Moodle Universal Cache) to avoid calling the SurveyMonkey API on every page load.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Case 4: Activity Submission -->
+        <div class="jira-ticket">
+            <div class="jira-header">
+                <span class="jira-id">MDL-104</span>
+                <span class="jira-title">Video Assignment with Auto-Transcoding</span>
+                <div class="jira-meta">
+                    <span class="badge badge-story">Story</span>
+                    <span class="badge badge-high">High</span>
+                </div>
+            </div>
+            <div class="jira-content">
+                <div class="section-title">Product Requirements</div>
+                <p><strong>User Story:</strong> Students upload raw video files (MOV, AVI). The system must convert them to MP4 (H.264) for web playback automatically.</p>
+                <ul class="requirements-list">
+                    <li>Support large file uploads (up to 2GB).</li>
+                    <li>Background processing (don't make user wait).</li>
+                    <li>Notify user when processing is done.</li>
+                </ul>
+
+                <div class="section-title">Technical Challenge</div>
+                <p>PHP cannot handle video conversion efficiently. We need `ffmpeg` and asynchronous processing.</p>
+
+                <div class="dev-solution">
+                    <h4>👨‍💻 Senior Developer Solution</h4>
+                    <p><strong>Architecture:</strong> Use <strong>Adhoc Tasks</strong> (Moodle's Job Queue). Never transcode during the HTTP request.</p>
+                    
+                    <p><strong>Implementation Plan:</strong></p>
+                    <ol>
+                        <li><strong>Upload:</strong> User uploads file to `mod_assign`.</li>
+                        <li><strong>Event Observer:</strong> Listen for `\mod_assign\event\assessable_submitted`.</li>
+                        <li><strong>Queue Task:</strong> Create `\local_video\task\transcode_video` and push to queue.</li>
+                        <li><strong>Worker:</strong> The cron job picks up the task, runs `ffmpeg` via `exec()` or sends to AWS MediaConvert.</li>
+                    </ol>
+
+                    <pre><code class="language-php">
+// local/video/classes/task/transcode_video.php
+namespace local_video\task;
+
+class transcode_video extends \core\task\adhoc_task {
+    public function execute() {
+        global $DB;        
+        
+        $data = $this->get_custom_data();
+        $fileid = $data->fileid;        
+        
+        // Get file from Moodle File API
+        $fs = get_file_storage();
+        $file = $fs->get_file_by_id($fileid);
+        
+        if (!$file) {
+            return; 
+        }
+
+        $input = $file->copy_content_to_temp();
+        $output = $input . '_converted.mp4';        
+        
+        // Run FFMPEG (ensure it's installed on server)
+        $cmd = "ffmpeg -i " . escapeshellarg($input) . " -vcodec h264 -acodec aac " . escapeshellarg($output);
+        exec($cmd, $out, $return);
+        
+        if ($return === 0) {
+            // Success: Replace original or save as new file
+            $file->delete(); // Remove original large file
+            
+            $record = [
+                'contextid' => $file->get_contextid(),
+                'component' => $file->get_component(),
+                'filearea'  => $file->get_filearea(),
+                'itemid'    => $file->get_itemid(),
+                'filepath'  => $file->get_filepath(),
+                'filename'  => 'video.mp4'
+            ];
+            $fs->create_file_from_pathname($record, $output);            
+            
+            // Notify User
+            \core\notification::add('Video processed successfully!', 'success');
+        }
+    }
+}
+                    </code></pre>
+                    <p><strong>Optimization:</strong> Offload to AWS Lambda or S3 Event Triggers to keep the Moodle server CPU load low.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Case 5: AI Integration -->
+        <div class="jira-ticket">
+            <div class="jira-header">
+                <span class="jira-id">MDL-105</span>
+                <span class="jira-title">AI-Powered Quiz Question Generator</span>
+                <div class="jira-meta">
+                    <span class="badge badge-story">Story</span>
+                    <span class="badge badge-medium">Medium</span>
+                </div>
+            </div>
+            <div class="jira-content">
+                <div class="section-title">Product Requirements</div>
+                <p><strong>User Story:</strong> Teachers want to click a button "Generate Questions" inside a Quiz, provide a topic, and get 5 multiple-choice questions automatically.</p>
+                <ul class="requirements-list">
+                    <li>Integrate with OpenAI API (GPT-4).</li>
+                    <li>Insert questions directly into the Question Bank.</li>
+                </ul>
+
+                <div class="section-title">Technical Challenge</div>
+                <p>Integrating external API securely and mapping the JSON response to Moodle's complex Question Bank database structure (`mdl_question`, `mdl_question_answers`).</p>
+
+                <div class="dev-solution">
+                    <h4>👨‍💻 Senior Developer Solution</h4>
+                    <p><strong>Architecture:</strong> Create a <strong>local plugin</strong> that adds a UI to the Question Bank or a new <strong>Question Import Format</strong>.</p>
+                    
+                    <p><strong>Implementation:</strong></p>
+                    <ol>
+                        <li><strong>UI:</strong> Add a button to the Question Bank view using `core_question_bank_plugins`.</li>
+                        <li><strong>API Call:</strong> Send prompt to OpenAI. Request JSON format.</li>
+                        <li><strong>Parsing:</strong> Use `question_import` classes to save data.</li>
+                    </ol>
+
+                    <pre><code class="language-php">
+// local/aiquiz/classes/generator.php
+namespace local_aiquiz;
+
+class generator {
+    public function generate_questions($topic, $count = 5) {
+        global $DB;   
+        
+        $prompt = "Create $count Moodle XML format multiple choice questions about '$topic'. Wrap in <quiz> tags.";
+        
+        // Call OpenAI (Pseudo-code)
+        $client = new \local_aiquiz\openai_client(get_config('local_aiquiz', 'apikey'));
+        $xml_content = $client->completion($prompt);
+        
+        // Parse XML
+        $qformat = new \qformat_xml();
+        $questions = $qformat->readquestions($xml_content);
+        
+        // Save to Question Bank
+        foreach ($questions as $q) {
+            $q->category = 1; // Default category ID
+            question_save_qtype_options($q);
+        }
+        
+        return count($questions);
+    }
+}
+                    </code></pre>
+                    <p><strong>Nice to have:</strong> Add a "Review" step where the teacher can edit the AI suggestions before saving to DB.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Case 6: Dashboard Widget -->
+        <div class="jira-ticket">
+            <div class="jira-header">
+                <span class="jira-id">MDL-106</span>
+                <span class="jira-title">Student Progress Tracker Block</span>
+                <div class="jira-meta">
+                    <span class="badge badge-story">Story</span>
+                    <span class="badge badge-medium">Medium</span>
+                </div>
+            </div>
+            <div class="jira-content">
+                <div class="section-title">Product Requirements</div>
+                <p><strong>User Story:</strong> Students need a visual dashboard block showing their progress across ALL enrolled courses with a circular progress bar.</p>
+                <ul class="requirements-list">
+                    <li>Must be a "Block" plugin (`block_progress`).</li>
+                    <li>Show % complete for each active course.</li>
+                    <li>Use Chart.js or CSS for visuals.</li>
+                </ul>
+
+                <div class="section-title">Technical Challenge</div>
+                <p>Calculating progress for all courses on every page load is a performance killer. `completion_info` is heavy.</p>
+
+                <div class="dev-solution">
+                    <h4>👨‍💻 Senior Developer Solution</h4>
+                    <p><strong>Architecture:</strong> Block Plugin + <strong>Caching</strong>.</p>
+                    
+                    <p><strong>Implementation:</strong></p>
+                    <ol>
+                        <li><strong>Data Retrieval:</strong> `enrol_get_my_courses()`.</li>
+                        <li><strong>Calculation:</strong> Loop courses, get `completion_info`.</li>
+                        <li><strong>Caching:</strong> Store the result in `MUC` (Session or Application cache) for 1 hour or until `\core\event\course_completion_updated` is fired.</li>
+                    </ol>
+
+                    <pre><code class="language-php">
+// blocks/myprogress/block_myprogress.php
+class block_myprogress extends block_base {
+    public function get_content() {
+        global $USER;
+        
+        if ($this->content !== null) {
+            return $this->content;
+        }
+        
+        $this->content = new stdClass;
+        
+        // Try to get from Cache first
+        $cache = \cache::make('block_myprogress', 'userprogress');
+        $data = $cache->get($USER->id);
+        
+        if (!$data) {
+            $courses = enrol_get_my_courses();
+            $data = [];
+            foreach ($courses as $c) {
+                $info = new \completion_info($c);
+                if ($info->is_enabled()) {
+                    $data[] = [
+                        'name' => $c->fullname,
+                        'percent' => $info->get_progress_all()
+                    ];
+                }
+            }
+            // Cache for 1 hour
+            $cache->set($USER->id, $data);
+        }
+        
+        $this->content->text = $this->render_chart($data);
+        return $this->content;
+    }
+    
+    private function render_chart($data) {
+        // Return HTML/JS for Chart.js
+        return '<canvas id="myProgressChart"></canvas>';
+    }
+}
+                    </code></pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Case 7: External API Sync -->
+        <div class="jira-ticket">
+            <div class="jira-header">
+                <span class="jira-id">MDL-107</span>
+                <span class="jira-title">Sync Users with HR System (SAP/Workday)</span>
+                <div class="jira-meta">
+                    <span class="badge badge-story">Story</span>
+                    <span class="badge badge-high">High</span>
+                </div>
+            </div>
+            <div class="jira-content">
+                <div class="section-title">Product Requirements</div>
+                <p><strong>User Story:</strong> When a new employee is added to SAP, they should automatically have an account in Moodle and be enrolled in "Onboarding 101".</p>
+                <ul class="requirements-list">
+                    <li>One-way sync: SAP -> Moodle.</li>
+                    <li>Run nightly.</li>
+                    <li>Handle updates (name changes) and deletions (suspend user).</li>
+                </ul>
+
+                <div class="section-title">Technical Challenge</div>
+                <p>Handling thousands of users efficiently. Avoiding "zombie" accounts.</p>
+
+                <div class="dev-solution">
+                    <h4>👨‍💻 Senior Developer Solution</h4>
+                    <p><strong>Architecture:</strong> Use an <strong>Auth Plugin</strong> (`auth_sap`) or <strong>Enrol Plugin</strong> (`enrol_sap`). Best practice: <strong>Scheduled Task</strong> consuming an API or CSV.</p>
+                    
+                    <p><strong>Implementation:</strong></p>
+                    <ol>
+                        <li><strong>Scheduled Task:</strong> `\auth_sap\task\sync_users`.</li>
+                        <li><strong>Batch Processing:</strong> Don't process one by one. Fetch delta (changes only) if possible.</li>
+                        <li><strong>User Creation:</strong> Use `user_create_user()` core function.</li>
+                        <li><strong>Enrollment:</strong> Use `enrol_manual->enrol_user()`.</li>
+                    </ol>
+
+                    <pre><code class="language-php">
+// auth/sap/classes/task/sync_users.php
+namespace auth_sap\task;
+
+class sync_users extends \core\task\scheduled_task {
+    public function execute() {
+        global $DB;
+        
+        // Fetch from SAP API
+        $sap_api = new \auth_sap\api_client();
+        $users = $sap_api->get_new_employees();
+        
+        foreach ($users as $u) {
+            // Check if user exists
+            if (!$existing = $DB->get_record('user', ['username' => $u['id']])) {
+                $user = new \stdClass();
+                $user->username = $u['id'];
+                $user->auth = 'sap';
+                $user->firstname = $u['first'];
+                $user->lastname = $u['last'];
+                $user->email = $u['email'];
+                $user->confirmed = 1;
+                
+                try {
+                    $id = user_create_user($user);
+                    
+                    // Auto enrol in Onboarding Course (ID: 1)
+                    $enrol = enrol_get_plugin('manual');
+                    $instance = $DB->get_record('enrol', ['courseid'=>1, 'enrol'=>'manual']);
+                    if ($instance) {
+                        $enrol->enrol_user($instance, $id, 5); // 5 = Student role
+                    }
+                    
+                    mtrace("Created user $u->id");
+                } catch (\Exception $e) {
+                    mtrace("Error creating user: " . $e->getMessage());
+                }
+            }
+        }
+    }
+}
+                    </code></pre>
+                    <p><strong>Optimization:</strong> Use CLI script for large syncs to avoid PHP timeouts. Log every action for audit trails.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Case 8: Theme Customization -->
+        <div class="jira-ticket">
+            <div class="jira-header">
+                <span class="jira-id">MDL-108</span>
+                <span class="jira-title">Dark Mode Toggle for University Branding</span>
+                <div class="jira-meta">
+                    <span class="badge badge-story">Story</span>
+                    <span class="badge badge-medium">Medium</span>
+                </div>
+            </div>
+            <div class="jira-content">
+                <div class="section-title">Product Requirements</div>
+                <p><strong>User Story:</strong> Users want to toggle between Light and Dark mode. The preference should be remembered across sessions.</p>
+                <ul class="requirements-list">
+                    <li>Button in the navbar.</li>
+                    <li>Persist preference in User Preferences (DB).</li>
+                    <li>Must work with Boost child theme.</li>
+                </ul>
+
+                <div class="section-title">Technical Challenge</div>
+                <p>CSS variables are easy, but persistence requires AJAX to save state to the backend so it applies when they log in on a different device.</p>
+
+                <div class="dev-solution">
+                    <h4>👨‍💻 Senior Developer Solution</h4>
+                    <p><strong>Architecture:</strong> Child Theme of Boost + AMD Module (JS) + User Preference API.</p>
+                    
+                    <p><strong>Implementation:</strong></p>
+                    <ol>
+                        <li><strong>SCSS:</strong> Define `:root` variables for colors. `[data-theme="dark"] { --bg: #000; }`.</li>
+                        <li><strong>JS (AMD):</strong> Handle click, toggle attribute on `body`, send AJAX to save.</li>
+                        <li><strong>PHP:</strong> In `theme_config.php` or `lib.php`, inject the saved class/attribute on page load.</li>
+                    </ol>
+
+                    <pre><code class="language-javascript">
+// theme/university/amd/src/darkmode.js
+define(['jquery', 'core/ajax', 'core/str'], function($, Ajax, Str) {
+    return {
+        init: function() {
+            $('#theme-toggle').on('click', function(e) {
+                e.preventDefault();
+                
+                var body = $('body');
+                var currentMode = body.attr('data-theme');
+                var newMode = currentMode === 'dark' ? 'light' : 'dark';
+                
+                // Apply immediately for UX
+                body.attr('data-theme', newMode);
+                
+                // Persist to DB
+                Ajax.call([{
+                    methodname: 'core_user_update_user_preferences',
+                    args: { 
+                        preferences: [{ 
+                            type: 'theme_university_mode', 
+                            value: newMode 
+                        }] 
+                    }
+                }]);
+            });
+        }
+    };
+});
+                    </code></pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Case 9: Performance -->
+        <div class="jira-ticket">
+            <div class="jira-header">
+                <span class="jira-id">MDL-109</span>
+                <span class="jira-title">Optimize Slow Course Page (1000+ Activities)</span>
+                <div class="jira-meta">
+                    <span class="badge badge-story">Story</span>
+                    <span class="badge badge-high">High</span>
+                </div>
+            </div>
+            <div class="jira-content">
+                <div class="section-title">Product Requirements</div>
+                <p><strong>User Story:</strong> The "Engineering 101" course takes 15 seconds to load. It has 50 sections and 1000+ resources. It needs to load in under 3 seconds.</p>
+                
+                <div class="section-title">Technical Challenge</div>
+                <p>Moodle loads all activities in the DOM by default. Rendering 1000+ activity icons and completion checkboxes kills the server and browser.</p>
+
+                <div class="dev-solution">
+                    <h4>👨‍💻 Senior Developer Solution</h4>
+                    <p><strong>Architecture:</strong> "One Section Per Page" setting is the easy fix. If "All Sections" is required, we need <strong>Lazy Loading</strong>.</p>
+                    
+                    <p><strong>Implementation:</strong></p>
+                    <ol>
+                        <li><strong>Configuration:</strong> Change Course Format to "One Section per page".</li>
+                        <li><strong>Code Fix (Course Format Plugin):</strong> If using a custom format (e.g., `format_tiles`), implement AJAX loading for sections. Only render the visible section.</li>
+                        <li><strong>Database:</strong> Check for N+1 queries. Ensure `get_fast_modinfo()` is being used and cached properly.</li>
+                    </ol>
+
+                    <pre><code class="language-php">
+// format/tiles/format.php
+// Instead of printing all sections:
+if ($course->coursedisplay == COURSE_DISPLAY_MULTIPAGE) {
+    // Only print current section
+    print_section($course, $thissection);
+} else {
+    // Use AJAX to fetch content when user clicks a tile
+    echo "<div class='tile' data-section-id='{$section->id}'>Load Content</div>";
+    
+    // JS will handle the click:
+    // fetch('ajax/get_section_content.php?id=' + id).then(...)
+}
+                    </code></pre>
+                    <p><strong>Developer Note:</strong> Always check the "Performance Info" in footer. If DB queries are > 100, you have a plugin problem.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Case 10: Security -->
+        <div class="jira-ticket">
+            <div class="jira-header">
+                <span class="jira-id">MDL-110</span>
+                <span class="jira-title">GDPR Data Export & Anonymization Tool</span>
+                <div class="jira-meta">
+                    <span class="badge badge-story">Story</span>
+                    <span class="badge badge-high">High</span>
+                </div>
+            </div>
+            <div class="jira-content">
+                <div class="section-title">Product Requirements</div>
+                <p><strong>User Story:</strong> To comply with GDPR, we need a button to "Anonymize Old Users" (inactive > 2 years). Their grades must remain for statistics, but names/emails must be scrubbed.</p>
+                
+                <div class="section-title">Technical Challenge</div>
+                <p>Moodle has a "Data Privacy" tool, but it deletes users. We need to <em>keep</em> the record ID but scramble the PII (Personally Identifiable Information).</p>
+
+                <div class="dev-solution">
+                    <h4>👨‍💻 Senior Developer Solution</h4>
+                    <p><strong>Architecture:</strong> Custom Admin Tool (`tool_anonymize`).</p>
+                    
+                    <p><strong>Implementation:</strong></p>
+                    <ol>
+                        <li><strong>Selection:</strong> Query users with `lastaccess < (time() - 2*YEAR)`.</li>
+                        <li><strong>Anonymization:</strong> Update `mdl_user` table. Set `firstname = 'Anonymized'`, `lastname = 'User'`, `email = md5(id)@deleted.com`.</li>
+                        <li><strong>Cleanup:</strong> Delete profile pictures, custom fields.</li>
+                        <li><strong>Logging:</strong> Log the action in `mdl_logstore_standard_log`.</li>
+                    </ol>
+
+                    <pre><code class="language-php">
+// admin/tool/anonymize/classes/task/scrub_users.php
+namespace tool_anonymize\task;
+
+class scrub_users extends \core\task\scheduled_task {
+    public function execute() {
+        global $DB;
+        
+        // 2 years in seconds
+        $cutoff = time() - (2 * 365 * 24 * 60 * 60);
+        
+        $sql = "SELECT id FROM {user} WHERE lastaccess < :time AND deleted = 0 AND id > 2"; // Skip guest/admin
+        $users = $DB->get_records_sql($sql, ['time' => $cutoff]);
+
+        foreach ($users as $u) {
+            $update = new \stdClass();
+            $update->id = $u->id;
+            $update->firstname = 'Anonymized';
+            $update->lastname = 'User ' . $u->id;
+            $update->email = $u->id . '@anonymized.local';
+            $update->picture = 0;
+            $update->description = '';
+            
+            // Use core function to ensure cache clearing and events
+            user_update_user($update);
+            
+            // Kill sessions
+            \core\session\manager::kill_user_sessions($u->id);
+            
+            mtrace("Anonymized user $u->id");
+        }
+    }
+}
+                    </code></pre>
+                    <p><strong>Warning:</strong> This is irreversible. Always backup DB first.</p>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+</body>
+</html>

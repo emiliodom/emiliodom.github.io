@@ -53,6 +53,90 @@ $string['welcome'] = 'Welcome to my plugin!';</code></pre>
             <h2>3. Database Tables (XMLDB)</h2>
             <p>Database schemas are defined in <code>db/install.xml</code>. You can use the XMLDB editor in the admin panel to generate this file.</p>
         </section>
+
+        <section>
+            <h2>4. Upgrade Script</h2>
+            <p>When you change the database schema or need to run code during an update, use <code>db/upgrade.php</code>.</p>
+            <pre><code class="language-php">// db/upgrade.php
+function xmldb_local_myplugin_upgrade($oldversion) {
+    global $DB;
+    $dbman = $DB->get_manager();
+
+    if ($oldversion < 2023101001) {
+        // Define table, add field, etc.
+        // ...
+        upgrade_plugin_savepoint(true, 2023101001, 'local', 'myplugin');
+    }
+    return true;
+}</code></pre>
+        </section>
+
+        <section>
+            <h2>5. Privacy API (GDPR)</h2>
+            <p>Every plugin that stores user data must implement the Privacy API to support data export and deletion requests.</p>
+            <pre><code class="language-php">// classes/privacy/provider.php
+namespace local_myplugin\privacy;
+
+class provider implements \core_privacy\local\metadata\null_provider {
+    // If your plugin DOES NOT store user data, use null_provider.
+    public static function get_reason() : string {
+        return 'privacy:metadata';
+    }
+}</code></pre>
+            <p>If you <strong>do</strong> store data, you must implement <code>\core_privacy\local\metadata\provider</code> and define <code>get_metadata</code>, <code>export_user_data</code>, and <code>delete_data_for_user</code>.</p>
+        </section>
+
+        <section>
+            <h2>6. Backup & Restore API</h2>
+            <p>To ensure your plugin's data is included in course backups, you must implement the Backup API.</p>
+            <ul>
+                <li><strong>backup/moodle2/backup_local_myplugin_stepslib.php</strong>: Define the structure of data to backup.</li>
+                <li><strong>backup/moodle2/restore_local_myplugin_stepslib.php</strong>: Define how to restore that data.</li>
+            </ul>
+            <p>This is complex but essential for Activity modules.</p>
+        </section>
+
+        <section>
+            <h2>7. Creating External Services (API)</h2>
+            <p>To expose your plugin's functionality via the REST API, you need to define a service.</p>
+            <p><strong>1. Define the function in <code>db/services.php</code>:</strong></p>
+            <pre><code class="language-php">$functions = [
+    'local_myplugin_get_items' => [
+        'classname'   => 'local_myplugin\external\get_items',
+        'methodname'  => 'execute',
+        'classpath'   => 'local/myplugin/classes/external/get_items.php',
+        'description' => 'Get a list of items',
+        'type'        => 'read',
+        'ajax'        => true, // Allow calling from JS
+    ],
+];</code></pre>
+            <p><strong>2. Implement the external class:</strong></p>
+            <pre><code class="language-php">namespace local_myplugin\external;
+use external_api;
+use external_function_parameters;
+use external_single_structure;
+use external_value;
+
+class get_items extends external_api {
+    public static function execute_parameters() {
+        return new external_function_parameters([
+            'courseid' => new external_value(PARAM_INT, 'Course ID'),
+        ]);
+    }
+
+    public static function execute($courseid) {
+        self::validate_parameters(self::execute_parameters(), ['courseid' => $courseid]);
+        // ... logic ...
+        return ['data' => '...'];
+    }
+
+    public static function execute_returns() {
+        return new external_single_structure([
+            'data' => new external_value(PARAM_TEXT, 'The data'),
+        ]);
+    }
+}</code></pre>
+        </section>
     </main>
 
     <footer>

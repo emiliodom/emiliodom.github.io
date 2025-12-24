@@ -22,6 +22,24 @@
         <h2>Introduction</h2>
         <p>This is not a tutorial. This is a curriculum. I will not give you the code. I will give you the requirements, the theory, and the documentation links. You must build the solutions.</p>
 
+        <div class="crash-course" style="background: #f0f9ff; border-left: 5px solid #61dafb; padding: 15px; margin: 20px 0;">
+            <h3>🚀 React Crash Course</h3>
+            <p>State and Effects in a nutshell:</p>
+            <pre><code class="language-tsx">function Counter() {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    document.title = `Count: ${count}`;
+  }, [count]);
+
+  return (
+    &lt;button onClick={() => setCount(c => c + 1)}&gt;
+      Count is {count}
+    &lt;/button&gt;
+  );
+}</code></pre>
+        </div>
+
         <div class="bug-hunt" style="background: #fff3cd; border-color: #ffeeba; color: #856404;">
             <h3>⚠️ Brutally Honest Expectations</h3>
             <ul>

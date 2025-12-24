@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Interview Prep - Master Index</title>
+    <link rel="stylesheet" href="../assets/css/python_styles.css">
+    <script src="../assets/js/python_layout.js"></script>
+    <style>
+        .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; margin-top: 20px; }
+        .card { background: var(--card-bg); border: 1px solid var(--card-border); padding: 20px; border-radius: 8px; transition: transform 0.2s, box-shadow 0.2s; height: 100%; }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .card-link { text-decoration: none; color: inherit; }
+        .card h3 { margin-top: 0; color: var(--link-color); }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Python Interview Preparation</h1>
+        <p>Targeted questions, code samples, and deep dives for Senior roles.</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section class="intro">
+            <p>Select a topic below to drill into specific interview questions. Each section includes theory, code samples, and common "gotchas".</p>
+        </section>
+
+        <div class="card-grid">
+            <a href="interview_core.html" class="card-link">
+                <div class="card">
+                    <h3>1. Core Python</h3>
+                    <p>Data Structures, Mutability, Scope, and Built-ins.</p>
+                </div>
+            </a>
+
+            <a href="interview_advanced.html" class="card-link">
+                <div class="card">
+                    <h3>2. Advanced Concepts</h3>
+                    <p>Decorators, Generators, Metaclasses, and the GIL.</p>
+                </div>
+            </a>
+
+            <a href="interview_web.html" class="card-link">
+                <div class="card">
+                    <h3>3. Web Frameworks</h3>
+                    <p>Django ORM, FastAPI Async, and Request Lifecycle.</p>
+                </div>
+            </a>
+
+            <a href="interview_algorithms.html" class="card-link">
+                <div class="card">
+                    <h3>4. Algorithms & Data Structures</h3>
+                    <p>Linked Lists, Trees, Graphs, and Sorting.</p>
+                </div>
+            </a>
+
+            <a href="interview_system_design.html" class="card-link">
+                <div class="card">
+                    <h3>5. System Design</h3>
+                    <p>Scalability, Caching, Load Balancing, and Microservices.</p>
+                </div>
+            </a>
+
+            <a href="interview_databases.html" class="card-link">
+                <div class="card">
+                    <h3>6. Databases</h3>
+                    <p>SQL, NoSQL, ORMs, and ACID properties.</p>
+                </div>
+            </a>
+
+            <a href="interview_testing.html" class="card-link">
+                <div class="card">
+                    <h3>7. Testing</h3>
+                    <p>Unit Testing, Mocking, Pytest, and TDD.</p>
+                </div>
+            </a>
+
+            <a href="interview_datascience.html" class="card-link">
+                <div class="card">
+                    <h3>8. Data Science</h3>
+                    <p>Pandas, NumPy, Machine Learning, and Visualization.</p>
+                </div>
+            </a>
+
+            <a href="interview_security.html" class="card-link">
+                <div class="card">
+                    <h3>9. Security</h3>
+                    <p>OWASP, Injection, XSS, and Secure Coding.</p>
+                </div>
+            </a>
+
+            <a href="interview_behavioral.html" class="card-link">
+                <div class="card">
+                    <h3>10. Behavioral</h3>
+                    <p>Soft skills, conflict resolution, and experience discussions.</p>
+                </div>
+            </a>
+        </div>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+    <script>
+        initLayout();
+    </script>
+</body>
+</html>

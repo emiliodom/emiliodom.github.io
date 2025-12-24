@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enterprise WordPress Engineering Roadmap</title>
+    <link rel="icon" href="../assets/img/avatar-fallback.svg">
+    <link rel="stylesheet" href="../assets/css/wordpress_styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <script src="../assets/js/wordpress_layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Enterprise WordPress Engineering</h1>
+        <p>Beyond Themes: Headless, AWS Fargate, Timber, and High-Scale Architecture.</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <h2>Introduction</h2>
+        <p>This is not a guide for installing plugins. This is a curriculum for <strong>Senior WordPress Engineers</strong> building enterprise-grade applications. We focus on modern development workflows, containerization, and high-performance architecture.</p>
+
+        <div class="crash-course">
+            <h3>🚀 WordPress Engineering Crash Course</h3>
+            <p>Modern WP development in a nutshell:</p>
+            <pre><code class="language-php">// 1. Timber Controller (MVC Pattern)
+class SinglePost extends Timber\Site {
+    public function __construct() {
+        $context = Timber::context();
+        $context['post'] = Timber::get_post();
+        
+        // 2. Redis Caching
+        $context['related'] = Timber::get_posts(
+            'post_type=post&numberposts=3', 
+            ['cache_mode' => 'transient', 'cache_time' => 600]
+        );
+        
+        Timber::render('single.twig', $context);
+    }
+}
+
+// 3. Registering a Gutenberg Block (ACF)
+acf_register_block_type([
+    'name'            => 'hero-section',
+    'title'           => __('Hero Section'),
+    'render_template' => 'views/blocks/hero.twig',
+    'mode'            => 'edit',
+    'supports'        => ['jsx' => true],
+]);</code></pre>
+        </div>
+
+        <div class="bug-hunt" style="background: #fff3cd; border-color: #ffeeba; color: #856404;">
+            <h3>⚠️ Job Profile Requirements</h3>
+            <ul>
+                <li><strong>Architecture:</strong> Bedrock (Composer-managed), 12-Factor App principles.</li>
+                <li><strong>Frontend:</strong> Twig (Timber), SCSS, React (Custom Blocks).</li>
+                <li><strong>Data:</strong> PostgreSQL (via PG4WP), Redis (Object Cache), NocoDB (External Data).</li>
+                <li><strong>DevOps:</strong> Docker, AWS Fargate, GitLab CI/CD.</li>
+            </ul>
+        </div>
+
+        <div class="task" style="background: #d4edda; border-color: #c3e6cb; color: #155724;">
+            <h3>🎯 Expected Outcome</h3>
+            <p>By the end of this guide, you will be able to:</p>
+            <ul>
+                <li>Develop custom <strong>Gutenberg Blocks</strong> using React and ACF.</li>
+                <li>Decouple logic from views using <strong>Timber & Twig</strong>.</li>
+                <li>Deploy scalable WordPress clusters on <strong>AWS Fargate</strong>.</li>
+                <li>Optimize high-traffic sites with <strong>Redis Object Caching</strong>.</li>
+                <li>Integrate external data sources like <strong>NocoDB</strong>.</li>
+                <li>Manage dependencies via <strong>Composer</strong> and <strong>NPM</strong>.</li>
+            </ul>
+        </div>
+
+        <h3>Curriculum Overview</h3>
+        <div class="modules-grid">
+            <p><strong>Module 1: Modern Setup</strong> - Bedrock, Composer, Env Config.</p>
+            <p><strong>Module 2: Templating</strong> - Timber, Twig, SCSS Architecture.</p>
+            <p><strong>Module 3: Block Editor</strong> - Native React Blocks vs ACF Blocks.</p>
+            <p><strong>Module 4: Data & Performance</strong> - PostgreSQL, Redis, Query Optimization.</p>
+            <p><strong>Module 5: DevOps</strong> - Dockerizing WP, GitLab CI, AWS Fargate.</p>
+            <p><strong>Module 6: Headless WordPress</strong> - REST API, GraphQL, Next.js Integration.</p>
+            <p><strong>Module 7: Enterprise Security</strong> - Hardening, Nonces, Sanitization, WAF.</p>
+            <p><strong>Module 8: Plugin Development</strong> - OOP, Namespaces, Hooks, Unit Testing.</p>
+            <p><strong>Module 9: WooCommerce Scale</strong> - HPOS, Custom Checkout, ERP Integration.</p>
+            <p><strong>Module 10: Migration & Legacy</strong> - Refactoring, Data Migration, WP-CLI.</p>
+        </div>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+    <script>
+        initLayout();
+    </script>
+</body>
+</html>

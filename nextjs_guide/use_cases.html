@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Next.js Real-World Use Cases</title>
+    <link rel="stylesheet" href="../assets/css/nextjs_styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <script src="../assets/js/nextjs_layout.js"></script>
+    <style>
+        .jira-ticket {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            margin-bottom: 30px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .jira-header {
+            background: #f4f5f7;
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--card-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        [data-theme="dark"] .jira-header {
+            background: #2d3748;
+        }
+        .jira-id {
+            font-family: monospace;
+            font-weight: bold;
+            color: #0052cc;
+            margin-right: 10px;
+        }
+        .jira-title {
+            font-weight: 600;
+            font-size: 1.1em;
+            flex-grow: 1;
+        }
+        .jira-meta {
+            display: flex;
+            gap: 10px;
+            font-size: 0.85em;
+        }
+        .badge {
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .badge-high { background: #ff5630; color: white; }
+        .badge-medium { background: #ffab00; color: black; }
+        .badge-story { background: #36b37e; color: white; }
+        
+        .jira-content {
+            padding: 20px;
+        }
+        .section-title {
+            font-size: 0.9em;
+            text-transform: uppercase;
+            color: #6b778c;
+            font-weight: bold;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            border-bottom: 2px solid var(--card-border);
+            padding-bottom: 5px;
+        }
+        .section-title:first-child { margin-top: 0; }
+        
+        .dev-solution {
+            background: rgba(16, 185, 129, 0.05);
+            border-left: 4px solid #10b981;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        .dev-solution h4 {
+            color: #059669;
+            margin-top: 0;
+        }
+        
+        .code-block {
+            padding: 0;
+            border-radius: 4px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.9em;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+        
+        .requirements-list {
+            list-style-type: disc;
+            padding-left: 20px;
+        }
+        .requirements-list li { margin-bottom: 5px; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Next.js Real-World Use Cases</h1>
+        <p>Practical scenarios bridging theory and enterprise application.</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section class="intro">
+            <p>This section presents common enterprise scenarios formatted as Jira tickets. Each case includes the business requirement, technical constraints, and a senior-level implementation strategy.</p>
+        </section>
+
+        <!-- Use Case 1: Server Actions for Forms -->
+        <div class="jira-ticket">
+            <div class="jira-header">
+                <div>
+                    <span class="jira-id">NXT-101</span>
+                    <span class="jira-title">Migrate Contact Form to Server Actions</span>
+                </div>
+                <div class="jira-meta">
+                    <span class="badge badge-high">High Priority</span>
+                    <span class="badge badge-story">Refactor</span>
+                </div>
+            </div>
+            <div class="jira-content">
+                <div class="section-title">Description</div>
+                <p>We are currently using a client-side `onSubmit` handler that calls an API route `/api/contact`. This requires hydration and JavaScript to work. We want to use Next.js Server Actions to make it work progressively enhanced (even without JS).</p>
+                
+                <div class="section-title">Acceptance Criteria</div>
+                <ul class="requirements-list">
+                    <li>Remove `/api/contact` route.</li>
+                    <li>Form must work with JavaScript disabled.</li>
+                    <li>Show validation errors from the server.</li>
+                </ul>
+
+                <div class="dev-solution">
+                    <h4>👨‍💻 Senior Developer Solution</h4>
+                    <p><strong>Strategy:</strong> Define a Server Action in a separate file and bind it to the form's `action` prop.</p>
+                    
+                    <div class="code-block">
+                        <pre><code class="language-tsx">// actions.ts
+'use server'
+import { z } from 'zod';
+
+const schema = z.object({ email: z.string().email() });
+
+export async function submitContact(prevState: any, formData: FormData) {
+    const validated = schema.safeParse({ email: formData.get('email') });
+    
+    if (!validated.success) {
+        return { message: 'Invalid email' };
+    }
+    
+    // Save to DB...
+    return { message: 'Success!' };
+}
+
+// ContactForm.tsx
+'use client'
+import { useFormState } from 'react-dom';
+import { submitContact } from './actions';
+
+export function ContactForm() {
+    const [state, formAction] = useFormState(submitContact, null);
+    
+    return (
+        &lt;form action={formAction}&gt;
+            &lt;input name="email" type="email" /&gt;
+            &lt;button type="submit"&gt;Send&lt;/button&gt;
+            {state?.message && &lt;p&gt;{state.message}&lt;/p&gt;}
+        &lt;/form&gt;
+    );
+}</code></pre>
+                    </div>
+                    <p><strong>Key Takeaway:</strong> Server Actions simplify data mutation by removing the need for manual API endpoints and `fetch` calls.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Use Case 2: Streaming & Suspense -->
+        <div class="jira-ticket">
+            <div class="jira-header">
+                <div>
+                    <span class="jira-id">NXT-205</span>
+                    <span class="jira-title">Improve Dashboard Perceived Performance</span>
+                </div>
+                <div class="jira-meta">
+                    <span class="badge badge-medium">Medium</span>
+                    <span class="badge badge-story">UX</span>
+                </div>
+            </div>
+            <div class="jira-content">
+                <div class="section-title">Description</div>
+                <p>The dashboard page waits for 3 slow API calls (User, Analytics, Recent Activity) to finish before showing anything. The user sees a blank white screen for 4 seconds.</p>
+                
+                <div class="section-title">Acceptance Criteria</div>
+                <ul class="requirements-list">
+                    <li>Show the page shell (header/sidebar) immediately.</li>
+                    <li>Stream in the slow components as they finish loading.</li>
+                    <li>Show skeletons while loading.</li>
+                </ul>
+
+                <div class="dev-solution">
+                    <h4>👨‍💻 Senior Developer Solution</h4>
+                    <p><strong>Strategy:</strong> Use React Suspense boundaries around the slow async components.</p>
+                    
+                    <div class="code-block">
+                        <pre><code class="language-tsx">// page.tsx
+import { Suspense } from 'react';
+import Analytics from './Analytics';
+import RecentActivity from './RecentActivity';
+import Skeleton from './Skeleton';
+
+export default function Dashboard() {
+    return (
+        &lt;main&gt;
+            &lt;h1&gt;Dashboard&lt;/h1&gt;
+            
+            &lt;div className="grid"&gt;
+                &lt;Suspense fallback={&lt;Skeleton /&gt;}&gt;
+                    &lt;Analytics /&gt;
+                &lt;/Suspense&gt;
+                
+                &lt;Suspense fallback={&lt;Skeleton /&gt;}&gt;
+                    &lt;RecentActivity /&gt;
+                &lt;/Suspense&gt;
+            &lt;/div&gt;
+        &lt;/main&gt;
+    );
+}</code></pre>
+                    </div>
+                    <p><strong>Key Takeaway:</strong> Suspense allows the server to send the HTML shell first, then stream the rest of the HTML as data becomes available.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Use Case 3: Dynamic Open Graph Images -->
+        <div class="jira-ticket">
+            <div class="jira-header">
+                <div>
+                    <span class="jira-id">NXT-310</span>
+                    <span class="jira-title">Generate Dynamic Social Cards</span>
+                </div>
+                <div class="jira-meta">
+                    <span class="badge badge-medium">Medium</span>
+                    <span class="badge badge-story">SEO</span>
+                </div>
+            </div>
+            <div class="jira-content">
+                <div class="section-title">Description</div>
+                <p>When users share a blog post on Twitter/LinkedIn, we want the image to dynamically show the post title and author, not just a generic logo.</p>
+                
+                <div class="section-title">Acceptance Criteria</div>
+                <ul class="requirements-list">
+                    <li>Create `opengraph-image.tsx` for blog posts.</li>
+                    <li>Image must render the post title dynamically.</li>
+                </ul>
+
+                <div class="dev-solution">
+                    <h4>👨‍💻 Senior Developer Solution</h4>
+                    <p><strong>Strategy:</strong> Use Next.js `ImageResponse` API to generate images on the fly using JSX.</p>
+                    
+                    <div class="code-block">
+                        <pre><code class="language-tsx">// app/blog/[slug]/opengraph-image.tsx
+import { ImageResponse } from 'next/og';
+
+export const runtime = 'edge';
+
+export default async function Image({ params }: { params: { slug: string } }) {
+    const post = await getPost(params.slug);
+    
+    return new ImageResponse(
+        (
+            &lt;div style={{
+                fontSize: 60,
+                background: 'white',
+                width: '100%',
+                height: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: 'black',
+            }}&gt;
+                {post.title}
+            &lt;/div&gt;
+        ),
+        { width: 1200, height: 630 }
+    );
+}</code></pre>
+                    </div>
+                    <p><strong>Key Takeaway:</strong> Next.js can generate images using HTML/CSS syntax, making dynamic social cards trivial.</p>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+    <script>
+        initLayout();
+    </script>
+</body>
+</html>

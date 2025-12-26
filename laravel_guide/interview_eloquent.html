@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Eloquent & Database Interview Questions - Laravel Guide</title>
     <link rel="stylesheet" href="../assets/css/laravel_styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <script src="../assets/js/laravel_layout.js"></script>
 </head>
@@ -56,12 +56,69 @@ $posts = Post::with('author')->get();</code></pre>
         </section>
 
         <section class="qna">
-            <h3>Q4: What are Eloquent Scopes?</h3>
+            <h3>Q4: What are Accessors and Mutators?</h3>
             <div class="answer">
-                <p>Scopes allow you to define common sets of constraints that you may easily re-use throughout your application.</p>
+                <p><strong>Accessors:</strong> Format an attribute when retrieving it from the model. (e.g., `getFirstNameAttribute`).</p>
+                <p><strong>Mutators:</strong> Format an attribute before saving it to the database. (e.g., `setFirstNameAttribute`).</p>
+                <p><strong>New Syntax (Laravel 9+):</strong></p>
+                <pre><code class="language-php">protected function firstName(): Attribute
+{
+    return Attribute::make(
+        get: fn ($value) => ucfirst($value),
+        set: fn ($value) => strtolower($value),
+    );
+}</code></pre>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q5: Explain Soft Deletes.</h3>
+            <div class="answer">
+                <p>Soft deleting a model doesn't actually remove the row from the database. Instead, it sets a <code>deleted_at</code> timestamp. Queries will automatically exclude these records unless you use <code>withTrashed()</code>.</p>
+                <p><strong>Implementation:</strong> Add the <code>SoftDeletes</code> trait to the model and a <code>deleted_at</code> column to the migration.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q6: What are Scopes in Eloquent?</h3>
+            <div class="answer">
+                <p>Scopes allow you to re-use common query logic.</p>
                 <ul>
-                    <li><strong>Global Scope:</strong> Applied automatically to all queries for a model (e.g., <code>SoftDeletes</code>).</li>
-                    <li><strong>Local Scope:</strong> Manually applied (e.g., <code>scopeActive($query)</code> -> <code>User::active()->get()</code>).</li>
+                    <li><strong>Local Scopes:</strong> Defined on the model (e.g., `scopeActive`). Used as `User::active()->get()`.</li>
+                    <li><strong>Global Scopes:</strong> Applied automatically to all queries for a model (e.g., SoftDeletes is a global scope).</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q7: How do you handle Database Transactions in Laravel?</h3>
+            <div class="answer">
+                <p>Transactions ensure that a set of database operations either all succeed or all fail (atomic). If an exception is thrown within the closure, the transaction is automatically rolled back.</p>
+                <pre><code class="language-php">DB::transaction(function () {
+    DB::table('users')->update(['votes' => 1]);
+    DB::table('posts')->delete();
+});</code></pre>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q8: What is the difference between `hasOne` and `belongsTo`?</h3>
+            <div class="answer">
+                <p>It depends on where the foreign key is located.</p>
+                <ul>
+                    <li><strong>belongsTo:</strong> The foreign key is on the <em>current</em> model's table. (e.g., A <code>Post</code> belongs to a <code>User</code> -> <code>posts</code> table has <code>user_id</code>).</li>
+                    <li><strong>hasOne:</strong> The foreign key is on the <em>other</em> model's table. (e.g., A <code>User</code> has one <code>Profile</code> -> <code>profiles</code> table has <code>user_id</code>).</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q9: How do you optimize Eloquent queries for large datasets?</h3>
+            <div class="answer">
+                <ul>
+                    <li><strong>Chunking:</strong> Process records in small groups to save memory. <code>User::chunk(100, function ($users) { ... });</code></li>
+                    <li><strong>Cursors:</strong> Uses a generator to iterate through records one by one, keeping only one in memory. <code>foreach (User::cursor() as $user) { ... }</code></li>
+                    <li><strong>Select specific columns:</strong> Don't select <code>*</code> if you don't need it. <code>User::select('id', 'name')->get();</code></li>
                 </ul>
             </div>
         </section>

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Laravel API Development Interview Questions - Laravel Guide</title>
     <link rel="stylesheet" href="../assets/css/laravel_styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <script src="../assets/js/laravel_layout.js"></script>
 </head>
@@ -48,6 +48,43 @@
             <div class="answer">
                 <p><strong>URI Versioning:</strong> The most common approach (e.g., <code>/api/v1/users</code>).</p>
                 <p><strong>Implementation:</strong> You can define route groups with prefixes in <code>routes/api.php</code> or separate route files entirely.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q4: How do you implement Rate Limiting in Laravel?</h3>
+            <div class="answer">
+                <p><strong>Mechanism:</strong> Laravel uses the <code>RateLimiter</code> facade and middleware to restrict the number of requests a user can make within a given timeframe.</p>
+                <p><strong>Configuration:</strong> Defined in <code>App\Providers\AppServiceProvider</code> (or <code>RouteServiceProvider</code> in older versions).</p>
+                <pre><code class="language-php">RateLimiter::for('api', function (Request $request) {
+    return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
+});</code></pre>
+                <p><strong>Usage:</strong> Apply the <code>throttle:api</code> middleware to your routes.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q5: How do you document your API?</h3>
+            <div class="answer">
+                <p><strong>Tools:</strong> The most popular tools are <strong>Scribe</strong> and <strong>L5-Swagger</strong>.</p>
+                <p><strong>Scribe:</strong> Generates documentation automatically by analyzing your routes and docblocks. It creates a static HTML page that looks like Stripe's API docs.</p>
+                <p><strong>Swagger/OpenAPI:</strong> Uses annotations in your controller methods to generate an OpenAPI spec file, which can be rendered via Swagger UI.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q6: How do you handle API Exceptions consistently?</h3>
+            <div class="answer">
+                <p><strong>Problem:</strong> Default Laravel error pages (HTML) are not suitable for JSON APIs.</p>
+                <p><strong>Solution:</strong> Modify the <code>register</code> method in <code>bootstrap/app.php</code> (Laravel 11) or the <code>Handler.php</code> file (older versions) to intercept exceptions and return JSON responses.</p>
+                <pre><code class="language-php">// Laravel 11 bootstrap/app.php
+->withExceptions(function (Exceptions $exceptions) {
+    $exceptions->render(function (NotFoundHttpException $e, Request $request) {
+        if ($request->is('api/*')) {
+            return response()->json(['message' => 'Record not found.'], 404);
+        }
+    });
+})</code></pre>
             </div>
         </section>
     </main>

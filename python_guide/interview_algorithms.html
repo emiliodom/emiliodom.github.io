@@ -61,7 +61,7 @@ def reverseList(head):
 
         <div class="interview-card">
             <h3>3. Two Sum</h3>
-            <p><strong>Question:</strong> Given an array of integers, return indices of the two numbers such that they add up to a specific target.</p>
+            <p><strong>Question:</strong> Given an array of integers and a target, return indices of the two numbers such that they add up to target.</p>
             <div class="answer">
                 <pre><code>def two_sum(nums, target):
     seen = {}
@@ -71,6 +71,71 @@ def reverseList(head):
             return [seen[complement], i]
         seen[num] = i
     return []</code></pre>
+            </div>
+        </div>
+
+        <div class="interview-card">
+            <h3>4. Valid Parentheses</h3>
+            <p><strong>Question:</strong> Given a string containing just the characters '(', ')', '{', '}', '[' and ']', determine if the input string is valid.</p>
+            <div class="answer">
+                <pre><code>def isValid(s):
+    stack = []
+    mapping = {")": "(", "}": "{", "]": "["}
+    for char in s:
+        if char in mapping:
+            top_element = stack.pop() if stack else '#'
+            if mapping[char] != top_element:
+                return False
+        else:
+            stack.append(char)
+    return not stack</code></pre>
+            </div>
+        </div>
+
+        <div class="interview-card">
+            <h3>5. Merge Intervals</h3>
+            <p><strong>Question:</strong> Given an array of intervals where intervals[i] = [start, end], merge all overlapping intervals.</p>
+            <div class="answer">
+                <pre><code>def merge(intervals):
+    intervals.sort(key=lambda x: x[0])
+    merged = []
+    for interval in intervals:
+        if not merged or merged[-1][1] < interval[0]:
+            merged.append(interval)
+        else:
+            merged[-1][1] = max(merged[-1][1], interval[1])
+    return merged</code></pre>
+            </div>
+        </div>
+
+        <div class="interview-card">
+            <h3>6. Maximum Subarray (Kadane's Algorithm)</h3>
+            <p><strong>Question:</strong> Find the contiguous subarray (containing at least one number) which has the largest sum.</p>
+            <div class="answer">
+                <pre><code>def maxSubArray(nums):
+    max_so_far = nums[0]
+    current_max = nums[0]
+    for i in range(1, len(nums)):
+        current_max = max(nums[i], current_max + nums[i])
+        max_so_far = max(max_so_far, current_max)
+    return max_so_far</code></pre>
+            </div>
+        </div>
+
+        <div class="interview-card">
+            <h3>7. Longest Substring Without Repeating Characters</h3>
+            <p><strong>Question:</strong> Find the length of the longest substring without repeating characters.</p>
+            <div class="answer">
+                <pre><code>def lengthOfLongestSubstring(s):
+    char_map = {}
+    left = 0
+    max_len = 0
+    for right in range(len(s)):
+        if s[right] in char_map:
+            left = max(left, char_map[s[right]] + 1)
+        char_map[s[right]] = right
+        max_len = max(max_len, right - left + 1)
+    return max_len</code></pre>
             </div>
         </div>
     </main>

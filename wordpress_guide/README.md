@@ -8,7 +8,7 @@ This repository contains a comprehensive curriculum for Senior WordPress Enginee
 ### Core Modules
 1.  **Modern Setup (Bedrock)**: Composer-managed WordPress, environment variables, and folder structure.
 2.  **Templating (Timber & Twig)**: MVC pattern in WordPress, separating logic from views.
-3.  **Advanced Gutenberg**: Building custom blocks with React and ACF.
+3.  **Advanced Gutenberg**: Building custom blocks with Native React (no ACF).
 4.  **DB & Performance**: PostgreSQL integration, Redis object caching, and query optimization.
 5.  **AWS Fargate & CI/CD**: Containerizing WordPress and deploying to serverless infrastructure.
 6.  **Headless WordPress**: Using WPGraphQL and Next.js as a frontend.

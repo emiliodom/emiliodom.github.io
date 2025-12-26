@@ -99,7 +99,68 @@ const MySidebar = () => (
     &lt;/PluginSidebar&gt;
 );
 
-registerPlugin( 'my-sidebar-plugin', { render: MySidebar } );</code></pre>
+registerPlugin( 'my-sidebar-plugin', {
+    render: MySidebar,
+} );</code></pre>
+            </div>
+        </div>
+
+        <div class="interview-question">
+            <h3>6. What are Block Patterns and how do they differ from Reusable Blocks?</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong></p>
+                <ul>
+                    <li><strong>Block Patterns:</strong> Pre-defined layouts of blocks that users can insert. Once inserted, the blocks are independent; changing the pattern definition does <em>not</em> update existing instances. They are best for starting points.</li>
+                    <li><strong>Reusable Blocks (Synced Patterns):</strong> A saved group of blocks where changes sync across all instances on the site. They are best for global content like a Call-to-Action.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="interview-question">
+            <h3>7. Explain `Block Context` and when you would use it.</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong> Block Context allows a parent block to pass values down to its inner blocks (descendants) without passing them explicitly through every level of the hierarchy (prop drilling).</p>
+                <p><strong>Example:</strong> A "Query Loop" block provides the `postId` context. An inner "Post Title" block consumes that context to know which title to display.</p>
+                <pre><code class="language-json">// Parent block.json
+"providesContext": {
+    "myPlugin/recordId": "recordId"
+}
+
+// Child block.json
+"usesContext": [ "myPlugin/recordId" ]</code></pre>
+            </div>
+        </div>
+
+        <div class="interview-question">
+            <h3>8. What is the difference between `count` and `for_each` in Terraform? (Wait, wrong guide - keeping it WP focused) -> What are Block Variations?</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong> Block Variations allow you to create different versions of a single block type. They share the same implementation but have different initial attributes or inner blocks.</p>
+                <p><strong>Example:</strong> The core "Embed" block has variations for YouTube, Twitter, Vimeo, etc. They are all the same block, just pre-configured differently.</p>
+            </div>
+        </div>
+
+        <div class="interview-question">
+            <h3>9. How do you handle "Deprecation" in Gutenberg blocks?</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong> When you change the HTML structure of a block's `save` function, existing blocks in the database will break (validation error). To fix this, you define a `deprecated` array in the block registration.</p>
+                <p>This array contains the <em>old</em> `save` function and attributes. Gutenberg checks this list to see if the invalid content matches an old version. If it does, it successfully migrates it to the new version.</p>
+            </div>
+        </div>
+
+        <div class="interview-question">
+            <h3>10. What is the `ServerSideRender` component?</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong> It is a React component that fetches the PHP-rendered HTML of a block and displays it in the editor. It is useful for dynamic blocks where replicating the rendering logic in JavaScript is too complex or impossible.</p>
+                <pre><code class="language-javascript">import ServerSideRender from '@wordpress/server-side-render';
+
+export default function Edit( props ) {
+    return (
+        &lt;ServerSideRender
+            block="my-plugin/latest-posts"
+            attributes={ props.attributes }
+        /&gt;
+    );
+}</code></pre>
             </div>
         </div>
 

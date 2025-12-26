@@ -23,6 +23,36 @@
             <li><strong>Checkout Fields:</strong> Adding custom data.</li>
             <li><strong>Payment Gateways:</strong> Integrating custom providers.</li>
         </ul>
+
+        <h3>1. High-Performance Order Storage (HPOS)</h3>
+        <p>WooCommerce is moving orders to custom tables. Ensure your code is compatible.</p>
+
+        <h3>2. Template Structure</h3>
+        <p>Copy templates to `theme/woocommerce/` to override them safely. Never edit core files.</p>
+
+        <h3>3. Hooks & Filters</h3>
+        <p>WooCommerce is event-driven. Use hooks like `woocommerce_before_cart` to inject content.</p>
+
+        <h3>4. Custom Checkout Fields</h3>
+        <p>Add fields to the checkout and save them to order meta.</p>
+
+        <h3>5. Product Data Tabs</h3>
+        <p>Add custom tabs to the product page to display NocoDB data or technical specs.</p>
+
+        <h3>6. AJAX Fragments</h3>
+        <p>Update the mini-cart without reloading the page using WC Fragments.</p>
+
+        <h3>7. Custom Payment Gateway</h3>
+        <p>Extend `WC_Payment_Gateway` to integrate a niche payment provider.</p>
+
+        <h3>8. REST API</h3>
+        <p>Use the WC REST API to build mobile apps or integrate with ERP systems.</p>
+
+        <h3>9. Scalability</h3>
+        <p>Disable the cart for bots. Use Redis for session storage. Offload static assets.</p>
+
+        <h3>10. Testing</h3>
+        <p>Use E2E testing (Cypress/Playwright) to ensure the checkout flow works after every update.</p>
     </main>
     <footer></footer>
     <script>initLayout();</script>

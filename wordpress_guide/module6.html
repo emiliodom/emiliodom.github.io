@@ -23,6 +23,41 @@
             <li><strong>Next.js:</strong> Static Site Generation (SSG) from WP data.</li>
             <li><strong>Revalidation:</strong> Updating static pages when content changes.</li>
         </ul>
+
+        <h3>1. Installing WPGraphQL</h3>
+        <p>The REST API is chatty. GraphQL allows us to fetch exactly what we need in a single request.</p>
+        <pre><code class="language-bash">composer require wpackagist-plugin/wp-graphql</code></pre>
+
+        <h3>2. Exposing Custom Data</h3>
+        <p>Register your NocoDB data or custom post types to the GraphQL schema:</p>
+        <pre><code class="language-php">add_action('graphql_register_types', function() {
+    register_graphql_object_type('NocoData', [ ... ]);
+});</code></pre>
+
+        <h3>3. Next.js Setup</h3>
+        <p>Create a new Next.js app to serve as the frontend:</p>
+        <pre><code class="language-bash">npx create-next-app@latest my-headless-wp</code></pre>
+
+        <h3>4. Fetching Data in Next.js</h3>
+        <p>Use `Apollo Client` or simple `fetch` to query the WPGraphQL endpoint.</p>
+
+        <h3>5. Static Site Generation (SSG)</h3>
+        <p>Use `getStaticProps` to fetch data at build time for lightning-fast performance.</p>
+
+        <h3>6. Incremental Static Regeneration (ISR)</h3>
+        <p>Update static pages without a full rebuild using the `revalidate` prop.</p>
+
+        <h3>7. Preview Mode</h3>
+        <p>Implement Next.js Preview Mode to allow editors to view drafts before publishing.</p>
+
+        <h3>8. Handling Forms</h3>
+        <p>Submit forms (like Contact Form 7) via the REST API or a dedicated GraphQL mutation.</p>
+
+        <h3>9. Authentication</h3>
+        <p>Use WPGraphQL JWT Authentication to allow users to log in and access private content.</p>
+
+        <h3>10. Deployment</h3>
+        <p>Deploy the Next.js frontend to Vercel and the WordPress backend to AWS Fargate. Connect them via environment variables.</p>
     </main>
     <footer></footer>
     <script>initLayout();</script>

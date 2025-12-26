@@ -22,6 +22,58 @@
             <h3>How do you handle pending states in Server Actions?</h3>
             <p>Using the <code>useFormStatus</code> hook in a Client Component rendered inside the form. It provides a <code>pending</code> boolean.</p>
         </section>
+        <section class="question">
+            <h3>How do you validate data in Server Actions?</h3>
+            <p>Since Server Actions receive raw FormData or JSON, you should validate inputs using a schema validation library like <strong>Zod</strong> before processing.</p>
+            <pre><code>import { z } from 'zod';
+
+const schema = z.object({
+  email: z.string().email(),
+});
+
+export async function create(formData) {
+  const parsed = schema.safeParse({
+    email: formData.get('email'),
+  });
+  
+  if (!parsed.success) {
+    return { errors: parsed.error.flatten().fieldErrors };
+  }
+  // ...
+}</code></pre>
+        </section>
+        <section class="question">
+            <h3>What is `useFormState` (or `useActionState`)?</h3>
+            <p>It is a hook used to handle the result of a Server Action (like validation errors or success messages) in a Client Component. It takes the action and an initial state.</p>
+            <pre><code>const [state, formAction] = useFormState(createUser, initialState);</code></pre>
+        </section>
+        <section class="question">
+            <h3>Can Server Actions be used outside of forms?</h3>
+            <p>Yes. You can invoke them from event handlers (<code>onClick</code>), <code>useEffect</code>, or other side effects. However, for non-form interactions, you often need to manage the pending state manually or use <code>useTransition</code>.</p>
+        </section>
+        <section class="question">
+            <h3>What is Optimistic UI and how do you implement it with Server Actions?</h3>
+            <p>Optimistic UI updates the interface immediately as if the action succeeded, without waiting for the server response. If the server fails, the UI rolls back.</p>
+            <p><strong>Implementation:</strong> Use the <code>useOptimistic</code> hook.</p>
+            <pre><code class="language-javascript">import { useOptimistic } from 'react';
+
+function MessageList({ messages, sendMessage }) {
+  const [optimisticMessages, addOptimisticMessage] = useOptimistic(
+    messages,
+    (state, newMessage) => [...state, newMessage]
+  );
+
+  async function action(formData) {
+    const message = formData.get('message');
+    addOptimisticMessage({ text: message, sending: true });
+    await sendMessage(formData);
+  }
+
+  return (
+    // ... render optimisticMessages ...
+  );
+}</code></pre>
+        </section>
     </main>
     <footer></footer>
     <script>initLayout();</script>

@@ -103,6 +103,41 @@ Timber::render('single.twig', $context);</code></pre>
             </div>
         </div>
 
+        <div class="interview-question">
+            <h3>6. How do you handle Menus in Timber?</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong></p>
+                <p>In PHP, you fetch the menu object:</p>
+                <pre><code class="language-php">$context['menu'] = Timber::get_menu('primary-menu');</code></pre>
+                <p>In Twig, you iterate over the items:</p>
+                <pre><code class="language-twig">&lt;ul&gt;
+    {% for item in menu.items %}
+        &lt;li class="{{ item.classes | join(' ') }}"&gt;
+            &lt;a href="{{ item.link }}"&gt;{{ item.title }}&lt;/a&gt;
+            {% if item.children %}
+                &lt;ul&gt;
+                    {% for child in item.children %}
+                        &lt;li&gt;&lt;a href="{{ child.link }}"&gt;{{ child.title }}&lt;/a&gt;&lt;/li&gt;
+                    {% endfor %}
+                &lt;/ul&gt;
+            {% endif %}
+        &lt;/li&gt;
+    {% endfor %}
+&lt;/ul&gt;</code></pre>
+            </div>
+        </div>
+
+        <div class="interview-question">
+            <h3>7. What is the `Timber::get_widgets()` function?</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong> It retrieves the HTML for a dynamic sidebar (widget area). This allows you to render widgets anywhere in your Twig template.</p>
+                <pre><code class="language-php">$context['sidebar'] = Timber::get_widgets('sidebar-1');</code></pre>
+                <pre><code class="language-twig">&lt;aside&gt;
+    {{ sidebar }}
+&lt;/aside&gt;</code></pre>
+            </div>
+        </div>
+
     </main>
 
     <footer>

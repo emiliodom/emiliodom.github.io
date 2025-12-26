@@ -49,7 +49,7 @@
                 <p><strong>Answer:</strong> Both are "Hooks", but they serve different purposes:</p>
                 <ul>
                     <li><strong>Actions (`do_action` / `add_action`):</strong> Events where you can "do" something at a specific point (e.g., echo HTML, send an email, update DB). They do not return a value.</li>
-                    <li><strong>Filters (`apply_filters` / `add_filter`):</strong> Used to modify data. They take a variable, modify it, and <strong>must return</strong> it.</li>
+                    <li><strong>Filters (`apply_filters` / `add_filter`):</strong> Events where you modify data and <strong>must return</strong> it. (e.g., changing the post title, modifying a query).</li>
                 </ul>
                 <pre><code class="language-php">// Action: Do something
 add_action('wp_footer', function() {
@@ -64,48 +64,150 @@ add_filter('the_title', function($title) {
         </div>
 
         <div class="interview-question">
-            <h3>3. Describe the WordPress Database Schema. What are the core tables?</h3>
+            <h3>3. Describe the WordPress Database Schema.</h3>
             <div class="answer">
-                <p><strong>Answer:</strong> WordPress uses a relational database (MySQL/MariaDB). Key tables include:</p>
+                <p><strong>Answer:</strong> WordPress uses a relational database (MySQL/MariaDB/PostgreSQL) with 12 core tables (by default). The most important ones are:</p>
                 <ul>
-                    <li>`wp_posts`: Stores posts, pages, attachments, nav menu items, and revisions.</li>
-                    <li>`wp_postmeta`: Key-value storage for extra post data (custom fields).</li>
-                    <li>`wp_users` & `wp_usermeta`: User data.</li>
-                    <li>`wp_options`: Site configuration and settings.</li>
-                    <li>`wp_terms`, `wp_term_taxonomy`, `wp_term_relationships`: Categories, tags, and custom taxonomies.</li>
+                    <li><code>wp_posts</code>: Stores posts, pages, attachments, nav menu items, and revisions.</li>
+                    <li><code>wp_postmeta</code>: Stores metadata for posts (EAV model).</li>
+                    <li><code>wp_users</code> & <code>wp_usermeta</code>: User data.</li>
+                    <li><code>wp_options</code>: Global site settings.</li>
+                    <li><code>wp_terms</code>, <code>wp_term_taxonomy</code>, <code>wp_term_relationships</code>: Categories and tags.</li>
                 </ul>
-                <p><strong>Follow-up:</strong> Why is `wp_postmeta` often a performance bottleneck? (Answer: It's an EAV - Entity Attribute Value - table, making complex filtering slow and inefficient).</p>
+                <p><strong>Key Concept:</strong> The EAV (Entity-Attribute-Value) model in `wp_postmeta` allows for flexibility but can be a performance bottleneck if not queried correctly.</p>
             </div>
         </div>
 
         <div class="interview-question">
             <h3>4. What is the Template Hierarchy?</h3>
             <div class="answer">
-                <p><strong>Answer:</strong> The logic WordPress uses to decide which theme file to render for a given request. It searches from specific to generic.</p>
+                <p><strong>Answer:</strong> It is the logic WordPress uses to decide which theme file to use to render a page. It searches from specific to generic.</p>
                 <p><strong>Example for a Single Post:</strong></p>
                 <ol>
-                    <li>`single-{post_type}-{slug}.php`</li>
-                    <li>`single-{post_type}.php`</li>
-                    <li>`single.php`</li>
-                    <li>`singular.php`</li>
-                    <li>`index.php` (Fallback)</li>
+                    <li><code>single-{post_type}-{slug}.php</code></li>
+                    <li><code>single-{post_type}.php</code></li>
+                    <li><code>single.php</code></li>
+                    <li><code>singular.php</code></li>
+                    <li><code>index.php</code> (Fallback)</li>
                 </ol>
             </div>
         </div>
 
         <div class="interview-question">
-            <h3>5. How does the Rewrite API work?</h3>
+            <h3>5. What are Transients?</h3>
             <div class="answer">
-                <p><strong>Answer:</strong> The Rewrite API maps incoming URLs (Permalinks) to database queries.</p>
-                <ul>
-                    <li>WordPress uses regex to match the URL structure.</li>
-                    <li>It converts the match into "Query Variables" (e.g., `index.php?p=123`).</li>
-                    <li>These variables are passed to `WP_Query` to fetch content.</li>
-                </ul>
-                <p><strong>Important:</strong> You must flush rewrite rules (`flush_rewrite_rules()`) after adding new custom post types or rewrite rules, but <strong>never</strong> on every page load (only on plugin activation).</p>
+                <p><strong>Answer:</strong> Transients are a way to store cached data in the database (<code>wp_options</code>) with an expiration time. They are similar to Options but are temporary.</p>
+                <p><strong>Usage:</strong> Storing the result of an expensive API call or complex query.</p>
+                <pre><code class="language-php">if ( false === ( $data = get_transient( 'my_api_data' ) ) ) {
+    $data = fetch_api_data();
+    set_transient( 'my_api_data', $data, 12 * HOUR_IN_SECONDS );
+}</code></pre>
             </div>
         </div>
 
+        <div class="interview-question">
+            <h3>6. Compare `WP_Query` vs `get_posts()` vs `query_posts()`.</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong></p>
+                <ul>
+                    <li><strong>`WP_Query`:</strong> The class behind all queries. It is the most powerful and customizable way to query the database. It is safe to use anywhere.</li>
+                    <li><strong>`get_posts()`:</strong> A wrapper around `WP_Query` that returns an array of post objects (not a loop). It suppresses filters by default and is slightly faster for simple retrievals.</li>
+                    <li><strong>`query_posts()`:</strong> <span style="color:red"><strong>NEVER USE THIS.</strong></span> It overrides the main query loop and causes significant issues with pagination and page state. It is deprecated in practice.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="interview-question">
+            <h3>7. When should you use a Custom Post Type vs. a Custom Taxonomy?</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong> This is an architecture question.</p>
+                <ul>
+                    <li><strong>Custom Post Type (CPT):</strong> Use this for <strong>Entities</strong> or "Nouns" that have their own content and lifecycle. Examples: <em>Movies, Products, Events, Team Members</em>.</li>
+                    <li><strong>Custom Taxonomy:</strong> Use this for <strong>Grouping</strong> or "Adjectives" that describe those entities. Examples: <em>Genre (for Movies), Color (for Products), Department (for Team Members)</em>.</li>
+                </ul>
+                <p><strong>Rule of Thumb:</strong> If you need to write a paragraph about it, it's a Post Type. If it's just a label to sort by, it's a Taxonomy.</p>
+            </div>
+        </div>
+
+        <div class="interview-question">
+            <h3>8. What is the Singleton Pattern and where is it used in WordPress?</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong> The Singleton pattern ensures a class has only one instance and provides a global point of access to it.</p>
+                <p><strong>WordPress Examples:</strong></p>
+                <ul>
+                    <li><code>$wpdb</code>: The global database connection object.</li>
+                    <li><code>$wp_rewrite</code>: Manages rewrite rules.</li>
+                    <li>Many plugins use a `getInstance()` method to prevent multiple initializations of their main class, which avoids hook duplication.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="interview-question">
+            <h3>9. What is the Rewrite API?</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong> The Rewrite API allows you to create custom URL structures (permalinks) that map to specific WordPress queries.</p>
+                <p><strong>Key Functions:</strong></p>
+                <ul>
+                    <li><code>add_rewrite_rule()</code>: Adds a new rule to the top of the rewrite list.</li>
+                    <li><code>add_rewrite_tag()</code>: Registers a query variable so WordPress knows to look for it.</li>
+                    <li><code>flush_rewrite_rules()</code>: Regenerates the `.htaccess` file or database rules. <strong>Warning:</strong> Only run this on plugin activation/deactivation, never on every page load (performance killer).</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="interview-question">
+            <h3>10. Explain the WordPress Cron system.</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong> WP-Cron is a pseudo-cron system. It is not a real system cron job. It runs when a visitor loads a page.</p>
+                <p><strong>Limitation:</strong> If no one visits the site, scheduled tasks (like publishing scheduled posts) won't run.</p>
+                <p><strong>Best Practice:</strong> Disable the default WP-Cron (`DISABLE_WP_CRON`) and set up a real system cron job to call `wp-cron.php` every minute.</p>
+            </div>
+        </div>
+
+        <div class="interview-question">
+            <h3>11. What is the REST API and how do you extend it?</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong> The REST API provides a JSON interface to WordPress content. It allows you to build decoupled applications (Headless WP).</p>
+                <p><strong>Extending:</strong> Use `register_rest_route()` to create custom endpoints.</p>
+                <pre><code class="language-php">add_action( 'rest_api_init', function () {
+    register_rest_route( 'myplugin/v1', '/data', array(
+        'methods' => 'GET',
+        'callback' => 'my_custom_callback',
+        'permission_callback' => function () { return current_user_can( 'edit_posts' ); }
+    ) );
+} );</code></pre>
+            </div>
+        </div>
+
+        <div class="interview-question">
+            <h3>12. What are Nonces?</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong> "Number used ONCE". They are security tokens used to protect URLs and forms from misuse (CSRF attacks).</p>
+                <p><strong>Usage:</strong></p>
+                <ul>
+                    <li>Create: `wp_create_nonce('action_name')`</li>
+                    <li>Verify: `wp_verify_nonce($_REQUEST['_wpnonce'], 'action_name')`</li>
+                </ul>
+                <p>Note: In WordPress, nonces are valid for 24 hours by default, so they are not strictly "once", but they are user-specific.</p>
+            </div>
+        </div>
+
+        <div class="interview-question">
+            <h3>13. How does the `WP_Query` class work?</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong> `WP_Query` is the class behind all post queries. The main loop uses a global instance of it.</p>
+                <p><strong>Key Methods:</strong></p>
+                <ul>
+                    <li>`have_posts()`: Checks if there are posts to loop through.</li>
+                    <li>`the_post()`: Sets up the global `$post` object and advances the counter.</li>
+                    <li>`wp_reset_postdata()`: Restores the global `$post` to the main query after a secondary loop.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 40px;">
+            <a href="interview_gutenberg.html" class="btn-next">Next: Gutenberg & React Questions &rarr;</a>
+        </div>
     </main>
 
     <footer>

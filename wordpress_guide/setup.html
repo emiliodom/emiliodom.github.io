@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WordPress Environment Setup</title>
+    <link rel="stylesheet" href="../assets/css/wordpress_styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <script src="../assets/js/wordpress_layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Module 0: Environment Setup</h1>
+        <p>Setting up a professional WordPress development environment on Mac and Windows.</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section class="crash-course">
+            <h2>🚀 Why this matters</h2>
+            <p>Before writing a single line of code, you need a robust local environment. We will move away from XAMPP/MAMP and use industry-standard tools like <strong>LocalWP</strong> (for beginners/intermediates) and <strong>Docker</strong> (for advanced engineering).</p>
+        </section>
+
+        <section class="task">
+            <h3>1. Install LocalWP (Recommended)</h3>
+            <p>LocalWP is the fastest way to spin up a WordPress site locally. It handles PHP versions, MySQL, and Nginx/Apache for you.</p>
+            
+            <h4>macOS & Windows Steps:</h4>
+            <ol>
+                <li>Download <a href="https://localwp.com/" target="_blank">LocalWP</a> and install it.</li>
+                <li>Open LocalWP and click the <strong>+</strong> button to create a new site.</li>
+                <li>Choose <strong>"Create a new site"</strong> -> Continue.</li>
+                <li>Name your site (e.g., <code>wordpress-dev.local</code>).</li>
+                <li>Choose <strong>Preferred</strong> environment (PHP 8.x, Nginx, MySQL 8.0).</li>
+                <li>Set up your WordPress username and password.</li>
+                <li>Click <strong>Add Site</strong>.</li>
+            </ol>
+            <p>🎉 You now have a running WordPress site at <code>http://wordpress-dev.local</code>.</p>
+
+            <div class="alert alert-info" style="background: #e3f2fd; padding: 15px; border-left: 5px solid #2196f3; margin-top: 20px;">
+                <strong>⚠️ Production Parity Note:</strong> 
+                LocalWP uses <strong>MySQL</strong> by default. However, our enterprise stack (Module 4 & 5) uses <strong>PostgreSQL</strong> via the `pg4wp` driver. 
+                <br><br>
+                For this "Crash Course" and basic theme development, MySQL is fine. But if you want strict production parity locally, you should use <strong>Docker</strong> or <strong>Lando</strong> to spin up a WordPress + PostgreSQL environment. We will cover the PostgreSQL migration in Module 4.
+            </div>
+        </section>
+
+        <section class="task">
+            <h3>2. Install VS Code & Extensions</h3>
+            <p>Visual Studio Code is the industry standard editor.</p>
+            <ol>
+                <li>Download <a href="https://code.visualstudio.com/" target="_blank">VS Code</a>.</li>
+                <li>Install these essential extensions:
+                    <ul>
+                        <li><strong>PHP Intelephense</strong> (Ben Mewburn) - For code completion.</li>
+                        <li><strong>WordPress Snippets</strong> - For common WP functions.</li>
+                        <li><strong>Prettier</strong> - For formatting CSS/JS.</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section class="task">
+            <h3>3. Install Node.js & Composer</h3>
+            <p>Modern WordPress development (Bedrock, Sage, Block Editor) requires these tools.</p>
+
+            <h4>macOS (using Homebrew):</h4>
+            <pre><code class="language-bash"># Install Homebrew if you haven't
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+# Install Node.js (LTS)
+brew install node
+
+# Install Composer
+brew install composer</code></pre>
+
+            <h4>Windows:</h4>
+            <ol>
+                <li>Download and install <a href="https://nodejs.org/" target="_blank">Node.js (LTS)</a>.</li>
+                <li>Download and install <a href="https://getcomposer.org/download/" target="_blank">Composer Setup.exe</a>.</li>
+                <li>Restart your terminal (PowerShell or Git Bash).</li>
+            </ol>
+
+            <h4>Verify Installation:</h4>
+            <pre><code class="language-bash">node -v
+# v18.x.x or higher
+
+composer -v
+# Composer version 2.x.x</code></pre>
+        </section>
+
+        <section class="bug-hunt">
+            <h3>Common Setup Issues</h3>
+            <ul>
+                <li><strong>Port Conflicts:</strong> If LocalWP can't start, check if Skype or another app is using port 80. LocalWP has a "Router Mode" setting to fix this.</li>
+                <li><strong>SSL Errors:</strong> In LocalWP, click "Trust" next to the SSL certificate to enable HTTPS locally.</li>
+            </ul>
+        </section>
+
+        <div style="text-align: center; margin-top: 40px;">
+            <a href="module1.html" class="btn-next">Next: Module 1 - Modern Setup (Bedrock) &rarr;</a>
+        </div>
+    </main>
+
+    <footer>
+        <!-- Footer injected by layout.js -->
+    </footer>
+    <script>
+        initLayout();
+    </script>
+</body>
+</html>

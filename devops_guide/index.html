@@ -22,7 +22,7 @@
         <h2>Introduction</h2>
         <p>This guide focuses on the essential tools for modern deployment: Docker for containerization and Kubernetes for orchestration.</p>
 
-        <div class="crash-course" style="background: #e6f7ff; border-left: 5px solid #099cec; padding: 15px; margin: 20px 0;">
+        <div class="crash-course">
             <h3>🚀 DevOps Crash Course</h3>
             <p>Essential commands you'll use daily:</p>
             <pre><code class="language-bash"># Docker
@@ -44,6 +44,72 @@ kubectl apply -f deployment.yaml</code></pre>
                 <li>Understand K8s primitives: Pods, Services, Deployments, Ingress.</li>
                 <li>Implement CI/CD workflows for containerized applications.</li>
             </ul>
+        </div>
+
+        <div class="jira-ticket">
+            <div class="jira-header">
+                <span class="jira-id">CAPSTONE-OPS</span>
+                <span class="jira-status">Final Project</span>
+            </div>
+            <div class="jira-body">
+                <h3 class="jira-title">Capstone: End-to-End GitOps Pipeline</h3>
+                <div class="jira-section">
+                    <span class="jira-label">Objective</span>
+                    <p>Implement a full GitOps pipeline using ArgoCD to deploy a microservices application to a Kubernetes cluster.</p>
+                </div>
+                <div class="jira-section">
+                    <span class="jira-label">Requirements</span>
+                    <ul class="req-list">
+                        <li><strong>Infrastructure:</strong> Provision a K8s cluster (Minikube or Kind) using Terraform.</li>
+                        <li><strong>CI:</strong> GitHub Actions pipeline to build, test, and push Docker images.</li>
+                        <li><strong>CD:</strong> ArgoCD to sync the cluster state with a Git repository (GitOps).</li>
+                        <li><strong>Monitoring:</strong> Prometheus and Grafana for cluster observability.</li>
+                        <li><strong>Security:</strong> Implement Network Policies and RBAC.</li>
+                    </ul>
+                </div>
+                <div class="jira-section">
+                    <span class="jira-label">Documentation</span>
+                    <p>Document the entire pipeline flow, including disaster recovery procedures.</p>
+                </div>
+            </div>
+        </div>
+
+        <h3>How to use this guide</h3>
+        <div class="modules-grid">
+            <div class="card">
+                <h3>Module 1: Docker & Containers</h3>
+                <p><strong>Time:</strong> 8 hours | <strong>Complexity:</strong> Medium</p>
+                <p>Building optimized images and composing services.</p>
+            </div>
+            <div class="card">
+                <h3>Module 2: Kubernetes Basics</h3>
+                <p><strong>Time:</strong> 12 hours | <strong>Complexity:</strong> High</p>
+                <p>Pods, Deployments, Services, and Ingress.</p>
+            </div>
+            <div class="card">
+                <h3>Module 3: CI/CD Pipelines</h3>
+                <p><strong>Time:</strong> 10 hours | <strong>Complexity:</strong> Medium</p>
+                <p>GitHub Actions, Jenkins, and automation.</p>
+            </div>
+             <div class="card">
+                <h3>Module 4: Infrastructure as Code</h3>
+                <p><strong>Time:</strong> 10 hours | <strong>Complexity:</strong> High</p>
+                <p>Terraform and Ansible for provisioning.</p>
+            </div>
+        </div>
+
+        <h3>Curriculum Overview</h3>
+        <div class="modules-grid">
+            <p><strong>Module 1: Docker Mastery</strong> - Images, Compose, Optimization.</p>
+            <p><strong>Module 2: Kubernetes Basics</strong> - Pods, Services, Deployments.</p>
+            <p><strong>Module 3: Advanced K8s</strong> - Helm, Ingress, StatefulSets.</p>
+            <p><strong>Module 4: CI/CD Pipelines</strong> - GitHub Actions, Jenkins, GitOps.</p>
+            <p><strong>Module 5: Terraform</strong> - IaC, State Management, Modules.</p>
+            <p><strong>Module 6: Ansible</strong> - Playbooks, Roles, Automation.</p>
+            <p><strong>Module 7: Monitoring</strong> - Prometheus, Grafana, ELK Stack.</p>
+            <p><strong>Module 8: DevSecOps</strong> - Scanning, Compliance, Secret Management.</p>
+            <p><strong>Module 9: Networking</strong> - DNS, Load Balancers, Service Mesh.</p>
+            <p><strong>Module 10: SRE</strong> - SLIs/SLOs, Incident Response, Post-mortems.</p>
         </div>
     </main>
 

@@ -9,93 +9,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <script>hljs.highlightAll();</script>
     <script src="../assets/js/laravel_layout.js"></script>
-    <style>
-        .jira-ticket {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 8px;
-            margin-bottom: 30px;
-            overflow: hidden;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-        .jira-header {
-            background: #f4f5f7;
-            padding: 15px 20px;
-            border-bottom: 1px solid var(--card-border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        [data-theme="dark"] .jira-header {
-            background: #2d3748;
-        }
-        .jira-id {
-            font-family: monospace;
-            font-weight: bold;
-            color: #0052cc;
-            margin-right: 10px;
-        }
-        .jira-title {
-            font-weight: 600;
-            font-size: 1.1em;
-            flex-grow: 1;
-        }
-        .jira-meta {
-            display: flex;
-            gap: 10px;
-            font-size: 0.85em;
-        }
-        .badge {
-            padding: 2px 8px;
-            border-radius: 3px;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
-        .badge-high { background: #ff5630; color: white; }
-        .badge-medium { background: #ffab00; color: black; }
-        .badge-story { background: #36b37e; color: white; }
-        
-        .jira-content {
-            padding: 20px;
-        }
-        .section-title {
-            font-size: 0.9em;
-            text-transform: uppercase;
-            color: #6b778c;
-            font-weight: bold;
-            margin-top: 20px;
-            margin-bottom: 10px;
-            border-bottom: 2px solid var(--card-border);
-            padding-bottom: 5px;
-        }
-        .section-title:first-child { margin-top: 0; }
-        
-        .dev-solution {
-            background: rgba(16, 185, 129, 0.05);
-            border-left: 4px solid #10b981;
-            padding: 15px;
-            margin-top: 20px;
-        }
-        .dev-solution h4 {
-            color: #059669;
-            margin-top: 0;
-        }
-        
-        .code-block {
-            padding: 0;
-            border-radius: 4px;
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 0.9em;
-            overflow-x: auto;
-            margin: 10px 0;
-        }
-        
-        .requirements-list {
-            list-style-type: disc;
-            padding-left: 20px;
-        }
-        .requirements-list li { margin-bottom: 5px; }
-    </style>
 </head>
 <body>
     <header>
@@ -124,12 +37,12 @@
                     <span class="badge badge-story">Performance</span>
                 </div>
             </div>
-            <div class="jira-content">
+            <div class="jira-body">
                 <div class="section-title">Description</div>
                 <p>The admin dashboard takes 8 seconds to load. Debugbar shows 150+ database queries. This is happening because we are iterating over 50 users and fetching their latest order individually.</p>
                 
                 <div class="section-title">Acceptance Criteria</div>
-                <ul class="requirements-list">
+                <ul class="req-list">
                     <li>Reduce query count to < 5.</li>
                     <li>Load time < 500ms.</li>
                 </ul>
@@ -168,12 +81,12 @@ foreach ($users as $user) {
                     <span class="badge badge-story">UX</span>
                 </div>
             </div>
-            <div class="jira-content">
+            <div class="jira-body">
                 <div class="section-title">Description</div>
                 <p>Users are clicking "Generate Monthly Report" and the browser spins for 30 seconds until it times out. We need to make this asynchronous.</p>
                 
                 <div class="section-title">Acceptance Criteria</div>
-                <ul class="requirements-list">
+                <ul class="req-list">
                     <li>User clicks button -> gets "Report processing started" message immediately.</li>
                     <li>Report generates in background.</li>
                     <li>User receives email when done.</li>
@@ -220,12 +133,12 @@ class GenerateReportJob implements ShouldQueue {
                     <span class="badge badge-story">Refactor</span>
                 </div>
             </div>
-            <div class="jira-content">
+            <div class="jira-body">
                 <div class="section-title">Description</div>
                 <p>The `OrderController::store` method is 400 lines long. It handles validation, payment processing, inventory updates, and email notifications. It's impossible to test.</p>
                 
                 <div class="section-title">Acceptance Criteria</div>
-                <ul class="requirements-list">
+                <ul class="req-list">
                     <li>Extract business logic to a Service class.</li>
                     <li>Controller should only handle HTTP request/response.</li>
                 </ul>

@@ -15,14 +15,76 @@
     <nav></nav>
     <main>
         <h2>Beyond Core Blocks</h2>
-        <p>Clients need custom layouts. You can build them using native React or ACF Blocks.</p>
+        <p>Clients need custom layouts. You can build them using native React.</p>
         
         <h3>Key Concepts</h3>
         <ul>
-            <li><strong>ACF Blocks:</strong> PHP-based block development (Rapid).</li>
             <li><strong>Native Blocks:</strong> React/JSX-based block development (Performant).</li>
             <li><strong>block.json:</strong> Metadata for your blocks.</li>
+            <li><strong>Server-Side Rendering:</strong> For dynamic content.</li>
         </ul>
+
+        <h3>1. Why Native Blocks?</h3>
+        <p>We are avoiding ACF Blocks to ensure maximum performance and full compatibility with the Site Editor. Native blocks use React and compile to static JS.</p>
+
+        <h3>2. Scaffolding with @wordpress/create-block</h3>
+        <p>Generate a new block plugin:</p>
+        <pre><code class="language-bash">npx @wordpress/create-block my-custom-block</code></pre>
+
+        <h3>3. block.json Configuration</h3>
+        <p>Define your block's metadata:</p>
+        <pre><code class="language-json">{
+    "name": "my-plugin/notice",
+    "title": "Notice",
+    "category": "common",
+    "attributes": {
+        "message": { "type": "string" }
+    }
+}</code></pre>
+
+        <h3>4. The Edit Component (React)</h3>
+        <p>Build the editor interface using standard React hooks and WP components:</p>
+        <pre><code class="language-jsx">import { TextControl } from '@wordpress/components';
+import { useBlockProps } from '@wordpress/block-editor';
+
+export default function Edit({ attributes, setAttributes }) {
+    return (
+        &lt;div { ...useBlockProps() }&gt;
+            &lt;TextControl
+                value={ attributes.message }
+                onChange={ ( val ) => setAttributes( { message: val } ) }
+            /&gt;
+        &lt;/div&gt;
+    );
+}</code></pre>
+
+        <h3>5. The Save Component</h3>
+        <p>Define how the block is saved to the database (static HTML):</p>
+        <pre><code class="language-jsx">export default function Save({ attributes }) {
+    return &lt;div { ...useBlockProps.save() }&gt;{ attributes.message }&lt;/div&gt;;
+}</code></pre>
+
+        <h3>6. Dynamic Blocks (Server-Side Render)</h3>
+        <p>For content that changes (like NocoDB data), use PHP to render:</p>
+        <pre><code class="language-json">// block.json
+"render": "file:./render.php"</code></pre>
+
+        <h3>7. Fetching NocoDB Data in Blocks</h3>
+        <p>In your `render.php`, fetch data and display it:</p>
+        <pre><code class="language-php">$data = get_transient('nocodb_data');
+if (!$data) {
+    // Fetch from API...
+}
+echo '&lt;div&gt;' . esc_html($data['field']) . '&lt;/div&gt;';</code></pre>
+
+        <h3>8. Block Attributes & State</h3>
+        <p>Manage complex state using the Redux-like data stores provided by `@wordpress/data`.</p>
+
+        <h3>9. Styles & Scripts</h3>
+        <p>Enqueue assets only when the block is present on the page to keep the site fast.</p>
+
+        <h3>10. Block Patterns</h3>
+        <p>Group multiple blocks together into pre-defined layouts that users can insert with one click.</p>
     </main>
     <footer></footer>
     <script>initLayout();</script>

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Moodle Database & APIs Interview Questions</title>
     <link rel="stylesheet" href="../assets/css/moodle_styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <script src="../assets/js/moodle_layout.js"></script>
 </head>
@@ -104,6 +104,27 @@
             <h3>Q12: What are 'params' in DB calls?</h3>
             <div class="answer">
                 <p>Params are values passed to SQL queries to replace placeholders. They are passed as an array. Moodle sanitizes these values to prevent SQL injection. Example: <code>$DB->get_record('user', ['username' => 'admin']);</code>.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q12: What is `get_in_or_equal()` used for?</h3>
+            <div class="answer">
+                <p>It is a helper function that constructs a SQL <code>IN (...)</code> clause safely. It returns an array containing the SQL fragment and the parameters. Example: <code>list($insql, $inparams) = $DB->get_in_or_equal([1, 2, 3]);</code>.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q13: How do you handle cross-database text comparison?</h3>
+            <div class="answer">
+                <p>Different databases handle text comparison differently (e.g., case sensitivity). Use <code>$DB->sql_compare_text('fieldname', 'searchterm')</code> or <code>$DB->sql_like()</code> to generate the correct SQL for the active database driver.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q14: When should you use `execute()`?</h3>
+            <div class="answer">
+                <p><code>$DB->execute($sql, $params)</code> is used for DDL statements (like <code>CREATE</code>, <code>DROP</code>) or complex updates/deletes that don't fit the standard <code>update_record</code>/<code>delete_records</code> methods. It returns true on success or throws an exception.</p>
             </div>
         </section>
 

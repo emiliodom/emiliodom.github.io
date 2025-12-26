@@ -23,6 +23,42 @@
             <li><strong>File Permissions:</strong> Read-only filesystem in production.</li>
             <li><strong>XML-RPC:</strong> Disabling legacy attack vectors.</li>
         </ul>
+
+        <h3>1. Disable File Editing</h3>
+        <p>Prevent admins from editing PHP files in the dashboard. Bedrock does this by default.</p>
+        <pre><code class="language-php">define('DISALLOW_FILE_EDIT', true);</code></pre>
+
+        <h3>2. Disable XML-RPC</h3>
+        <p>XML-RPC is a common target for brute force attacks. Disable it if not used.</p>
+        <pre><code class="language-php">add_filter('xmlrpc_enabled', '__return_false');</code></pre>
+
+        <h3>3. Content Security Policy (CSP)</h3>
+        <p>Restrict where scripts and styles can load from using HTTP headers.</p>
+
+        <h3>4. Nonces</h3>
+        <p>Always use nonces to protect URLs and forms from CSRF attacks.</p>
+        <pre><code class="language-php">wp_create_nonce('my_action');
+check_admin_referer('my_action');</code></pre>
+
+        <h3>5. Sanitization & Escaping</h3>
+        <p>Never trust user input. Sanitize on save, escape on output.</p>
+        <pre><code class="language-php">$clean = sanitize_text_field($_POST['data']);
+echo esc_html($clean);</code></pre>
+
+        <h3>6. Limit Login Attempts</h3>
+        <p>Install a plugin or use a WAF to block IPs that fail login too many times.</p>
+
+        <h3>7. Two-Factor Authentication (2FA)</h3>
+        <p>Enforce 2FA for all administrator accounts.</p>
+
+        <h3>8. Database Prefix</h3>
+        <p>Change the default `wp_` prefix to something random during installation (handled by Bedrock env).</p>
+
+        <h3>9. Salt Keys</h3>
+        <p>Ensure your `SALT` keys in `.env` are unique and random. Rotate them periodically.</p>
+
+        <h3>10. Web Application Firewall (WAF)</h3>
+        <p>Use Cloudflare or AWS WAF to block malicious traffic before it reaches your server.</p>
     </main>
     <footer></footer>
     <script>initLayout();</script>

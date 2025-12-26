@@ -9,94 +9,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <script>hljs.highlightAll();</script>
     <script src="../assets/js/moodle_layout.js"></script>
-    <style>
-        .jira-ticket {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 8px;
-            margin-bottom: 30px;
-            overflow: hidden;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-        .jira-header {
-            background: #f4f5f7; /* Jira light grey */
-            padding: 15px 20px;
-            border-bottom: 1px solid var(--card-border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        [data-theme="dark"] .jira-header {
-            background: #2d3748;
-        }
-        .jira-id {
-            font-family: monospace;
-            font-weight: bold;
-            color: #0052cc; /* Jira Blue */
-            margin-right: 10px;
-        }
-        .jira-title {
-            font-weight: 600;
-            font-size: 1.1em;
-            flex-grow: 1;
-        }
-        .jira-meta {
-            display: flex;
-            gap: 10px;
-            font-size: 0.85em;
-        }
-        .badge {
-            padding: 2px 8px;
-            border-radius: 3px;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
-        .badge-high { background: #ff5630; color: white; }
-        .badge-medium { background: #ffab00; color: black; }
-        .badge-story { background: #36b37e; color: white; }
-        
-        .jira-content {
-            padding: 20px;
-        }
-        .section-title {
-            font-size: 0.9em;
-            text-transform: uppercase;
-            color: #6b778c;
-            font-weight: bold;
-            margin-top: 20px;
-            margin-bottom: 10px;
-            border-bottom: 2px solid var(--card-border);
-            padding-bottom: 5px;
-        }
-        .section-title:first-child { margin-top: 0; }
-        
-        .dev-solution {
-            background: rgba(16, 185, 129, 0.05); /* Light green tint */
-            border-left: 4px solid #10b981;
-            padding: 15px;
-            margin-top: 20px;
-        }
-        .dev-solution h4 {
-            color: #059669;
-            margin-top: 0;
-        }
-        
-        .code-block {
-            /* Removed custom background since highlight.js handles it */
-            padding: 0;
-            border-radius: 4px;
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 0.9em;
-            overflow-x: auto;
-            margin: 10px 0;
-        }
-        
-        .requirements-list {
-            list-style-type: disc;
-            padding-left: 20px;
-        }
-        .requirements-list li { margin-bottom: 5px; }
-    </style>
 </head>
 <body>
     <header>
@@ -120,10 +32,10 @@
                     <span class="badge badge-medium">Medium</span>
                 </div>
             </div>
-            <div class="jira-content">
+            <div class="jira-body">
                 <div class="section-title">Product Requirements</div>
                 <p><strong>User Story:</strong> As a student, I want to download a PDF certificate automatically when I complete a course, so I can prove my attendance.</p>
-                <ul class="requirements-list">
+                <ul class="req-list">
                     <li>Certificate must be generated as PDF.</li>
                     <li>Must include Student Name, Course Name, and Date.</li>
                     <li>Only accessible if "Course Completion" criteria are met.</li>
@@ -184,10 +96,10 @@ $doc->Output('certificate.pdf', 'D');
                     <span class="badge badge-high">High</span>
                 </div>
             </div>
-            <div class="jira-content">
+            <div class="jira-body">
                 <div class="section-title">Product Requirements</div>
                 <p><strong>User Story:</strong> As a university admin, I want students to see their final grades only if they have paid their tuition fees.</p>
-                <ul class="requirements-list">
+                <ul class="req-list">
                     <li>Integrate with external Payment Gateway (Stripe/PayPal).</li>
                     <li>If unpaid, the Gradebook view should show a "Payment Required" message.</li>
                     <li>Payment status is stored in a custom user profile field or external DB.</li>
@@ -238,10 +150,10 @@ class core_grades_renderer extends general_action_bar {
                     <span class="badge badge-medium">Medium</span>
                 </div>
             </div>
-            <div class="jira-content">
+            <div class="jira-body">
                 <div class="section-title">Product Requirements</div>
                 <p><strong>User Story:</strong> Students must complete the "End of Course Survey" before they can view their final grade or download their certificate.</p>
-                <ul class="requirements-list">
+                <ul class="req-list">
                     <li>Survey is a Moodle "Feedback" activity.</li>
                     <li>Grades/Certificate activity must be hidden/unavailable until Feedback is submitted.</li>
                 </ul>
@@ -298,10 +210,10 @@ class condition extends \core_availability\condition {
                     <span class="badge badge-high">High</span>
                 </div>
             </div>
-            <div class="jira-content">
+            <div class="jira-body">
                 <div class="section-title">Product Requirements</div>
                 <p><strong>User Story:</strong> Students upload raw video files (MOV, AVI). The system must convert them to MP4 (H.264) for web playback automatically.</p>
-                <ul class="requirements-list">
+                <ul class="req-list">
                     <li>Support large file uploads (up to 2GB).</li>
                     <li>Background processing (don't make user wait).</li>
                     <li>Notify user when processing is done.</li>
@@ -383,10 +295,10 @@ class transcode_video extends \core\task\adhoc_task {
                     <span class="badge badge-medium">Medium</span>
                 </div>
             </div>
-            <div class="jira-content">
+            <div class="jira-body">
                 <div class="section-title">Product Requirements</div>
                 <p><strong>User Story:</strong> Teachers want to click a button "Generate Questions" inside a Quiz, provide a topic, and get 5 multiple-choice questions automatically.</p>
-                <ul class="requirements-list">
+                <ul class="req-list">
                     <li>Integrate with OpenAI API (GPT-4).</li>
                     <li>Insert questions directly into the Question Bank.</li>
                 </ul>
@@ -448,10 +360,10 @@ class generator {
                     <span class="badge badge-medium">Medium</span>
                 </div>
             </div>
-            <div class="jira-content">
+            <div class="jira-body">
                 <div class="section-title">Product Requirements</div>
                 <p><strong>User Story:</strong> Students need a visual dashboard block showing their progress across ALL enrolled courses with a circular progress bar.</p>
-                <ul class="requirements-list">
+                <ul class="req-list">
                     <li>Must be a "Block" plugin (`block_progress`).</li>
                     <li>Show % complete for each active course.</li>
                     <li>Use Chart.js or CSS for visuals.</li>
@@ -527,10 +439,10 @@ class block_myprogress extends block_base {
                     <span class="badge badge-high">High</span>
                 </div>
             </div>
-            <div class="jira-content">
+            <div class="jira-body">
                 <div class="section-title">Product Requirements</div>
                 <p><strong>User Story:</strong> When a new employee is added to SAP, they should automatically have an account in Moodle and be enrolled in "Onboarding 101".</p>
-                <ul class="requirements-list">
+                <ul class="req-list">
                     <li>One-way sync: SAP -> Moodle.</li>
                     <li>Run nightly.</li>
                     <li>Handle updates (name changes) and deletions (suspend user).</li>
@@ -608,10 +520,10 @@ class sync_users extends \core\task\scheduled_task {
                     <span class="badge badge-medium">Medium</span>
                 </div>
             </div>
-            <div class="jira-content">
+            <div class="jira-body">
                 <div class="section-title">Product Requirements</div>
                 <p><strong>User Story:</strong> Users want to toggle between Light and Dark mode. The preference should be remembered across sessions.</p>
-                <ul class="requirements-list">
+                <ul class="req-list">
                     <li>Button in the navbar.</li>
                     <li>Persist preference in User Preferences (DB).</li>
                     <li>Must work with Boost child theme.</li>
@@ -675,7 +587,7 @@ define(['jquery', 'core/ajax', 'core/str'], function($, Ajax, Str) {
                     <span class="badge badge-high">High</span>
                 </div>
             </div>
-            <div class="jira-content">
+            <div class="jira-body">
                 <div class="section-title">Product Requirements</div>
                 <p><strong>User Story:</strong> The "Engineering 101" course takes 15 seconds to load. It has 50 sections and 1000+ resources. It needs to load in under 3 seconds.</p>
                 
@@ -722,7 +634,7 @@ if ($course->coursedisplay == COURSE_DISPLAY_MULTIPAGE) {
                     <span class="badge badge-high">High</span>
                 </div>
             </div>
-            <div class="jira-content">
+            <div class="jira-body">
                 <div class="section-title">Product Requirements</div>
                 <p><strong>User Story:</strong> To comply with GDPR, we need a button to "Anonymize Old Users" (inactive > 2 years). Their grades must remain for statistics, but names/emails must be scrubbed.</p>
                 

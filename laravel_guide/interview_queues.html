@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Laravel Queues & Jobs Interview Questions - Laravel Guide</title>
     <link rel="stylesheet" href="../assets/css/laravel_styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <script src="../assets/js/laravel_layout.js"></script>
 </head>
@@ -42,6 +42,35 @@
             <div class="answer">
                 <p><strong>Tool:</strong> A dashboard and configuration system for Redis queues.</p>
                 <p><strong>Features:</strong> It allows you to monitor key metrics like job throughput, runtime, and failures. It also allows you to balance workers across different queues based on workload (auto-scaling).</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q4: Explain the difference between `dispatch()` and `dispatchSync()`.</h3>
+            <div class="answer">
+                <p><strong>`dispatch()`:</strong> Pushes the job to the queue. The job will be processed asynchronously by a queue worker in the background. The user gets an immediate response.</p>
+                <p><strong>`dispatchSync()`:</strong> Executes the job immediately within the current request lifecycle. It does not go to the queue. It behaves like a normal function call.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q5: How do you prevent a job from running twice (Atomic Locks)?</h3>
+            <div class="answer">
+                <p><strong>Scenario:</strong> If a worker times out but the job is still running, another worker might pick it up, causing duplication.</p>
+                <p><strong>Solution:</strong> Use <code>Cache::lock()</code> or the <code>ShouldBeUnique</code> interface.</p>
+                <pre><code class="language-php">// In Job class
+public function middleware()
+{
+    return [new WithoutOverlapping($this->user->id)];
+}</code></pre>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q6: What is the difference between `queue:work` and `queue:listen`?</h3>
+            <div class="answer">
+                <p><strong>`queue:work`:</strong> Boots the framework once and processes jobs in a loop. It is much more efficient (faster) but requires you to restart the worker (<code>queue:restart</code>) when you change code.</p>
+                <p><strong>`queue:listen`:</strong> Boots the framework for <em>every</em> job. It is slower but useful for local development because it automatically picks up code changes.</p>
             </div>
         </section>
     </main>

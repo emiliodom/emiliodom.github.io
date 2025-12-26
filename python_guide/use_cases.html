@@ -9,93 +9,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <script>hljs.highlightAll();</script>
     <script src="../assets/js/python_layout.js"></script>
-    <style>
-        .jira-ticket {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 8px;
-            margin-bottom: 30px;
-            overflow: hidden;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-        .jira-header {
-            background: #f4f5f7;
-            padding: 15px 20px;
-            border-bottom: 1px solid var(--card-border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        [data-theme="dark"] .jira-header {
-            background: #2d3748;
-        }
-        .jira-id {
-            font-family: monospace;
-            font-weight: bold;
-            color: #0052cc;
-            margin-right: 10px;
-        }
-        .jira-title {
-            font-weight: 600;
-            font-size: 1.1em;
-            flex-grow: 1;
-        }
-        .jira-meta {
-            display: flex;
-            gap: 10px;
-            font-size: 0.85em;
-        }
-        .badge {
-            padding: 2px 8px;
-            border-radius: 3px;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
-        .badge-high { background: #ff5630; color: white; }
-        .badge-medium { background: #ffab00; color: black; }
-        .badge-story { background: #36b37e; color: white; }
-        
-        .jira-content {
-            padding: 20px;
-        }
-        .section-title {
-            font-size: 0.9em;
-            text-transform: uppercase;
-            color: #6b778c;
-            font-weight: bold;
-            margin-top: 20px;
-            margin-bottom: 10px;
-            border-bottom: 2px solid var(--card-border);
-            padding-bottom: 5px;
-        }
-        .section-title:first-child { margin-top: 0; }
-        
-        .dev-solution {
-            background: rgba(16, 185, 129, 0.05);
-            border-left: 4px solid #10b981;
-            padding: 15px;
-            margin-top: 20px;
-        }
-        .dev-solution h4 {
-            color: #059669;
-            margin-top: 0;
-        }
-        
-        .code-block {
-            padding: 0;
-            border-radius: 4px;
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 0.9em;
-            overflow-x: auto;
-            margin: 10px 0;
-        }
-        
-        .requirements-list {
-            list-style-type: disc;
-            padding-left: 20px;
-        }
-        .requirements-list li { margin-bottom: 5px; }
-    </style>
 </head>
 <body>
     <header>
@@ -125,12 +38,12 @@
                     <span class="badge badge-high">High Priority</span>
                 </div>
             </div>
-            <div class="jira-content">
+            <div class="jira-body">
                 <div class="section-title">Description</div>
                 <p>The current ingestion script takes 4 hours to process a 5GB CSV file. We need to reduce this to under 30 minutes to meet SLA.</p>
                 
                 <div class="section-title">Acceptance Criteria</div>
-                <ul class="requirements-list">
+                <ul class="req-list">
                     <li>Process 5GB CSV in < 30 mins.</li>
                     <li>Handle memory constraints (max 8GB RAM).</li>
                     <li>Upsert data into PostgreSQL.</li>
@@ -180,7 +93,7 @@ if __name__ == '__main__':
                     <span class="badge badge-medium">Medium Priority</span>
                 </div>
             </div>
-            <div class="jira-content">
+            <div class="jira-body">
                 <div class="section-title">Description</div>
                 <p>The <code>/upload</code> endpoint blocks the main thread while resizing images, causing timeouts under load. We need to make this non-blocking.</p>
                 
@@ -225,7 +138,7 @@ def resize_image_task(path):
                     <span class="badge badge-high">Critical</span>
                 </div>
             </div>
-            <div class="jira-content">
+            <div class="jira-body">
                 <div class="section-title">Description</div>
                 <p>The background worker process consumes increasing memory over time until it crashes (OOM). Restarting fixes it temporarily.</p>
                 

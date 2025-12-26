@@ -23,6 +23,37 @@
             <li><strong>Strangler Pattern:</strong> Replacing pieces one by one.</li>
             <li><strong>Data Migration:</strong> Moving content safely.</li>
         </ul>
+
+        <h3>1. The Audit</h3>
+        <p>Catalog all plugins, themes, and custom code. Identify what is used and what is dead.</p>
+
+        <h3>2. Local Environment</h3>
+        <p>Get the legacy site running locally using Docker/DDEV before touching anything.</p>
+
+        <h3>3. Moving to Composer</h3>
+        <p>Replace manually installed plugins with Composer dependencies one by one.</p>
+
+        <h3>4. Database Cleanup</h3>
+        <p>Remove orphaned tables and unused post meta. Optimize the database.</p>
+
+        <h3>5. Refactoring Theme to Twig</h3>
+        <p>Start by replacing the header and footer with Twig templates. Then move to page templates.</p>
+
+        <h3>6. Replacing Shortcodes with Blocks</h3>
+        <p>Write a script to parse content and convert shortcodes to block comments.</p>
+
+        <h3>7. Media Migration</h3>
+        <p>Move `wp-content/uploads` to S3. Update database references.</p>
+
+        <h3>8. WP-CLI Search & Replace</h3>
+        <p>Update URLs when moving from dev to staging to production.</p>
+        <pre><code class="language-bash">wp search-replace 'http://old.com' 'https://new.com' --all-tables</code></pre>
+
+        <h3>9. Testing the Migration</h3>
+        <p>Use visual regression testing to ensure the new site looks exactly like the old one (or better).</p>
+
+        <h3>10. Go Live Strategy</h3>
+        <p>Lower TTL. Put the site in maintenance mode. Sync the final database diff. Switch DNS.</p>
     </main>
     <footer></footer>
     <script>initLayout();</script>

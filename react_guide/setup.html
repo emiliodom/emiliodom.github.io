@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 0: React Environment Setup</title>
+    <link rel="stylesheet" href="../assets/css/react_styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <script src="../assets/js/react_layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Module 0: Environment Setup</h1>
+        <p>Setting up a professional React development environment with Vite, ESLint, and Prettier.</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section class="crash-course">
+            <h2>🚀 Goodbye Create React App (CRA)</h2>
+            <p>For years, <code>create-react-app</code> was the standard. It is now deprecated. The industry standard for Single Page Applications (SPAs) is <strong>Vite</strong> (pronounced "veet"). It is significantly faster and leaner.</p>
+        </section>
+
+        <section class="task">
+            <h3>1. Install Node.js (LTS)</h3>
+            <p>Ensure you have the Long Term Support (LTS) version of Node.js installed.</p>
+            <pre><code class="language-bash">node -v
+# Should be v18.x.x or v20.x.x</code></pre>
+        </section>
+
+        <section class="task">
+            <h3>2. Create a Vite Project</h3>
+            <p>We will use TypeScript, as it is the industry standard for React development.</p>
+            <pre><code class="language-bash">npm create vite@latest my-react-app -- --template react-ts
+cd my-react-app
+npm install</code></pre>
+        </section>
+
+        <section class="task">
+            <h3>3. Configure VS Code</h3>
+            <p>Install these extensions for the best experience:</p>
+            <ul>
+                <li><strong>ES7+ React/Redux/React-Native snippets</strong> (dsznajder)</li>
+                <li><strong>Prettier - Code formatter</strong></li>
+                <li><strong>ESLint</strong></li>
+                <li><strong>Tailwind CSS IntelliSense</strong> (if using Tailwind)</li>
+            </ul>
+        </section>
+
+        <section class="task">
+            <h3>4. Setup Linting & Formatting</h3>
+            <p>Consistency is key. We'll set up Prettier to run on save.</p>
+            
+            <h4>Create <code>.prettierrc</code>:</h4>
+            <pre><code class="language-json">{
+  "semi": true,
+  "singleQuote": true,
+  "tabWidth": 2,
+  "trailingComma": "es5"
+}</code></pre>
+
+            <h4>Update VS Code Settings (<code>.vscode/settings.json</code>):</h4>
+            <pre><code class="language-json">{
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  }
+}</code></pre>
+        </section>
+
+        <section class="task">
+            <h3>5. Run the App</h3>
+            <pre><code class="language-bash">npm run dev</code></pre>
+            <p>Open the URL shown in the terminal (usually <code>http://localhost:5173</code>).</p>
+        </section>
+
+        <div style="text-align: center; margin-top: 40px;">
+            <a href="module0.html" class="btn-next">Next: Module 0.5 - JS Prerequisites &rarr;</a>
+        </div>
+    </main>
+</body>
+</html>

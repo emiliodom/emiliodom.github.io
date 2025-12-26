@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>App Router Interview Questions - Next.js Guide</title>
     <link rel="stylesheet" href="../assets/css/nextjs_styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <script src="../assets/js/nextjs_layout.js"></script>
 </head>
@@ -61,6 +61,73 @@
                     <li><code>no-store</code> fetch requests.</li>
                 </ul>
                 <p><strong>Forcing Dynamic:</strong> <code>export const dynamic = 'force-dynamic'</code></p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q5: What are Route Handlers?</h3>
+            <div class="answer">
+                <p><strong>Definition:</strong> Route Handlers allow you to create custom request handlers for a given route using the Web Request and Response APIs. They replace API Routes from the Pages Router.</p>
+                <p><strong>File:</strong> Defined in a <code>route.js</code> or <code>route.ts</code> file inside the <code>app</code> directory.</p>
+                <pre><code class="language-javascript">// app/api/users/route.js
+export async function GET(request) {
+  const data = await fetchUsers();
+  return Response.json({ data });
+}</code></pre>
+                <p><strong>Supported Methods:</strong> GET, POST, PUT, PATCH, DELETE, HEAD, and OPTIONS.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q6: How does Data Revalidation work in the App Router?</h3>
+            <div class="answer">
+                <p>Revalidation allows you to update cached data without rebuilding the entire site.</p>
+                <ul>
+                    <li><strong>Time-based Revalidation:</strong> Automatically revalidate data after a certain amount of time has passed.
+                        <br><code>fetch('...', { next: { revalidate: 3600 } })</code>
+                    </li>
+                    <li><strong>On-demand Revalidation:</strong> Manually revalidate data based on an event (e.g., form submission).
+                        <br><code>revalidatePath('/blog')</code> or <code>revalidateTag('posts')</code>
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q7: What is the purpose of Middleware in Next.js?</h3>
+            <div class="answer">
+                <p><strong>Function:</strong> Middleware allows you to run code <em>before</em> a request is completed. You can modify the response by rewriting, redirecting, modifying request headers, or responding directly.</p>
+                <p><strong>Common Use Cases:</strong></p>
+                <ul>
+                    <li>Authentication and Authorization (protecting routes).</li>
+                    <li>Server-side Redirects (e.g., based on user role or locale).</li>
+                    <li>A/B Testing (rewriting to different variants).</li>
+                    <li>Bot protection.</li>
+                </ul>
+                <p><strong>Location:</strong> Defined in <code>middleware.js</code> at the root of your project.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q8: What is the `generateStaticParams` function?</h3>
+            <div class="answer">
+                <p><strong>Purpose:</strong> It is the replacement for <code>getStaticPaths</code> in the App Router.</p>
+                <p><strong>Usage:</strong> It allows you to generate static routes at build time for dynamic segments (e.g., <code>/blog/[slug]</code>).</p>
+                <pre><code class="language-javascript">export async function generateStaticParams() {
+  const posts = await getPosts();
+  return posts.map((post) => ({
+    slug: post.slug,
+  }));
+}</code></pre>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q9: How do you handle errors in the App Router?</h3>
+            <div class="answer">
+                <p><strong>File:</strong> Create an <code>error.js</code> file in the route segment.</p>
+                <p><strong>Mechanism:</strong> It automatically wraps the page in a React Error Boundary. If an error occurs during rendering, the <code>error.js</code> component is displayed instead of crashing the whole app.</p>
+                <p><strong>Recovery:</strong> The component receives a <code>reset()</code> function prop to attempt to re-render the segment.</p>
             </div>
         </section>
     </main>

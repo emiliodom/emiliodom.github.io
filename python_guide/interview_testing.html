@@ -36,6 +36,43 @@
                 <p>Fixtures are functions, which will run before each test function to which it is applied. They are used to feed some data to the tests such as database connections, URLs to test, or some sort of input data.</p>
             </div>
         </div>
+
+        <div class="interview-card">
+            <h3>3. TDD (Test Driven Development)</h3>
+            <p><strong>Question:</strong> Explain the TDD cycle.</p>
+            <div class="answer">
+                <p><strong>Red-Green-Refactor:</strong></p>
+                <ol>
+                    <li><strong>Red:</strong> Write a failing test for a new feature.</li>
+                    <li><strong>Green:</strong> Write the minimum code necessary to pass the test.</li>
+                    <li><strong>Refactor:</strong> Improve the code while keeping the test passing.</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="interview-card">
+            <h3>4. Parametrization</h3>
+            <p><strong>Question:</strong> How do you run the same test with different inputs in pytest?</p>
+            <div class="answer">
+                <p>Using the <code>@pytest.mark.parametrize</code> decorator.</p>
+                <pre><code>@pytest.mark.parametrize("input,expected", [
+    ("3+5", 8),
+    ("2+4", 6),
+    ("6*9", 54),
+])
+def test_eval(input, expected):
+    assert eval(input) == expected</code></pre>
+            </div>
+        </div>
+
+        <div class="interview-card">
+            <h3>5. Coverage</h3>
+            <p><strong>Question:</strong> What is Code Coverage and is 100% coverage necessary?</p>
+            <div class="answer">
+                <p><strong>Definition:</strong> A metric that measures the percentage of your code that is executed when your tests run.</p>
+                <p><strong>Necessity:</strong> 100% coverage is a good goal but not always practical or indicative of bug-free code. It's more important to test critical paths and edge cases than to blindly chase a number.</p>
+            </div>
+        </div>
     </main>
 
     <footer>

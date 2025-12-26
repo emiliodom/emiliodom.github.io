@@ -2,6 +2,7 @@
 const navLinks = [
     { href: "/python_guide/index.html", text: "Home" },
     { href: "/python_guide/use_cases.html", text: "💼 Real World Use Cases" },
+    { href: "/python_guide/setup.html", text: "0. Environment Setup" },
     { href: "/python_guide/module1.html", text: "1. Advanced Python" },
     { href: "/python_guide/module2.html", text: "2. Web Frameworks (FastAPI/Django)" },
     { href: "/python_guide/module3.html", text: "3. Concurrency & AsyncIO" },
@@ -16,55 +17,24 @@ const navLinks = [
     { href: "/python_guide/interview_index.html", text: "📝 Interview Prep" }
 ];
 
-function initLayout() {
-    // 0. Inject Global Nav
-    if (!document.querySelector('.site-nav')) {
+function loadSharedLayout() {
+    const config = {
+        navLinks: navLinks,
+        themeColor: null, // Use default active class
+        footerHtml: '<p>&copy; 2025 Python Guide. Built for Senior Developers.</p>'
+    };
+
+    if (typeof window.initGuideLayout === 'function') {
+        window.initGuideLayout(config);
+    } else {
         const script = document.createElement('script');
-        script.src = '../assets/js/global-nav.js';
+        script.src = '../assets/js/guide-layout.js';
+        script.onload = () => {
+             window.initGuideLayout(config);
+        };
         document.head.appendChild(script);
     }
-
-    // 1. Inject Theme Toggle
-    const themeToggle = document.createElement('button');
-    themeToggle.className = 'theme-toggle';
-    themeToggle.textContent = '🌓 Theme';
-    themeToggle.onclick = toggleTheme;
-    document.body.appendChild(themeToggle);
-
-    // 2. Inject Navigation
-    const nav = document.querySelector('nav');
-    if (nav) {
-        nav.innerHTML = '';
-        navLinks.forEach(link => {
-            const a = document.createElement('a');
-            a.href = link.href;
-            a.textContent = link.text;
-            if (window.location.pathname.endsWith(link.href)) {
-                a.className = 'active';
-            }
-            nav.appendChild(a);
-        });
-    }
-
-    // 3. Inject Footer
-    const footer = document.querySelector('footer');
-    if (footer) {
-        footer.innerHTML = '<p>&copy; 2025 Python Guide. Built for Senior Developers.</p>';
-    }
 }
 
-function toggleTheme() {
-    const body = document.body;
-    if (body.getAttribute('data-theme') === 'dark') {
-        body.removeAttribute('data-theme');
-        localStorage.setItem('theme', 'light');
-    } else {
-        body.setAttribute('data-theme', 'dark');
-        localStorage.setItem('theme', 'dark');
-    }
-}
-
-// Apply theme on load
-if (localStorage.getItem('theme') === 'dark') {
-    document.body.setAttribute('data-theme', 'dark');
-}
+// Run when DOM is ready
+document.addEventListener('DOMContentLoaded', loadSharedLayout);

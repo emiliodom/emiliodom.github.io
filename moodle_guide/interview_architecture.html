@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Moodle Architecture Interview Questions</title>
     <link rel="stylesheet" href="../assets/css/moodle_styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <script src="../assets/js/moodle_layout.js"></script>
 </head>
@@ -99,28 +99,38 @@
         </section>
 
         <section class="qna">
-            <h3>Q10: What is the 'moodledata' directory?</h3>
+            <h3>Q10: What is the Moodle Universal Cache (MUC)?</h3>
             <div class="answer">
-                <p><code>moodledata</code> is a directory outside the web server's public document root that stores user-uploaded files, session data, cache, and temp files. It is critical for security that this folder is not directly accessible via a URL.</p>
+                <p>The MUC is Moodle's caching system that allows administrators to configure how data is cached. It supports multiple backends (stores) like Redis, Memcached, or the file system. Developers use the Cache API to store and retrieve data, while the MUC handles the underlying storage mechanism.</p>
             </div>
         </section>
 
         <section class="qna">
-            <h3>Q11: How does Moodle manage caching?</h3>
+            <h3>Q11: What is the difference between `require_login()` and `isloggedin()`?</h3>
             <div class="answer">
-                <p>Moodle has a sophisticated Moodle Universal Cache (MUC) system. It supports multiple cache stores (File, Session, Redis, Memcached) and definitions. Developers can define caches in <code>db/caches.php</code> to improve performance by storing frequently accessed data.</p>
+                <p><code>isloggedin()</code> returns a boolean indicating if a user is authenticated. It does not stop script execution.</p>
+                <p><code>require_login()</code> checks if the user is logged in and has access to the specified course or module. If not, it redirects them to the login page or displays an error. It is a security gatekeeper.</p>
             </div>
         </section>
 
         <section class="qna">
-            <h3>Q12: What is the purpose of 'config.php'?</h3>
+            <h3>Q12: Explain the concept of 'Mustache Templates' in Moodle.</h3>
             <div class="answer">
-                <p><code>config.php</code> is the primary configuration file. It defines the database connection type, host, name, user, and password, as well as the <code>wwwroot</code> (site URL) and <code>dataroot</code> (moodledata path). It is created during installation.</p>
+                <p>Moodle uses Mustache for templating to separate logic (PHP) from presentation (HTML). Templates are stored in the <code>templates</code> folder of a plugin. Data is passed to the template via a context array, and renderers render them using <code>$OUTPUT->render_from_template()</code>.</p>
             </div>
         </section>
 
         <section class="qna">
-            <h3>Q13: Explain the difference between DDL and DML in Moodle.</h3>
+            <h3>Q13: What is the String Manager and why is it important?</h3>
+            <div class="answer">
+                <p><strong>Function:</strong> The String Manager handles internationalization (i18n). It retrieves localized strings from language packs.</p>
+                <p><strong>Usage:</strong> <code>get_string('identifier', 'component', $a)</code>.</p>
+                <p><strong>Importance:</strong> Hardcoding text in Moodle is strictly forbidden. Using the String Manager ensures the interface can be translated into any language supported by Moodle.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q14: Explain the difference between DDL and DML in Moodle.</h3>
             <div class="answer">
                 <ul>
                     <li><strong>DDL (Data Definition Language):</strong> Managed by <code>$manager = $DB->get_manager();</code>. Used for creating/modifying tables and fields (e.g., during installation or upgrade).</li>
@@ -130,119 +140,119 @@
         </section>
 
         <section class="qna">
-            <h3>Q14: What are 'Mustache' templates?</h3>
+            <h3>Q15: What are 'Mustache' templates?</h3>
             <div class="answer">
                 <p>Mustache is a logic-less template engine used by Moodle for rendering the UI. Templates are stored in the <code>templates</code> folder of a plugin or theme. They allow for a clear separation between PHP logic and HTML structure, facilitating easier theming and JavaScript interaction.</p>
             </div>
         </section>
 
         <section class="qna">
-            <h3>Q15: How are JavaScript modules handled in Moodle?</h3>
+            <h3>Q16: How are JavaScript modules handled in Moodle?</h3>
             <div class="answer">
                 <p>Moodle uses AMD (Asynchronous Module Definition) modules via RequireJS. JavaScript files are placed in the <code>amd/src</code> directory and compiled (transpiled/minified) into <code>amd/build</code>. They are loaded in PHP using <code>$PAGE->requires->js_call_amd()</code>.</p>
             </div>
         </section>
 
         <section class="qna">
-            <h3>Q16: What is the 'admin' directory for?</h3>
+            <h3>Q17: What is the 'admin' directory for?</h3>
             <div class="answer">
                 <p>The <code>/admin</code> directory contains the code for the Site Administration interface. It handles configuration settings, user management, plugin management, and system reports. It is the control center for Moodle administrators.</p>
             </div>
         </section>
 
         <section class="qna">
-            <h3>Q17: What is a 'course format'?</h3>
+            <h3>Q18: What is a 'course format'?</h3>
             <div class="answer">
                 <p>A course format determines the layout of a course page (e.g., Weekly, Topics, Social). It controls how sections and activities are displayed. Developers can create custom course formats to change the learning experience structure.</p>
             </div>
         </section>
 
         <section class="qna">
-            <h3>Q18: What are 'Filters' in Moodle?</h3>
+            <h3>Q19: What are 'Filters' in Moodle?</h3>
             <div class="answer">
                 <p>Filters are plugins that process text before it is output to the browser. They can auto-link words, embed multimedia, or convert mathematical notation (e.g., TeX) into images. They operate on content output by other plugins.</p>
             </div>
         </section>
 
         <section class="qna">
-            <h3>Q19: How does the 'Backup and Restore' system work?</h3>
+            <h3>Q20: How does the 'Backup and Restore' system work?</h3>
             <div class="answer">
                 <p>The Backup and Restore API allows courses, activities, and user data to be exported to <code>.mbz</code> files and imported back. It uses a step-based architecture to traverse the course structure and serialize data into XML, handling dependencies and file references.</p>
             </div>
         </section>
 
         <section class="qna">
-            <h3>Q20: What is the 'Web Services' API?</h3>
+            <h3>Q21: What is the 'Web Services' API?</h3>
             <div class="answer">
                 <p>The Web Services API allows external systems (like the Moodle Mobile App or HR systems) to interact with Moodle. It supports protocols like REST, SOAP, and XML-RPC. Functions are defined in <code>db/services.php</code> and enforce permission checks.</p>
             </div>
         </section>
 
         <section class="qna">
-            <h3>Q21: What is the purpose of 'upgrade.php'?</h3>
+            <h3>Q22: What is the purpose of 'upgrade.php'?</h3>
             <div class="answer">
                 <p><code>upgrade.php</code> (in <code>db/</code> folder of a plugin) contains the code to migrate the database schema and data from an older version of a plugin to a newer one. It is executed automatically when the admin visits the Notifications page after updating the plugin code.</p>
             </div>
         </section>
 
         <section class="qna">
-            <h3>Q22: What is the 'Navigation' API?</h3>
+            <h3>Q23: What is the 'Navigation' API?</h3>
             <div class="answer">
                 <p>The Navigation API builds the navigation block and the navigation bar (breadcrumbs). Plugins can extend the navigation by creating a <code>lib.php</code> function named <code>{pluginname}_extend_navigation()</code> or <code>{pluginname}_extend_settings_navigation()</code>.</p>
             </div>
         </section>
 
         <section class="qna">
-            <h3>Q23: What is 'YUI' and is it still used?</h3>
+            <h3>Q24: What is 'YUI' and is it still used?</h3>
             <div class="answer">
                 <p>YUI (Yahoo User Interface) was the primary JavaScript library in older Moodle versions. While still present for backward compatibility, modern Moodle development prefers jQuery and ES6 modules (AMD). New development should avoid YUI.</p>
             </div>
         </section>
 
         <section class="qna">
-            <h3>Q24: How do you debug in Moodle?</h3>
+            <h3>Q25: How do you debug in Moodle?</h3>
             <div class="answer">
                 <p>Debugging is enabled in <code>config.php</code> by setting <code>$CFG->debug</code> and <code>$CFG->debugdisplay</code>. Developers use <code>debugging()</code> calls to log messages. The 'Developer' debugging level shows all PHP notices and warnings.</p>
             </div>
         </section>
 
         <section class="qna">
-            <h3>Q25: What is the 'String Manager'?</h3>
+            <h3>Q26: What is the 'String Manager'?</h3>
             <div class="answer">
                 <p>The String Manager handles localization. It retrieves strings from language packs using <code>get_string()</code>. It supports string overriding and customization without changing the core language files.</p>
             </div>
         </section>
 
         <section class="qna">
-            <h3>Q26: What is a 'Capability'?</h3>
+            <h3>Q27: What is a 'Capability'?</h3>
             <div class="answer">
                 <p>A capability is a specific permission (e.g., <code>mod/forum:replypost</code>). Capabilities are grouped into Roles (e.g., Student, Teacher). The combination of Role assignments in a Context determines a user's actual permissions.</p>
             </div>
         </section>
 
         <section class="qna">
-            <h3>Q27: What is the 'Form API'?</h3>
+            <h3>Q28: What is the 'Form API'?</h3>
             <div class="answer">
                 <p>The Form API (moodleform) is a wrapper around the PEAR HTML_QuickForm library. It provides a standardized way to create secure forms with validation, file uploads, and consistent styling. Forms are defined as classes extending <code>moodleform</code>.</p>
             </div>
         </section>
 
         <section class="qna">
-            <h3>Q28: What is 'Purge Caches'?</h3>
+            <h3>Q29: What is 'Purge Caches'?</h3>
             <div class="answer">
                 <p>Purging caches clears all Moodle caches (MUC, theme, javascript, language). It is necessary when making changes to <code>db/</code> files, language strings, or theme CSS/JS to ensure the changes are reflected immediately.</p>
             </div>
         </section>
 
         <section class="qna">
-            <h3>Q29: What is the 'Task API'?</h3>
+            <h3>Q30: What is the 'Task API'?</h3>
             <div class="answer">
                 <p>The Task API manages scheduled tasks (cron) and ad-hoc tasks (background processing). It allows tasks to be scheduled, run in parallel, and managed via the admin interface. It replaces the legacy <code>cron.php</code> function approach.</p>
             </div>
         </section>
 
         <section class="qna">
-            <h3>Q30: What is 'Behat' testing?</h3>
+            <h3>Q31: What is 'Behat' testing?</h3>
             <div class="answer">
                 <p>Behat is a Behavior Driven Development (BDD) framework used for acceptance testing in Moodle. It allows developers to write human-readable scenarios (Gherkin syntax) that simulate user interactions with the browser to verify features work as expected.</p>
             </div>

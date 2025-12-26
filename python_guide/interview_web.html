@@ -47,6 +47,70 @@
             <p><strong>Answer:</strong> It happens when code executes N additional query statements to fetch the same data that could have been retrieved when executing the primary query.</p>
             <p><strong>Fix:</strong> Use <code>select_related</code> (JOIN) or <code>prefetch_related</code> (separate query + Python join) in Django.</p>
         </div>
+
+        <div class="question-card">
+            <h3>5. What is WSGI vs ASGI?</h3>
+            <p><strong>Answer:</strong></p>
+            <ul>
+                <li><strong>WSGI (Web Server Gateway Interface):</strong> The synchronous standard for Python web applications (Django, Flask). It handles one request at a time per worker.</li>
+                <li><strong>ASGI (Asynchronous Server Gateway Interface):</strong> The spiritual successor to WSGI, designed for asynchronous applications (FastAPI, Django Channels). It supports WebSockets and long-polling.</li>
+            </ul>
+        </div>
+
+        <div class="question-card">
+            <h3>6. Explain Django Middleware.</h3>
+            <p><strong>Answer:</strong> Middleware is a framework of hooks into Django's request/response processing. It's a light, low-level "plugin" system for globally altering Django's input or output.</p>
+            <p><strong>Examples:</strong> AuthenticationMiddleware (associates users with requests), SessionMiddleware (manages sessions), GZipMiddleware (compresses content).</p>
+        </div>
+
+        <div class="question-card">
+            <h3>7. How does Dependency Injection work in FastAPI?</h3>
+            <p><strong>Answer:</strong> FastAPI has a powerful Dependency Injection system. You create a function (the dependency) and declare it in the path operation function's parameters using <code>Depends()</code>.</p>
+            <p>FastAPI takes care of executing the dependency, handling sub-dependencies, and passing the result to your function. This is great for database sessions, authentication, and shared logic.</p>
+        </div>
+
+        <div class="question-card">
+            <h3>8. What are Django Signals?</h3>
+            <p><strong>Answer:</strong> Signals allow certain senders to notify a set of receivers that some action has taken place. They allow decoupled applications to get notified when events occur elsewhere in the framework.</p>
+            <p><strong>Common Signals:</strong> <code>pre_save</code>, <code>post_save</code>, <code>pre_delete</code>, <code>post_delete</code>.</p>
+        </div>
+
+        <div class="question-card">
+            <h3>9. How do you secure a Python Web App?</h3>
+            <p><strong>Answer:</strong></p>
+            <ul>
+                <li><strong>SQL Injection:</strong> Use ORMs (Django ORM, SQLAlchemy) which parameterize queries by default.</li>
+                <li><strong>XSS (Cross-Site Scripting):</strong> Templates (Jinja2, DTL) auto-escape variables.</li>
+                <li><strong>CSRF (Cross-Site Request Forgery):</strong> Use CSRF tokens for state-changing requests (POST, PUT, DELETE).</li>
+                <li><strong>Dependencies:</strong> Regularly audit packages (`pip audit`).</li>
+            </ul>
+        </div>
+
+        <div class="question-card">
+            <h3>10. What is Pydantic and why is it used in FastAPI?</h3>
+            <p><strong>Answer:</strong> Pydantic is a data validation and settings management library using Python type annotations. FastAPI uses it to:</p>
+            <ul>
+                <li>Validate request data (query params, body).</li>
+                <li>Serialize response data (convert ORM objects to JSON).</li>
+                <li>Generate OpenAPI (Swagger) schemas automatically.</li>
+            </ul>
+        </div>
+
+        <div class="question-card">
+            <h3>11. How do you handle background tasks in Python web apps?</h3>
+            <p><strong>Answer:</strong> For long-running tasks (sending emails, processing images), you shouldn't block the request loop.</p>
+            <ul>
+                <li><strong>Celery:</strong> The industry standard distributed task queue. Requires a broker like Redis or RabbitMQ.</li>
+                <li><strong>FastAPI BackgroundTasks:</strong> A simple, built-in way to run a function after returning a response. Good for small tasks.</li>
+                <li><strong>Redis Queue (RQ):</strong> A lighter alternative to Celery.</li>
+            </ul>
+        </div>
+
+        <div class="question-card">
+            <h3>12. What is the Global Interpreter Lock (GIL)?</h3>
+            <p><strong>Answer:</strong> A mutex that allows only one thread to hold the control of the Python interpreter. This means even in a multi-threaded Python program, only one thread executes Python bytecode at a time.</p>
+            <p><strong>Impact on Web:</strong> It limits CPU-bound performance. However, web apps are usually I/O-bound (waiting for DB/Network), so threading or async (which releases the GIL during I/O) still provides concurrency.</p>
+        </div>
     </main>
 
     <footer></footer>

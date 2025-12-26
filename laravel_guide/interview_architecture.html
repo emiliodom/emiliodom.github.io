@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Laravel Architecture Interview Questions - Laravel Guide</title>
     <link rel="stylesheet" href="../assets/css/laravel_styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <script src="../assets/js/laravel_layout.js"></script>
 </head>
@@ -45,6 +45,29 @@
             <div class="answer">
                 <p><strong>Concept:</strong> A layer of abstraction between the domain logic and data mapping layers. It allows you to decouple your business logic from the specific database implementation (Eloquent).</p>
                 <p><strong>Relevance:</strong> It is debated. For simple apps, Eloquent is sufficient and Repositories add boilerplate. For complex, enterprise apps where you might switch data sources or need strict testing boundaries, it is highly valuable.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q4: Explain the SOLID principles in the context of Laravel.</h3>
+            <div class="answer">
+                <p><strong>S - Single Responsibility:</strong> A class should have one reason to change. (e.g., Don't put validation logic in your Controller; use Form Requests).</p>
+                <p><strong>O - Open/Closed:</strong> Open for extension, closed for modification. (e.g., Use Laravel's Macros or Pipelines to add functionality without changing core code).</p>
+                <p><strong>L - Liskov Substitution:</strong> Subtypes must be substitutable for their base types. (e.g., Any implementation of a <code>PaymentGatewayInterface</code> should work interchangeably).</p>
+                <p><strong>I - Interface Segregation:</strong> Clients shouldn't depend on methods they don't use. (e.g., Split large interfaces into smaller ones).</p>
+                <p><strong>D - Dependency Inversion:</strong> Depend on abstractions, not concretions. (e.g., Type-hint interfaces in constructors, not concrete classes).</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q5: What are Service Providers?</h3>
+            <div class="answer">
+                <p><strong>Role:</strong> The central place of all Laravel application bootstrapping. They are used to register services, event listeners, middleware, and routes.</p>
+                <p><strong>Methods:</strong></p>
+                <ul>
+                    <li><code>register()</code>: Only bind things into the service container. No other logic.</li>
+                    <li><code>boot()</code>: Called after all other service providers have been registered. You can access other services here (e.g., Event listeners, Routes).</li>
+                </ul>
             </div>
         </section>
     </main>

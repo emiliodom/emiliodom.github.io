@@ -45,7 +45,7 @@
                 <ul>
                     <li><strong>Code:</strong> Baked into the Docker image. Cannot be changed at runtime (no plugin updates via WP Admin).</li>
                     <li><strong>Media:</strong> Offloaded to S3 (since local disk is ephemeral).</li>
-                    <li><strong>Database:</strong> External RDS/MySQL service.</li>
+                    <li><strong>Database:</strong> External RDS (MySQL/Postgres) service.</li>
                     <li><strong>Logs:</strong> Streamed to CloudWatch/Datadog.</li>
                 </ul>
             </div>
@@ -86,6 +86,61 @@
                     <li>It rewrites the URL in the database to point to the S3 (or CDN) URL.</li>
                     <li>This removes the dependency on local server storage, enabling auto-scaling.</li>
                 </ul>
+            </div>
+        </div>
+
+        <div class="interview-question">
+            <h3>6. What is WP-CLI and how do you use it for automation?</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong> WP-CLI is the command-line interface for WordPress. It allows you to perform actions without a web browser.</p>
+                <ul>
+                    <li><strong>Automation:</strong> You can script complex tasks like creating users, installing plugins, regenerating thumbnails, or searching/replacing database strings.</li>
+                    <li><strong>CI/CD:</strong> It is essential for deployment scripts (e.g., `wp core update-db`, `wp cache flush`).</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="interview-question">
+            <h3>7. Explain the difference between a Reverse Proxy and a Load Balancer in a WP context.</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong></p>
+                <ul>
+                    <li><strong>Load Balancer (e.g., AWS ALB):</strong> Distributes incoming traffic across multiple WordPress application servers to ensure high availability and scalability.</li>
+                    <li><strong>Reverse Proxy (e.g., Nginx, Varnish):</strong> Sits in front of the web server. It handles caching (serving static HTML to anonymous users), SSL termination, and compression, reducing the load on PHP/Database.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="interview-question">
+            <h3>8. How do you secure a WordPress installation at the server level?</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong></p>
+                <ul>
+                    <li><strong>File Permissions:</strong> Ensure web server can only write to `wp-content/uploads`. Core files should be read-only.</li>
+                    <li><strong>Firewall (WAF):</strong> Use Cloudflare or AWS WAF to block SQL injection and XSS attacks before they reach the server.</li>
+                    <li><strong>Disable PHP Execution:</strong> Prevent PHP execution in the `uploads` directory.</li>
+                    <li><strong>Fail2Ban:</strong> Ban IPs that repeatedly fail login attempts.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="interview-question">
+            <h3>9. What is Object Caching and why is it important?</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong> Object Caching stores the results of complex database queries in memory (Redis or Memcached) so they don't need to be computed again.</p>
+                <p>WordPress has a built-in Object Cache class, but it is non-persistent by default. Using a persistent backend like Redis drastically reduces database load for dynamic pages.</p>
+            </div>
+        </div>
+
+        <div class="interview-question">
+            <h3>10. How do you debug a "White Screen of Death" in production without showing errors to users?</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong></p>
+                <ol>
+                    <li>Check the server error logs (Nginx/Apache/PHP-FPM logs).</li>
+                    <li>Enable `WP_DEBUG` and `WP_DEBUG_LOG` in `wp-config.php`, but keep `WP_DEBUG_DISPLAY` set to `false`. This writes errors to `wp-content/debug.log` instead of the screen.</li>
+                    <li>Use a monitoring tool like New Relic or Sentry to capture the stack trace.</li>
+                </ol>
             </div>
         </div>
 

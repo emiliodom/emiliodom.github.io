@@ -23,6 +23,44 @@
             <li><strong>S3 Offload:</strong> Storing media files in the cloud.</li>
             <li><strong>GitLab CI:</strong> Automating the build and deploy process.</li>
         </ul>
+
+        <h3>1. The Container Philosophy</h3>
+        <p>Containers are ephemeral. Any file written to disk (like uploads) will be lost on restart. We must offload state.</p>
+
+        <h3>2. Dockerfile for WordPress</h3>
+        <p>We need a multi-stage build. Stage 1 installs Composer dependencies. Stage 2 copies them to the final PHP-FPM image.</p>
+        <pre><code class="language-dockerfile">FROM composer:2 as builder
+COPY . /app
+RUN composer install --no-dev
+
+FROM php:8.2-fpm-alpine
+COPY --from=builder /app /var/www/html</code></pre>
+
+        <h3>3. Nginx Configuration</h3>
+        <p>Run Nginx in a separate container (sidecar) or use a single image with Supervisor. We prefer the sidecar pattern for Fargate.</p>
+
+        <h3>4. S3 Offload</h3>
+        <p>Install `humanmade/s3-uploads` via Composer to automatically push media library uploads to an AWS S3 bucket.</p>
+
+        <h3>5. Environment Secrets</h3>
+        <p>Never bake secrets into the image. Inject them at runtime using AWS Secrets Manager or ECS Environment Variables.</p>
+
+        <h3>6. AWS Fargate Setup</h3>
+        <p>Define a Task Definition with two containers: `php` and `nginx`. Map port 80 to the Nginx container.</p>
+
+        <h3>7. Database Connection</h3>
+        <p>Connect to AWS RDS (PostgreSQL) using the endpoint provided in the environment variables.</p>
+
+        <h3>8. Redis for Sessions</h3>
+        <p>Configure PHP to store sessions in Redis, not on the filesystem, to allow horizontal scaling.</p>
+        <pre><code class="language-ini">session.save_handler = redis
+session.save_path = "tcp://redis:6379"</code></pre>
+
+        <h3>9. GitLab CI/CD Pipeline</h3>
+        <p>Build the Docker image, push to ECR, and update the ECS service on every merge to `main`.</p>
+
+        <h3>10. Health Checks</h3>
+        <p>Implement a `/healthz` endpoint in Nginx/PHP to let the Load Balancer know if the container is ready to accept traffic.</p>
     </main>
     <footer></footer>
     <script>initLayout();</script>

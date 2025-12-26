@@ -45,6 +45,52 @@
                 </ul>
             </div>
         </div>
+
+        <div class="interview-card">
+            <h3>3. Caching Strategies</h3>
+            <p><strong>Question:</strong> Compare Write-Through, Write-Back, and Cache-Aside strategies.</p>
+            <div class="answer">
+                <ul>
+                    <li><strong>Cache-Aside (Lazy Loading):</strong> App checks cache. If miss, reads DB, updates cache, returns data. Best for read-heavy workloads.</li>
+                    <li><strong>Write-Through:</strong> App writes to cache and DB synchronously. Ensures consistency but higher write latency.</li>
+                    <li><strong>Write-Back (Write-Behind):</strong> App writes to cache only. Cache writes to DB asynchronously. Fastest writes, but risk of data loss if cache fails.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="interview-card">
+            <h3>4. Database Sharding</h3>
+            <p><strong>Question:</strong> What is Sharding and when should you use it?</p>
+            <div class="answer">
+                <p><strong>Definition:</strong> Horizontal scaling method that splits a large database into smaller, faster, more easily managed parts called data shards.</p>
+                <p><strong>When to use:</strong> When a single database server cannot handle the write volume or storage requirements.</p>
+                <p><strong>Challenges:</strong> Complex queries (joins across shards), rebalancing data, and handling transactions.</p>
+            </div>
+        </div>
+
+        <div class="interview-card">
+            <h3>5. Message Queues (Celery/RabbitMQ)</h3>
+            <p><strong>Question:</strong> Why use a message queue in a system architecture?</p>
+            <div class="answer">
+                <p><strong>Decoupling:</strong> Producers and consumers don't need to know about each other.</p>
+                <p><strong>Asynchronous Processing:</strong> Offload heavy tasks (email sending, video processing) from the main request-response cycle.</p>
+                <p><strong>Load Leveling:</strong> If traffic spikes, the queue absorbs the load, allowing workers to process tasks at their own pace without crashing the system.</p>
+            </div>
+        </div>
+
+        <div class="interview-card">
+            <h3>6. CAP Theorem</h3>
+            <p><strong>Question:</strong> Explain the CAP Theorem.</p>
+            <div class="answer">
+                <p>In a distributed system, you can only guarantee two of the following three:</p>
+                <ul>
+                    <li><strong>Consistency:</strong> Every read receives the most recent write or an error.</li>
+                    <li><strong>Availability:</strong> Every request receives a (non-error) response, without the guarantee that it contains the most recent write.</li>
+                    <li><strong>Partition Tolerance:</strong> The system continues to operate despite an arbitrary number of messages being dropped or delayed by the network between nodes.</li>
+                </ul>
+                <p>Since network partitions are inevitable, you must choose between Consistency (CP) and Availability (AP).</p>
+            </div>
+        </div>
     </main>
 
     <footer>

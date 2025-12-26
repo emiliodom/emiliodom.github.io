@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Laravel Security Interview Questions - Laravel Guide</title>
     <link rel="stylesheet" href="../assets/css/laravel_styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <script src="../assets/js/laravel_layout.js"></script>
 </head>
@@ -41,6 +41,67 @@
             <div class="answer">
                 <p><strong>Gates:</strong> Closure-based authorization checks. Good for simple, unrelated actions (e.g., <code>Gate::allows('access-admin')</code>).</p>
                 <p><strong>Policies:</strong> Classes that organize authorization logic around a specific model (e.g., <code>PostPolicy</code> with methods like <code>view</code>, <code>create</code>, <code>update</code>).</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q4: What is Mass Assignment Vulnerability and how do you prevent it?</h3>
+            <div class="answer">
+                <p><strong>Vulnerability:</strong> Occurs when a user passes unexpected HTTP parameters that modify database columns you didn't intend to expose (e.g., passing <code>is_admin=1</code> in a registration form).</p>
+                <p><strong>Prevention:</strong> Laravel models are protected by default. You must explicitly define which attributes are mass-assignable using <code>$fillable</code> or which are restricted using <code>$guarded</code>.</p>
+                <pre><code class="language-php">class User extends Model {
+    // Only these can be filled via create() or update()
+    protected $fillable = ['name', 'email', 'password'];
+    
+    // OR: Everything except these can be filled
+    // protected $guarded = ['id', 'is_admin'];
+}</code></pre>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q5: How does Blade protect against XSS (Cross-Site Scripting)?</h3>
+            <div class="answer">
+                <p><strong>Escaping:</strong> By default, Blade's <code>{{ $variable }}</code> syntax automatically runs PHP's <code>htmlspecialchars</code> function, converting special characters to HTML entities. This prevents malicious scripts from executing.</p>
+                <p><strong>Raw Output:</strong> If you explicitly need to render HTML (e.g., from a CMS), you use <code>{!! $variable !!}</code>. This should only be used with trusted content or content that has been sanitized (e.g., using HTML Purifier).</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q6: What are Signed URLs and when would you use them?</h3>
+            <div class="answer">
+                <p><strong>Definition:</strong> URLs that contain a cryptographic signature hash appended to the query string. Laravel verifies that the URL has not been modified since it was created.</p>
+                <p><strong>Use Cases:</strong></p>
+                <ul>
+                    <li><strong>Email Verification:</strong> Links sent to users to verify their email address.</li>
+                    <li><strong>Unsubscribe Links:</strong> Allowing a user to unsubscribe without logging in.</li>
+                    <li><strong>Temporary Access:</strong> Granting access to a specific resource for a limited time (using <code>temporarySignedRoute</code>).</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q7: What is the difference between Hashing and Encryption in Laravel?</h3>
+            <div class="answer">
+                <p><strong>Hashing (<code>Hash::make</code>):</strong> One-way transformation. You cannot retrieve the original value. Used for passwords. Laravel uses Bcrypt or Argon2.</p>
+                <p><strong>Encryption (<code>Crypt::encryptString</code>):</strong> Two-way transformation. You can decrypt the value to get the original data using the application key (APP_KEY). Used for sensitive user data like SSNs or API tokens stored in the DB.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q8: What is the difference between `encrypt` and `hash`?</h3>
+            <div class="answer">
+                <p><strong>Encryption:</strong> Two-way process. Data is scrambled using a key and can be unscrambled (decrypted) using the same key. Used for sensitive data you need to retrieve later (e.g., credit card tokens, PII).</p>
+                <p><strong>Hashing:</strong> One-way process. Data is scrambled into a fixed-length string and cannot be reversed. Used for verifying data integrity, such as passwords.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q9: How do you secure API routes in Laravel?</h3>
+            <div class="answer">
+                <p><strong>Sanctum / Passport:</strong> Use Laravel Sanctum for SPA or simple token-based authentication. Use Passport for full OAuth2 implementation.</p>
+                <p><strong>Throttling:</strong> Apply rate limiting middleware (<code>throttle:api</code>) to prevent abuse.</p>
+                <p><strong>HTTPS:</strong> Always enforce HTTPS to encrypt data in transit.</p>
             </div>
         </section>
     </main>

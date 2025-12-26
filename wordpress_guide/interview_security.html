@@ -99,6 +99,41 @@ $wpdb->query(
             </div>
         </div>
 
+        <div class="interview-question">
+            <h3>6. What is the difference between `current_user_can()` and `user_can()`?</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong></p>
+                <ul>
+                    <li><strong>`current_user_can( $capability )`:</strong> Checks the permissions of the <em>currently logged-in</em> user. This is the most common check used in themes and plugins.</li>
+                    <li><strong>`user_can( $user_id, $capability )`:</strong> Checks the permissions of a <em>specific</em> user (by ID). Useful for checking if an author can edit a post without logging in as them.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="interview-question">
+            <h3>7. Explain Cross-Site Scripting (XSS) in the context of WordPress.</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong> XSS occurs when an attacker injects malicious scripts into content that is viewed by other users.</p>
+                <p><strong>WordPress Context:</strong> If a plugin saves user input (like a comment or form field) without sanitization and then outputs it without escaping, a script tag `&lt;script&gt;alert('hacked')&lt;/script&gt;` could execute in the admin dashboard.</p>
+                <p><strong>Prevention:</strong></p>
+                <ul>
+                    <li><strong>Sanitize Input:</strong> `sanitize_text_field()`, `wp_kses_post()`.</li>
+                    <li><strong>Escape Output:</strong> `esc_html()`, `esc_js()`, `esc_url()`.</li>
+                    <li><strong>Content Security Policy (CSP):</strong> HTTP headers that restrict where scripts can load from.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="interview-question">
+            <h3>8. Why should you disable file editing in the dashboard?</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong> The built-in Theme and Plugin Editor allows admins to edit PHP files directly from the dashboard.</p>
+                <p><strong>Risk:</strong> If an attacker gains admin access (via compromised password or XSS), they can use this editor to inject a backdoor or malware directly into the site code.</p>
+                <p><strong>Fix:</strong> Add this to `wp-config.php`:</p>
+                <pre><code class="language-php">define( 'DISALLOW_FILE_EDIT', true );</code></pre>
+            </div>
+        </div>
+
     </main>
 
     <footer>

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Moodle Administration Interview Questions</title>
     <link rel="stylesheet" href="../assets/css/moodle_styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <script src="../assets/js/moodle_layout.js"></script>
 </head>
@@ -102,6 +102,32 @@ $CFG->debugdisplay = 1;</code></pre>
             <h3>Q10: What is a 'Web Service Token'?</h3>
             <div class="answer">
                 <p>A token is a unique string that acts as a key for an external application to access Moodle's API on behalf of a specific user. It replaces the need to send a username and password with every request.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q10: How does the Backup and Restore system work?</h3>
+            <div class="answer">
+                <p>Moodle's backup system serializes course data (activities, users, grades) into an <code>.mbz</code> file (a zipped XML structure). The restore process reads this file and recreates the course elements. It uses a controller-worker pattern and can be executed asynchronously.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q11: What are some essential CLI commands for administrators?</h3>
+            <div class="answer">
+                <ul>
+                    <li><code>php admin/cli/cron.php</code>: Runs the cron tasks manually.</li>
+                    <li><code>php admin/cli/purge_caches.php</code>: Clears all Moodle caches.</li>
+                    <li><code>php admin/cli/maintenance.php</code>: Toggles maintenance mode.</li>
+                    <li><code>php admin/cli/cfg.php</code>: View or set configuration variables.</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q12: How do you reset a user's password from the command line?</h3>
+            <div class="answer">
+                <p>You can use the <code>admin/cli/reset_password.php</code> script. Usage: <code>php admin/cli/reset_password.php --username=admin --newpassword=NewPass123!</code>. This is useful if the admin gets locked out.</p>
             </div>
         </section>
 

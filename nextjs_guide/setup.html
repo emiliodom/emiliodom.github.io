@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 0: Next.js Environment Setup</title>
+    <link rel="stylesheet" href="../assets/css/nextjs_styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <script src="../assets/js/nextjs_layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Module 0: Environment Setup</h1>
+        <p>Initializing a production-ready Next.js 14+ application.</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section class="crash-course">
+            <h2>🚀 The Full Stack Framework</h2>
+            <p>Next.js is a framework built on top of React that adds server-side rendering, routing, and API handling. It is the default choice for modern React applications.</p>
+        </section>
+
+        <section class="task">
+            <h3>1. System Requirements</h3>
+            <ul>
+                <li><strong>Node.js:</strong> 18.17 or later.</li>
+                <li><strong>OS:</strong> macOS, Windows (WSL2 recommended), or Linux.</li>
+            </ul>
+        </section>
+
+        <section class="task">
+            <h3>2. Create Next.js App</h3>
+            <p>We will use the App Router, TypeScript, and Tailwind CSS.</p>
+            <pre><code class="language-bash">npx create-next-app@latest my-next-app</code></pre>
+            
+            <h4>Recommended Selections:</h4>
+            <ul>
+                <li>Would you like to use TypeScript? <strong>Yes</strong></li>
+                <li>Would you like to use ESLint? <strong>Yes</strong></li>
+                <li>Would you like to use Tailwind CSS? <strong>Yes</strong></li>
+                <li>Would you like to use `src/` directory? <strong>Yes</strong> (Cleaner structure)</li>
+                <li>Would you like to use App Router? <strong>Yes</strong> (The modern standard)</li>
+                <li>Would you like to customize the default import alias (@/*)? <strong>No</strong></li>
+            </ul>
+        </section>
+
+        <section class="task">
+            <h3>3. Project Structure</h3>
+            <p>Understanding the <code>src/app</code> directory is crucial.</p>
+            <ul>
+                <li><code>page.tsx</code>: The UI for a route.</li>
+                <li><code>layout.tsx</code>: Shared UI (headers, footers) for a segment and its children.</li>
+                <li><code>loading.tsx</code>: Loading UI for a segment.</li>
+                <li><code>error.tsx</code>: Error UI for a segment.</li>
+            </ul>
+        </section>
+
+        <section class="task">
+            <h3>4. VS Code Setup</h3>
+            <p>In addition to standard React extensions, install:</p>
+            <ul>
+                <li><strong>Next.js Snippets</strong></li>
+                <li><strong>Tailwind CSS IntelliSense</strong> (Critical for class autocompletion)</li>
+            </ul>
+        </section>
+
+        <section class="task">
+            <h3>5. Run Development Server</h3>
+            <pre><code class="language-bash">cd my-next-app
+npm run dev</code></pre>
+            <p>Visit <code>http://localhost:3000</code>.</p>
+        </section>
+
+        <div style="text-align: center; margin-top: 40px;">
+            <a href="module1.html" class="btn-next">Next: Module 1 - App Router & Server Components &rarr;</a>
+        </div>
+    </main>
+</body>
+</html>

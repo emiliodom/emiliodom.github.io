@@ -34,6 +34,49 @@
                 <p><strong>TCP:</strong> Connection-oriented, reliable, ordered, slower (e.g., HTTP, SSH).<br><strong>UDP:</strong> Connectionless, unreliable, unordered, faster (e.g., DNS, Streaming).</p>
             </div>
         </div>
+
+        <div class="interview-card">
+            <h3>3. HTTP Status Codes</h3>
+            <p><strong>Question:</strong> What do the different ranges of HTTP status codes mean?</p>
+            <div class="answer">
+                <ul>
+                    <li><strong>1xx:</strong> Informational (e.g., 100 Continue).</li>
+                    <li><strong>2xx:</strong> Success (e.g., 200 OK, 201 Created).</li>
+                    <li><strong>3xx:</strong> Redirection (e.g., 301 Moved Permanently, 302 Found).</li>
+                    <li><strong>4xx:</strong> Client Error (e.g., 400 Bad Request, 401 Unauthorized, 403 Forbidden, 404 Not Found).</li>
+                    <li><strong>5xx:</strong> Server Error (e.g., 500 Internal Server Error, 502 Bad Gateway).</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="interview-card">
+            <h3>4. Load Balancing</h3>
+            <p><strong>Question:</strong> What is a Load Balancer and what algorithms does it use?</p>
+            <div class="answer">
+                <p><strong>Concept:</strong> A device or software that distributes network traffic across multiple servers to ensure reliability and performance.</p>
+                <p><strong>Algorithms:</strong></p>
+                <ul>
+                    <li><strong>Round Robin:</strong> Sequential distribution.</li>
+                    <li><strong>Least Connections:</strong> Sends traffic to the server with the fewest active connections.</li>
+                    <li><strong>IP Hash:</strong> Uses the client's IP to determine which server receives the request (sticky sessions).</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="interview-card">
+            <h3>5. SSL/TLS Handshake</h3>
+            <p><strong>Question:</strong> Briefly explain the SSL/TLS handshake.</p>
+            <div class="answer">
+                <p>It is the process of establishing a secure connection.</p>
+                <ol>
+                    <li><strong>Client Hello:</strong> Client sends supported cipher suites and random number.</li>
+                    <li><strong>Server Hello:</strong> Server selects a cipher suite, sends its certificate and random number.</li>
+                    <li><strong>Key Exchange:</strong> Client verifies certificate and sends a pre-master secret encrypted with the server's public key.</li>
+                    <li><strong>Session Keys:</strong> Both sides generate session keys.</li>
+                    <li><strong>Secure Connection:</strong> Encrypted communication begins.</li>
+                </ol>
+            </div>
+        </div>
     </main>
 
     <footer>

@@ -44,14 +44,20 @@ class SinglePost extends Timber\Site {
     }
 }
 
-// 3. Registering a Gutenberg Block (ACF)
-acf_register_block_type([
-    'name'            => 'hero-section',
-    'title'           => __('Hero Section'),
-    'render_template' => 'views/blocks/hero.twig',
-    'mode'            => 'edit',
-    'supports'        => ['jsx' => true],
-]);</code></pre>
+// 3. Native Gutenberg Block (React)
+// No PHP registration needed if using block.json
+// src/edit.js
+export default function Edit({ attributes, setAttributes }) {
+    return (
+        &lt;div { ...useBlockProps() }&gt;
+            &lt;RichText
+                tagName="h2"
+                value={ attributes.content }
+                onChange={ ( content ) => setAttributes( { content } ) }
+            /&gt;
+        &lt;/div&gt;
+    );
+}</code></pre>
         </div>
 
         <div class="bug-hunt" style="background: #fff3cd; border-color: #ffeeba; color: #856404;">
@@ -68,13 +74,70 @@ acf_register_block_type([
             <h3>🎯 Expected Outcome</h3>
             <p>By the end of this guide, you will be able to:</p>
             <ul>
-                <li>Develop custom <strong>Gutenberg Blocks</strong> using React and ACF.</li>
+                <li>Develop custom <strong>Gutenberg Blocks</strong> using React and NocoDB data.</li>
                 <li>Decouple logic from views using <strong>Timber & Twig</strong>.</li>
                 <li>Deploy scalable WordPress clusters on <strong>AWS Fargate</strong>.</li>
                 <li>Optimize high-traffic sites with <strong>Redis Object Caching</strong>.</li>
                 <li>Integrate external data sources like <strong>NocoDB</strong>.</li>
                 <li>Manage dependencies via <strong>Composer</strong> and <strong>NPM</strong>.</li>
             </ul>
+        </div>
+
+        <div class="jira-ticket">
+            <div class="jira-header">
+                <span class="jira-id">CAPSTONE-WP</span>
+                <span class="jira-status">Final Project</span>
+            </div>
+            <div class="jira-body">
+                <h3 class="jira-title">Capstone: Headless-Ready Enterprise Portal</h3>
+                <div class="jira-section">
+                    <span class="jira-label">Objective</span>
+                    <p>Build a high-performance, decoupled WordPress site that aggregates data from external sources and serves it via custom blocks.</p>
+                </div>
+                <div class="jira-section">
+                    <span class="jira-label">Requirements</span>
+                    <ul class="req-list">
+                        <li><strong>Architecture:</strong> Bedrock setup with PostgreSQL database.</li>
+                        <li><strong>Data Layer:</strong> Connect to NocoDB to fetch "Product" data and cache it in Redis.</li>
+                        <li><strong>Frontend:</strong> Create a custom Gutenberg block "Product Grid" that renders this data using React.</li>
+                        <li><strong>Templating:</strong> Use Timber/Twig for the theme structure, ensuring no PHP logic in views.</li>
+                        <li><strong>API:</strong> Expose a custom REST API endpoint for a potential Headless frontend.</li>
+                    </ul>
+                </div>
+                <div class="jira-section">
+                    <span class="jira-label">Documentation</span>
+                    <p>Create a `docs/` folder with setup steps, architecture decision records (ADRs), and API specs.</p>
+                </div>
+            </div>
+        </div>
+
+        <h3>How to use this guide</h3>
+        <div class="modules-grid">
+            <div class="card">
+                <h3>Module 1: Modern Setup</h3>
+                <p><strong>Time:</strong> 5 hours | <strong>Complexity:</strong> Medium</p>
+                <p>Bedrock, Composer, and Env Config.</p>
+            </div>
+            <div class="card">
+                <h3>Module 2: Templating</h3>
+                <p><strong>Time:</strong> 8 hours | <strong>Complexity:</strong> Medium</p>
+                <p>Timber, Twig, SCSS Architecture.</p>
+            </div>
+            <div class="card">
+                <h3>Module 3: Block Editor</h3>
+                <p><strong>Time:</strong> 15 hours | <strong>Complexity:</strong> High</p>
+                <p>Native React Blocks, NocoDB Integration.</p>
+            </div>
+            <div class="card">
+                <h3>Module 4: Data & Performance</h3>
+                <p><strong>Time:</strong> 10 hours | <strong>Complexity:</strong> High</p>
+                <p>PostgreSQL, Redis, Query Optimization.</p>
+            </div>
+            <div class="card">
+                <h3>Module 5: DevOps</h3>
+                <p><strong>Time:</strong> 12 hours | <strong>Complexity:</strong> Very High</p>
+                <p>Dockerizing WP, GitLab CI, AWS Fargate.</p>
+            </div>
         </div>
 
         <h3>Curriculum Overview</h3>

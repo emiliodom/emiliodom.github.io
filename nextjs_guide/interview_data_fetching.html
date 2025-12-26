@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Data & Mutations Interview Questions - Next.js Guide</title>
     <link rel="stylesheet" href="../assets/css/nextjs_styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <script src="../assets/js/nextjs_layout.js"></script>
 </head>
@@ -70,6 +70,47 @@ export async function subscribe(prevState, formData) {
             <div class="answer">
                 <p><strong><code>revalidatePath('/blog')</code>:</strong> Purges the cache for a specific URL path.</p>
                 <p><strong><code>revalidateTag('posts')</code>:</strong> Purges all data fetches tagged with <code>['posts']</code>, regardless of which page they are on. This is more granular and powerful for shared data.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q5: How do Streaming and Suspense improve data fetching UX?</h3>
+            <div class="answer">
+                <p><strong>Problem:</strong> Traditionally, the server waits for <em>all</em> data to be fetched before sending <em>any</em> HTML (Waterfall).</p>
+                <p><strong>Solution:</strong> Wrap slow components in <code>&lt;Suspense&gt;</code>.</p>
+                <pre><code class="language-jsx">&lt;Suspense fallback={&lt;LoadingSkeleton /&gt;}&gt;
+  &lt;SlowComponent /&gt;
+&lt;/Suspense&gt;</code></pre>
+                <p><strong>Result:</strong> Next.js instantly sends the initial HTML (shell). When the slow component finishes fetching, its HTML is streamed in via a separate chunk, replacing the fallback.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q6: When should you use Client-side Fetching (SWR/TanStack Query) in the App Router?</h3>
+            <div class="answer">
+                <p>While Server Components are preferred for initial data load, client-side fetching is better for:</p>
+                <ul>
+                    <li><strong>Real-time data:</strong> Polling or live updates (e.g., stock prices, chat).</li>
+                    <li><strong>User-specific interactions:</strong> "Like" buttons, infinite scrolling, or search-as-you-type.</li>
+                    <li><strong>Browser-only APIs:</strong> Data that depends on <code>window</code> or <code>localStorage</code>.</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q7: How do you perform Parallel Data Fetching in Server Components?</h3>
+            <div class="answer">
+                <p><strong>Sequential (Slow):</strong> Awaiting requests one by one creates a waterfall.</p>
+                <pre><code class="language-javascript">// ❌ Waits for User, THEN waits for Posts
+const user = await getUser();
+const posts = await getPosts();</code></pre>
+                <p><strong>Parallel (Fast):</strong> Initiate both requests simultaneously.</p>
+                <pre><code class="language-javascript">// ✅ Both start at the same time
+const userData = getUser();
+const postsData = getPosts();
+
+// Wait for both to finish
+const [user, posts] = await Promise.all([userData, postsData]);</code></pre>
             </div>
         </section>
     </main>

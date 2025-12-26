@@ -39,6 +39,33 @@ cursor.execute("SELECT * FROM users WHERE name = %s", (name,))</code></pre>
                 <p>Ensure that all user-generated content is escaped before rendering it in the browser. Modern templates like Jinja2 (used in Flask) and Django templates do this automatically.</p>
             </div>
         </div>
+
+        <div class="interview-card">
+            <h3>3. CSRF (Cross-Site Request Forgery)</h3>
+            <p><strong>Question:</strong> What is CSRF and how do you prevent it?</p>
+            <div class="answer">
+                <p>CSRF attacks trick a user into executing unwanted actions on a web application where they are currently authenticated.</p>
+                <p><strong>Prevention:</strong> Use CSRF tokens. Frameworks like Django and Flask-WTF include this protection by default. The server generates a unique token for the user's session and validates it with every state-changing request (POST, PUT, DELETE).</p>
+            </div>
+        </div>
+
+        <div class="interview-card">
+            <h3>4. Password Hashing</h3>
+            <p><strong>Question:</strong> How should you store passwords in a database?</p>
+            <div class="answer">
+                <p><strong>Never</strong> store passwords in plain text. Use a strong hashing algorithm like <strong>bcrypt</strong> or <strong>Argon2</strong>.</p>
+                <p><strong>Salting:</strong> Always add a unique "salt" to each password before hashing to prevent rainbow table attacks. Libraries like `bcrypt` handle salting automatically.</p>
+            </div>
+        </div>
+
+        <div class="interview-card">
+            <h3>5. Input Validation</h3>
+            <p><strong>Question:</strong> Why is input validation important?</p>
+            <div class="answer">
+                <p>To ensure that the data received by the application is in the expected format. This prevents malformed data from causing errors or security vulnerabilities.</p>
+                <p><strong>Tools:</strong> Use libraries like <strong>Pydantic</strong> (for data validation) or framework-specific validators (Django Forms, WTForms).</p>
+            </div>
+        </div>
     </main>
 
     <footer>

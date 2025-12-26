@@ -47,10 +47,10 @@
                 <p>Multi-stage builds allow you to use multiple `FROM` statements in a single Dockerfile. Each `FROM` instruction starts a new stage.</p>
                 <p><strong>Benefit:</strong> You can copy artifacts from one stage to another, leaving behind all the build tools and intermediate files in the final image. This drastically reduces image size.</p>
                 <pre><code># Build Stage
-FROM golang:1.16 AS builder
+FROM golang:1.21 AS builder
 WORKDIR /app
 COPY . .
-RUN go build -o myapp
+RUN go build -o myapp main.go
 
 # Final Stage
 FROM alpine:latest
@@ -61,23 +61,88 @@ CMD ["./myapp"]</code></pre>
         </section>
 
         <section class="question">
-            <h2>4. Explain Docker Networking modes.</h2>
+            <h2>4. Docker Networking Modes</h2>
             <div class="answer">
+                <p><strong>Question:</strong> Explain the difference between Bridge, Host, and None networks.</p>
                 <ul>
-                    <li><strong>Bridge (default):</strong> Containers are connected to a private internal network. They can talk to each other via IP.</li>
-                    <li><strong>Host:</strong> The container shares the host's networking namespace. No port mapping is required. Performance is better, but security is lower.</li>
-                    <li><strong>None:</strong> No networking. Useful for batch jobs that don't need network access.</li>
-                    <li><strong>Overlay:</strong> Used for multi-host networking (Swarm/Kubernetes).</li>
+                    <li><strong>Bridge (Default):</strong> Containers talk to each other via a private internal network. They need port mapping (<code>-p 8080:80</code>) to be accessible from the host.</li>
+                    <li><strong>Host:</strong> The container shares the host's networking namespace directly. No port mapping needed, but port conflicts can occur. Performance is better.</li>
+                    <li><strong>None:</strong> No networking. Useful for secure, offline batch jobs.</li>
                 </ul>
             </div>
         </section>
 
-        <div class="navigation-buttons">
-            <a href="interview_index.html" class="btn">Back to Interview Index</a>
-            <a href="interview_k8s.html" class="btn">Next: Kubernetes Questions</a>
+        <section class="question">
+            <h2>5. Volumes vs. Bind Mounts</h2>
+            <div class="answer">
+                <p><strong>Question:</strong> How do you persist data?</p>
+                <ul>
+                    <li><strong>Volumes:</strong> Managed by Docker (<code>/var/lib/docker/volumes</code>). Best for database data and persistence independent of the container's lifecycle.</li>
+                    <li><strong>Bind Mounts:</strong> Map a specific file or directory on the host to the container. Best for development (live code reloading).</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="question">
+            <h2>6. Docker Security Best Practices</h2>
+            <div class="answer">
+                <p><strong>Question:</strong> How do you secure a Docker container for production?</p>
+                <ul>
+                    <li><strong>Non-root User:</strong> Always create a user in the Dockerfile and switch to it (<code>USER appuser</code>).</li>
+                    <li><strong>Minimal Base Images:</strong> Use <code>alpine</code> or <code>distroless</code> images to reduce attack surface.</li>
+                    <li><strong>Read-only Filesystem:</strong> Run containers with <code>--read-only</code> where possible.</li>
+                    <li><strong>Scan Images:</strong> Use tools like Trivy or Docker Scan to find vulnerabilities.</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="question">
+            <h2>7. What is Docker Compose?</h2>
+            <div class="answer">
+                <p><strong>Definition:</strong> A tool for defining and running multi-container Docker applications. You use a YAML file to configure your application's services.</p>
+                <p><strong>Key Command:</strong> `docker-compose up -d` (starts all services in the background).</p>
+                <p><strong>Use Case:</strong> Spinning up a full stack (Frontend + Backend + Database + Redis) with a single command for local development.</p>
+            </div>
+        </section>
+
+        <section class="question">
+            <h2>8. Explain the `ENTRYPOINT` vs `CMD` instruction.</h2>
+            <div class="answer">
+                <p>Both define what command runs when the container starts, but they interact differently.</p>
+                <ul>
+                    <li><strong>CMD:</strong> Sets default arguments that can be overridden from the command line. <br><code>CMD ["echo", "hello"]</code> -> running `docker run myimage world` will output "world".</li>
+                    <li><strong>ENTRYPOINT:</strong> Configures a container that will run as an executable. Arguments passed to `docker run` are <em>appended</em> to the entrypoint. <br><code>ENTRYPOINT ["echo"]</code> -> running `docker run myimage world` will output "world" (echo + world).</li>
+                </ul>
+                <p><strong>Best Practice:</strong> Use `ENTRYPOINT` for the main executable and `CMD` for default flags/arguments.</p>
+            </div>
+        </section>
+
+        <section class="question">
+            <h2>9. How do you reduce the size of a Docker Image?</h2>
+            <div class="answer">
+                <p><strong>Strategies:</strong></p>
+                <ol>
+                    <li><strong>Use Alpine Images:</strong> `FROM node:alpine` is much smaller than `FROM node`.</li>
+                    <li><strong>Multi-Stage Builds:</strong> Compile in one stage, copy only the binary to the final stage.</li>
+                    <li><strong>Minimize Layers:</strong> Combine commands: `RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*`.</li>
+                    <li><strong>.dockerignore:</strong> Exclude `node_modules`, `.git`, and logs from the build context.</li>
+                </ol>
+            </div>
+        </section>
+
+        <section class="question">
+            <h2>9. How do you handle zombie processes in Docker?</h2>
+            <div class="answer">
+                <p><strong>Problem:</strong> When a process terminates, it becomes a "zombie" until its parent waits for it. In Docker, if the main process (PID 1) doesn't handle this, zombies accumulate.</p>
+                <p><strong>Solution:</strong> Use an init process like <code>tini</code> (built into Docker with <code>--init</code> flag) or dumb-init. It acts as PID 1 and properly reaps zombie processes.</p>
+            </div>
+        </section>
+
+        <div style="text-align: center; margin-top: 40px;">
+            <a href="interview_k8s.html" class="btn-next">Next: Kubernetes Interview Questions &rarr;</a>
         </div>
     </main>
-
+    
     <footer>
         <!-- Footer injected by layout.js -->
     </footer>

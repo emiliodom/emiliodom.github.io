@@ -401,131 +401,92 @@ npm test -- --coverage
         </details>
     </div>
 
-    <h2>3. Tools & Frameworks</h2>
+    <h2>3. Best Practices & Common Patterns</h2>
 
     <div class="q-block">
-        <div class="q-text">Q: Jest vs. Vitest?</div>
-        <div class="hint">Speed and Ecosystem.</div>
+        <div class="q-text">Q: Why is `userEvent` preferred over `fireEvent`?</div>
+        <div class="hint">Think about realism and browser behavior.</div>
         <div class="code-section">
             <h4>Basic Implementation</h4>
-            <pre><code>// Jest (jest.config.js)
-module.exports = {
-  testEnvironment: 'jsdom',
-  transform: { '^.+\\.tsx?$': 'ts-jest' }
+            <pre><code>// ❌ fireEvent: Dispatches a DOM event directly
+fireEvent.change(input, { target: { value: 'hello' } });
+
+// ✅ userEvent: Simulates full user interaction
+await userEvent.type(input, 'hello');</code></pre>
+            <h4>Real World Example</h4>
+            <pre><code>// When a real user types into an input:
+// 1. Focus event fires
+// 2. KeyDown event fires
+// 3. Input event fires
+// 4. KeyUp event fires
+//
+// `fireEvent.change` ONLY fires the input event.
+// `userEvent.type` fires ALL of them, triggering any side effects attached to focus/blur/keys.</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p><code>userEvent</code> simulates full user interactions (clicks, typing) more accurately than <code>fireEvent</code>. It triggers all the intermediate events (focus, blur, keydown, keyup) that a real browser would, whereas <code>fireEvent</code> only dispatches the specific event you called.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: How do you test a component that relies on a Context Provider (e.g., Theme or Auth)?</div>
+        <div class="hint">The component will crash if rendered without its parent provider.</div>
+        <div class="code-section">
+            <h4>Basic Implementation</h4>
+            <pre><code>// The Component
+const UserProfile = () => {
+  const { user } = useAuth(); // Will throw if Provider is missing
+  return &lt;div&gt;{user.name}&lt;/div&gt;;
 };
 
-// Vitest (vite.config.ts)
-export default defineConfig({
-  test: {
-    environment: 'jsdom',
-    globals: true // to use describe/test without import
-  }
+// The Test
+test('renders user', () => {
+  render(
+    &lt;AuthProvider value={{ user: { name: 'Alice' } }}&gt;
+      &lt;UserProfile /&gt;
+    &lt;/AuthProvider&gt;
+  );
+  expect(screen.getByText('Alice')).toBeInTheDocument();
 });</code></pre>
             <h4>Real World Example</h4>
-            <pre><code>// Migration from Jest to Vitest is usually easy.
-// 1. npm install -D vitest
-// 2. Replace `jest` command with `vitest`
-// 3. Vitest supports ESM natively (no more babel-jest headaches).
-// 4. Vitest re-uses the same Vite pipeline as your app (faster).</code></pre>
+            <pre><code>// Create a custom render function to avoid repetition
+const customRender = (ui, options) =>
+  render(ui, { wrapper: AllTheProviders, ...options });
+
+// Now you can just use:
+customRender(&lt;UserProfile /&gt;);</code></pre>
         </div>
         <details>
             <summary>Show Answer</summary>
             <div class="answer">
-                <ul>
-                    <li><strong>Jest:</strong> The standard for years. Robust, huge ecosystem. Can be slow.</li>
-                    <li><strong>Vitest:</strong> Newer, built for Vite. Extremely fast (uses Vite's dev server). API compatible with Jest. Recommended for modern projects.</li>
-                </ul>
+                <p>You must wrap the component in the necessary Provider during the test. A common pattern is to create a custom <code>render</code> function that automatically wraps every component with your global providers (Theme, Auth, Redux).</p>
             </div>
         </details>
     </div>
 
     <div class="q-block">
-        <div class="q-text">Q: Cypress vs. Playwright?</div>
-        <div class="hint">E2E Tools.</div>
+        <div class="q-text">Q: What is "Shallow Rendering" and why is it generally discouraged now?</div>
+        <div class="hint">Enzyme vs React Testing Library.</div>
         <div class="code-section">
             <h4>Basic Implementation</h4>
-            <pre><code>// Cypress
-cy.visit('/login');
-cy.get('input[name=user]').type('admin');
-cy.get('button').click();
+            <pre><code>// Shallow (Enzyme style) - Conceptual
+// &lt;Parent&gt;
+//   &lt;Child /&gt;  <-- Child is NOT rendered, just a placeholder
+// &lt;/Parent&gt;
 
-// Playwright
-await page.goto('/login');
-await page.fill('input[name=user]', 'admin');
-await page.click('button');</code></pre>
-            <h4>Real World Example</h4>
-            <pre><code>// Playwright handles multiple tabs/pages better.
-// Scenario: User clicks "Open in new tab".
-// Cypress: Hard to test (runs in same tab).
-// Playwright:
-const [newPage] = await Promise.all([
-  context.waitForEvent('page'),
-  page.click('a[target="_blank"]')
-]);
-await newPage.waitForLoadState();</code></pre>
+// Full Rendering (RTL style)
+// &lt;Parent&gt;
+//   &lt;div&gt;Child Content&lt;/div&gt; <-- Child is fully rendered
+// &lt;/Parent&gt;</code></pre>
         </div>
         <details>
             <summary>Show Answer</summary>
             <div class="answer">
-                <ul>
-                    <li><strong>Cypress:</strong> Runs inside the browser. Great DX, easy debugging. Historically slower, limited multi-tab support.</li>
-                    <li><strong>Playwright:</strong> Microsoft's tool. Runs outside the browser (via protocol). Faster, supports multiple tabs/pages, parallel execution, and all browsers (WebKit, Firefox, Chromium).</li>
-                </ul>
-            </div>
-        </details>
-    </div>
-
-    <div class="q-block">
-        <div class="q-text">Q: What is MSW (Mock Service Worker)?</div>
-        <div class="hint">Network interception.</div>
-        <div class="code-section">
-            <h4>Basic Implementation</h4>
-            <pre><code>// handlers.js
-export const handlers = [
-  rest.get('/api/user', (req, res, ctx) => {
-    return res(ctx.json({ name: 'John Doe' }));
-  })
-];
-
-// setupTests.js
-server.listen();</code></pre>
-            <h4>Real World Example</h4>
-            <pre><code>// MSW is powerful because it works in the Browser too.
-// You can run your app locally with `npm start` and have MSW mock the backend.
-// Great for frontend development when the backend API isn't ready yet.</code></pre>
-        </div>
-        <details>
-            <summary>Show Answer</summary>
-            <div class="answer">
-                <p>A library that intercepts network requests at the network level (using Service Workers). It allows you to mock API responses for both browser (development) and node (testing) using the same handlers.</p>
-            </div>
-        </details>
-    </div>
-
-    <div class="q-block">
-        <div class="q-text">Q: What is "Visual Regression Testing"?</div>
-        <div class="hint">Pixel perfect.</div>
-        <div class="code-section">
-            <h4>Basic Implementation</h4>
-            <pre><code>// Playwright
-test('visual comparison', async ({ page }) => {
-  await page.goto('/');
-  await expect(page).toHaveScreenshot(); 
-});
-// First run: Generates baseline image.
-// Subsequent runs: Compares current view to baseline.</code></pre>
-            <h4>Real World Example</h4>
-            <pre><code>// Tools like Percy or Chromatic integrate with CI.
-// 1. Push code.
-// 2. CI builds app.
-// 3. Percy takes screenshots of all components.
-// 4. If pixels changed, PR status is "Pending Approval".
-// 5. Designer reviews changes visually.</code></pre>
-        </div>
-        <details>
-            <summary>Show Answer</summary>
-            <div class="answer">
-                <p>Tools like <strong>Percy</strong>, <strong>Chromatic</strong>, or Playwright's snapshot feature take screenshots of your UI and compare them pixel-by-pixel against a baseline. If pixels differ, the test fails. Catches CSS bugs that functional tests miss.</p>
+                <p><strong>Shallow Rendering:</strong> Renders a component one level deep. Child components are not rendered, only their placeholders.</p>
+                <p><strong>Why Discouraged:</strong> It tests implementation details. If you refactor a big component into smaller sub-components, shallow tests might break even if the application works perfectly. Full rendering (Integration testing) gives more confidence that the app actually works for the user.</p>
             </div>
         </details>
     </div>

@@ -49,74 +49,62 @@ const element = {
   props: { className: 'greeting', children: 'Hello' }
 };
 // Lightweight JS object, not a real DOM node.</code></pre>
-        </div>
-
-        <div class="code-section">
-            <span class="code-label">Real World (React Fiber)</span>
-            <pre><code>// Simplified Fiber Node structure
-{
-  tag: HostComponent,
-  type: 'div',
-  stateNode: document.createElement('div'),
-  return: parentFiber,
-  child: childFiber,
-  sibling: siblingFiber,
-  // ...
-}
-// React uses this linked list to track work.</code></pre>
-        </div>
-
-        <details>
-            <summary>Show Answer</summary>
             <div class="answer">
-                <p>The Virtual DOM is a lightweight JavaScript object representation of the real DOM. When state changes:</p>
+                <p>The Virtual DOM is a lightweight copy of the actual DOM in memory. When state changes:</p>
                 <ol>
                     <li>React creates a new Virtual DOM tree.</li>
                     <li>It compares (diffs) it with the previous tree.</li>
-                    <li>It calculates the minimal set of changes needed.</li>
+                    <li>It calculates the minimum number of changes needed.</li>
                     <li>It updates the real DOM in a batch (Reconciliation).</li>
                 </ol>
-                <p><strong>Benefit:</strong> Touching the real DOM is slow. JS objects are fast.</p>
             </div>
-        </details>
+        </div>
     </div>
 
     <div class="q-block">
-        <div class="q-text">Q: Props vs. State</div>
-        <div class="hint">Ownership and Mutability.</div>
-
-        <div class="code-section">
-            <span class="code-label">Basic Implementation</span>
-            <pre><code>// Props: Passed down, Read-only
-function Child(props) {
-  return &lt;h1&gt;{props.title}&lt;/h1&gt;;
-}
-
-// State: Internal, Mutable
-function Counter() {
-  const [count, setCount] = useState(0);
-  return &lt;button onClick={() => setCount(count + 1)}&gt;{count}&lt;/button&gt;;
-}</code></pre>
+        <div class="q-text">Q: What is JSX?</div>
+        <div class="hint">Syntax Extension for JavaScript.</div>
+        <div class="answer">
+            <p>JSX stands for JavaScript XML. It allows us to write HTML-like syntax directly in JavaScript. It is syntactic sugar that transpilers (like Babel) convert into <code>React.createElement()</code> calls.</p>
         </div>
+    </div>
 
-        <div class="code-section">
-            <span class="code-label">Real World Example (Data Flow)</span>
-            <pre><code>// Parent manages state, Child receives it as props
-function Parent() {
-  const [user, setUser] = useState(null);
-  return &lt;Profile user={user} /&gt;;
-}</code></pre>
+    <div class="q-block">
+        <div class="q-text">Q: Props vs State</div>
+        <div class="hint">Immutable vs Mutable.</div>
+        <div class="answer">
+            <ul>
+                <li><strong>Props (Properties):</strong> Read-only data passed from a parent component to a child. They make components reusable.</li>
+                <li><strong>State:</strong> Data managed <em>within</em> the component that can change over time (e.g., user input, API response). Changing state triggers a re-render.</li>
+            </ul>
         </div>
+    </div>
 
-        <details>
-            <summary>Show Answer</summary>
-            <div class="answer">
-                <ul>
-                    <li><strong>Props (Properties):</strong> Read-only. Passed from parent to child. Immutable within the child.</li>
-                    <li><strong>State:</strong> Managed within the component. Mutable (via setter). Triggers re-renders when changed.</li>
-                </ul>
-            </div>
-        </details>
+    <div class="q-block">
+        <div class="q-text">Q: What are Synthetic Events?</div>
+        <div class="hint">Cross-browser wrapper.</div>
+        <div class="answer">
+            <p>React doesn't attach event handlers to nodes directly. Instead, it uses a single event listener at the root (Event Delegation) and wraps native browser events in <code>SyntheticEvent</code> objects. This ensures consistent behavior across different browsers.</p>
+        </div>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Explain the Component Lifecycle (Class vs Functional).</div>
+        <div class="hint">Mounting, Updating, Unmounting.</div>
+        <div class="answer">
+            <p><strong>Class Components:</strong></p>
+            <ul>
+                <li><code>componentDidMount</code>: Runs after first render (API calls).</li>
+                <li><code>componentDidUpdate</code>: Runs after props/state change.</li>
+                <li><code>componentWillUnmount</code>: Runs before removal (cleanup).</li>
+            </ul>
+            <p><strong>Functional Components (Hooks):</strong></p>
+            <ul>
+                <li><code>useEffect(() => { ... }, [])</code>: Equivalent to Mount.</li>
+                <li><code>useEffect(() => { ... }, [prop])</code>: Equivalent to Update.</li>
+                <li><code>useEffect(() => { return () => { ... } }, [])</code>: Equivalent to Unmount.</li>
+            </ul>
+        </div>
     </div>
 
     <h2>2. Hooks Basics</h2>

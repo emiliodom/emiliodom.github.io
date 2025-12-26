@@ -22,7 +22,7 @@
         <h2>Introduction</h2>
         <p>This curriculum covers the breadth of Python development, from advanced language features to web frameworks (Django/FastAPI) and data engineering concepts.</p>
 
-        <div class="crash-course" style="background: #e8f4f8; border-left: 5px solid #3776ab; padding: 15px; margin: 20px 0;">
+        <div class="crash-course">
             <h3>🚀 Python Crash Course</h3>
             <p>Quick refresher on the essentials:</p>
             <pre><code class="language-python"># List Comprehension
@@ -51,6 +51,72 @@ class Dog:
                 <li>Implement robust testing with <strong>Pytest</strong>.</li>
                 <li>Package and distribute Python applications.</li>
             </ul>
+        </div>
+
+        <div class="jira-ticket">
+            <div class="jira-header">
+                <span class="jira-id">CAPSTONE-PY</span>
+                <span class="jira-status">Final Project</span>
+            </div>
+            <div class="jira-body">
+                <h3 class="jira-title">Capstone: Distributed Task Queue System</h3>
+                <div class="jira-section">
+                    <span class="jira-label">Objective</span>
+                    <p>Build a distributed task queue system similar to Celery, but from scratch, to demonstrate mastery of concurrency, networking, and system design.</p>
+                </div>
+                <div class="jira-section">
+                    <span class="jira-label">Requirements</span>
+                    <ul class="req-list">
+                        <li><strong>Core:</strong> Implement a Producer-Consumer architecture using Redis as the broker.</li>
+                        <li><strong>Worker:</strong> Create a Python worker process that listens for tasks and executes them.</li>
+                        <li><strong>API:</strong> Build a FastAPI service to submit tasks and check status.</li>
+                        <li><strong>Concurrency:</strong> Use `asyncio` for the API and `multiprocessing` for the workers.</li>
+                        <li><strong>Monitoring:</strong> A simple dashboard to view active, completed, and failed tasks.</li>
+                    </ul>
+                </div>
+                <div class="jira-section">
+                    <span class="jira-label">Documentation</span>
+                    <p>Include a `README.md` with setup instructions, architecture diagram, and API documentation.</p>
+                </div>
+            </div>
+        </div>
+
+        <h3>How to use this guide</h3>
+        <div class="modules-grid">
+            <div class="card">
+                <h3>Module 1: Advanced Python</h3>
+                <p><strong>Time:</strong> 10 hours | <strong>Complexity:</strong> High</p>
+                <p>Deep dive into the language internals.</p>
+            </div>
+            <div class="card">
+                <h3>Module 2: Web Frameworks</h3>
+                <p><strong>Time:</strong> 15 hours | <strong>Complexity:</strong> Medium</p>
+                <p>Building APIs with FastAPI and Django.</p>
+            </div>
+            <div class="card">
+                <h3>Module 3: Data Engineering</h3>
+                <p><strong>Time:</strong> 12 hours | <strong>Complexity:</strong> High</p>
+                <p>Pandas, NumPy, and ETL pipelines.</p>
+            </div>
+             <div class="card">
+                <h3>Module 4: Testing & QA</h3>
+                <p><strong>Time:</strong> 8 hours | <strong>Complexity:</strong> Medium</p>
+                <p>Pytest, Mocking, and CI integration.</p>
+            </div>
+        </div>
+
+        <h3>Curriculum Overview</h3>
+        <div class="modules-grid">
+            <p><strong>Module 1: Advanced Python</strong> - Internals, Decorators, Metaclasses.</p>
+            <p><strong>Module 2: Web Frameworks</strong> - FastAPI, Django, REST APIs.</p>
+            <p><strong>Module 3: Concurrency</strong> - AsyncIO, Multiprocessing, Threading.</p>
+            <p><strong>Module 4: Testing & QA</strong> - Pytest, Mocking, TDD.</p>
+            <p><strong>Module 5: Data Science</strong> - Pandas, NumPy, Jupyter.</p>
+            <p><strong>Module 6: Machine Learning</strong> - Scikit-Learn, Basic Models.</p>
+            <p><strong>Module 7: System Design</strong> - Scalability, Microservices, Caching.</p>
+            <p><strong>Module 8: Databases</strong> - SQL (SQLAlchemy), NoSQL (Redis/Mongo).</p>
+            <p><strong>Module 9: Packaging</strong> - PyPI, Poetry, Docker.</p>
+            <p><strong>Module 10: Security</strong> - OWASP, Cryptography, Auth.</p>
         </div>
     </main>
 

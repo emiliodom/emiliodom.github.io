@@ -23,6 +23,41 @@
             <li><strong>Redis Object Cache:</strong> Caching query results in memory.</li>
             <li><strong>Transients:</strong> Storing temporary data.</li>
         </ul>
+
+        <h3>1. Why PostgreSQL?</h3>
+        <p>PostgreSQL offers better concurrency, JSON support, and reliability than MySQL. We use `pg4wp` to make WordPress talk to Postgres.</p>
+
+        <h3>2. Installing pg4wp</h3>
+        <p>Drop the `db.php` drop-in into `web/app/` and configure your connection string in `.env`.</p>
+
+        <h3>3. Redis Object Caching</h3>
+        <p>WordPress makes many database queries per page. Redis caches the <em>results</em> of these queries in memory.</p>
+        <pre><code class="language-bash">wp redis enable</code></pre>
+
+        <h3>4. Query Monitor</h3>
+        <p>Use the Query Monitor plugin to identify slow queries, duplicate queries, and high memory usage.</p>
+
+        <h3>5. N+1 Query Problem</h3>
+        <p>Avoid fetching related data in a loop. Use `Timber::get_posts()` which handles eager loading better, or custom SQL.</p>
+
+        <h3>6. Transients API</h3>
+        <p>Cache API responses (like NocoDB data) for a set time:</p>
+        <pre><code class="language-php">if ( false === ( $data = get_transient( 'noco_data' ) ) ) {
+    $data = fetch_from_nocodb();
+    set_transient( 'noco_data', $data, 12 * HOUR_IN_SECONDS );
+}</code></pre>
+
+        <h3>7. Custom Tables vs Post Meta</h3>
+        <p>Post Meta is flexible but slow for searching. For high-performance data, create custom tables in Postgres.</p>
+
+        <h3>8. Indexing</h3>
+        <p>Ensure your custom tables and frequently searched columns are properly indexed in the database.</p>
+
+        <h3>9. Asset Optimization</h3>
+        <p>Minify and concatenate CSS/JS. Use WebP images. Bedrock's structure makes it easy to integrate build tools like Webpack or Vite.</p>
+
+        <h3>10. CDN Integration</h3>
+        <p>Offload static assets (images, CSS, JS) to a CDN like Cloudflare or AWS CloudFront to reduce server load.</p>
     </main>
     <footer></footer>
     <script>initLayout();</script>

@@ -99,12 +99,7 @@ const ListItem = React.memo(({ item, onToggle }) => {
                 <pre><code>const Child = React.memo(({ onClick }) => {
   console.log("Render Child");
   return &lt;button onClick={onClick}&gt;Click&lt;/button&gt;;
-});
-
-// Parent
-// If 'handleClick' is not wrapped in useCallback, 
-// Child will re-render every time Parent renders, 
-// because the function reference changes.</code></pre>
+});</code></pre>
             </div>
         </details>
     </div>
@@ -312,19 +307,64 @@ dispatch(addTodo('Buy milk'));
 }</code></pre>
             <span class="code-label">Real World Example</span>
             <pre><code>// Authentication HOC
-const ProtectedProfile = withAuth(Profile);
+const withAuth = (Component) => (props) => {
+  const { user } = useAuth();
+  if (!user) return &lt;Login /&gt;;
+  return &lt;Component {...props} /&gt;;
+};
 
-function withAuth(Component) {
-  return (props) => {
-    if (!isLoggedIn) return &lt;Login /&gt;;
-    return &lt;Component {...props} /&gt;;
-  };
-}</code></pre>
+export default withAuth(Dashboard);</code></pre>
         </div>
         <details>
             <summary>Show Answer</summary>
             <div class="answer">
-                <p>A function that takes a component and returns a new component with added props or behavior. Example: <code>withAuth(Profile)</code>. Largely replaced by Hooks, but still used in libraries.</p>
+                <p>A function that takes a component and returns a new component with enhanced functionality. It's a pattern for reusing component logic (like mixins in the old days).</p>
+                <p><strong>Note:</strong> Custom Hooks have largely replaced HOCs for logic reuse, but HOCs are still useful for injecting UI or props.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is "Render Props"?</div>
+        <div class="hint">Sharing code via a prop function.</div>
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>&lt;MouseTracker render={({ x, y }) => (
+  &lt;h1&gt;The mouse is at {x}, {y}&lt;/h1&gt;
+)} /&gt;</code></pre>
+            <span class="code-label">Real World Example</span>
+            <pre><code>// Formik (older versions) used this heavily
+&lt;Formik&gt;
+  {({ values, handleChange }) => (
+    &lt;form&gt;
+      &lt;input value={values.email} onChange={handleChange} /&gt;
+    &lt;/form&gt;
+  )}
+&lt;/Formik&gt;</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>A technique for sharing code between React components using a prop whose value is a function. The component calls this function to determine what to render.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What is the Virtual DOM and how does it work?</div>
+        <div class="hint">Diffing algorithm.</div>
+        <div class="code-section">
+            <span class="code-label">Concept</span>
+            <pre><code>1. State changes.
+2. React creates a new Virtual DOM tree.
+3. React compares (diffs) the new tree with the old one.
+4. React calculates the minimum number of changes needed.
+5. React updates the real DOM (Reconciliation).</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>A lightweight JavaScript representation of the actual DOM. React uses it to minimize direct manipulation of the DOM, which is slow. By comparing the new Virtual DOM with the previous one (Diffing), React updates only the parts of the real DOM that actually changed (Reconciliation).</p>
             </div>
         </details>
     </div>

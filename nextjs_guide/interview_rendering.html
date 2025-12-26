@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rendering & Streaming Interview Questions - Next.js Guide</title>
     <link rel="stylesheet" href="../assets/css/nextjs_styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <script src="../assets/js/nextjs_layout.js"></script>
 </head>
@@ -54,9 +54,30 @@ export default function Page() {
         <section class="qna">
             <h3>Q3: What is Partial Prerendering (PPR)?</h3>
             <div class="answer">
-                <p><strong>Concept:</strong> PPR is an experimental feature that combines static and dynamic rendering in the same route.</p>
-                <p><strong>How it works:</strong> The shell of the application is prerendered at build time (static), leaving "holes" for dynamic content. When a request comes in, the static shell is sent immediately, and the dynamic parts are streamed in parallel.</p>
-                <p><strong>Difference from standard Streaming:</strong> Standard streaming usually happens at request time for the whole page. PPR pre-computes the static parts during the build.</p>
+                <p><strong>Concept:</strong> PPR combines static rendering and dynamic streaming in the same route. It allows you to have a static shell (navbar, footer, sidebar) that is served instantly from the edge, while dynamic parts (user data, cart) stream in parallel.</p>
+                <p><strong>How it works:</strong> The static parts are pre-generated at build time. The dynamic parts are wrapped in Suspense boundaries. When a request comes in, the static shell is sent immediately, and the dynamic holes are filled as data becomes available.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q4: Explain the difference between `generateStaticParams` and `getServerSideProps` (Legacy).</h3>
+            <div class="answer">
+                <p><strong>`generateStaticParams` (App Router):</strong> Used in dynamic routes to statically generate routes at build time. It replaces `getStaticPaths`. It returns an array of objects representing the dynamic segments.</p>
+                <p><strong>`getServerSideProps` (Pages Router):</strong> Runs on every request to fetch data. In the App Router, this is replaced by standard `async/await` fetch calls in Server Components with `cache: 'no-store'`.</p>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q5: How does React Server Components (RSC) payload differ from HTML?</h3>
+            <div class="answer">
+                <p>When navigating between routes in Next.js, the server doesn't send full HTML. Instead, it sends the <strong>RSC Payload</strong>.</p>
+                <p>This is a compact binary representation of the rendered React tree. It contains:</p>
+                <ul>
+                    <li>The rendered result of Server Components.</li>
+                    <li>Placeholders for Client Components and references to their JavaScript files.</li>
+                    <li>Props passed from Server to Client Components.</li>
+                </ul>
+                <p>The client uses this payload to update the DOM without a full page reload.</p>
             </div>
         </section>
     </main>

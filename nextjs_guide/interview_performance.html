@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Performance Optimization Interview Questions - Next.js Guide</title>
     <link rel="stylesheet" href="../assets/css/nextjs_styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <script src="../assets/js/nextjs_layout.js"></script>
 </head>
@@ -52,6 +52,28 @@ const HeavyChart = dynamic(() => import('./components/HeavyChart'), {
                     <li><strong><code>strategy="lazyOnload"</code>:</strong> Load during idle time.</li>
                     <li><strong><code>strategy="worker"</code>:</strong> (Experimental) Load in a web worker (Partytown).</li>
                 </ul>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q4: What is Image Optimization in Next.js?</h3>
+            <div class="answer">
+                <p><strong><code>next/image</code>:</strong> The Image component automatically optimizes images on-demand.</p>
+                <ul>
+                    <li><strong>Resizing:</strong> Serves correctly sized images for each device.</li>
+                    <li><strong>Format:</strong> Converts images to modern formats like WebP or AVIF.</li>
+                    <li><strong>Lazy Loading:</strong> Images are lazy-loaded by default.</li>
+                    <li><strong>Prevention of CLS:</strong> Enforces width and height to prevent Cumulative Layout Shift.</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q5: Explain Incremental Static Regeneration (ISR).</h3>
+            <div class="answer">
+                <p><strong>Concept:</strong> ISR allows you to create or update static pages <em>after</em> you’ve built your site.</p>
+                <p><strong>Mechanism:</strong> You set a `revalidate` prop (in seconds) in `getStaticProps`. When a request comes in after that time, Next.js serves the stale page while generating a new one in the background for future visitors.</p>
+                <p><strong>Benefit:</strong> Combines the speed of static sites with the freshness of dynamic rendering.</p>
             </div>
         </section>
     </main>

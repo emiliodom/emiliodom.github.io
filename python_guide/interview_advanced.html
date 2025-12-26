@@ -41,6 +41,42 @@
                 <li><code>__init__</code> is an instance method responsible for <em>initializing</em> the created instance. It returns None.</li>
             </ul>
         </div>
+
+        <div class="question-card">
+            <h3>5. What are Decorators?</h3>
+            <p><strong>Answer:</strong> Decorators are a design pattern in Python that allows a user to add new functionality to an existing object without modifying its structure. They are usually called before the definition of a function you want to decorate.</p>
+            <pre><code>def my_decorator(func):
+    def wrapper():
+        print("Something is happening before the function is called.")
+        func()
+        print("Something is happening after the function is called.")
+    return wrapper
+
+@my_decorator
+def say_hello():
+    print("Hello!")</code></pre>
+        </div>
+
+        <div class="question-card">
+            <h3>6. Explain Context Managers and the `with` statement.</h3>
+            <p><strong>Answer:</strong> Context managers allow you to allocate and release resources precisely when you want to. The most widely used example of context managers is the <code>with</code> statement.</p>
+            <p>They are implemented using the <code>__enter__</code> and <code>__exit__</code> methods.</p>
+            <pre><code>with open('file.txt', 'w') as f:
+    f.write('hello world')
+# File is automatically closed here, even if an exception occurs.</code></pre>
+        </div>
+
+        <div class="question-card">
+            <h3>7. What is Monkey Patching?</h3>
+            <p><strong>Answer:</strong> Monkey patching refers to dynamic modifications of a class or module at runtime. It is often used to replace a method or attribute with a mock or stub during testing.</p>
+            <p><strong>Caution:</strong> It should be used sparingly as it can lead to code that is hard to debug and maintain.</p>
+        </div>
+
+        <div class="question-card">
+            <h3>8. What are Descriptors?</h3>
+            <p><strong>Answer:</strong> Descriptors are Python objects that implement a method of the descriptor protocol: <code>__get__</code>, <code>__set__</code>, or <code>__delete__</code>. They provide a powerful way to control attribute access.</p>
+            <p>Properties (<code>@property</code>), methods, static methods, and class methods are all based on the descriptor protocol.</p>
+        </div>
     </main>
 
     <footer></footer>

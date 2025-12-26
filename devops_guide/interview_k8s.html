@@ -49,6 +49,7 @@
                     <li><strong>NodePort:</strong> Exposes the service on each Node's IP at a static port.</li>
                     <li><strong>LoadBalancer:</strong> Exposes the service externally using a cloud provider's load balancer.</li>
                     <li><strong>ExternalName:</strong> Maps the service to the contents of the `externalName` field (e.g., `foo.bar.example.com`).</li>
+                    <li><strong>Headless Service:</strong> Does not provide a cluster IP. Used for direct Pod-to-Pod communication.</li>
                 </ul>
             </div>
         </section>
@@ -59,6 +60,55 @@
                 <ul>
                     <li><strong>ConfigMaps:</strong> Store non-confidential data in key-value pairs. Can be consumed as environment variables, command-line arguments, or configuration files in a volume.</li>
                     <li><strong>Secrets:</strong> Similar to ConfigMaps but intended for sensitive data (passwords, tokens, keys). Data is stored base64 encoded (not encrypted by default, though encryption at rest can be enabled).</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="question">
+            <h2>4. What is Ingress?</h2>
+            <div class="answer">
+                <p><strong>Ingress</strong> manages external access to the services in a cluster, typically HTTP/HTTPS. It can provide load balancing, SSL termination, and name-based virtual hosting.</p>
+                <p>Unlike a Service (Layer 4), Ingress operates at Layer 7 (Application Layer).</p>
+            </div>
+        </section>
+
+        <section class="question">
+            <h2>5. Explain Liveness vs. Readiness Probes.</h2>
+            <div class="answer">
+                <ul>
+                    <li><strong>Liveness Probe:</strong> "Is the container alive?" If it fails, Kubernetes kills the container and restarts it. Use this to catch deadlocks.</li>
+                    <li><strong>Readiness Probe:</strong> "Is the container ready to accept traffic?" If it fails, Kubernetes removes the Pod from the Service's endpoints (stops sending traffic). Use this while the app is warming up (loading cache, DB connection).</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="question">
+            <h2>6. How do you debug a crashing Pod?</h2>
+            <div class="answer">
+                <p><strong>Scenario:</strong> A Pod is in `CrashLoopBackOff`.</p>
+                <ol>
+                    <li><code>kubectl describe pod [pod-name]</code>: Check events (OOMKilled, ImagePullBackOff).</li>
+                    <li><code>kubectl logs [pod-name]</code>: Check application logs.</li>
+                    <li><code>kubectl logs [pod-name] --previous</code>: Check logs of the <em>previous</em> instance that crashed.</li>
+                </ol>
+            </div>
+        </section>
+
+        <section class="question">
+            <h2>7. What is a DaemonSet?</h2>
+            <div class="answer">
+                <p>A <strong>DaemonSet</strong> ensures that all (or some) Nodes run a copy of a Pod. As nodes are added to the cluster, Pods are added to them. As nodes are removed, those Pods are garbage collected.</p>
+                <p><strong>Use Cases:</strong> Log collection daemons (Fluentd), node monitoring daemons (Prometheus Node Exporter).</p>
+            </div>
+        </section>
+
+        <section class="question">
+            <h2>8. What are Taints and Tolerations?</h2>
+            <div class="answer">
+                <p>They work together to ensure that pods are not scheduled onto inappropriate nodes.</p>
+                <ul>
+                    <li><strong>Taint:</strong> Applied to a Node. "I do not accept any pods that do not tolerate this taint." (e.g., `kubectl taint nodes node1 key=value:NoSchedule`)</li>
+                    <li><strong>Toleration:</strong> Applied to a Pod. "I can be scheduled on a node with this taint."</li>
                 </ul>
             </div>
         </section>

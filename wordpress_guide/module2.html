@@ -23,6 +23,59 @@
             <li><strong>Twig Syntax:</strong> `{{ post.title }}` instead of `&lt;?php the_title(); ?&gt;`.</li>
             <li><strong>Inheritance:</strong> `{% extends "base.twig" %}`.</li>
         </ul>
+
+        <h3>1. Installing Timber</h3>
+        <p>We use Composer to install the library:</p>
+        <pre><code class="language-bash">composer require timber/timber</code></pre>
+
+        <h3>2. The Controller (PHP)</h3>
+        <p>In your theme's `index.php` or `single.php`, you prepare the data:</p>
+        <pre><code class="language-php">$context = Timber::context();
+$context['post'] = Timber::get_post();
+$context['foo'] = 'bar';
+Timber::render('single.twig', $context);</code></pre>
+
+        <h3>3. The View (Twig)</h3>
+        <p>In `views/single.twig`, you display the data:</p>
+        <pre><code class="language-twig">{% extends "base.twig" %}
+
+{% block content %}
+    &lt;h1&gt;{{ post.title }}&lt;/h1&gt;
+    &lt;div&gt;{{ post.content }}&lt;/div&gt;
+    &lt;p&gt;Custom data: {{ foo }}&lt;/p&gt;
+{% endblock %}</code></pre>
+
+        <h3>4. Template Inheritance</h3>
+        <p>Define a `base.twig` with your header and footer, then extend it. This eliminates code duplication.</p>
+
+        <h3>5. Custom Twig Filters</h3>
+        <p>Add custom logic to your templates via `functions.php`:</p>
+        <pre><code class="language-php">add_filter('timber/twig', function($twig) {
+    $twig->addFilter(new Twig\TwigFilter('my_filter', function($text) {
+        return 'Modified: ' . $text;
+    }));
+    return $twig;
+});</code></pre>
+
+        <h3>6. Integrating NocoDB Data</h3>
+        <p>Fetch data from NocoDB in the controller and pass it to Twig:</p>
+        <pre><code class="language-php">$client = new \GuzzleHttp\Client();
+$response = $client->get('https://noco.db/api/v1/db/data/v1/Project/Table');
+$context['external_data'] = json_decode($response->getBody(), true);</code></pre>
+
+        <h3>7. Caching Context</h3>
+        <p>Cache expensive data fetches using Transients before passing to context:</p>
+        <pre><code class="language-php">$context['menu'] = get_transient('main_menu') ?: Timber::get_menu('main');</code></pre>
+
+        <h3>8. Debugging Twig</h3>
+        <p>Enable debug mode in `config/environments/development.php` to use `{{ dump(post) }}`.</p>
+
+        <h3>9. Component Architecture</h3>
+        <p>Break down your UI into small, reusable Twig files (e.g., `tease-post.twig`) and include them:</p>
+        <pre><code class="language-twig">{% include 'tease-post.twig' with { post: item } %}</code></pre>
+
+        <h3>10. Security in Twig</h3>
+        <p>Twig auto-escapes output by default, preventing XSS. Use `|raw` only when you trust the content source.</p>
     </main>
     <footer></footer>
     <script>initLayout();</script>

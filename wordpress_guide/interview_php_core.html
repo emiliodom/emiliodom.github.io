@@ -54,76 +54,135 @@
     }
 }</code></pre>
                 <ol start="2">
-                    <li>Run `composer dump-autoload`.</li>
-                    <li>Require `vendor/autoload.php` in your main plugin file.</li>
+                    <li>Run <code>composer dump-autoload</code>.</li>
+                    <li>Include <code>require_once __DIR__ . '/vendor/autoload.php';</code> in your main plugin file.</li>
                 </ol>
             </div>
         </div>
 
         <div class="interview-question">
-            <h3>3. What are PHP Namespaces and why are they critical in WordPress development?</h3>
+            <h3>3. Traits vs. Interfaces vs. Abstract Classes</h3>
             <div class="answer">
-                <p><strong>Answer:</strong> Namespaces encapsulate items (classes, interfaces, functions, constants) to prevent name collisions. In the global WordPress scope, generic class names like `Event` or `User` will conflict with other plugins.</p>
-                <pre><code class="language-php">namespace MyAgency\ClientProject\Utils;
-
-class DateFormatter { ... }
-
-// Usage
-use MyAgency\ClientProject\Utils\DateFormatter;
-$formatter = new DateFormatter();</code></pre>
+                <p><strong>Question:</strong> When would you use a Trait over an Interface or Abstract Class in a WordPress context?</p>
+                <ul>
+                    <li><strong>Interface:</strong> Defines a contract (e.g., <code>Renderable</code>). Use when different classes must share a method signature but implementation varies.</li>
+                    <li><strong>Abstract Class:</strong> Provides a base implementation (e.g., <code>BaseWidget</code>). Use when classes share a common "is-a" relationship and shared logic.</li>
+                    <li><strong>Trait:</strong> Horizontal code reuse (e.g., <code>HasSettings</code>). Use when unrelated classes need the same functionality (like logging or singleton behavior) without inheritance.</li>
+                </ul>
             </div>
         </div>
 
         <div class="interview-question">
-            <h3>4. Explain Dependency Injection (DI) and why it's preferred over global state or Singletons.</h3>
+            <h3>4. Dependency Injection (DI) in WordPress</h3>
             <div class="answer">
-                <p><strong>Answer:</strong> DI is a design pattern where dependencies are passed into a class (usually via the constructor) rather than the class creating them or accessing them globally.</p>
-                <p><strong>Benefits:</strong></p>
-                <ul>
-                    <li><strong>Testability:</strong> You can easily mock dependencies.</li>
-                    <li><strong>Decoupling:</strong> Classes don't need to know how to construct their dependencies.</li>
-                    <li><strong>Clarity:</strong> Dependencies are explicit in the constructor signature.</li>
-                </ul>
-                <pre><code class="language-php">// ❌ Bad (Hidden Dependency)
+                <p><strong>Question:</strong> WordPress relies heavily on global state (hooks). How do you implement DI to make code testable?</p>
+                <p>Instead of instantiating dependencies inside a class, pass them via the constructor.</p>
+                <pre><code class="language-php">// Bad (Hard to test)
 class OrderService {
     public function process() {
-        global $wpdb; // Hidden dependency
-        // ...
+        $db = new Database(); // Hard dependency
+        $db->save();
     }
 }
 
-// ✅ Good (Dependency Injection)
+// Good (DI)
 class OrderService {
     protected $db;
     
-    public function __construct(wpdb $db) {
+    public function __construct(DatabaseInterface $db) {
         $this->db = $db;
     }
+}</code></pre>
+                <p>In WordPress, we often use a Container (like PHP-DI) or a simple service provider pattern to wire these up in the main plugin file.</p>
+            </div>
+        </div>
+
+        <div class="interview-question">
+            <h3>5. Late Static Binding</h3>
+            <div class="answer">
+                <p><strong>Question:</strong> What is Late Static Binding and what keyword is used?</p>
+                <p><strong>Answer:</strong> It allows referenced static methods or properties to be resolved at runtime (late) rather than compile time. It uses the `static` keyword instead of `self`.</p>
+                <pre><code class="language-php">class A {
+    public static function who() {
+        echo __CLASS__;
+    }
+    public static function test() {
+        self::who();   // Outputs 'A'
+        static::who(); // Outputs 'B' (when called from B)
+    }
+}
+
+class B extends A {
+    public static function who() {
+        echo __CLASS__;
+    }
+}
+
+B::test();</code></pre>
+            </div>
+        </div>
+
+        <div class="interview-question">
+            <h3>6. What are Generators in PHP?</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong> Generators provide an easy way to implement simple iterators without the overhead or complexity of implementing a class that implements the Iterator interface.</p>
+                <p>A generator allows you to write code that uses `foreach` to iterate over a set of data without needing to build an array in memory, which may cause you to exceed a memory limit.</p>
+                <pre><code class="language-php">function getLines($file) {
+    $f = fopen($file, 'r');
+    while ($line = fgets($f)) {
+        yield $line;
+    }
+    fclose($f);
 }</code></pre>
             </div>
         </div>
 
         <div class="interview-question">
-            <h3>5. What are Traits in PHP and give a practical WordPress use case?</h3>
+            <h3>7. Explain Anonymous Classes.</h3>
             <div class="answer">
-                <p><strong>Answer:</strong> Traits are a mechanism for code reuse in single inheritance languages like PHP. They allow you to reuse methods freely in several independent classes.</p>
-                <p><strong>Use Case:</strong> A `Loggable` trait that adds logging capabilities to various services (OrderService, UserService, PaymentGateway) without them sharing a common ancestor.</p>
-                <pre><code class="language-php">trait Loggable {
-    public function log($message) {
-        error_log("[MyPlugin] " . $message);
+                <p><strong>Answer:</strong> Anonymous classes are useful for simple, one-off objects. They can pass arguments to their constructors, extend other classes, implement interfaces, and use traits just like a normal class.</p>
+                <pre><code class="language-php">$logger = new class {
+    public function log($msg) {
+        echo $msg;
     }
-}
+};
 
-class PaymentGateway {
-    use Loggable;
-    
-    public function pay() {
-        $this->log("Processing payment...");
-    }
-}</code></pre>
+$logger->log('Hello World');</code></pre>
             </div>
         </div>
 
+        <div class="interview-question">
+            <h3>8. What is the Null Coalescing Operator?</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong> The null coalescing operator (`??`) is syntactic sugar for the common case of needing to use a ternary in conjunction with `isset()`. It returns its first operand if it exists and is not null; otherwise it returns its second operand.</p>
+                <pre><code class="language-php">// Old way
+$username = isset($_GET['user']) ? $_GET['user'] : 'nobody';
+
+// New way
+$username = $_GET['user'] ?? 'nobody';</code></pre>
+            </div>
+        </div>
+
+        <div class="interview-question">
+            <h3>9. What are Attributes (Annotations) in PHP 8?</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong> Attributes allow you to add structured, machine-readable metadata information on declarations in your code: classes, methods, functions, parameters, properties and class constants.</p>
+                <p>They replace the old PHPDoc-style annotations (e.g., `@Route`).</p>
+                <pre><code class="language-php">#[Route("/api/posts", methods: ["GET"])]
+public function index() { ... }</code></pre>
+            </div>
+        </div>
+
+        <div class="interview-question">
+            <h3>10. Explain WeakMaps.</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong> A WeakMap is a collection of objects (keys) and values where the keys are weakly referenced. This means that if the object key is no longer referenced anywhere else in the application, it will be garbage collected, and the entry will be removed from the WeakMap automatically. This prevents memory leaks in long-running processes.</p>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 40px;">
+            <a href="interview_wordpress_core.html" class="btn-next">Next: Core Architecture Questions &rarr;</a>
+        </div>
     </main>
 
     <footer>

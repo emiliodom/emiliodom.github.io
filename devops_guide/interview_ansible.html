@@ -34,6 +34,42 @@
                 <p>Idempotency means that an operation can be applied multiple times without changing the result beyond the initial application. It ensures that running a playbook multiple times won't break things or create duplicate resources.</p>
             </div>
         </div>
+
+        <div class="interview-card">
+            <h3>3. Playbooks vs. Roles</h3>
+            <p><strong>Question:</strong> What is the difference between a Playbook and a Role?</p>
+            <div class="answer">
+                <p><strong>Playbook:</strong> A YAML file containing a list of plays. It maps a group of hosts to a list of tasks. It's the entry point for Ansible execution.</p>
+                <p><strong>Role:</strong> A way to bundle automation content (tasks, files, templates, variables) to make it reusable and shareable. A playbook typically includes roles.</p>
+            </div>
+        </div>
+
+        <div class="interview-card">
+            <h3>4. Ansible Vault</h3>
+            <p><strong>Question:</strong> How do you handle sensitive data (passwords, keys) in Ansible?</p>
+            <div class="answer">
+                <p><strong>Ansible Vault:</strong> A tool that allows you to encrypt sensitive data files (like <code>secrets.yml</code>) using AES256 encryption. You can encrypt entire files or specific strings within YAML files.</p>
+                <p>Usage: <code>ansible-vault encrypt secrets.yml</code></p>
+            </div>
+        </div>
+
+        <div class="interview-card">
+            <h3>5. Handlers</h3>
+            <p><strong>Question:</strong> What are Handlers and when are they executed?</p>
+            <div class="answer">
+                <p><strong>Handlers:</strong> Special tasks that only run when notified by another task. They are typically used to restart services when a configuration file changes.</p>
+                <p><strong>Execution:</strong> They run once, at the very end of the play, regardless of how many tasks notified them (to avoid restarting a service multiple times).</p>
+            </div>
+        </div>
+
+        <div class="interview-card">
+            <h3>6. Variables and Facts</h3>
+            <p><strong>Question:</strong> What is the difference between Variables and Facts?</p>
+            <div class="answer">
+                <p><strong>Variables:</strong> Defined by the user in playbooks, inventory, or roles (e.g., <code>port: 8080</code>).</p>
+                <p><strong>Facts:</strong> Information gathered from the remote system by Ansible automatically at the start of a play (e.g., IP address, OS version, CPU count). Accessed via the <code>setup</code> module.</p>
+            </div>
+        </div>
     </main>
 
     <footer>

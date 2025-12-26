@@ -23,6 +23,68 @@
             <li><strong>Environment Variables:</strong> Keep secrets out of the codebase.</li>
             <li><strong>Folder Structure:</strong> `web/app` instead of `wp-content`.</li>
         </ul>
+
+        <h3>1. The Bedrock Structure</h3>
+        <p>Unlike standard WP, Bedrock looks like a modern PHP app:</p>
+        <pre><code class="language-bash">├── config/          # WP configuration
+├── web/
+│   ├── app/         # wp-content (themes, plugins)
+│   └── wp/          # WP Core (Git ignored)
+├── .env             # Secrets
+└── composer.json    # Dependencies</code></pre>
+
+        <h3>2. Installing Bedrock</h3>
+        <p>Start a new project:</p>
+        <pre><code class="language-bash">composer create-project roots/bedrock my-project</code></pre>
+
+        <h3>3. Environment Variables</h3>
+        <p>Configure your `.env` file for local development:</p>
+        <pre><code class="language-bash">DB_NAME='my_db'
+DB_USER='db_user'
+DB_PASSWORD='db_password'
+WP_HOME='http://my-project.test'
+WP_SITEURL="${WP_HOME}/wp"</code></pre>
+
+        <h3>4. Managing Plugins with Composer</h3>
+        <p>Install plugins from WordPress Packagist:</p>
+        <pre><code class="language-bash">composer require wpackagist-plugin/wordpress-seo
+composer require wpackagist-plugin/timber-library</code></pre>
+
+        <h3>5. Database: PostgreSQL via PG4WP</h3>
+        <p>We are moving away from MySQL. Install the PG4WP driver:</p>
+        <ol>
+            <li>Download `pg4wp` and place it in `web/app/db.php`.</li>
+            <li>Update `.env` to point to your PostgreSQL instance.</li>
+        </ol>
+
+        <h3>6. Redis Object Cache</h3>
+        <p>Configure Redis for high-performance object caching:</p>
+        <pre><code class="language-bash">composer require wpackagist-plugin/redis-cache</code></pre>
+        <p>Add to `config/application.php`:</p>
+        <pre><code class="language-php">Config::define('WP_REDIS_HOST', env('REDIS_HOST'));</code></pre>
+
+        <h3>7. NocoDB Integration Setup</h3>
+        <p>We will use NocoDB as an external data source. Install the HTTP client:</p>
+        <pre><code class="language-bash">composer require guzzlehttp/guzzle</code></pre>
+
+        <h3>8. Custom Directory Structure</h3>
+        <p>Understand where your code goes:</p>
+        <ul>
+            <li><strong>Themes:</strong> `web/app/themes/`</li>
+            <li><strong>Plugins:</strong> `web/app/plugins/` (Git ignored if managed by Composer)</li>
+            <li><strong>Mu-Plugins:</strong> `web/app/mu-plugins/` (Autoloaded)</li>
+        </ul>
+
+        <h3>9. Security Hardening</h3>
+        <p>Bedrock secures your site by default:</p>
+        <ul>
+            <li><strong>Web Root:</strong> Only `web/` is exposed to the public.</li>
+            <li><strong>Passwords:</strong> Salt keys are defined in `.env`.</li>
+            <li><strong>Disallow File Edit:</strong> `DISALLOW_FILE_EDIT` is true by default.</li>
+        </ul>
+
+        <h3>10. Deployment Workflow</h3>
+        <p>With Bedrock, you deploy the entire application artifact, not just theme files. This ensures consistency across environments.</p>
     </main>
     <footer></footer>
     <script>initLayout();</script>

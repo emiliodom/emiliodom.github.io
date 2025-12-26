@@ -50,18 +50,63 @@
         <section class="question">
             <h2>4. How do you secure a CI/CD pipeline?</h2>
             <div class="answer">
+                <p><strong>Answer:</strong></p>
                 <ul>
-                    <li><strong>Secrets Management:</strong> Never store credentials in code. Use vault solutions (HashiCorp Vault, GitHub Secrets, AWS Secrets Manager).</li>
-                    <li><strong>Least Privilege:</strong> The CI/CD runner should only have the permissions necessary to perform the deployment, not full admin access.</li>
-                    <li><strong>Image Scanning:</strong> Scan container images for vulnerabilities before deploying them.</li>
-                    <li><strong>Code Analysis:</strong> Run SAST (Static Application Security Testing) tools during the build process.</li>
+                    <li><strong>Secrets Management:</strong> Never store credentials in git. Use tools like HashiCorp Vault, AWS Secrets Manager, or GitHub Secrets.</li>
+                    <li><strong>Least Privilege:</strong> The CI/CD runner should only have the permissions necessary to deploy (e.g., it shouldn't have admin access to the entire cloud account).</li>
+                    <li><strong>Static Analysis (SAST):</strong> Run security scans on the code during the build process.</li>
+                    <li><strong>Image Scanning:</strong> Scan Docker images for vulnerabilities before pushing to the registry.</li>
                 </ul>
             </div>
         </section>
 
-        <div class="navigation-buttons">
-            <a href="interview_k8s.html" class="btn">Back: Kubernetes Questions</a>
-            <a href="interview_index.html" class="btn">Back to Index</a>
+        <section class="question">
+            <h2>5. What is a "Self-Hosted Runner"?</h2>
+            <div class="answer">
+                <p>A self-hosted runner is a machine (VM or container) that you manage and maintain to run your CI/CD jobs, instead of using the cloud provider's shared runners.</p>
+                <p><strong>Use Cases:</strong></p>
+                <ul>
+                    <li><strong>Security:</strong> You need to deploy to a private network that is not accessible from the public internet.</li>
+                    <li><strong>Performance:</strong> You need specialized hardware (GPU) or more powerful specs than the standard runners.</li>
+                    <li><strong>Cost:</strong> For very high volume pipelines, it might be cheaper.</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="question">
+            <h2>6. What is GitOps?</h2>
+            <div class="answer">
+                <p>GitOps is a set of practices where the entire state of your infrastructure and applications is defined in a Git repository.</p>
+                <p><strong>Workflow:</strong></p>
+                <ol>
+                    <li>Developer pushes a change to the Git repo (e.g., updating a Docker image tag in a YAML file).</li>
+                    <li>An automated operator (like ArgoCD or Flux) running in the cluster detects the divergence between Git and the live cluster.</li>
+                    <li>The operator automatically syncs the cluster to match the state defined in Git.</li>
+                </ol>
+                <p><strong>Key Benefit:</strong> Git becomes the "Single Source of Truth".</p>
+            </div>
+        </section>
+
+        <section class="question">
+            <h2>7. Explain the concept of "Immutable Infrastructure".</h2>
+            <div class="answer">
+                <p><strong>Definition:</strong> Once a server (or container) is deployed, it is never modified. If you need to update it, you replace it with a new version.</p>
+                <p><strong>Old Way (Mutable):</strong> SSH into a server, run `apt-get update`, edit config files. Leads to "Configuration Drift" and "Snowflake Servers".</p>
+                <p><strong>New Way (Immutable):</strong> Build a new VM image (AMI) or Docker image with the updates baked in. Terminate the old instance and launch the new one.</p>
+            </div>
+        </section>
+
+        <section class="question">
+            <h2>8. What is a "Pipeline as Code"?</h2>
+            <div class="answer">
+                <p>Defining your build, test, and deploy steps in a file (usually YAML) that is stored in the same repository as your source code.</p>
+                <p><strong>Examples:</strong> `.gitlab-ci.yml`, `Jenkinsfile`, `.github/workflows/main.yml`.</p>
+                <p><strong>Benefits:</strong> The pipeline is versioned with the code. You can test changes to the pipeline in a separate branch before merging.</p>
+            </div>
+        </section>
+
+        <div style="text-align: center; margin-top: 40px;">
+            <a href="interview_terraform.html" class="btn-next">Next: Terraform Interview Questions &rarr;</a>
         </div>
     </main>
 

@@ -24,6 +24,34 @@
             <p>This guide is tailored for the Senior Full-stack Moodle Developer role. It covers Moodle architecture, plugin development, theme customization, and performance optimization for large-scale installations.</p>
         </section>
 
+        <div class="crash-course">
+            <h3>🚀 Moodle Crash Course</h3>
+            <p>The essentials in 30 seconds:</p>
+            <pre><code class="language-php">// 1. The Global $DB
+global $DB;
+$user = $DB->get_record('user', ['username' => 'admin']);
+
+// 2. The Page Context
+$PAGE->set_context(context_system::instance());
+$PAGE->set_url('/local/myplugin/index.php');
+$PAGE->set_title('My Plugin');
+
+// 3. Output API
+echo $OUTPUT->header();
+echo $OUTPUT->heading('Hello Moodle');
+echo $OUTPUT->footer();</code></pre>
+        </div>
+
+        <div class="bug-hunt" style="background: #fff3cd; border-left: 5px solid #ffeeba; padding: 15px; margin: 20px 0; color: #856404;">
+            <h3>⚠️ Senior Expectations</h3>
+            <ul>
+                <li><strong>Architecture:</strong> Understand the difference between Plugins, Subsystems, and Core.</li>
+                <li><strong>Performance:</strong> Know how to use MUC (Moodle Universal Cache) and Session handling.</li>
+                <li><strong>Security:</strong> Always use `required_param`, `optional_param`, and `sesskey()` checks.</li>
+                <li><strong>Standards:</strong> Follow Moodle Coding Style (Frankenstyle) strictly.</li>
+            </ul>
+        </div>
+
         <div class="card-grid">
             <a href="module1.html" class="card-link">
                 <div class="card">
@@ -73,7 +101,75 @@
                     <p>Command line tools, Cron management, and advanced configuration.</p>
                 </div>
             </a>
+        </div>
 
+        <div class="jira-ticket">
+            <div class="jira-header">
+                <span class="jira-id">CAPSTONE-LMS</span>
+                <span class="jira-status">Final Project</span>
+            </div>
+            <div class="jira-body">
+                <h3 class="jira-title">Capstone: Enterprise LMS Customization</h3>
+                <div class="jira-section">
+                    <span class="jira-label">Objective</span>
+                    <p>Transform a standard Moodle installation into a tailored Enterprise LMS for a corporate client.</p>
+                </div>
+                <div class="jira-section">
+                    <span class="jira-label">Requirements</span>
+                    <ul class="req-list">
+                        <li><strong>Custom Plugin:</strong> Develop a "Corporate Training" activity module with custom grading logic.</li>
+                        <li><strong>Theme:</strong> Create a child theme with a custom dashboard layout and branding.</li>
+                        <li><strong>Integration:</strong> Sync users from an external HR system (simulated CSV/API) via a scheduled task.</li>
+                        <li><strong>Reporting:</strong> Build a custom report plugin showing course completion rates by department.</li>
+                        <li><strong>Performance:</strong> Configure Redis for session and application caching.</li>
+                    </ul>
+                </div>
+                <div class="jira-section">
+                    <span class="jira-label">Documentation</span>
+                    <p>Provide a technical manual for the IT team and a user guide for instructors.</p>
+                </div>
+            </div>
+        </div>
+
+        <h3>How to use this guide</h3>
+        <div class="modules-grid">
+            <div class="card">
+                <h3>Module 1: Architecture & PHP</h3>
+                <p><strong>Time:</strong> 10 hours | <strong>Complexity:</strong> High</p>
+                <p>Deep dive into Moodle's core and coding standards.</p>
+            </div>
+            <div class="card">
+                <h3>Module 2: Plugin Development</h3>
+                <p><strong>Time:</strong> 20 hours | <strong>Complexity:</strong> Very High</p>
+                <p>Building Activities, Blocks, and Local plugins.</p>
+            </div>
+            <div class="card">
+                <h3>Module 3: Themes & UI</h3>
+                <p><strong>Time:</strong> 10 hours | <strong>Complexity:</strong> Medium</p>
+                <p>Mustache templates, SCSS, and Output API.</p>
+            </div>
+             <div class="card">
+                <h3>Module 4: Enterprise Features</h3>
+                <p><strong>Time:</strong> 15 hours | <strong>Complexity:</strong> High</p>
+                <p>Performance, Security, and Integrations.</p>
+            </div>
+        </div>
+
+        <h3>Curriculum Overview</h3>
+        <div class="modules-grid">
+            <p><strong>Module 1: Architecture</strong> - Core structure, File organization.</p>
+            <p><strong>Module 2: PHP for Moodle</strong> - Coding standards, Global objects.</p>
+            <p><strong>Module 3: Plugin Dev</strong> - Activity modules, Blocks, Local plugins.</p>
+            <p><strong>Module 4: Themes</strong> - Mustache, SCSS, Bootstrap.</p>
+            <p><strong>Module 5: Core APIs</strong> - DML, Page API, Output API.</p>
+            <p><strong>Module 6: Security & Perf</strong> - Caching, Session handling, Hardening.</p>
+            <p><strong>Module 7: Power User</strong> - CLI, Cron, Configuration.</p>
+            <p><strong>Module 8: Enterprise</strong> - CI/CD, Upgrades, Scaling.</p>
+            <p><strong>Module 9: Administration</strong> - Users, Courses, Roles.</p>
+            <p><strong>Module 10: Use Cases</strong> - Real-world scenarios and solutions.</p>
+        </div>
+
+        <div class="card-grid">
             <a href="module_enterprise.html" class="card-link">
                 <div class="card">
                     <h3>8. Enterprise & CI/CD</h3>

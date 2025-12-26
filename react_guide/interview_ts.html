@@ -152,6 +152,36 @@ const str = identity("hi"); // TS knows 'str' is string</code></pre>
         </details>
     </div>
 
+    <div class="q-block">
+        <div class="q-text">Q: Generics</div>
+        <div class="hint">Type variables.</div>
+        <div class="code-section">
+            <span class="code-label">Basic Implementation</span>
+            <pre><code>function identity&lt;T&gt;(arg: T): T {
+    return arg;
+}
+
+let output = identity&lt;string&gt;("myString");</code></pre>
+            <span class="code-label">Real World Example</span>
+            <pre><code>// Reusable API Response Wrapper
+interface ApiResponse&lt;T&gt; {
+    data: T;
+    status: number;
+    error?: string;
+}
+
+// Usage
+interface User { id: number; name: string; }
+const response: ApiResponse&lt;User&gt; = await fetchUser();</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Generics allow you to create reusable components that work with a variety of types rather than a single one. They act like variables for types.</p>
+            </div>
+        </details>
+    </div>
+
     <h2>3. Utility Types</h2>
     <div class="q-block">
         <div class="q-text">Q: Explain Partial, Pick, and Omit.</div>
@@ -189,6 +219,40 @@ type TodoPreview = Pick&lt;Todo, "id" | "title"&gt;;
 
 // Omit: Remove specific keys
 type TodoInput = Omit&lt;Todo, "id"&gt;;</code></pre>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: Utility Types (Pick, Omit, Partial)</div>
+        <div class="hint">Transforming types.</div>
+        <div class="code-section">
+            <span class="code-label">Examples</span>
+            <pre><code>interface User {
+    id: number;
+    name: string;
+    email: string;
+}
+
+// Pick: Select specific keys
+type UserPreview = Pick&lt;User, "id" | "name"&gt;;
+
+// Omit: Remove specific keys
+type UserInput = Omit&lt;User, "id"&gt;;
+
+// Partial: Make all keys optional
+type UserUpdate = Partial&lt;User&gt;;</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>TypeScript provides built-in utility types to facilitate common type transformations.</p>
+                <ul>
+                    <li><strong>Pick&lt;T, K&gt;:</strong> Constructs a type by picking the set of properties K from T.</li>
+                    <li><strong>Omit&lt;T, K&gt;:</strong> Constructs a type by picking all properties from T and then removing K.</li>
+                    <li><strong>Partial&lt;T&gt;:</strong> Constructs a type with all properties of T set to optional.</li>
+                    <li><strong>Record&lt;K, T&gt;:</strong> Constructs an object type whose property keys are K and whose property values are T.</li>
+                </ul>
             </div>
         </details>
     </div>

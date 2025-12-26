@@ -34,6 +34,44 @@
                 <p>An inode (index node) is a data structure in a Unix-style file system that describes a file-system object like a file or a directory. It stores attributes (permissions, owner, size) and disk block locations, but not the filename.</p>
             </div>
         </div>
+
+        <div class="interview-card">
+            <h3>3. File Permissions</h3>
+            <p><strong>Question:</strong> Explain the output <code>drwxr-xr-x</code> and how to change permissions.</p>
+            <div class="answer">
+                <p><strong>Breakdown:</strong> <code>d</code> (directory), <code>rwx</code> (Owner: read/write/execute), <code>r-x</code> (Group: read/execute), <code>r-x</code> (Others: read/execute).</p>
+                <p><strong>Commands:</strong></p>
+                <ul>
+                    <li><code>chmod 755 file</code>: Sets permissions (7=rwx, 5=r-x).</li>
+                    <li><code>chown user:group file</code>: Changes ownership.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="interview-card">
+            <h3>4. Process Management</h3>
+            <p><strong>Question:</strong> How do you find and kill a process consuming high CPU?</p>
+            <div class="answer">
+                <ol>
+                    <li><strong>Find:</strong> Run <code>top</code> or <code>htop</code> to see processes sorted by CPU usage. Or use <code>ps aux | grep &lt;name&gt;</code>.</li>
+                    <li><strong>Identify:</strong> Note the PID (Process ID).</li>
+                    <li><strong>Kill:</strong> Run <code>kill &lt;PID&gt;</code> (sends SIGTERM - polite kill). If it's stuck, use <code>kill -9 &lt;PID&gt;</code> (sends SIGKILL - forceful kill).</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="interview-card">
+            <h3>5. Networking Basics</h3>
+            <p><strong>Question:</strong> What commands would you use to troubleshoot connectivity issues?</p>
+            <div class="answer">
+                <ul>
+                    <li><code>ping google.com</code>: Check if the host is reachable.</li>
+                    <li><code>curl -v http://example.com</code>: Check if the web server is responding and view headers.</li>
+                    <li><code>netstat -tuln</code> or <code>ss -tuln</code>: Check which ports are open and listening on your server.</li>
+                    <li><code>nslookup</code> or <code>dig</code>: Troubleshoot DNS resolution issues.</li>
+                </ul>
+            </div>
+        </div>
     </main>
 
     <footer>

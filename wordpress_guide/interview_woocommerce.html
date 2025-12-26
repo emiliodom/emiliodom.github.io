@@ -83,6 +83,38 @@
             </div>
         </div>
 
+        <div class="interview-question">
+            <h3>6. How do you use the WooCommerce REST API for bulk updates?</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong> The REST API supports batch processing, which is essential for syncing large catalogs from an ERP.</p>
+                <p><strong>Endpoint:</strong> <code>/wp-json/wc/v3/products/batch</code></p>
+                <p><strong>Payload:</strong> You can send arrays of `create`, `update`, and `delete` objects in a single HTTP POST request. This significantly reduces network overhead compared to making individual requests for each product.</p>
+            </div>
+        </div>
+
+        <div class="interview-question">
+            <h3>7. What is the correct way to override WooCommerce templates?</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong></p>
+                <ul>
+                    <li><strong>Copy:</strong> Copy the file from `wp-content/plugins/woocommerce/templates/{path}`.</li>
+                    <li><strong>Paste:</strong> Paste it into `wp-content/themes/{your-theme}/woocommerce/{path}`.</li>
+                    <li><strong>Maintenance:</strong> You must monitor the "System Status" page after WooCommerce updates. If the core template changes, your overridden file might become outdated (out of date version), requiring you to manually merge changes.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="interview-question">
+            <h3>8. How do you add a custom field to the Product General Tab?</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong> You need to hook into the product data tabs and then save the data.</p>
+                <ol>
+                    <li><strong>Display:</strong> Use `woocommerce_product_options_general_product_data` action to output the field using `woocommerce_wp_text_input()`.</li>
+                    <li><strong>Save:</strong> Use `woocommerce_process_product_meta` action to save the `$_POST` value to post meta using `update_post_meta()`.</li>
+                </ol>
+            </div>
+        </div>
+
     </main>
 
     <footer>

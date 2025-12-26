@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Authentication Interview Questions - Next.js Guide</title>
     <link rel="stylesheet" href="../assets/css/nextjs_styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <script src="../assets/js/nextjs_layout.js"></script>
 </head>
@@ -63,6 +63,32 @@ export const config = {
                 <p><strong>Best Practice:</strong> Use the <code>server-only</code> package to ensure a module that handles sensitive data (like database connection) is never imported into a Client Component.</p>
                 <pre><code class="language-javascript">import 'server-only'
 // ... database logic ...</code></pre>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q4: What is RBAC (Role-Based Access Control) and how do you implement it?</h3>
+            <div class="answer">
+                <p><strong>Concept:</strong> Restricting access based on the user's role (e.g., Admin, Editor, User).</p>
+                <p><strong>Implementation:</strong></p>
+                <ol>
+                    <li>Add a <code>role</code> field to your User database model.</li>
+                    <li>Include the role in the session callback in <code>auth.js</code> so it's available on the client.</li>
+                    <li>Check the role in Middleware or Server Components.</li>
+                </ol>
+                <pre><code class="language-javascript">// In a Server Component
+const session = await auth();
+if (session?.user?.role !== 'admin') {
+  redirect('/unauthorized');
+}</code></pre>
+            </div>
+        </section>
+
+        <section class="qna">
+            <h3>Q5: How do you handle CSRF protection in Next.js?</h3>
+            <div class="answer">
+                <p><strong>Server Actions:</strong> Next.js Server Actions automatically include CSRF protection. The framework generates a hidden token for every action submission.</p>
+                <p><strong>API Routes:</strong> If you are building manual API routes (<code>route.js</code>), you are responsible for CSRF protection if they are called from a browser. However, since Next.js encourages Server Actions for mutations, this is less of a concern for modern apps.</p>
             </div>
         </section>
     </main>

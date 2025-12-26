@@ -40,6 +40,41 @@
                 </ul>
             </div>
         </div>
+
+        <div class="interview-card">
+            <h3>3. Indexing</h3>
+            <p><strong>Question:</strong> How do database indexes work and what is the trade-off?</p>
+            <div class="answer">
+                <p><strong>Concept:</strong> An index is a data structure (usually a B-Tree) that improves the speed of data retrieval operations on a table.</p>
+                <p><strong>Trade-off:</strong> While indexes speed up <code>SELECT</code> queries, they slow down <code>INSERT</code>, <code>UPDATE</code>, and <code>DELETE</code> operations because the index must be updated whenever the data changes. They also consume additional disk space.</p>
+            </div>
+        </div>
+
+        <div class="interview-card">
+            <h3>4. Normalization</h3>
+            <p><strong>Question:</strong> What is Database Normalization?</p>
+            <div class="answer">
+                <p>The process of organizing data to reduce redundancy and improve data integrity.</p>
+                <ul>
+                    <li><strong>1NF:</strong> Atomic values (no lists in a cell).</li>
+                    <li><strong>2NF:</strong> No partial dependencies (all columns depend on the full primary key).</li>
+                    <li><strong>3NF:</strong> No transitive dependencies (columns depend only on the key, not on other non-key columns).</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="interview-card">
+            <h3>5. Transaction Isolation Levels</h3>
+            <p><strong>Question:</strong> What are the common Transaction Isolation Levels?</p>
+            <div class="answer">
+                <ul>
+                    <li><strong>Read Uncommitted:</strong> Dirty reads allowed (lowest isolation).</li>
+                    <li><strong>Read Committed:</strong> Prevents dirty reads (default in Postgres).</li>
+                    <li><strong>Repeatable Read:</strong> Prevents dirty and non-repeatable reads (default in MySQL).</li>
+                    <li><strong>Serializable:</strong> Strict serial execution (highest isolation, lowest performance).</li>
+                </ul>
+            </div>
+        </div>
     </main>
 
     <footer>

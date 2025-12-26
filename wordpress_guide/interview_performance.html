@@ -32,7 +32,7 @@
                 <ul>
                     <li><strong>Browser Cache:</strong> Static assets (CSS, JS, Images) stored in the user's browser.</li>
                     <li><strong>Page Cache (Varnish/Nginx/Plugin):</strong> Stores the fully rendered HTML of a page. The fastest way to serve content.</li>
-                    <li><strong>Object Cache (Redis/Memcached):</strong> Stores database query results (e.g., `get_option`, `get_post_meta`) in memory to avoid hitting MySQL.</li>
+                    <li><strong>Object Cache (Redis/Memcached):</strong> Stores database query results (e.g., `get_option`, `get_post_meta`) in memory to avoid hitting the primary database (MySQL/Postgres).</li>
                     <li><strong>Opcode Cache (OPcache):</strong> Stores compiled PHP bytecode in memory so PHP doesn't have to re-compile scripts on every request.</li>
                 </ul>
             </div>
@@ -88,6 +88,50 @@ if (false === $data) {
                     <li><strong>WP-CLI:</strong> `wp profile` commands.</li>
                     <li><strong>Check Logs:</strong> PHP error logs and server access logs.</li>
                 </ol>
+            </div>
+        </div>
+
+        <div class="interview-question">
+            <h3>6. What is the difference between `wp_cache_set` and `set_transient`?</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong></p>
+                <ul>
+                    <li><strong>`wp_cache_set` (Object Cache):</strong> Stores data in memory (RAM) for the duration of the request. If a persistent object cache (Redis/Memcached) is installed, it persists across requests. It is non-blocking and very fast.</li>
+                    <li><strong>`set_transient` (Database/Object Cache):</strong> Stores data in the `wp_options` table by default (with an expiration). If a persistent object cache is present, it acts like `wp_cache_set`.</li>
+                </ul>
+                <p><strong>Key Difference:</strong> Without an external object cache, `wp_cache_set` data is lost when the page finishes loading. Transients persist in the DB even without Redis.</p>
+            </div>
+        </div>
+
+        <div class="interview-question">
+            <h3>7. How do you optimize the `wp_options` table?</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong> The `wp_options` table can become bloated, slowing down every page load because "autoloaded" options are fetched on every request.</p>
+                <p><strong>Optimization Strategies:</strong></p>
+                <ul>
+                    <li><strong>Clean up Autoloaded Data:</strong> Identify large options with `autoload='yes'` that aren't needed on every page and set them to `'no'`.</li>
+                    <li><strong>Remove Stale Transients:</strong> Old transients can clutter the table. Use a DB cleaner or WP-CLI `wp transient delete --expired`.</li>
+                    <li><strong>Index:</strong> Ensure the `autoload` column is indexed (it is by default in modern WP).</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="interview-question">
+            <h3>8. Explain "Lazy Loading" in the context of WordPress images.</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong> Lazy loading defers the loading of off-screen images until the user scrolls near them. This improves the initial "Largest Contentful Paint" (LCP) score.</p>
+                <p><strong>Implementation:</strong></p>
+                <ul>
+                    <li><strong>Native:</strong> WordPress (since 5.5) adds `loading="lazy"` attribute to `img` tags automatically.</li>
+                    <li><strong>Optimization:</strong> You should <em>disable</em> lazy loading for the "hero" image (above the fold) to ensure it loads immediately, improving LCP.</li>
+                </ul>
+                <pre><code class="language-php">// Disable lazy loading for the first image
+add_filter( 'wp_get_attachment_image_attributes', function( $attr ) {
+    if ( is_hero_image() ) {
+        $attr['loading'] = 'eager';
+    }
+    return $attr;
+});</code></pre>
             </div>
         </div>
 

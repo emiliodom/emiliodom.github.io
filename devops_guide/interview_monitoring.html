@@ -34,6 +34,42 @@
                 <p><strong>Pull (Prometheus):</strong> The server scrapes metrics from agents. Better for knowing if an agent is down.<br><strong>Push (Graphite/InfluxDB):</strong> Agents send metrics to the server. Better for short-lived jobs or behind firewalls.</p>
             </div>
         </div>
+
+        <div class="interview-card">
+            <h3>3. SLI vs SLO vs SLA</h3>
+            <p><strong>Question:</strong> Define SLI, SLO, and SLA.</p>
+            <div class="answer">
+                <ul>
+                    <li><strong>SLI (Service Level Indicator):</strong> A quantitative measure of some aspect of the level of service (e.g., request latency).</li>
+                    <li><strong>SLO (Service Level Objective):</strong> A target value or range of values for a service level that is measured by an SLI (e.g., 99.9% of requests should be faster than 200ms).</li>
+                    <li><strong>SLA (Service Level Agreement):</strong> An explicit or implicit contract with your users that includes consequences of meeting (or missing) the SLOs (e.g., refund if downtime > 1 hour).</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="interview-card">
+            <h3>4. Distributed Tracing</h3>
+            <p><strong>Question:</strong> What is Distributed Tracing and why is it needed?</p>
+            <div class="answer">
+                <p><strong>Definition:</strong> A method used to profile and monitor applications, especially those built using a microservices architecture.</p>
+                <p><strong>Need:</strong> In microservices, a single user request might travel through dozens of services. Tracing (using tools like Jaeger or Zipkin) helps visualize the entire request lifecycle to identify bottlenecks and failures.</p>
+            </div>
+        </div>
+
+        <div class="interview-card">
+            <h3>5. Alert Fatigue</h3>
+            <p><strong>Question:</strong> What is Alert Fatigue and how do you prevent it?</p>
+            <div class="answer">
+                <p><strong>Definition:</strong> When engineers become desensitized to alerts because they are too frequent or often false positives.</p>
+                <p><strong>Prevention:</strong></p>
+                <ul>
+                    <li>Make alerts actionable.</li>
+                    <li>Tune thresholds to avoid noise.</li>
+                    <li>Group related alerts.</li>
+                    <li>Only page humans for urgent, user-impacting issues.</li>
+                </ul>
+            </div>
+        </div>
     </main>
 
     <footer>

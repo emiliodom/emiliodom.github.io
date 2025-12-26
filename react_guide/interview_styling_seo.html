@@ -304,6 +304,80 @@ Avoid `!important`. Increase specificity naturally:
         </details>
     </div>
 
+    <h2>2. SEO & Performance</h2>
+
+    <div class="q-block">
+        <div class="q-text">Q: How do you improve SEO in a React (SPA) application?</div>
+        <div class="hint">Crawlers and Meta tags.</div>
+        <div class="code-section">
+            <h4>Basic Implementation: React Helmet</h4>
+            <pre><code>import { Helmet } from "react-helmet";
+
+const Page = () => (
+  &lt;div&gt;
+    &lt;Helmet&gt;
+      &lt;title&gt;My Page Title&lt;/title&gt;
+      &lt;meta name="description" content="This is a description" /&gt;
+    &lt;/Helmet&gt;
+    &lt;h1&gt;Content&lt;/h1&gt;
+  &lt;/div&gt;
+);</code></pre>
+            <h4>Real World Example: SSR (Next.js)</h4>
+            <pre><code>// In Next.js (App Router), you export metadata:
+export const metadata = {
+  title: 'My Page',
+  description: 'SEO optimized page',
+  openGraph: {
+    images: ['/og-image.png'],
+  },
+};</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p><strong>Problem:</strong> SPAs render content via JavaScript. Some older crawlers might see a blank page.</p>
+                <p><strong>Solutions:</strong></p>
+                <ol>
+                    <li><strong>Server-Side Rendering (SSR):</strong> Use Next.js or Remix to send pre-rendered HTML.</li>
+                    <li><strong>Meta Tags:</strong> Use <code>react-helmet</code> to manage <code>&lt;head&gt;</code> tags dynamically.</li>
+                    <li><strong>Sitemap & Robots.txt:</strong> Ensure crawlers know what to index.</li>
+                    <li><strong>Semantic HTML:</strong> Use <code>&lt;header&gt;</code>, <code>&lt;main&gt;</code>, <code>&lt;article&gt;</code> instead of just <code>&lt;div&gt;</code>.</li>
+                </ol>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
+        <div class="q-text">Q: What are Core Web Vitals?</div>
+        <div class="hint">LCP, FID, CLS.</div>
+        <div class="code-section">
+            <h4>Basic Implementation: Measuring</h4>
+            <pre><code>import { onCLS, onFID, onLCP } from 'web-vitals';
+
+function sendToAnalytics(metric) {
+  const body = JSON.stringify(metric);
+  // Use `navigator.sendBeacon()` if available, falling back to `fetch()`.
+  (navigator.sendBeacon && navigator.sendBeacon('/analytics', body)) ||
+    fetch('/analytics', { body, method: 'POST', keepalive: true });
+}
+
+onCLS(sendToAnalytics);
+onFID(sendToAnalytics);
+onLCP(sendToAnalytics);</code></pre>
+        </div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p>Google's metrics for user experience:</p>
+                <ul>
+                    <li><strong>LCP (Largest Contentful Paint):</strong> Loading performance. (Target: &lt; 2.5s)</li>
+                    <li><strong>FID (First Input Delay) / INP (Interaction to Next Paint):</strong> Interactivity. (Target: &lt; 100ms)</li>
+                    <li><strong>CLS (Cumulative Layout Shift):</strong> Visual stability. (Target: &lt; 0.1)</li>
+                </ul>
+            </div>
+        </details>
+    </div>
+
     <h2>2. React Component Libraries & Best Practices</h2>
 
     <div class="q-block">

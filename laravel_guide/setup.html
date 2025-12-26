@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 0: Laravel Environment Setup</title>
+    <link rel="stylesheet" href="../assets/css/laravel_styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <script src="../assets/js/laravel_layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Module 0: Environment Setup</h1>
+        <p>Setting up a professional Laravel environment using Docker (Sail).</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section class="crash-course">
+            <h2>🚀 Docker is the Standard</h2>
+            <p>Gone are the days of XAMPP/WAMP. Modern Laravel development uses <strong>Laravel Sail</strong>, a light-weight command-line interface for interacting with Laravel's default Docker development environment.</p>
+        </section>
+
+        <section class="task">
+            <h3>1. Prerequisites</h3>
+            
+            <h4>macOS:</h4>
+            <ul>
+                <li>Install <a href="https://orbstack.dev/" target="_blank">OrbStack</a> (Recommended) or Docker Desktop.</li>
+            </ul>
+
+            <h4>Windows:</h4>
+            <ul>
+                <li>Install <strong>WSL2</strong> (Windows Subsystem for Linux).</li>
+                <li>Install Docker Desktop and enable WSL2 integration.</li>
+                <li><strong>Important:</strong> All terminal commands must be run inside your WSL2 terminal (Ubuntu), not PowerShell.</li>
+            </ul>
+        </section>
+
+        <section class="task">
+            <h3>2. Create a New Project</h3>
+            <p>This command downloads a small Docker container to build your app without needing PHP installed on your local machine initially.</p>
+            <pre><code class="language-bash">curl -s "https://laravel.build/my-app" | bash</code></pre>
+            <p>You can customize the services (e.g., add Redis, MySQL):</p>
+            <pre><code class="language-bash">curl -s "https://laravel.build/my-app?with=mysql,redis" | bash</code></pre>
+        </section>
+
+        <section class="task">
+            <h3>3. Start the Environment</h3>
+            <pre><code class="language-bash">cd my-app
+./vendor/bin/sail up -d</code></pre>
+            <p>The first time you run this, it will take a few minutes to build the containers.</p>
+        </section>
+
+        <section class="task">
+            <h3>4. Configure Shell Alias</h3>
+            <p>Typing <code>./vendor/bin/sail</code> is tedious. Add an alias to your shell configuration (<code>.zshrc</code> or <code>.bashrc</code>):</p>
+            <pre><code class="language-bash">alias sail='[ -f sail ] && bash sail || bash vendor/bin/sail'</code></pre>
+            <p>Reload your shell, and now you can just type <code>sail up</code>, <code>sail artisan</code>, etc.</p>
+        </section>
+
+        <section class="task">
+            <h3>5. VS Code Setup</h3>
+            <p>Install these extensions:</p>
+            <ul>
+                <li><strong>PHP Intelephense</strong> (Ben Mewburn)</li>
+                <li><strong>Laravel Blade Snippets</strong> (Winnie Lin)</li>
+                <li><strong>Laravel Extra Intellisense</strong></li>
+                <li><strong>Docker</strong></li>
+            </ul>
+        </section>
+
+        <div style="text-align: center; margin-top: 40px;">
+            <a href="module1.html" class="btn-next">Next: Module 1 - Modern PHP & Setup &rarr;</a>
+        </div>
+    </main>
+</body>
+</html>

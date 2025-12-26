@@ -9,93 +9,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <script>hljs.highlightAll();</script>
     <script src="../assets/js/devops_layout.js"></script>
-    <style>
-        .jira-ticket {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 8px;
-            margin-bottom: 30px;
-            overflow: hidden;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-        .jira-header {
-            background: #f4f5f7;
-            padding: 15px 20px;
-            border-bottom: 1px solid var(--card-border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        [data-theme="dark"] .jira-header {
-            background: #2d3748;
-        }
-        .jira-id {
-            font-family: monospace;
-            font-weight: bold;
-            color: #0052cc;
-            margin-right: 10px;
-        }
-        .jira-title {
-            font-weight: 600;
-            font-size: 1.1em;
-            flex-grow: 1;
-        }
-        .jira-meta {
-            display: flex;
-            gap: 10px;
-            font-size: 0.85em;
-        }
-        .badge {
-            padding: 2px 8px;
-            border-radius: 3px;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
-        .badge-high { background: #ff5630; color: white; }
-        .badge-medium { background: #ffab00; color: black; }
-        .badge-story { background: #36b37e; color: white; }
-        
-        .jira-content {
-            padding: 20px;
-        }
-        .section-title {
-            font-size: 0.9em;
-            text-transform: uppercase;
-            color: #6b778c;
-            font-weight: bold;
-            margin-top: 20px;
-            margin-bottom: 10px;
-            border-bottom: 2px solid var(--card-border);
-            padding-bottom: 5px;
-        }
-        .section-title:first-child { margin-top: 0; }
-        
-        .dev-solution {
-            background: rgba(16, 185, 129, 0.05);
-            border-left: 4px solid #10b981;
-            padding: 15px;
-            margin-top: 20px;
-        }
-        .dev-solution h4 {
-            color: #059669;
-            margin-top: 0;
-        }
-        
-        .code-block {
-            padding: 0;
-            border-radius: 4px;
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 0.9em;
-            overflow-x: auto;
-            margin: 10px 0;
-        }
-        
-        .requirements-list {
-            list-style-type: disc;
-            padding-left: 20px;
-        }
-        .requirements-list li { margin-bottom: 5px; }
-    </style>
 </head>
 <body>
     <header>
@@ -124,12 +37,12 @@
                     <span class="badge badge-story">Optimization</span>
                 </div>
             </div>
-            <div class="jira-content">
+            <div class="jira-body">
                 <div class="section-title">Description</div>
                 <p>Our current Node.js production image is 1.2GB. This slows down deployments and autoscaling. We need to reduce it to under 200MB.</p>
                 
                 <div class="section-title">Acceptance Criteria</div>
-                <ul class="requirements-list">
+                <ul class="req-list">
                     <li>Final image size < 200MB.</li>
                     <li>Must not contain source code (only build artifacts).</li>
                     <li>Must not contain devDependencies.</li>
@@ -179,12 +92,12 @@ CMD ["node", "dist/main.js"]</code></pre>
                     <span class="badge badge-story">Reliability</span>
                 </div>
             </div>
-            <div class="jira-content">
+            <div class="jira-body">
                 <div class="section-title">Description</div>
                 <p>During high load, our API sometimes freezes but the container stays "Running", so K8s doesn't restart it. Also, during startup, traffic is sent before the DB connection is ready, causing 500 errors.</p>
                 
                 <div class="section-title">Acceptance Criteria</div>
-                <ul class="requirements-list">
+                <ul class="req-list">
                     <li>Restart container if application freezes (Deadlock).</li>
                     <li>Do not send traffic until DB connection is established.</li>
                 </ul>
@@ -236,12 +149,12 @@ spec:
                     <span class="badge badge-story">Automation</span>
                 </div>
             </div>
-            <div class="jira-content">
+            <div class="jira-body">
                 <div class="section-title">Description</div>
                 <p>Developers are manually building and pushing Docker images. This is error-prone. We need a GitHub Actions pipeline that runs tests and pushes to registry only on main branch.</p>
                 
                 <div class="section-title">Acceptance Criteria</div>
-                <ul class="requirements-list">
+                <ul class="req-list">
                     <li>Run unit tests on every PR.</li>
                     <li>Build and Push Docker image ONLY on merge to `main`.</li>
                     <li>Tag image with commit SHA.</li>
@@ -301,12 +214,12 @@ jobs:
                     <span class="badge badge-story">Infrastructure</span>
                 </div>
             </div>
-            <div class="jira-content">
+            <div class="jira-body">
                 <div class="section-title">Description</div>
                 <p>We need a reproducible network environment in AWS. Manually clicking in the console is not scalable. We need a Terraform module to provision a VPC with public and private subnets.</p>
                 
                 <div class="section-title">Acceptance Criteria</div>
-                <ul class="requirements-list">
+                <ul class="req-list">
                     <li>Create 1 VPC (10.0.0.0/16).</li>
                     <li>Create 2 Public Subnets (for Load Balancers).</li>
                     <li>Create 2 Private Subnets (for App Servers).</li>
@@ -354,12 +267,12 @@ jobs:
                     <span class="badge badge-story">Configuration</span>
                 </div>
             </div>
-            <div class="jira-content">
+            <div class="jira-body">
                 <div class="section-title">Description</div>
                 <p>We have 50 web servers. Updating `nginx.conf` manually is impossible. We need an Ansible playbook to push the new config and reload Nginx without downtime.</p>
                 
                 <div class="section-title">Acceptance Criteria</div>
-                <ul class="requirements-list">
+                <ul class="req-list">
                     <li>Copy `nginx.conf` to all web servers.</li>
                     <li>Validate the configuration before reloading.</li>
                     <li>Reload Nginx service only if config changed.</li>
@@ -405,12 +318,12 @@ jobs:
                     <span class="badge badge-story">Monitoring</span>
                 </div>
             </div>
-            <div class="jira-content">
+            <div class="jira-body">
                 <div class="section-title">Description</div>
                 <p>We had an outage because a server stuck at 100% CPU for 2 hours unnoticed. We need a Prometheus alert rule to notify us via Slack.</p>
                 
                 <div class="section-title">Acceptance Criteria</div>
-                <ul class="requirements-list">
+                <ul class="req-list">
                     <li>Trigger alert if CPU usage > 80% for more than 5 minutes.</li>
                     <li>Send notification to #ops-alerts channel.</li>
                 </ul>

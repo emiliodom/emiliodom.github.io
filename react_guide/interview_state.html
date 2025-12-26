@@ -102,87 +102,61 @@ const userSlice = createSlice({
   }
 });</code></pre>
         </div>
-        <details>
-            <summary>Show Answer</summary>
-            <div class="answer">
-                <pre><code>import { createSlice } from '@reduxjs/toolkit';
-
-const counterSlice = createSlice({
-  name: 'counter',
-  initialState: { value: 0 },
-  reducers: {
-    increment: state => { state.value += 1; }, // Immer magic
-    decrement: state => { state.value -= 1; }
-  }
-});
-
-export const { increment, decrement } = counterSlice.actions;
-export default counterSlice.reducer;</code></pre>
-            </div>
-        </details>
     </div>
 
     <h2>2. Zustand</h2>
     <div class="q-block">
-        <div class="q-text zustand">Q: Why choose Zustand over Redux?</div>
-        <div class="hint">Simplicity and Boilerplate.</div>
-        <div class="code-section">
-            <span class="code-label">Basic Implementation</span>
-            <pre><code>// Redux: Requires Provider, Slice, Store config, Dispatch, Selector
-// Zustand: Just create a hook and use it.</code></pre>
-            <span class="code-label">Real World Example</span>
-            <pre><code>// Small to Medium apps where Redux is overkill.
-// Or when you need state outside of React components (Zustand stores are vanilla JS).</code></pre>
-        </div>
+        <div class="q-text">Q: Why choose Zustand over Redux?</div>
+        <div class="hint">Simplicity, Boilerplate, Bundle size.</div>
         <details>
             <summary>Show Answer</summary>
             <div class="answer">
+                <p><strong>Zustand</strong> is a "bearbones" state management library.</p>
                 <ul>
-                    <li><strong>Simplicity:</strong> No Providers wrapping the app. No complex boilerplate.</li>
-                    <li><strong>Size:</strong> Tiny bundle size.</li>
-                    <li><strong>Mental Model:</strong> It's just a hook.</li>
+                    <li><strong>No Boilerplate:</strong> No providers, no reducers, no complex dispatch logic. Just a hook.</li>
+                    <li><strong>Small Size:</strong> Tiny bundle size compared to Redux.</li>
+                    <li><strong>Transient Updates:</strong> Can update state without causing re-renders (via subscription).</li>
+                    <li><strong>Mental Model:</strong> It's just a store with functions to update it.</li>
                 </ul>
             </div>
         </details>
     </div>
 
     <div class="q-block">
-        <div class="q-text zustand">Q: Code Sample: Zustand Store</div>
+        <div class="q-text">Q: Code Sample: Create a Store</div>
         <div class="hint">create((set) => ({ ... }))</div>
         <div class="code-section">
-            <span class="code-label">Basic Implementation</span>
-            <pre><code>const useStore = create((set) => ({
+            <span class="code-label">Implementation</span>
+            <pre><code>import { create } from 'zustand'
+
+const useStore = create((set) => ({
   bears: 0,
-  increase: () => set((state) => ({ bears: state.bears + 1 })),
-}));</code></pre>
-            <span class="code-label">Real World Example</span>
-            <pre><code>// Usage in Component
+  increasePopulation: () => set((state) => ({ bears: state.bears + 1 })),
+  removeAllBears: () => set({ bears: 0 }),
+}))
+
+// Usage
 function BearCounter() {
-  const bears = useStore((state) => state.bears);
-  return &lt;h1&gt;{bears} bears&lt;/h1&gt;;
+  const bears = useStore((state) => state.bears)
+  return &lt;h1&gt;{bears} around here ...&lt;/h1&gt;
 }</code></pre>
         </div>
+    </div>
+
+    <h2>3. Context API vs. External Libraries</h2>
+    <div class="q-block">
+        <div class="q-text">Q: When should you use Context API instead of Redux/Zustand?</div>
+        <div class="hint">Frequency of updates, Prop drilling.</div>
         <details>
             <summary>Show Answer</summary>
             <div class="answer">
-                <pre><code>import { create } from 'zustand';
-
-interface Store {
-  bears: number;
-  increase: () => void;
-}
-
-const useStore = create&lt;Store&gt;((set) => ({
-  bears: 0,
-  increase: () => set((state) => ({ bears: state.bears + 1 })),
-}));
-
-// Usage in Component
-function BearCounter() {
-  // Selector pattern for performance
-  const bears = useStore((state) => state.bears); 
-  return &lt;h1&gt;{bears} bears&lt;/h1&gt;;
-}</code></pre>
+                <p><strong>Context API</strong> is best for:</p>
+                <ul>
+                    <li><strong>Low-frequency updates:</strong> Theme (Dark/Light), User Language, Auth User data.</li>
+                    <li><strong>Static data:</strong> Configuration settings.</li>
+                    <li><strong>Avoiding Prop Drilling:</strong> Passing data down 3-4 levels.</li>
+                </ul>
+                <p><strong>Avoid Context for:</strong> High-frequency updates (like a text input or mouse position) because it triggers a re-render of <em>all</em> consumers every time the value changes, leading to performance issues.</p>
             </div>
         </details>
     </div>

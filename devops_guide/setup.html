@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 0: DevOps Environment Setup</title>
+    <link rel="stylesheet" href="../assets/css/devops_styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <script src="../assets/js/devops_layout.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Module 0: Environment Setup</h1>
+        <p>Preparing your machine for Cloud, Docker, and Infrastructure as Code.</p>
+    </header>
+
+    <nav>
+        <!-- Navigation injected by layout.js -->
+    </nav>
+
+    <main>
+        <section class="crash-course">
+            <h2>🛠 The DevOps Toolbelt</h2>
+            <p>DevOps engineers live in the terminal. Your local environment must mirror the servers you manage. This means having a robust Unix-like shell, container runtime, and cloud CLIs ready.</p>
+        </section>
+
+        <section class="task">
+            <h3>1. The Terminal (Shell)</h3>
+            
+            <h4>macOS:</h4>
+            <p>You are already on Unix. Install <strong>iTerm2</strong> for a better experience than the default Terminal.</p>
+            <pre><code class="language-bash">brew install --cask iterm2
+# Install Oh My Zsh for better prompts
+sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"</code></pre>
+
+            <h4>Windows:</h4>
+            <p><strong>WSL2 (Windows Subsystem for Linux) is mandatory.</strong> Do not try to do DevOps with PowerShell alone.</p>
+            <ol>
+                <li>Open PowerShell as Administrator.</li>
+                <li>Run: <code>wsl --install</code></li>
+                <li>Restart your computer.</li>
+                <li>Open "Ubuntu" from your Start menu and create a user.</li>
+                <li>Use "Windows Terminal" to access your Ubuntu shell.</li>
+            </ol>
+        </section>
+
+        <section class="task">
+            <h3>2. Container Runtime (Docker)</h3>
+            <p>You need to build and run containers locally.</p>
+            <ul>
+                <li><strong>Docker Desktop:</strong> The standard choice. Easy to install but requires a license for large companies.</li>
+                <li><strong>OrbStack (macOS only):</strong> Faster, lighter alternative to Docker Desktop. Highly recommended for Mac users.</li>
+            </ul>
+            <pre><code class="language-bash"># macOS (OrbStack)
+brew install --cask orbstack
+
+# Windows
+# Install Docker Desktop and enable "WSL 2 Integration" in settings.</code></pre>
+        </section>
+
+        <section class="task">
+            <h3>3. Essential CLIs</h3>
+            <p>Install these tools to manage infrastructure.</p>
+            <pre><code class="language-bash"># macOS (Homebrew) / Linux (apt/yum)
+
+# AWS CLI (Cloud management)
+brew install awscli
+
+# Terraform (Infrastructure as Code)
+brew install terraform
+
+# Kubectl (Kubernetes control)
+brew install kubectl
+
+# Git (Version Control) - Ensure you have it!
+git --version</code></pre>
+        </section>
+
+        <section class="task">
+            <h3>4. VS Code Extensions</h3>
+            <p>Equip your editor with syntax highlighting for config files.</p>
+            <ul>
+                <li><strong>Docker</strong> (Microsoft)</li>
+                <li><strong>Kubernetes</strong> (Microsoft)</li>
+                <li><strong>HashiCorp Terraform</strong></li>
+                <li><strong>YAML</strong> (Red Hat) - Crucial for K8s/Ansible files.</li>
+                <li><strong>WSL</strong> (Microsoft) - <em>Windows users only</em>, lets you edit files inside Linux from Windows.</li>
+            </ul>
+        </section>
+
+        <div style="text-align: center; margin-top: 40px;">
+            <a href="module1.html" class="btn-next">Next: Module 1 - Docker Mastery &rarr;</a>
+        </div>
+    </main>
+</body>
+</html>

@@ -54,6 +54,33 @@ func(1, 2, a=3)</code></pre>
             <h3>4. What are Python decorators?</h3>
             <p><strong>Answer:</strong> A decorator is a design pattern in Python that allows a user to add new functionality to an existing object without modifying its structure. It is usually a function that takes another function as an argument and extends its behavior.</p>
         </div>
+
+        <div class="question-card">
+            <h3>5. What are Generators and the `yield` keyword?</h3>
+            <p><strong>Answer:</strong> Generators are functions that return an iterable set of items, one at a time, in a special way.</p>
+            <ul>
+                <li>When an iteration over a set of items starts using the <code>for</code> statement, the generator is run.</li>
+                <li>Once the generator's function code reaches a <code>yield</code> statement, the generator yields its execution back to the for loop, returning a new value from the set.</li>
+                <li><strong>Benefit:</strong> Memory efficient. It doesn't store the whole list in memory.</li>
+            </ul>
+        </div>
+
+        <div class="question-card">
+            <h3>6. Explain Context Managers (`with` statement).</h3>
+            <p><strong>Answer:</strong> Context managers allow you to allocate and release resources precisely when you want to. The most widely used example is the <code>with</code> statement.</p>
+            <pre><code>with open('file.txt', 'w') as f:
+    f.write('hello')</code></pre>
+            <p>It ensures that the file is closed automatically, even if an exception occurs. It uses the <code>__enter__</code> and <code>__exit__</code> magic methods.</p>
+        </div>
+
+        <div class="question-card">
+            <h3>7. What is the difference between `is` and `==`?</h3>
+            <p><strong>Answer:</strong></p>
+            <ul>
+                <li><code>==</code> checks for <strong>value equality</strong>. (Do these two objects contain the same data?)</li>
+                <li><code>is</code> checks for <strong>reference equality</strong>. (Do these two variables point to the exact same object in memory?)</li>
+            </ul>
+        </div>
     </main>
 
     <footer></footer>

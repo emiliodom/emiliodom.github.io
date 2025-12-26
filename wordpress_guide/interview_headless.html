@@ -96,6 +96,34 @@
             </div>
         </div>
 
+        <div class="interview-question">
+            <h3>6. What is ISR (Incremental Static Regeneration) and how does it help Headless WP?</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong> ISR allows you to create or update static pages <em>after</em> you’ve built your site.</p>
+                <p><strong>Benefit:</strong> In a large WordPress site (10k+ posts), building all pages statically takes too long. With ISR, you can build critical pages at build time and generate others on-demand when a user requests them. You can also set a revalidation time (e.g., 60 seconds) so content updates without a full rebuild.</p>
+            </div>
+        </div>
+
+        <div class="interview-question">
+            <h3>7. What are the SEO challenges in Headless WordPress?</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong></p>
+                <ul>
+                    <li><strong>Meta Tags:</strong> You need to fetch SEO data (Yoast/RankMath) via the API and inject it into the <code>&lt;head&gt;</code> of your frontend application.</li>
+                    <li><strong>Sitemaps:</strong> The default WP sitemap points to the WP domain. You need to generate a custom sitemap on the frontend or proxy the WP sitemap to rewrite URLs.</li>
+                    <li><strong>Canonical URLs:</strong> Ensure canonicals point to the frontend domain, not the backend WP installation.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="interview-question">
+            <h3>8. How do Webhooks function in a Headless architecture?</h3>
+            <div class="answer">
+                <p><strong>Answer:</strong> Webhooks are used to trigger a rebuild or cache invalidation on the frontend hosting provider (Vercel/Netlify) whenever content changes in WordPress.</p>
+                <p><strong>Workflow:</strong> User publishes a post -> WP sends POST request to Vercel Webhook URL -> Vercel triggers a new deployment or revalidates the specific path.</p>
+            </div>
+        </div>
+
     </main>
 
     <footer>

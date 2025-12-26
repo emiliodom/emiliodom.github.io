@@ -34,6 +34,91 @@
                 <p><code>plan</code> creates an execution plan, showing what actions Terraform will take to reach the desired state. <code>apply</code> executes those actions to provision the resources.</p>
             </div>
         </div>
+
+        <div class="interview-card">
+            <h3>3. Modules</h3>
+            <p><strong>Question:</strong> What are Terraform Modules and why should you use them?</p>
+            <div class="answer">
+                <p><strong>Answer:</strong> Modules are containers for multiple resources that are used together. They allow you to:</p>
+                <ul>
+                    <li><strong>Reusability:</strong> Write code once and instantiate it multiple times (e.g., a standard VPC setup).</li>
+                    <li><strong>Organization:</strong> Break down complex configurations into smaller, manageable parts.</li>
+                    <li><strong>Encapsulation:</strong> Hide complexity and expose only necessary variables.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="interview-card">
+            <h3>4. `count` vs `for_each`</h3>
+            <p><strong>Question:</strong> When should you use `for_each` instead of `count`?</p>
+            <div class="answer">
+                <p><strong>Answer:</strong></p>
+                <ul>
+                    <li><strong>`count`:</strong> Good for simple conditional creation (0 or 1) or identical resources. However, it relies on array indices. If you remove an item from the middle of the list, Terraform may destroy and recreate all subsequent resources.</li>
+                    <li><strong>`for_each`:</strong> Uses a map or set of strings. Resources are identified by a key, not an index. This is safer for lists of resources that might change order or have items removed.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="interview-card">
+            <h3>5. Managing Secrets</h3>
+            <p><strong>Question:</strong> How do you handle secrets (passwords, API keys) in Terraform?</p>
+            <div class="answer">
+                <p><strong>Answer:</strong> NEVER commit secrets to version control.</p>
+                <ul>
+                    <li>Use <strong>Environment Variables</strong> (e.g., `TF_VAR_db_password`).</li>
+                    <li>Use a secret manager (AWS Secrets Manager, HashiCorp Vault) and fetch them via data sources.</li>
+                    <li>Mark variables as `sensitive = true` to prevent them from showing in logs.</li>
+                    <li>Encrypt the state file (remote backends usually handle this).</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="interview-card">
+            <h3>6. Data Sources</h3>
+            <p><strong>Question:</strong> What is a Data Source in Terraform?</p>
+            <div class="answer">
+                <p><strong>Answer:</strong> Data sources allow Terraform to fetch information defined outside of Terraform, or defined by another separate Terraform configuration. For example, looking up the ID of the latest Amazon Linux AMI or finding the ID of an existing VPC.</p>
+            </div>
+        </div>
+
+        <div class="interview-card">
+            <h3>7. Dependency Management</h3>
+            <p><strong>Question:</strong> How does Terraform handle dependencies? What is `depends_on`?</p>
+            <div class="answer">
+                <p><strong>Answer:</strong> Terraform usually infers dependencies automatically (implicit dependency) based on resource references (e.g., an EC2 instance referencing a Security Group ID). However, sometimes hidden dependencies exist that Terraform can't see. In those cases, you use the `depends_on` meta-argument to explicitly define the order of creation.</p>
+            </div>
+        </div>
+
+        <div class="interview-card">
+            <h3>8. Provisioners</h3>
+            <p><strong>Question:</strong> What are Provisioners and why does HashiCorp recommend avoiding them?</p>
+            <div class="answer">
+                <p><strong>Answer:</strong> Provisioners (like `local-exec` or `remote-exec`) execute scripts on a local or remote machine as part of resource creation/destruction. They are a "last resort" because:</p>
+                <ul>
+                    <li>They don't track state well.</li>
+                    <li>They make the code less portable and more fragile.</li>
+                    <li>It's better to use "User Data" (cloud-init) or golden images (Packer) for configuration.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="interview-card">
+            <h3>9. Terraform Workspaces</h3>
+            <p><strong>Question:</strong> What are Workspaces and when should you use them?</p>
+            <div class="answer">
+                <p><strong>Answer:</strong> Workspaces allow you to manage multiple states for the same configuration. For example, you can have a `dev`, `staging`, and `prod` workspace using the exact same `.tf` files.</p>
+                <p><strong>Caveat:</strong> HashiCorp often recommends using separate directories (and separate state files) for different environments (e.g., `env/prod`, `env/dev`) instead of workspaces for better isolation and clarity.</p>
+            </div>
+        </div>
+
+        <div class="interview-card">
+            <h3>10. Drift Detection</h3>
+            <p><strong>Question:</strong> What happens if someone manually changes a resource in the AWS console that Terraform manages?</p>
+            <div class="answer">
+                <p><strong>Answer:</strong> This is called "Drift". The next time you run `terraform plan`, Terraform will detect that the real-world state differs from the state file. It will propose changes to revert the resource back to the configuration defined in your code.</p>
+            </div>
+        </div>
     </main>
 
     <footer>

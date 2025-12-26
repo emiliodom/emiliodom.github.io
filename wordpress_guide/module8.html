@@ -23,6 +23,41 @@
             <li><strong>Hooks:</strong> Actions and Filters deep dive.</li>
             <li><strong>Settings API:</strong> Creating admin pages correctly.</li>
         </ul>
+
+        <h3>1. PSR-4 Autoloading</h3>
+        <p>Use Composer to autoload your plugin classes. No more `require_once`.</p>
+        <pre><code class="language-json">"autoload": {
+    "psr-4": {
+        "MyPlugin\\": "src/"
+    }
+}</code></pre>
+
+        <h3>2. The Singleton Pattern</h3>
+        <p>Ensure your main plugin class is only instantiated once.</p>
+
+        <h3>3. Activation & Deactivation Hooks</h3>
+        <p>Create tables or schedule cron jobs when the plugin is activated. Clean up on deactivation.</p>
+
+        <h3>4. Custom Post Types (CPT)</h3>
+        <p>Register CPTs for structured content. Use a class-based approach.</p>
+
+        <h3>5. Shortcodes vs Blocks</h3>
+        <p>Shortcodes are legacy. Build Blocks for the editor, but know how to support shortcodes for backward compatibility.</p>
+
+        <h3>6. The Settings API</h3>
+        <p>Don't build custom forms. Use the Settings API to register fields and sections in the admin area.</p>
+
+        <h3>7. Transients & Caching</h3>
+        <p>Cache expensive operations within your plugin using the Transients API.</p>
+
+        <h3>8. Internationalization (i18n)</h3>
+        <p>Make your plugin translatable. Wrap strings in `__('Text', 'domain')`.</p>
+
+        <h3>9. Unit Testing</h3>
+        <p>Use PHPUnit and `wp-browser` to test your plugin logic.</p>
+
+        <h3>10. Publishing to Packagist</h3>
+        <p>Host your private plugins on a private Packagist or Git repo to install them via Composer.</p>
     </main>
     <footer></footer>
     <script>initLayout();</script>

@@ -99,107 +99,157 @@
             { q: "Where is middleware.js defined?", options: ["In the root of the project", "In the app folder", "In the pages folder", "In the public folder"], answer: 0 },
             { q: "What is the purpose of 'generateStaticParams'?", options: ["To define dynamic routes to be statically generated", "To generate parameters", "To fetch data", "To configure the router"], answer: 0 },
             { q: "How do you redirect a user?", options: ["redirect() from 'next/navigation'", "window.location", "Router.push", "Link component"], answer: 0 },
-            { q: "What is the 'usePathname' hook?", options: ["To get the current URL path", "To get the file path", "To navigate", "To get query params"], answer: 0 },
-            { q: "What is the 'useSearchParams' hook?", options: ["To get query string parameters", "To search files", "To search the database", "To filter lists"], answer: 0 },
-            { q: "What is the 'useRouter' hook?", options: ["To programmatically navigate", "To define routes", "To get route params", "To handle errors"], answer: 0 },
-            { q: "What is the difference between 'router.push' and 'router.replace'?", options: ["Push adds a history entry, replace replaces the current one", "Push is faster", "Replace is faster", "No difference"], answer: 0 },
-            { q: "How do you optimize fonts?", options: ["next/font", "Import CSS", "CDN links", "Download files"], answer: 0 },
-            { q: "What is the purpose of 'next.config.js'?", options: ["Custom configuration for Next.js", "Database config", "Route config", "Style config"], answer: 0 },
-            { q: "How do you handle images from external domains?", options: ["Configure 'images.remotePatterns' in next.config.js", "Just use the URL", "Download them", "Use a proxy"], answer: 0 },
-            { q: "What is a Server Action?", options: ["A function that runs on the server, callable from Client Components", "A Redux action", "A database trigger", "A cron job"], answer: 0 },
-            { q: "How do you define a Server Action?", options: ["'use server' inside the function or file", "'use action'", "'server-side'", "It's automatic"], answer: 0 },
+            { q: "What is the 'usePathname' hook?", options: ["Returns the current pathname", "Returns the full URL", "Returns the query params", "Returns the domain"], answer: 0 },
+            { q: "What is the 'useSearchParams' hook?", options: ["Returns the current search parameters", "Returns the path", "Returns the hash", "Returns the body"], answer: 0 },
+            { q: "What is the 'useRouter' hook?", options: ["Allows programmatic navigation", "Returns the router object", "Returns the route", "Returns the map"], answer: 0 },
+            { q: "What is the difference between 'next/link' and 'a' tag?", options: ["Link enables client-side navigation (SPA feel), 'a' tag causes full reload", "Link is slower", "Link is deprecated", "They are the same"], answer: 0 },
+            { q: "What is 'next/image'?", options: ["An extension of the HTML <img> element for automatic image optimization", "A drawing tool", "A gallery", "A plugin"], answer: 0 },
+            { q: "What is the 'priority' prop in Image?", options: ["Prioritizes loading of the image (e.g., LCP element)", "Low priority", "Hidden", "Lazy load"], answer: 0 },
+            { q: "What is 'next/script'?", options: ["An extension of the HTML <script> element for optimizing third-party scripts", "A coding tool", "A font", "A style"], answer: 0 },
+            { q: "What is the 'strategy' prop in Script?", options: ["Controls when the script should load (e.g., lazyOnload, afterInteractive)", "A game strategy", "A plan", "A map"], answer: 0 },
 
-            // --- Senior (20) ---
-            { q: "What is React Server Components (RSC) payload?", options: ["A JSON-like representation of the rendered server components", "HTML", "JavaScript bundle", "CSS"], answer: 0 },
-            { q: "How does hydration work with Server Components?", options: ["Server Components are not hydrated, only Client Components are", "Everything is hydrated", "Nothing is hydrated", "Only HTML is hydrated"], answer: 0 },
-            { q: "What is Streaming?", options: ["Sending UI in chunks as it becomes ready", "Watching videos", "Downloading files", "Database replication"], answer: 0 },
-            { q: "How do you implement Streaming?", options: ["Using Suspense boundaries", "Using WebSockets", "Using fetch", "Using lazy loading"], answer: 0 },
-            { q: "What is the Edge Runtime?", options: ["A lightweight runtime based on Web APIs, for edge locations", "Node.js", "Browser runtime", "Python runtime"], answer: 0 },
-            { q: "When would you use the Edge Runtime?", options: ["For low-latency middleware or simple APIs", "For heavy computation", "For database access", "For file processing"], answer: 0 },
-            { q: "What is Parallel Routing?", options: ["Rendering multiple pages in the same layout simultaneously (Slots)", "Running routes in parallel", "Load balancing", "A/B testing"], answer: 0 },
-            { q: "What is Intercepting Routes?", options: ["Loading a route within the current layout (e.g., modal)", "Blocking routes", "Middleware", "Security feature"], answer: 0 },
-            { q: "How do you optimize bundle size?", options: ["Dynamic imports, analyzing bundles", "Minification", "Tree shaking", "All of the above"], answer: 3 },
-            { q: "What is the purpose of 'cache' function from React?", options: ["To memoize data requests per request", "To cache files", "To cache assets", "To cache routes"], answer: 0 },
-            { q: "What is the difference between 'revalidatePath' and 'revalidateTag'?", options: ["Path revalidates a specific URL, Tag revalidates all data with that tag", "They are the same", "Tag is faster", "Path is deprecated"], answer: 0 },
-            { q: "How do you handle internationalization (i18n)?", options: ["Routing middleware and dictionaries", "Google Translate", "Separate domains", "Manual translation"], answer: 0 },
-            { q: "What is Open Graph (OG) Image Generation?", options: ["Dynamically creating social media images using code (ImageResponse)", "Uploading images", "Photoshop", "CSS styling"], answer: 0 },
-            { q: "How do you secure Server Actions?", options: ["Authentication and authorization checks inside the action", "Middleware", "Firewall", "HTTPS"], answer: 0 },
-            { q: "What is the 'taint' API?", options: ["Preventing sensitive data from being passed to the client", "Coloring data", "Validating data", "Logging data"], answer: 0 },
-            { q: "How do you handle large page transitions?", options: ["useTransition hook", "Loading spinners", "Optimistic UI", "All of the above"], answer: 3 },
-            { q: "What is Optimistic UI?", options: ["Updating the UI immediately before the server responds", "Hoping for the best", "Fast UI", "Colorful UI"], answer: 0 },
-            { q: "How do you implement Optimistic UI in Next.js?", options: ["useOptimistic hook", "useState", "useEffect", "Redux"], answer: 0 },
-            { q: "What is Partial Prerendering (PPR)?", options: ["Combining static and dynamic rendering in the same route", "Rendering half the page", "Lazy loading", "Caching"], answer: 0 },
-            { q: "How do you debug Next.js performance?", options: ["Web Vitals, React DevTools, Lighthouse", "Console logs", "Guessing", "User reports"], answer: 0 }
+            // --- Advanced (20) ---
+            { q: "What is React Server Components (RSC)?", options: ["Components that render on the server and send HTML/JSON to client", "Components on client", "API routes", "Database"], answer: 0 },
+            { q: "What is the benefit of RSC?", options: ["Reduced bundle size, direct database access, improved performance", "More JS", "Slower", "Harder to write"], answer: 0 },
+            { q: "Can you use hooks in Server Components?", options: ["No", "Yes", "Only useState", "Only useEffect"], answer: 0 },
+            { q: "Can you import a Server Component into a Client Component?", options: ["No, you must pass it as children or prop", "Yes", "Maybe", "Sometimes"], answer: 0 },
+            { q: "Can you import a Client Component into a Server Component?", options: ["Yes", "No", "Maybe", "Sometimes"], answer: 0 },
+            { q: "What is Streaming?", options: ["Sending UI in chunks as it is rendered", "Watching movies", "Water flow", "Data loss"], answer: 0 },
+            { q: "What is Suspense used for in Next.js?", options: ["Showing a fallback while content loads (streaming)", "Stopping execution", "Error handling", "Routing"], answer: 0 },
+            { q: "What is Partial Prerendering (PPR)?", options: ["Combining static and dynamic rendering in the same route", "Rendering partially", "Rendering slowly", "Rendering fast"], answer: 0 },
+            { q: "What is Server Actions?", options: ["Async functions that run on the server, callable from Client Components", "Client functions", "API routes", "Database queries"], answer: 0 },
+            { q: "How do you define a Server Action?", options: ["'use server' at top of file or function", "'use client'", "'server-side'", "'action'"], answer: 0 },
+            { q: "What is the benefit of Server Actions?", options: ["Simplified data mutation without creating API endpoints", "More code", "Slower", "Less secure"], answer: 0 },
+            { q: "What is 'revalidatePath'?", options: ["Purges cached data for a specific path", "Reloads page", "Deletes path", "Creates path"], answer: 0 },
+            { q: "What is 'revalidateTag'?", options: ["Purges cached data associated with a specific tag", "Reloads tag", "Deletes tag", "Creates tag"], answer: 0 },
+            { q: "What is the Next.js Cache?", options: ["A multi-layer caching system (Data, Full Route, Router, Request)", "Browser cache", "CDN", "Memory"], answer: 0 },
+            { q: "What is the Data Cache?", options: ["Persists results of fetch requests across requests", "Browser cache", "Cookie", "Session"], answer: 0 },
+            { q: "What is the Full Route Cache?", options: ["Stores the rendered HTML and RSC payload of a route", "Browser cache", "CDN", "Memory"], answer: 0 },
+            { q: "What is the Router Cache?", options: ["In-memory client-side cache of visited routes", "Server cache", "Database", "File"], answer: 0 },
+            { q: "What is the Request Memoization?", options: ["Deduplicates identical fetch requests within a single render pass", "Caching requests", "Memory loss", "Forgetting"], answer: 0 },
+            { q: "How do you opt out of caching?", options: ["fetch(url, { cache: 'no-store' }) or export const dynamic = 'force-dynamic'", "cache: false", "no-cache", "stop-cache"], answer: 0 },
+            { q: "What is 'generateStaticParams' used for?", options: ["Statically generating routes at build time with dynamic segments", "Generating params", "Fetching data", "Routing"], answer: 0 },
+
+            // --- Deployment & Config (20) ---
+            { q: "What is Vercel?", options: ["The platform created by the makers of Next.js for optimal deployment", "A database", "A language", "A tool"], answer: 0 },
+            { q: "What is 'next build'?", options: ["Builds the application for production", "Runs dev server", "Tests app", "Lints code"], answer: 0 },
+            { q: "What is 'next start'?", options: ["Starts the production server", "Starts dev server", "Builds app", "Tests app"], answer: 0 },
+            { q: "What is 'next.config.js'?", options: ["Configuration file for Next.js", "Main file", "Route file", "Style file"], answer: 0 },
+            { q: "How do you configure redirects?", options: ["In next.config.js redirects() function", "In page.js", "In layout.js", "In middleware"], answer: 0 },
+            { q: "How do you configure rewrites?", options: ["In next.config.js rewrites() function", "In page.js", "In layout.js", "In middleware"], answer: 0 },
+            { q: "What is the difference between redirect and rewrite?", options: ["Redirect changes URL, Rewrite keeps URL but shows different content", "They are the same", "Rewrite changes URL", "Redirect keeps URL"], answer: 0 },
+            { q: "What is 'output: export'?", options: ["Configures Next.js for static HTML export", "Exports data", "Exports code", "Exports images"], answer: 0 },
+            { q: "What is the Edge Runtime?", options: ["A lightweight runtime based on Web Standards (V8) for Edge Middleware/Functions", "Node.js", "Python", "Java"], answer: 0 },
+            { q: "What are the limitations of Edge Runtime?", options: ["No Node.js APIs (fs, path, etc.)", "No fetch", "No standard APIs", "No limitations"], answer: 0 },
+            { q: "What is Internationalization (i18n)?", options: ["Support for multiple languages", "Internet", "Integration", "Interface"], answer: 0 },
+            { q: "How do you implement i18n in App Router?", options: ["Using middleware and dynamic route segments ([lang])", "next.config.js i18n", "Plugin", "Library"], answer: 0 },
+            { q: "What is Turbopack?", options: ["An incremental bundler optimized for JavaScript and TypeScript (successor to Webpack)", "A turbo", "A pack", "A tool"], answer: 0 },
+            { q: "What is 'instrumentation.js'?", options: ["File to integrate monitoring/observability tools", "Music", "Instruments", "Tools"], answer: 0 },
+            { q: "What is OpenGraph?", options: ["Protocol for social media metadata", "A graph", "A chart", "A map"], answer: 0 },
+            { q: "What is 'sitemap.xml'?", options: ["A file listing all pages for search engines", "A map", "A site", "A list"], answer: 0 },
+            { q: "What is 'robots.txt'?", options: ["Instructions for crawlers", "A robot", "A text", "A file"], answer: 0 },
+            { q: "What is 'manifest.json'?", options: ["Web App Manifest for PWA", "A list", "A file", "A config"], answer: 0 },
+            { q: "What is a PWA?", options: ["Progressive Web App", "Public Web App", "Private Web App", "Personal Web App"], answer: 0 },
+            { q: "What is AMP?", options: ["Accelerated Mobile Pages (deprecated in Next.js)", "Amplifier", "A map", "A page"], answer: 0 },
+
+            // --- Ecosystem & Migration (20) ---
+            { q: "What is the Pages Router?", options: ["The original routing system in Next.js (pages directory)", "The new one", "The best one", "The only one"], answer: 0 },
+            { q: "What is 'getStaticProps'?", options: ["Data fetching for SSG in Pages Router", "App Router function", "Client function", "Server function"], answer: 0 },
+            { q: "What is 'getServerSideProps'?", options: ["Data fetching for SSR in Pages Router", "App Router function", "Client function", "Server function"], answer: 0 },
+            { q: "What is 'getInitialProps'?", options: ["Legacy data fetching method", "New method", "Best method", "Only method"], answer: 0 },
+            { q: "What is the '_app.js' file?", options: ["Custom App component in Pages Router", "Root layout", "Main file", "Config"], answer: 0 },
+            { q: "What is the '_document.js' file?", options: ["Custom Document component in Pages Router", "Root layout", "Main file", "Config"], answer: 0 },
+            { q: "How do you migrate from Pages to App Router?", options: ["Incrementally move routes from pages/ to app/", "Rewrite everything", "Use a tool", "You can't"], answer: 0 },
+            { q: "What is 'clsx' or 'classnames'?", options: ["Utility for constructing className strings conditionally", "A class", "A name", "A style"], answer: 0 },
+            { q: "What is 'sharp'?", options: ["High performance Node.js image processing module (used by next/image)", "A knife", "A tool", "A library"], answer: 0 },
+            { q: "What is 'eslint-config-next'?", options: ["ESLint configuration for Next.js", "A linter", "A config", "A tool"], answer: 0 },
+            { q: "What is TypeScript?", options: ["A typed superset of JavaScript", "A script", "A type", "A language"], answer: 0 },
+            { q: "Why use TypeScript with Next.js?", options: ["Type safety and better developer experience", "It is required", "It is faster", "It is easier"], answer: 0 },
+            { q: "What is 'next/font'?", options: ["Optimizes fonts (Google Fonts and local)", "A font", "A style", "A tool"], answer: 0 },
+            { q: "What is 'next/og'?", options: ["Dynamic Open Graph Image Generation", "Original Gangster", "A game", "A tool"], answer: 0 },
+            { q: "What is 'next/mdx'?", options: ["Support for MDX (Markdown + JSX)", "Medical", "A file", "A tool"], answer: 0 },
+            { q: "What is 't3-stack'?", options: ["A popular stack (Next.js, tRPC, Tailwind, TypeScript, Prisma)", "A stack", "A tool", "A library"], answer: 0 },
+            { q: "What is Prisma?", options: ["Next-generation ORM", "A prism", "A database", "A tool"], answer: 0 },
+            { q: "What is tRPC?", options: ["End-to-end typesafe APIs", "A protocol", "A tool", "A library"], answer: 0 },
+            { q: "What is Auth.js (NextAuth)?", options: ["Authentication solution for Next.js", "Authorization", "A tool", "A library"], answer: 0 },
+            { q: "What is Stripe?", options: ["Payment processing platform", "A line", "A pattern", "A tool"], answer: 0 }
         ];
 
-        // Shuffle questions
-        function shuffle(array) {
+        // Shuffle function
+        function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
                 [array[i], array[j]] = [array[j], array[i]];
             }
-            return array;
         }
 
-        const quizContainer = document.getElementById('quiz');
-        const scoreDisplay = document.getElementById('score-display');
-        const progressBar = document.getElementById('progress');
-        
-        let shuffledQuestions = shuffle([...questions]);
-        let score = 0;
-        let answeredCount = 0;
+        function initQuiz() {
+            const quizContainer = document.getElementById('quiz');
+            const scoreDisplay = document.getElementById('score-display');
+            const progressBar = document.getElementById('progress');
+            let score = 0;
+            let answeredCount = 0;
 
-        function renderQuiz() {
-            quizContainer.innerHTML = '';
-            shuffledQuestions.forEach((q, index) => {
+            // Shuffle questions
+            shuffleArray(questions);
+
+            questions.forEach((q, index) => {
                 const qEl = document.createElement('div');
                 qEl.className = 'question';
-                qEl.innerHTML = `
-                    <h3>${index + 1}. ${q.q}</h3>
-                    <div class="options" id="opt-${index}">
-                        ${q.options.map((opt, i) => `
-                            <div class="option" onclick="checkAnswer(${index}, ${i}, ${q.answer})">${opt}</div>
-                        `).join('')}
-                    </div>
-                `;
+                
+                const title = document.createElement('h3');
+                title.textContent = `${index + 1}. ${q.q}`;
+                qEl.appendChild(title);
+
+                const optionsDiv = document.createElement('div');
+                optionsDiv.className = 'options';
+
+                let optionsWithIndices = q.options.map((opt, i) => ({ text: opt, originalIndex: i }));
+                shuffleArray(optionsWithIndices);
+
+                optionsWithIndices.forEach(optObj => {
+                    const btn = document.createElement('div');
+                    btn.className = 'option';
+                    btn.textContent = optObj.text;
+                    
+                    btn.onclick = () => {
+                        if (optionsDiv.classList.contains('answered')) return;
+                        
+                        optionsDiv.classList.add('answered');
+                        answeredCount++;
+                        
+                        const progressPercent = (answeredCount / questions.length) * 100;
+                        progressBar.style.width = `${progressPercent}%`;
+
+                        if (optObj.originalIndex === q.answer) {
+                            score++;
+                            btn.classList.add('correct');
+                        } else {
+                            btn.classList.add('incorrect');
+                        }
+
+                        Array.from(optionsDiv.children).forEach(child => {
+                            if (child.textContent === q.options[q.answer]) {
+                                child.classList.add('correct');
+                            } else if (child !== btn) {
+                                child.classList.add('dimmed');
+                            }
+                        });
+
+                        scoreDisplay.textContent = `Score: ${score} / ${questions.length}`;
+                    };
+                    
+                    optionsDiv.appendChild(btn);
+                });
+
+                qEl.appendChild(optionsDiv);
                 quizContainer.appendChild(qEl);
             });
-            updateScore();
-        }
-
-        window.checkAnswer = function(qIndex, selected, correct) {
-            const optionsDiv = document.getElementById(`opt-${qIndex}`);
-            if (optionsDiv.classList.contains('answered')) return;
-
-            optionsDiv.classList.add('answered');
-            const options = optionsDiv.getElementsByClassName('option');
             
-            if (selected === correct) {
-                options[selected].classList.add('correct');
-                score++;
-            } else {
-                options[selected].classList.add('incorrect');
-                options[correct].classList.add('correct');
-            }
-
-            // Dim others
-            for (let i = 0; i < options.length; i++) {
-                if (i !== selected && i !== correct) {
-                    options[i].classList.add('dimmed');
-                }
-            }
-
-            answeredCount++;
-            updateScore();
-        };
-
-        function updateScore() {
-            scoreDisplay.textContent = `Score: ${score} / ${questions.length}`;
-            const percent = (answeredCount / questions.length) * 100;
-            progressBar.style.width = `${percent}%`;
+            scoreDisplay.textContent = `Score: 0 / ${questions.length}`;
         }
 
-        renderQuiz();
+        initQuiz();
     </script>
 </body>
 </html>

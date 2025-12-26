@@ -99,107 +99,157 @@
             { q: "Which library is commonly used for routing in React?", options: ["React Router", "Vue Router", "Angular Router", "Express"], answer: 0 },
             { q: "What is the purpose of custom hooks?", options: ["To reuse stateful logic", "To create new UI components", "To override React hooks", "To fetch data"], answer: 0 },
             { q: "How do you prevent a component from re-rendering?", options: ["React.memo", "usePreventRender", "stopRender()", "It's impossible"], answer: 0 },
-            { q: "What is the difference between controlled and uncontrolled components?", options: ["Controlled uses state, uncontrolled uses refs", "Controlled uses refs, uncontrolled uses state", "There is no difference", "Uncontrolled is deprecated"], answer: 0 },
-            { q: "What is the purpose of ReactDOM.createPortal?", options: ["To render children into a DOM node outside the parent hierarchy", "To create a new window", "To teleport data", "To optimize rendering"], answer: 0 },
-            { q: "How do you fetch data in React?", options: ["useEffect + fetch/axios", "componentDidMount", "useFetch", "All of the above"], answer: 0 },
-            { q: "What is the rule of hooks?", options: ["Only call hooks at the top level", "Only call hooks inside loops", "Only call hooks in class components", "There are no rules"], answer: 0 },
-            { q: "What is the purpose of the dependency array in useEffect?", options: ["To control when the effect runs", "To store data", "To pass props", "To define state"], answer: 0 },
-            { q: "How do you share logic between components without HOCs or Render Props?", options: ["Custom Hooks", "Mixins", "Inheritance", "Copy-paste"], answer: 0 },
-            { q: "What is the Flux architecture?", options: ["Unidirectional data flow", "Bidirectional data binding", "MVC pattern", "Database schema"], answer: 0 },
-            { q: "What is Redux?", options: ["A predictable state container", "A database", "A routing library", "A styling framework"], answer: 0 },
-            { q: "What is the purpose of 'dispatch' in Redux?", options: ["To send an action to the store", "To fetch data", "To update the UI", "To register a reducer"], answer: 0 },
+            { q: "What is the 'key' prop used for?", options: ["Helping React identify which items have changed", "Styling", "Accessing DOM", "Passing data"], answer: 0 },
+            { q: "What is a Portal?", options: ["Rendering children into a DOM node outside the parent hierarchy", "A game", "A routing tool", "A state manager"], answer: 0 },
+            { q: "What is Reconciliation?", options: ["The process of updating the DOM to match the Virtual DOM", "Fixing bugs", "Merging branches", "Compiling code"], answer: 0 },
+            { q: "What is the difference between Element and Component?", options: ["Element is an object describing UI, Component is a function/class returning Elements", "They are the same", "Component is smaller", "Element is a function"], answer: 0 },
+            { q: "What is 'dangerouslySetInnerHTML'?", options: ["React's replacement for innerHTML", "A virus", "A warning", "A style"], answer: 0 },
+            { q: "What is SyntheticEvent?", options: ["Cross-browser wrapper around the browser's native event", "A fake event", "A custom event", "A global event"], answer: 0 },
+            { q: "What is the purpose of 'defaultProps'?", options: ["Defining default values for props", "Defining types", "Defining state", "Defining styles"], answer: 0 },
+            { q: "What is 'propTypes'?", options: ["Runtime type checking for props", "Compile time checking", "A library", "A function"], answer: 0 },
 
-            // --- Senior (20) ---
-            { q: "How does React's reconciliation algorithm work?", options: ["Diffing algorithm comparing Virtual DOM trees", "Re-rendering the entire DOM", "Using shadow DOM", "Direct DOM manipulation"], answer: 0 },
-            { q: "What is the significance of 'keys' in reconciliation?", options: ["Helps React identify which items have changed, added, or removed", "Sorts the list", "Styles the list", "Binds events"], answer: 0 },
-            { q: "Explain the concept of 'Fiber' in React.", options: ["A reimplementation of the reconciliation engine", "A new styling library", "A database connector", "A type of hook"], answer: 0 },
-            { q: "How would you optimize a large list rendering?", options: ["Virtualization (windowing)", "Pagination", "Infinite scroll", "All of the above"], answer: 3 },
-            { q: "What is Server-Side Rendering (SSR) and why use it?", options: ["Rendering on the server for SEO and performance", "Rendering on the client", "Rendering in a service worker", "Rendering in the database"], answer: 0 },
-            { q: "What is Static Site Generation (SSG)?", options: ["Generating HTML at build time", "Generating HTML at runtime", "Generating HTML on the client", "Generating HTML in the browser"], answer: 0 },
-            { q: "How do you handle global state in a complex application?", options: ["Redux/Zustand/Context", "Local state everywhere", "Global variables", "LocalStorage"], answer: 0 },
-            { q: "What are the performance implications of using Context API for frequent updates?", options: ["It can cause unnecessary re-renders of all consumers", "It is faster than Redux", "It has no impact", "It crashes the app"], answer: 0 },
-            { q: "How do you test React components?", options: ["Jest + React Testing Library", "Mocha", "Selenium", "Manual testing"], answer: 0 },
-            { q: "What is Code Splitting?", options: ["Splitting bundles to load only what's needed", "Splitting code into files", "Splitting components", "Splitting CSS"], answer: 0 },
-            { q: "How does React handle synthetic events?", options: ["It wraps native events for cross-browser compatibility", "It uses native events directly", "It ignores events", "It uses jQuery events"], answer: 0 },
-            { q: "What is the difference between Shadow DOM and Virtual DOM?", options: ["Shadow DOM is browser tech for scoping, Virtual DOM is React's diffing concept", "They are the same", "Virtual DOM is faster", "Shadow DOM is deprecated"], answer: 0 },
-            { q: "How do you implement authentication in a React app?", options: ["JWT/Session tokens stored securely", "Hardcoded passwords", "Plain text cookies", "URL parameters"], answer: 0 },
-            { q: "What is the purpose of useLayoutEffect?", options: ["Fires synchronously after all DOM mutations", "Fires asynchronously", "Fires before render", "Fires after paint"], answer: 0 },
-            { q: "How do you handle race conditions in data fetching?", options: ["AbortController or ignoring stale responses", "setTimeout", "Promises", "Async/await"], answer: 0 },
-            { q: "What is the 'render prop' pattern?", options: ["Sharing code using a prop whose value is a function", "Passing a component as a prop", "Rendering a prop", "Prop drilling"], answer: 0 },
-            { q: "How do you secure a React application against XSS?", options: ["React escapes data by default, sanitize HTML if using dangerouslySetInnerHTML", "Disable JavaScript", "Use HTTPS", "Use Redux"], answer: 0 },
-            { q: "What is hydration in the context of SSR?", options: ["Attaching event listeners to server-rendered HTML", "Drinking water", "Loading CSS", "Fetching data"], answer: 0 },
-            { q: "How do you manage side effects in Redux?", options: ["Middleware (Thunk, Saga)", "Reducers", "Actions", "Components"], answer: 0 },
-            { q: "What is the difference between shallow and deep rendering in testing?", options: ["Shallow renders one level deep, deep renders full tree", "Shallow is faster", "Deep is more accurate", "All of the above"], answer: 3 }
+            // --- Advanced (20) ---
+            { q: "What is Concurrent Mode?", options: ["A set of features that help React apps stay responsive", "Running multiple apps", "Parallel processing", "A strict mode"], answer: 0 },
+            { q: "What is Suspense?", options: ["A component that lets you wait for some code to load", "A thriller", "A loading spinner", "A state"], answer: 0 },
+            { q: "What is useLayoutEffect?", options: ["Fires synchronously after all DOM mutations", "Fires asynchronously", "Fires before render", "Fires after paint"], answer: 0 },
+            { q: "What is the difference between useEffect and useLayoutEffect?", options: ["useEffect is async, useLayoutEffect is sync", "They are the same", "useEffect is sync", "useLayoutEffect is async"], answer: 0 },
+            { q: "What is a Fiber?", options: ["The new reconciliation engine in React 16", "A thread", "A material", "A cable"], answer: 0 },
+            { q: "What is Hydration?", options: ["Attaching event listeners to server-rendered HTML", "Drinking water", "Loading data", "Compiling code"], answer: 0 },
+            { q: "What is Server Components?", options: ["Components that render exclusively on the server", "Components on the client", "API routes", "Database models"], answer: 0 },
+            { q: "What is Code Splitting?", options: ["Splitting code into smaller bundles to load on demand", "Deleting code", "Formatting code", "Minifying code"], answer: 0 },
+            { q: "How do you implement Code Splitting?", options: ["React.lazy and Suspense", "Split() function", "Webpack only", "You can't"], answer: 0 },
+            { q: "What is an Error Boundary?", options: ["A component that catches JavaScript errors in its child component tree", "A try-catch block", "A linter", "A debugger"], answer: 0 },
+            { q: "Which lifecycle method is used in Error Boundaries?", options: ["componentDidCatch", "render", "componentDidMount", "shouldComponentUpdate"], answer: 0 },
+            { q: "What is 'forwardRef'?", options: ["Passing a ref through a component to one of its children", "Moving forward", "Referencing a parent", "A hook"], answer: 0 },
+            { q: "What is 'useImperativeHandle'?", options: ["Customizing the instance value that is exposed to parent components when using ref", "Handling errors", "Handling events", "Handling state"], answer: 0 },
+            { q: "What is 'useDebugValue'?", options: ["Displaying a label for custom hooks in React DevTools", "Debugging code", "Logging values", "Testing"], answer: 0 },
+            { q: "What is the Flux architecture?", options: ["Unidirectional data flow pattern", "MVC pattern", "MVVM pattern", "Two-way binding"], answer: 0 },
+            { q: "What is Redux?", options: ["A predictable state container for JS apps", "A database", "A router", "A server"], answer: 0 },
+            { q: "What is a Reducer in Redux?", options: ["A pure function that takes previous state and an action, and returns the next state", "A component", "A store", "A middleware"], answer: 0 },
+            { q: "What is an Action in Redux?", options: ["A plain JavaScript object describing what happened", "A function", "A component", "A state"], answer: 0 },
+            { q: "What is the Store in Redux?", options: ["Holds the application state", "A shop", "A database", "A file"], answer: 0 },
+            { q: "What is Redux Thunk?", options: ["Middleware for writing action creators that return a function", "A database", "A component", "A hook"], answer: 0 },
+
+            // --- Ecosystem & Performance (20) ---
+            { q: "What is React Router?", options: ["Standard routing library for React", "A map", "A server", "A database"], answer: 0 },
+            { q: "What is the difference between BrowserRouter and HashRouter?", options: ["BrowserRouter uses HTML5 history API, HashRouter uses hash portion of URL", "They are the same", "HashRouter is newer", "BrowserRouter is deprecated"], answer: 0 },
+            { q: "What is Styled Components?", options: ["CSS-in-JS library", "A component library", "A framework", "A tool"], answer: 0 },
+            { q: "What is Tailwind CSS?", options: ["A utility-first CSS framework", "A component library", "A preprocessor", "A JS library"], answer: 0 },
+            { q: "What is Next.js?", options: ["A React framework for production (SSR, SSG)", "A database", "A testing tool", "A mobile framework"], answer: 0 },
+            { q: "What is Gatsby?", options: ["A static site generator based on React", "A book", "A server", "A database"], answer: 0 },
+            { q: "What is React Native?", options: ["A framework for building native apps using React", "A web framework", "A database", "A tool"], answer: 0 },
+            { q: "What is Jest?", options: ["A JavaScript testing framework", "A joke", "A component", "A library"], answer: 0 },
+            { q: "What is React Testing Library?", options: ["A library for testing React components", "A book", "A tool", "A server"], answer: 0 },
+            { q: "What is Enzyme?", options: ["A JavaScript testing utility for React (older)", "A protein", "A tool", "A library"], answer: 0 },
+            { q: "What is Prettier?", options: ["An opinionated code formatter", "A linter", "A compiler", "A bundler"], answer: 0 },
+            { q: "What is ESLint?", options: ["A tool for identifying and reporting on patterns found in ECMAScript/JavaScript code", "A formatter", "A compiler", "A bundler"], answer: 0 },
+            { q: "What is Webpack?", options: ["A static module bundler", "A server", "A database", "A browser"], answer: 0 },
+            { q: "What is Babel?", options: ["A JavaScript compiler (transpiler)", "A tower", "A library", "A framework"], answer: 0 },
+            { q: "What is Vite?", options: ["A build tool that aims to provide a faster and leaner development experience", "A framework", "A library", "A server"], answer: 0 },
+            { q: "What is Create React App (CRA)?", options: ["An officially supported way to create single-page React applications", "A tool", "A library", "A framework"], answer: 0 },
+            { q: "Why is CRA being replaced by Vite/Next.js?", options: ["Performance and modern features", "It is broken", "It is paid", "It is old"], answer: 0 },
+            { q: "What is React Query (TanStack Query)?", options: ["A data-fetching library for React", "A database", "A router", "A state manager"], answer: 0 },
+            { q: "What is Zustand?", options: ["A small, fast and scalable bearbones state-management solution", "A country", "A food", "A tool"], answer: 0 },
+            { q: "What is Recoil?", options: ["A state management library for React (atomic)", "A spring", "A tool", "A library"], answer: 0 },
+
+            // --- Patterns & Best Practices (20) ---
+            { q: "What is the Container/Presentational pattern?", options: ["Separating logic (container) from UI (presentational)", "A box", "A style", "A hook"], answer: 0 },
+            { q: "What is Composition vs Inheritance?", options: ["React prefers composition (combining components) over inheritance", "Inheritance is better", "They are the same", "Composition is slower"], answer: 0 },
+            { q: "What is a Render Prop?", options: ["A technique for sharing code between components using a prop whose value is a function", "A prop", "A state", "A hook"], answer: 0 },
+            { q: "What is Memoization?", options: ["An optimization technique used primarily to speed up computer programs by storing the results of expensive function calls", "Memory loss", "Writing notes", "Deleting data"], answer: 0 },
+            { q: "When should you use useMemo?", options: ["To memoize expensive calculations", "Always", "Never", "For simple math"], answer: 0 },
+            { q: "When should you use useCallback?", options: ["To memoize functions passed as props to optimized child components", "Always", "Never", "For every function"], answer: 0 },
+            { q: "What is the Rule of Hooks?", options: ["Only call hooks at the top level, and only from React functions", "Call anywhere", "Call in loops", "Call in conditions"], answer: 0 },
+            { q: "Why keys should be stable?", options: ["To maintain component state and focus", "To look good", "To be random", "To be unique only"], answer: 0 },
+            { q: "Why not use array index as key?", options: ["It can cause issues with component state if the list order changes", "It is illegal", "It is slow", "It is ugly"], answer: 0 },
+            { q: "What is Immutable Data?", options: ["Data that cannot be changed once created", "Data that changes", "Fast data", "Slow data"], answer: 0 },
+            { q: "Why is immutability important in React?", options: ["It helps with performance optimization and change detection", "It is required", "It is faster", "It is easier"], answer: 0 },
+            { q: "What is a Pure Component?", options: ["A component that renders the same output for the same props and state", "A clean component", "A simple component", "A fast component"], answer: 0 },
+            { q: "How do you optimize a large list?", options: ["Virtualization (Windowing)", "Pagination", "Infinite Scroll", "All of the above"], answer: 3 },
+            { q: "What is React.lazy?", options: ["Lets you define a component that is loaded dynamically", "Lazy loading images", "Lazy developer", "Lazy state"], answer: 0 },
+            { q: "What is the purpose of 'displayName'?", options: ["Used in debugging messages", "Displaying name on screen", "Variable name", "File name"], answer: 0 },
+            { q: "What is 'strict mode'?", options: ["A tool for highlighting potential problems in an application", "A hard mode", "A game", "A setting"], answer: 0 },
+            { q: "How do you share logic between components?", options: ["Custom Hooks", "HOCs", "Render Props", "All of the above"], answer: 3 },
+            { q: "What is the difference between state and props?", options: ["State is internal and mutable, props are external and immutable", "State is external", "Props are mutable", "No difference"], answer: 0 },
+            { q: "What is unidirectional data flow?", options: ["Data flows down from parent to child", "Data flows up", "Data flows both ways", "Data flows sideways"], answer: 0 },
+            { q: "What is the Virtual DOM diffing algorithm?", options: ["Heuristic algorithm to update the DOM efficiently", "Sorting algorithm", "Search algorithm", "Encryption"], answer: 0 }
         ];
 
-        // Shuffle questions
-        function shuffle(array) {
+        // Shuffle function
+        function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
                 [array[i], array[j]] = [array[j], array[i]];
             }
-            return array;
         }
 
-        const quizContainer = document.getElementById('quiz');
-        const scoreDisplay = document.getElementById('score-display');
-        const progressBar = document.getElementById('progress');
-        
-        let shuffledQuestions = shuffle([...questions]);
-        let score = 0;
-        let answeredCount = 0;
+        function initQuiz() {
+            const quizContainer = document.getElementById('quiz');
+            const scoreDisplay = document.getElementById('score-display');
+            const progressBar = document.getElementById('progress');
+            let score = 0;
+            let answeredCount = 0;
 
-        function renderQuiz() {
-            quizContainer.innerHTML = '';
-            shuffledQuestions.forEach((q, index) => {
+            // Shuffle questions
+            shuffleArray(questions);
+
+            questions.forEach((q, index) => {
                 const qEl = document.createElement('div');
                 qEl.className = 'question';
-                qEl.innerHTML = `
-                    <h3>${index + 1}. ${q.q}</h3>
-                    <div class="options" id="opt-${index}">
-                        ${q.options.map((opt, i) => `
-                            <div class="option" onclick="checkAnswer(${index}, ${i}, ${q.answer})">${opt}</div>
-                        `).join('')}
-                    </div>
-                `;
+                
+                const title = document.createElement('h3');
+                title.textContent = `${index + 1}. ${q.q}`;
+                qEl.appendChild(title);
+
+                const optionsDiv = document.createElement('div');
+                optionsDiv.className = 'options';
+
+                let optionsWithIndices = q.options.map((opt, i) => ({ text: opt, originalIndex: i }));
+                shuffleArray(optionsWithIndices);
+
+                optionsWithIndices.forEach(optObj => {
+                    const btn = document.createElement('div');
+                    btn.className = 'option';
+                    btn.textContent = optObj.text;
+                    
+                    btn.onclick = () => {
+                        if (optionsDiv.classList.contains('answered')) return;
+                        
+                        optionsDiv.classList.add('answered');
+                        answeredCount++;
+                        
+                        const progressPercent = (answeredCount / questions.length) * 100;
+                        progressBar.style.width = `${progressPercent}%`;
+
+                        if (optObj.originalIndex === q.answer) {
+                            score++;
+                            btn.classList.add('correct');
+                        } else {
+                            btn.classList.add('incorrect');
+                        }
+
+                        Array.from(optionsDiv.children).forEach(child => {
+                            if (child.textContent === q.options[q.answer]) {
+                                child.classList.add('correct');
+                            } else if (child !== btn) {
+                                child.classList.add('dimmed');
+                            }
+                        });
+
+                        scoreDisplay.textContent = `Score: ${score} / ${questions.length}`;
+                    };
+                    
+                    optionsDiv.appendChild(btn);
+                });
+
+                qEl.appendChild(optionsDiv);
                 quizContainer.appendChild(qEl);
             });
-            updateScore();
-        }
-
-        window.checkAnswer = function(qIndex, selected, correct) {
-            const optionsDiv = document.getElementById(`opt-${qIndex}`);
-            if (optionsDiv.classList.contains('answered')) return;
-
-            optionsDiv.classList.add('answered');
-            const options = optionsDiv.getElementsByClassName('option');
             
-            if (selected === correct) {
-                options[selected].classList.add('correct');
-                score++;
-            } else {
-                options[selected].classList.add('incorrect');
-                options[correct].classList.add('correct');
-            }
-
-            // Dim others
-            for (let i = 0; i < options.length; i++) {
-                if (i !== selected && i !== correct) {
-                    options[i].classList.add('dimmed');
-                }
-            }
-
-            answeredCount++;
-            updateScore();
-        };
-
-        function updateScore() {
-            scoreDisplay.textContent = `Score: ${score} / ${questions.length}`;
-            const percent = (answeredCount / questions.length) * 100;
-            progressBar.style.width = `${percent}%`;
+            scoreDisplay.textContent = `Score: 0 / ${questions.length}`;
         }
 
-        renderQuiz();
+        initQuiz();
     </script>
 </body>
 </html>

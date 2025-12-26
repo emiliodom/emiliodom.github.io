@@ -34,9 +34,12 @@ window.initGuideLayout = function(config) {
             a.textContent = link.text;
             
             // Active State Logic
-            const currentPath = window.location.pathname;
-            // Check for exact match or if the link is the current directory index
-            if (currentPath.endsWith(link.href) || (link.href.endsWith('index.html') && currentPath.endsWith('/'))) {
+            // Use a.pathname to get the resolved absolute path from the link
+            const normalize = (p) => p.replace(/\/index\.html$/, '/').replace(/\/$/, '');
+            const normalizedCurrent = normalize(window.location.pathname);
+            const normalizedLink = normalize(a.pathname);
+
+            if (normalizedCurrent === normalizedLink) {
                 if (themeColor) {
                     a.style.backgroundColor = themeColor;
                     a.style.color = 'white';

@@ -99,176 +99,65 @@
             { q: "When should you use `$DB->get_record_sql()` instead of `$DB->get_record()`?", options: ["Always", "When you need to join tables or use complex conditions", "When fetching a single field", "When updating a record"], answer: 1 },
             { q: "Which method is used to render a Mustache template in PHP?", options: ["$OUTPUT->render()", "$OUTPUT->render_from_template()", "$PAGE->render()", "Mustache::render()"], answer: 1 },
             { q: "How do you trigger an event in Moodle?", options: ["Event::trigger()", "\\core\\event\\base::create()->trigger()", "trigger_event()", "$EVENT->fire()"], answer: 1 },
-            { q: "What is the main difference between Adhoc tasks and Scheduled tasks?", options: ["Adhoc tasks run once when triggered; Scheduled tasks run periodically", "Adhoc tasks are for admins only", "Scheduled tasks cannot fail", "Adhoc tasks do not use the cron"], answer: 0 },
-            { q: "Where should you define external functions for a Web Service?", options: ["externallib.php", "lib.php", "services.php", "db/services.php"], answer: 0 },
-            { q: "Which function is used to require a specific capability?", options: ["require_capability()", "has_capability()", "check_permission()", "auth_check()"], answer: 0 },
-            { q: "What is the purpose of `optional_param()`?", options: ["To get a parameter from the URL/POST that might not exist", "To define an optional function argument", "To set a default configuration value", "To check if a plugin is installed"], answer: 0 },
-            { q: "What is the purpose of `required_param()`?", options: ["To ensure a parameter exists and stop execution if missing", "To define a mandatory database field", "To force a user to fill a form field", "To require a file inclusion"], answer: 0 },
-            { q: "Which function is used to redirect the user to another page?", options: ["header()", "redirect()", "move_to()", "location()"], answer: 1 },
-            { q: "How do you add a breadcrumb to the navigation?", options: ["$PAGE->navbar->add()", "$NAV->add_node()", "add_breadcrumb()", "$OUTPUT->add_crumb()"], answer: 0 },
-            { q: "Which class handles database transactions?", options: ["$DB", "TransactionManager", "PDO", "SqlTransaction"], answer: 0 },
-            { q: "What is the correct way to start a transaction?", options: ["$DB->start_transaction()", "$DB->begin()", "start_transaction()", "BEGIN WORK"], answer: 0 },
-            { q: "Which function retrieves a string from the language pack?", options: ["get_string()", "lang()", "str()", "_()"], answer: 0 },
-            { q: "What is the purpose of `cron.php` in a plugin?", options: ["Legacy file for scheduled tasks (deprecated)", "Main entry point for cron", "Configuration for cron", "Log file for cron"], answer: 0 },
-            { q: "How do you define a new capability in `access.php`?", options: ["By adding an entry to the `$capabilities` array", "By creating a new class", "By running a SQL command", "By using the admin interface"], answer: 0 },
-            { q: "Which function checks if a user is logged in?", options: ["is_logged_in()", "isloggedin()", "check_login()", "auth_user()"], answer: 1 },
+            { q: "What is the purpose of `db/services.php`?", options: ["To register external web services functions", "To list database services", "To configure server", "To manage users"], answer: 0 },
+            { q: "What is a Renderer in Moodle?", options: ["A class responsible for generating HTML output", "A painter", "A database tool", "A file manager"], answer: 0 },
+            { q: "How do you override a renderer?", options: ["By creating a custom theme and defining the renderer in `renderers.php`", "You can't", "Editing core files", "Using a plugin"], answer: 0 },
+            { q: "What is the `OUTPUT` global?", options: ["Instance of core_renderer", "Output buffer", "HTML string", "File handle"], answer: 0 },
+            { q: "What is the `PAGE` global?", options: ["Instance of moodle_page, manages page setup", "Page content", "HTML", "URL"], answer: 0 },
+            { q: "What is the `DB` global?", options: ["Instance of moodle_database", "Database name", "SQL query", "Table"], answer: 0 },
+            { q: "What is the `USER` global?", options: ["Object containing current user data", "User ID", "Username", "User list"], answer: 0 },
+            { q: "What is the `COURSE` global?", options: ["Object containing current course data", "Course ID", "Course name", "Course list"], answer: 0 },
+            { q: "What is `require_login()`?", options: ["Ensures user is logged in and sets up course context", "Logs user in", "Checks password", "Redirects to home"], answer: 0 },
+            { q: "What is `require_capability()`?", options: ["Checks if user has a specific permission, throws error if not", "Checks login", "Checks role", "Checks admin"], answer: 0 },
+            { q: "What is `has_capability()`?", options: ["Returns true/false if user has permission", "Throws error", "Checks login", "Checks role"], answer: 0 },
+            { q: "What is the purpose of `version.php`?", options: ["Defines plugin version and dependencies", "Defines PHP version", "Defines Moodle version", "Defines DB version"], answer: 0 },
 
-            // --- Delivery & Frontend (20) ---
-            { q: "What is the purpose of `amd/src` directory?", options: ["To store source JavaScript files for AMD modules", "To store compiled JS files", "To store external libraries", "To store CSS files"], answer: 0 },
-            { q: "How do you compile AMD modules in Moodle?", options: ["Using Grunt", "Using Webpack", "Using Gulp", "They are compiled automatically on request"], answer: 0 },
-            { q: "Which file lists the third-party libraries used in Moodle?", options: ["lib/thirdpartylibs.xml", "package.json", "composer.json", "vendor/list.txt"], answer: 0 },
-            { q: "What is the purpose of the `templates` directory in a plugin?", options: ["To store Mustache templates", "To store HTML files", "To store PHP view files", "To store email templates"], answer: 0 },
-            { q: "How do you pass data to a Mustache template?", options: ["As a JSON string", "As a PHP array or object (context)", "Using global variables", "Through the URL"], answer: 1 },
-            { q: "Which Moodle JS function is used to make an AJAX request?", options: ["ajax.call()", "$.ajax()", "fetch()", "moodle_ajax()"], answer: 0 },
-            { q: "What is the purpose of `pix` directory in a plugin?", options: ["To store images and icons", "To store pixel shaders", "To store picture logic", "To store user avatars"], answer: 0 },
-            { q: "How do you reference an image in the `pix` folder from a Mustache template?", options: ["{{#pix}} image_name, component {{/pix}}", "<img src='pix/image.png'>", "{{image_url}}", "[[pix:image_name]]"], answer: 0 },
-            { q: "What is the purpose of `styles.css` in a plugin?", options: ["To define plugin-specific CSS", "To override core Moodle styles", "To define admin interface styles", "It is not used, use SCSS instead"], answer: 0 },
-            { q: "Which file is used to add content to the HTML `<head>`?", options: ["lib.php", "styles.css", "renderer.php", "Anywhere via $PAGE->requires"], answer: 3 },
-            { q: "What is a 'renderer' in Moodle?", options: ["A class responsible for generating HTML output", "A tool to compile CSS", "A database engine", "A JavaScript library"], answer: 0 },
-            { q: "How do you override a core renderer?", options: ["By creating a custom theme and defining a renderer factory", "By editing the core file", "By using a hook", "You cannot override renderers"], answer: 0 },
-            { q: "What is the purpose of `YUI` in older Moodle versions?", options: ["It was the primary JS library before jQuery/AMD", "It is a PHP framework", "It is a database abstraction layer", "It is a testing tool"], answer: 0 },
-            { q: "Which function loads a CSS file manually?", options: ["$PAGE->requires->css()", "load_css()", "require_style()", "add_stylesheet()"], answer: 0 },
-            { q: "What is the purpose of the `grunt watch` command?", options: ["To watch for file changes and compile AMD/SCSS automatically", "To monitor server performance", "To watch user activity", "To debug PHP code"], answer: 0 },
-            { q: "How do you add a notification message to the session?", options: ["\core\\notification::add()", "notify()", "alert()", "message()"], answer: 0 },
-            { q: "What is the 'fragment' API used for?", options: ["To load parts of a page via AJAX", "To manage URL fragments", "To split the database", "To handle file uploads"], answer: 0 },
-            { q: "Which JS module is used for modal dialogues?", options: ["core/modal", "core/dialog", "core/popup", "core/window"], answer: 0 },
-            { q: "How do you ensure your plugin supports mobile app?", options: ["By creating a `db/mobile.php` file", "By using responsive CSS", "By creating a separate app", "It is automatic"], answer: 0 },
-            { q: "What is the purpose of `outputcomponents`?", options: ["Reusable UI elements like tabs, dropdowns", "Output buffering settings", "Printer configurations", "Export formats"], answer: 0 },
+            // --- Plugins & Themes (20) ---
+            { q: "What is a Block plugin?", options: ["Small items that appear in the side regions of pages", "A brick", "A ban", "A large plugin"], answer: 0 },
+            { q: "What is an Activity Module?", options: ["Interactive learning content (Quiz, Forum, Assignment)", "A static page", "A setting", "A user"], answer: 0 },
+            { q: "What is a Filter plugin?", options: ["Modifies content before it is displayed (e.g., auto-linking)", "A search filter", "A database filter", "A user filter"], answer: 0 },
+            { q: "What is an Authentication plugin?", options: ["Handles user login (LDAP, OAuth, Manual)", "A security check", "A password", "A user"], answer: 0 },
+            { q: "What is an Enrolment plugin?", options: ["Handles how users get into courses (Manual, PayPal, Cohort)", "A list", "A form", "A user"], answer: 0 },
+            { q: "What is a Repository plugin?", options: ["Allows users to bring content into Moodle (Google Drive, Dropbox)", "A storage", "A database", "A folder"], answer: 0 },
+            { q: "What is a Portfolio plugin?", options: ["Allows users to export content out of Moodle", "A folder", "A resume", "A file"], answer: 0 },
+            { q: "What is a Theme plugin?", options: ["Controls the look and feel of the site", "A song", "A topic", "A plugin"], answer: 0 },
+            { q: "What is a Local plugin?", options: ["General purpose customizations that don't fit other types", "A translation", "A map", "A user"], answer: 0 },
+            { q: "What is an Admin Tool plugin?", options: ["Functionality for administrators", "A hammer", "A setting", "A user"], answer: 0 },
+            { q: "What is the `mod_form.php` file?", options: ["Defines the settings form for an activity module", "A database form", "A user form", "A login form"], answer: 0 },
+            { q: "What is `view.php` typically used for?", options: ["The main page for an activity module instance", "Viewing a user", "Viewing logs", "Viewing files"], answer: 0 },
+            { q: "What is `index.php` typically used for in a module?", options: ["Listing all instances of the module in a course", "Home page", "Login page", "Error page"], answer: 0 },
+            { q: "What is the `lang` folder?", options: ["Contains language strings", "Contains code", "Contains images", "Contains styles"], answer: 0 },
+            { q: "What is `get_string()`?", options: ["Retrieves a localized string", "Gets a variable", "Gets a file", "Gets a user"], answer: 0 },
+            { q: "What is the `pix` folder?", options: ["Contains icons and images", "Contains pixels", "Contains code", "Contains styles"], answer: 0 },
+            { q: "What is `amd` folder?", options: ["Asynchronous Module Definition (JavaScript)", "AMD processor", "A folder", "A file"], answer: 0 },
+            { q: "What is Grunt used for in Moodle?", options: ["Building JS (AMD) and CSS (LESS/SCSS)", "A sound", "A database", "A server"], answer: 0 },
+            { q: "What is Behat?", options: ["Behavior Driven Development (BDD) testing framework", "A hat", "A bee", "A tool"], answer: 0 },
+            { q: "What is PHPUnit?", options: ["Unit testing framework for PHP", "A unit", "A test", "A tool"], answer: 0 },
 
-            // --- Configuration & Admin (20) ---
-            { q: "Where are the main site configuration settings stored?", options: ["config table in DB", "config.php file", "Both config.php and config table", "settings.xml"], answer: 2 },
-            { q: "What is the purpose of `admin/settings.php` in a plugin?", options: ["To define admin settings for the plugin", "To configure the admin user", "To set up the database", "To install the plugin"], answer: 0 },
-            { q: "Which function adds a setting to the admin tree?", options: ["$ADMIN->add()", "admin_setting_configtext()", "add_admin_setting()", "register_setting()"], answer: 0 },
-            { q: "What is a 'Role' in Moodle?", options: ["A collection of capabilities", "A user group", "A job title", "A plugin type"], answer: 0 },
-            { q: "What is a 'Context' in Moodle?", options: ["The scope where a role is assigned (System, Course, Module, etc.)", "The text content of a page", "The PHP execution context", "The database connection"], answer: 0 },
-            { q: "Which context level is the most specific?", options: ["System", "Course Category", "Course", "Module (Activity)"], answer: 3 },
-            { q: "How do you check if a user has a specific role?", options: ["You shouldn't; check for capabilities instead", "user_has_role()", "check_role()", "get_user_roles()"], answer: 0 },
-            { q: "What is the purpose of 'Archetypes' in roles?", options: ["To provide default permissions for new roles", "To define user avatars", "To group courses", "To categorize plugins"], answer: 0 },
-            { q: "Where can you define default settings for a plugin?", options: ["install.xml", "settings.php", "config.php", "defaults.php"], answer: 1 },
-            { q: "What is 'Cron' in Moodle context?", options: ["A script that runs background tasks", "A time format", "A calendar plugin", "A user role"], answer: 0 },
-            { q: "How do you manually trigger the cron via CLI?", options: ["php admin/cli/cron.php", "php cron.php", "run cron", "moodle cron"], answer: 0 },
-            { q: "What is 'Purge Caches' used for?", options: ["To clear MUC, theme, and JS caches", "To delete old users", "To empty the database", "To uninstall plugins"], answer: 0 },
-            { q: "Which file allows you to switch the site to Maintenance Mode?", options: ["admin/cli/maintenance.php", "config.php", "maintenance.html", "index.php"], answer: 0 },
-            { q: "What is the purpose of `$CFG->dataroot`?", options: ["Path to the data directory", "Path to the database", "Path to the code", "Path to the root URL"], answer: 0 },
-            { q: "Why must `dataroot` be outside the web root?", options: ["Security; to prevent direct browser access to files", "Performance", "Database requirements", "It doesn't have to be"], answer: 0 },
-            { q: "What is 'Debugging' mode?", options: ["A setting to show error messages and warnings", "A developer tool", "A virus scanner", "A database repair tool"], answer: 0 },
-            { q: "Which capability allows a user to view hidden courses?", options: ["moodle/course:viewhiddencourses", "moodle/site:view", "course:view", "admin:view"], answer: 0 },
-            { q: "What is the 'Guest' user?", options: ["A special user account for anonymous access", "A hacked account", "A new user", "An admin account"], answer: 0 },
-            { q: "How do you prevent a plugin from being uninstalled?", options: ["You can't", "Remove the uninstall capability", "Delete the uninstall.php file", "Lock it in config.php"], answer: 3 },
-            { q: "What is the purpose of 'Cohorts'?", options: ["Site-wide groups of users", "Course-specific groups", "Plugin collections", "Theme sets"], answer: 0 },
-
-            // --- Full Stack & Integration (20) ---
-            { q: "What is a 'Course Format' plugin?", options: ["A plugin that controls the layout of a course page", "A file format for backups", "A text editor plugin", "A grading method"], answer: 0 },
-            { q: "What is a 'Block' plugin?", options: ["A widget that appears in the side regions of a page", "A way to block users", "A piece of code", "A database table"], answer: 0 },
-            { q: "What is an 'Activity Module'?", options: ["Interactive learning content (Forum, Quiz, Assignment)", "A static page", "A system setting", "A background task"], answer: 0 },
-            { q: "What is a 'Filter' plugin?", options: ["A plugin that processes text before display (e.g., auto-linking)", "A search tool", "A database query filter", "A spam blocker"], answer: 0 },
-            { q: "What is the 'Repository' API?", options: ["Allows users to bring content into Moodle from external sources", "A code version control system", "A database backup tool", "A plugin store"], answer: 0 },
-            { q: "What is the 'Portfolio' API?", options: ["Allows users to export Moodle content to external systems", "A stock market tool", "A user profile page", "A file manager"], answer: 0 },
-            { q: "What is 'LTI'?", options: ["Learning Tools Interoperability (standard for connecting ed-tech systems)", "Long Term Integration", "Learning Tech Interface", "Local Tool Install"], answer: 0 },
-            { q: "What is 'Web Services' in Moodle used for?", options: ["To allow external applications to interact with Moodle (Mobile app, ERP)", "To browse the web", "To serve web pages", "To manage hosting"], answer: 0 },
-            { q: "Which protocol is NOT supported by Moodle Web Services by default?", options: ["GraphQL", "REST", "SOAP", "XML-RPC"], answer: 0 },
-            { q: "What is the purpose of `external_api` class?", options: ["Base class for defining web service functions", "To call external websites", "To manage API keys", "To document APIs"], answer: 0 },
-            { q: "How do you unit test a Moodle plugin?", options: ["Using PHPUnit", "Using Selenium", "Using Jest", "Manual testing only"], answer: 0 },
-            { q: "What is Behat used for in Moodle?", options: ["Behavior-Driven Development (BDD) / Acceptance Testing", "Unit testing", "Performance testing", "Security scanning"], answer: 0 },
-            { q: "What is the 'Data Generator' in tests?", options: ["A tool to create mock data (courses, users) for tests", "A database seeder", "A random number generator", "A backup tool"], answer: 0 },
-            { q: "Which file configures the testing environment?", options: ["config.php (with $CFG->phpunit_...)", "phpunit.xml", "tests.php", "env.php"], answer: 0 },
-            { q: "What is the purpose of `backup` and `restore` APIs?", options: ["To save and load course content/user data", "To undo code changes", "To fix database errors", "To cache pages"], answer: 0 },
-            { q: "What is a 'Gradebook' report plugin?", options: ["A plugin to visualize or export grades", "A plugin to grade assignments", "A plugin to calculate totals", "A plugin to set grade scales"], answer: 0 },
-            { q: "What is the 'Question Engine'?", options: ["The subsystem that handles quiz questions and attempts", "A search engine", "A forum type", "A help system"], answer: 0 },
-            { q: "How do you add a new question type?", options: ["Create a plugin in `question/type`", "Edit the quiz module", "Add a row to the database", "Use the admin interface"], answer: 0 },
-            { q: "What is the purpose of `plagiarism` plugins?", options: ["To check student submissions against external plagiarism services", "To copy content", "To prevent copying", "To cite sources"], answer: 0 },
-            { q: "What is the 'Message Output' plugin type?", options: ["Defines how notifications are sent (Email, Popup, Jabber)", "Defines message content", "Defines chat rooms", "Defines forum posts"], answer: 0 },
-
-            // --- Security & Performance (20) ---
-            { q: "What is the primary defense against SQL Injection in Moodle?", options: ["Use the $DB API with placeholders", "Use mysql_real_escape_string", "Strip tags", "Use addslashes"], answer: 0 },
-            { q: "Which function should be used to escape plain text for HTML attribute output?", options: ["s()", "p()", "echo()", "print()"], answer: 0 },
-            { q: "What is the purpose of `sesskey` in Moodle?", options: ["To prevent CSRF attacks", "To encrypt passwords", "To manage database sessions", "To license the software"], answer: 0 },
-            { q: "Which function must be called to validate a form submission's sesskey?", options: ["require_sesskey()", "check_sesskey()", "validate_session()", "confirm_key()"], answer: 0 },
-            { q: "What is the correct PARAM type for a course ID?", options: ["PARAM_INT", "PARAM_NUMBER", "PARAM_ID", "PARAM_INTEGER"], answer: 0 },
-            { q: "Which function checks if a user has a specific permission and throws an error if not?", options: ["require_capability()", "has_capability()", "check_permission()", "user_can()"], answer: 0 },
-            { q: "What does `format_text()` do?", options: ["Filters and cleans HTML text for output", "Formats a date", "Converts text to uppercase", "Translates text"], answer: 0 },
-            { q: "How do you enable detailed error messages in Moodle?", options: ["Set Debugging to DEVELOPER in Site Admin", "Delete the database", "Check the logs", "Reinstall Moodle"], answer: 0 },
-            { q: "What is the 'Moodle Universal Cache' (MUC)?", options: ["A unified caching API for Moodle", "A browser cache", "A database engine", "A file storage system"], answer: 0 },
-            { q: "Which cache store is best for high-performance session handling?", options: ["Redis", "File system", "Database", "Browser LocalStorage"], answer: 0 },
-            { q: "What is 'Theme Designer Mode'?", options: ["A setting that disables theme caching for development", "A tool to draw themes", "A special user role", "A plugin"], answer: 0 },
-            { q: "Why should 'Theme Designer Mode' be disabled in production?", options: ["It severely degrades performance", "It is a security risk", "It breaks the layout", "It costs money"], answer: 0 },
-            { q: "What is the purpose of the `purify_html` function?", options: ["To remove malicious code (XSS) from HTML", "To format HTML", "To compress HTML", "To translate HTML"], answer: 0 },
-            { q: "What is a 'Session Lock'?", options: ["A mechanism to prevent concurrent writes to the session", "A way to ban users", "A password protection", "A database lock"], answer: 0 },
-            { q: "How can you restrict access to a script to only the CLI?", options: ["defined('MOODLE_INTERNAL') || die()", "if (CLI_SCRIPT) ...", "if (!is_admin()) die()", "require_login()"], answer: 1 },
-            { q: "What is the safest way to include user input in a SQL query?", options: ["Use placeholders (?)", "Concatenate strings", "Use md5()", "Use base64_encode()"], answer: 0 },
-            { q: "Which function is used to clean a filename?", options: ["clean_param($name, PARAM_FILE)", "clean_filename()", "fix_name()", "sanitize_file()"], answer: 0 },
-            { q: "What is the default session timeout in Moodle?", options: ["2 hours", "30 minutes", "24 hours", "1 week"], answer: 0 },
-            { q: "How do you prevent a specific plugin from running its cron task?", options: ["Disable it in Scheduled Tasks settings", "Delete the plugin", "Comment out the code", "You can't"], answer: 0 },
-            { q: "What is 'Password Salting'?", options: ["Adding random data to a password before hashing", "Adding sugar", "Encrypting twice", "Sending it via HTTPS"], answer: 0 }
+            // --- Administration & Security (20) ---
+            { q: "What is Cron in Moodle?", options: ["Background script that runs scheduled tasks", "A time", "A user", "A plugin"], answer: 0 },
+            { q: "How often should Cron run?", options: ["Every minute", "Every hour", "Every day", "Every week"], answer: 0 },
+            { q: "What is Maintenance Mode?", options: ["Prevents users from logging in during updates", "Fixing bugs", "Cleaning", "Sleeping"], answer: 0 },
+            { q: "What is Purge Caches?", options: ["Clears all Moodle caches (Theme, JS, Language, DB)", "Deleting files", "Deleting users", "Deleting courses"], answer: 0 },
+            { q: "What is the `config.php` file?", options: ["Main configuration file (DB details, wwwroot, dataroot)", "A plugin", "A theme", "A user"], answer: 0 },
+            { q: "What is `dataroot`?", options: ["Directory where Moodle stores user files (must be outside web root)", "Database root", "Web root", "Code root"], answer: 0 },
+            { q: "Why must `dataroot` be outside web root?", options: ["Security (prevents direct access to files)", "Space", "Speed", "Organization"], answer: 0 },
+            { q: "What is `wwwroot`?", options: ["The URL of the Moodle site", "Web root folder", "World Wide Web", "Root user"], answer: 0 },
+            { q: "What is Debugging mode?", options: ["Shows error messages to help developers", "Fixing bugs", "Hiding errors", "Speeding up"], answer: 0 },
+            { q: "What is the Security Overview report?", options: ["Checks for common security issues", "A police report", "A user list", "A log"], answer: 0 },
+            { q: "What is IP Blocker?", options: ["Blocks access from specific IP addresses", "A firewall", "A plugin", "A user"], answer: 0 },
+            { q: "What is Password Policy?", options: ["Rules for password complexity", "A law", "A setting", "A user"], answer: 0 },
+            { q: "What is Notification?", options: ["Messages sent to users (Email, Web, Mobile)", "A bell", "A sound", "A popup"], answer: 0 },
+            { q: "What is a Cohort?", options: ["A site-wide group of users", "A course group", "A class", "A team"], answer: 0 },
+            { q: "What is a Role?", options: ["A collection of permissions (Student, Teacher, Admin)", "A character", "A job", "A user"], answer: 0 },
+            { q: "What is Context?", options: ["The scope where a role is assigned (System, Category, Course, Module)", "A text", "A situation", "A place"], answer: 0 },
+            { q: "What is Backup & Restore?", options: ["Saving and loading courses", "Saving files", "Saving users", "Saving database"], answer: 0 },
+            { q: "What is LTI?", options: ["Learning Tools Interoperability (connecting external tools)", "A sandwich", "A protocol", "A tool"], answer: 0 },
+            { q: "What is SCORM?", options: ["Standard for e-learning content", "A storm", "A score", "A form"], answer: 0 },
+            { q: "What is H5P?", options: ["Interactive HTML5 content", "A code", "A file", "A tool"], answer: 0 }
         ];
 
-        const quizContainer = document.getElementById('quiz');
-        const scoreDisplay = document.getElementById('score-display');
-        const progressBar = document.getElementById('progress');
-
-        let score = 0;
-        let answeredCount = 0;
-
-        function escapeHtml(text) {
-            return text
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;")
-                .replace(/'/g, "&#039;");
-        }
-
-        function renderQuiz() {
-            quizContainer.innerHTML = questions.map((q, index) => `
-                <div class="question" id="q-${index}" data-index="${index}">
-                    <h3>${index + 1}. ${escapeHtml(q.q)}</h3>
-                    <div class="options">
-                        ${q.options.map((opt, i) => `
-                            <div class="option" onclick="handleSelection(${index}, ${i})">${escapeHtml(opt)}</div>
-                        `).join('')}
-                    </div>
-                </div>
-            `).join('');
-            updateScoreBoard();
-        }
-
-        window.handleSelection = (qIndex, oIndex) => {
-            const questionEl = document.getElementById(`q-${qIndex}`);
-            const optionsDiv = questionEl.querySelector('.options');
-            
-            // Prevent re-answering
-            if (optionsDiv.classList.contains('answered')) return;
-
-            optionsDiv.classList.add('answered');
-            const options = optionsDiv.querySelectorAll('.option');
-            const correctAnswer = questions[qIndex].answer;
-
-            // Visual feedback
-            if (oIndex === correctAnswer) {
-                options[oIndex].classList.add('correct');
-                score++;
-            } else {
-                options[oIndex].classList.add('incorrect');
-                options[correctAnswer].classList.add('correct');
-            }
-
-            // Dim other options
-            options.forEach((opt, i) => {
-                if (i !== oIndex && i !== correctAnswer) {
-                    opt.classList.add('dimmed');
-                }
-            });
-
-            answeredCount++;
-            updateScoreBoard();
-        };
-
-        function updateScoreBoard() {
-            scoreDisplay.textContent = `Score: ${score} / ${questions.length}`;
-            const percentage = (answeredCount / questions.length) * 100;
-            progressBar.style.width = `${percentage}%`;
-        }
-
+        // Shuffle function
         function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
@@ -276,9 +165,76 @@
             }
         }
 
-        initLayout();
-        shuffleArray(questions);
-        renderQuiz();
+        function initQuiz() {
+            const quizContainer = document.getElementById('quiz');
+            const scoreDisplay = document.getElementById('score-display');
+            const progressBar = document.getElementById('progress');
+            let score = 0;
+            let answeredCount = 0;
+
+            // Shuffle questions
+            shuffleArray(questions);
+
+            questions.forEach((q, index) => {
+                const qEl = document.createElement('div');
+                qEl.className = 'question';
+                
+                const title = document.createElement('h3');
+                title.textContent = `${index + 1}. ${q.q}`;
+                qEl.appendChild(title);
+
+                const optionsDiv = document.createElement('div');
+                optionsDiv.className = 'options';
+
+                let optionsWithIndices = q.options.map((opt, i) => ({ text: opt, originalIndex: i }));
+                shuffleArray(optionsWithIndices);
+
+                optionsWithIndices.forEach(optObj => {
+                    const btn = document.createElement('div');
+                    btn.className = 'option';
+                    btn.textContent = optObj.text;
+                    
+                    btn.onclick = () => {
+                        if (optionsDiv.classList.contains('answered')) return;
+                        
+                        optionsDiv.classList.add('answered');
+                        answeredCount++;
+                        
+                        const progressPercent = (answeredCount / questions.length) * 100;
+                        progressBar.style.width = `${progressPercent}%`;
+
+                        if (optObj.originalIndex === q.answer) {
+                            score++;
+                            btn.classList.add('correct');
+                        } else {
+                            btn.classList.add('incorrect');
+                        }
+
+                        Array.from(optionsDiv.children).forEach(child => {
+                            if (child.textContent === q.options[q.answer]) {
+                                child.classList.add('correct');
+                            } else if (child !== btn) {
+                                child.classList.add('dimmed');
+                            }
+                        });
+
+                        scoreDisplay.textContent = `Score: ${score} / ${questions.length}`;
+                    };
+                    
+                    optionsDiv.appendChild(btn);
+                });
+
+                qEl.appendChild(optionsDiv);
+                quizContainer.appendChild(qEl);
+            });
+            
+            scoreDisplay.textContent = `Score: 0 / ${questions.length}`;
+        }
+
+        if (typeof initLayout === 'function') {
+            initLayout();
+        }
+        initQuiz();
     </script>
 </body>
 </html>

@@ -130,98 +130,114 @@
             { q: "What is the 'itertools' module?", options: ["Functions creating iterators for efficient looping", "Tools for items", "A list tool", "A loop tool"], answer: 0 },
             { q: "What is the difference between __str__ and __repr__?", options: ["__str__ is for end-users, __repr__ is for developers (debugging)", "They are the same", "__str__ is for debugging", "__repr__ is for users"], answer: 0 },
             { q: "How do you handle circular imports?", options: ["Import inside functions or restructure code", "Ignore them", "Use global variables", "Delete files"], answer: 0 },
+            { q: "What is the 'abc' module?", options: ["Abstract Base Classes", "Alphabet", "A basic class", "A variable"], answer: 0 },
+            { q: "What is the 're' module?", options: ["Regular Expressions", "Real Estate", "Repeat", "Return"], answer: 0 },
+            { q: "What is a regular expression?", options: ["A sequence of characters that specifies a search pattern", "A normal expression", "A math formula", "A code"], answer: 0 },
+            { q: "What is 'sys.argv'?", options: ["List of command line arguments", "System arguments", "A variable", "A function"], answer: 0 },
+            { q: "What is 'os.path'?", options: ["Common pathname manipulations", "Operating system", "A path", "A file"], answer: 0 },
+            { q: "What is 'json' module?", options: ["JSON encoder and decoder", "JavaScript", "A file", "A database"], answer: 0 },
+            { q: "What is 'csv' module?", options: ["CSV file reading and writing", "Comma Separated Values", "A file", "A database"], answer: 0 },
+            { q: "What is 'unittest'?", options: ["Unit testing framework", "A test", "A unit", "A module"], answer: 0 },
+            { q: "What is 'pytest'?", options: ["A popular third-party testing framework", "A test", "A python test", "A module"], answer: 0 },
 
-            // --- Advanced (20) ---
-            { q: "What is a metaclass?", options: ["A class of a class", "A super class", "A subclass", "A function"], answer: 0 },
-            { q: "What is the difference between __new__ and __init__?", options: ["__new__ creates the object, __init__ initializes it", "They are the same", "__init__ creates, __new__ initializes", "__new__ is deprecated"], answer: 0 },
-            { q: "What is monkey patching?", options: ["Dynamic modification of a class or module at runtime", "A game", "Fixing bugs", "Updating Python"], answer: 0 },
-            { q: "What is the purpose of __slots__?", options: ["To save memory by preventing __dict__ creation", "To create slots for variables", "To speed up loops", "To define methods"], answer: 0 },
-            { q: "What is a context manager?", options: ["An object that defines runtime context (enter/exit)", "A manager class", "A database connection", "A file handler"], answer: 0 },
-            { q: "What is the 'async' keyword?", options: ["Defines a coroutine", "Starts a thread", "Imports a library", "Defines a class"], answer: 0 },
-            { q: "What is the 'await' keyword?", options: ["Pauses execution until a coroutine completes", "Stops the program", "Waits for user input", "Sleeps for a second"], answer: 0 },
-            { q: "What is the difference between a thread and a process?", options: ["Threads share memory, processes do not", "Processes share memory", "They are the same", "Threads are slower"], answer: 0 },
-            { q: "What is the 'multiprocessing' module?", options: ["Allows spawning processes", "Allows threading", "Allows async", "Allows networking"], answer: 0 },
-            { q: "What is a descriptor?", options: ["An object with binding behavior (get/set/delete)", "A description", "A file", "A variable"], answer: 0 },
-            { q: "What is the MRO (Method Resolution Order)?", options: ["The order in which base classes are searched", "Alphabetical order", "Random order", "Creation order"], answer: 0 },
-            { q: "What is a weak reference?", options: ["A reference that doesn't prevent garbage collection", "A broken link", "A pointer", "A variable"], answer: 0 },
-            { q: "What is the 'collections' module?", options: ["High-performance container datatypes", "A list of books", "A database", "A garbage collector"], answer: 0 },
-            { q: "What is 'functools'?", options: ["Higher-order functions and operations on callable objects", "Functional programming", "Functions tools", "A game"], answer: 0 },
-            { q: "What is 'itertools'?", options: ["Functions creating iterators for efficient looping", "Iteration tools", "A loop", "A list"], answer: 0 },
-            { q: "What is pickling?", options: ["Serializing a Python object structure", "Preserving food", "Compressing files", "Encrypting data"], answer: 0 },
-            { q: "What is the difference between deep copy and shallow copy?", options: ["Deep copy copies objects recursively, shallow copy copies references", "They are the same", "Shallow copy is recursive", "Deep copy is faster"], answer: 0 },
-            { q: "What is a closure?", options: ["A function object that remembers values in enclosing scopes", "A closed function", "A loop", "A variable"], answer: 0 },
-            { q: "What is duck typing?", options: ["Checking behavior rather than type", "Checking type", "A bird", "A game"], answer: 0 },
-            { q: "What is the 'abc' module?", options: ["Abstract Base Classes", "Alphabet", "A basic class", "A variable"], answer: 0 }
+            // --- Data Science & Web (20) ---
+            { q: "What is NumPy?", options: ["Library for large, multi-dimensional arrays and matrices", "Numbers", "Python", "A database"], answer: 0 },
+            { q: "What is Pandas?", options: ["Library for data manipulation and analysis", "A bear", "A database", "A tool"], answer: 0 },
+            { q: "What is a DataFrame?", options: ["2-dimensional labeled data structure in Pandas", "A frame", "A data", "A list"], answer: 0 },
+            { q: "What is Matplotlib?", options: ["Plotting library", "Math", "A map", "A tool"], answer: 0 },
+            { q: "What is Scikit-learn?", options: ["Machine learning library", "Science", "Learning", "A tool"], answer: 0 },
+            { q: "What is TensorFlow/PyTorch?", options: ["Deep learning frameworks", "Games", "Tools", "Libraries"], answer: 0 },
+            { q: "What is Django?", options: ["High-level Python web framework", "A movie", "A game", "A tool"], answer: 0 },
+            { q: "What is Flask?", options: ["Micro web framework", "A bottle", "A tool", "A library"], answer: 0 },
+            { q: "What is FastAPI?", options: ["Modern, fast (high-performance), web framework for building APIs", "Fast food", "A tool", "A library"], answer: 0 },
+            { q: "What is SQLAlchemy?", options: ["SQL toolkit and Object Relational Mapper (ORM)", "SQL", "Alchemy", "A tool"], answer: 0 },
+            { q: "What is Requests?", options: ["HTTP library for humans", "Asking", "A tool", "A library"], answer: 0 },
+            { q: "What is Beautiful Soup?", options: ["Library for pulling data out of HTML and XML files", "Food", "A tool", "A library"], answer: 0 },
+            { q: "What is Selenium?", options: ["Tool for automating web browsers", "Element", "A tool", "A library"], answer: 0 },
+            { q: "What is Jupyter Notebook?", options: ["Web-based interactive computing environment", "A planet", "A book", "A tool"], answer: 0 },
+            { q: "What is PIP?", options: ["Package Installer for Python", "A seed", "A tool", "A library"], answer: 0 },
+            { q: "What is PyPI?", options: ["Python Package Index", "Pie", "A tool", "A library"], answer: 0 },
+            { q: "What is Anaconda?", options: ["Distribution of Python and R for scientific computing", "A snake", "A tool", "A library"], answer: 0 },
+            { q: "What is Conda?", options: ["Package and environment management system", "A snake", "A tool", "A library"], answer: 0 },
+            { q: "What is PEP 8?", options: ["Style guide for Python code", "A drink", "A person", "A rule"], answer: 0 },
+            { q: "What is The Zen of Python?", options: ["Guiding principles for Python's design (import this)", "Meditation", "A book", "A rule"], answer: 0 }
         ];
 
-        // Shuffle questions
-        function shuffle(array) {
+        // Shuffle function
+        function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
                 [array[i], array[j]] = [array[j], array[i]];
             }
-            return array;
         }
 
-        const quizContainer = document.getElementById('quiz');
-        const scoreDisplay = document.getElementById('score-display');
-        const progressBar = document.getElementById('progress');
-        
-        let shuffledQuestions = shuffle([...questions]);
-        let score = 0;
-        let answeredCount = 0;
+        function initQuiz() {
+            const quizContainer = document.getElementById('quiz');
+            const scoreDisplay = document.getElementById('score-display');
+            const progressBar = document.getElementById('progress');
+            let score = 0;
+            let answeredCount = 0;
 
-        function renderQuiz() {
-            quizContainer.innerHTML = '';
-            shuffledQuestions.forEach((q, index) => {
+            // Shuffle questions
+            shuffleArray(questions);
+
+            questions.forEach((q, index) => {
                 const qEl = document.createElement('div');
                 qEl.className = 'question';
-                qEl.innerHTML = `
-                    <h3>${index + 1}. ${q.q}</h3>
-                    <div class="options" id="opt-${index}">
-                        ${q.options.map((opt, i) => `
-                            <div class="option" onclick="checkAnswer(${index}, ${i}, ${q.answer})">${opt}</div>
-                        `).join('')}
-                    </div>
-                `;
+                
+                const title = document.createElement('h3');
+                title.textContent = `${index + 1}. ${q.q}`;
+                qEl.appendChild(title);
+
+                const optionsDiv = document.createElement('div');
+                optionsDiv.className = 'options';
+
+                let optionsWithIndices = q.options.map((opt, i) => ({ text: opt, originalIndex: i }));
+                shuffleArray(optionsWithIndices);
+
+                optionsWithIndices.forEach(optObj => {
+                    const btn = document.createElement('div');
+                    btn.className = 'option';
+                    btn.textContent = optObj.text;
+                    
+                    btn.onclick = () => {
+                        if (optionsDiv.classList.contains('answered')) return;
+                        
+                        optionsDiv.classList.add('answered');
+                        answeredCount++;
+                        
+                        const progressPercent = (answeredCount / questions.length) * 100;
+                        progressBar.style.width = `${progressPercent}%`;
+
+                        if (optObj.originalIndex === q.answer) {
+                            score++;
+                            btn.classList.add('correct');
+                        } else {
+                            btn.classList.add('incorrect');
+                        }
+
+                        Array.from(optionsDiv.children).forEach(child => {
+                            if (child.textContent === q.options[q.answer]) {
+                                child.classList.add('correct');
+                            } else if (child !== btn) {
+                                child.classList.add('dimmed');
+                            }
+                        });
+
+                        scoreDisplay.textContent = `Score: ${score} / ${questions.length}`;
+                    };
+                    
+                    optionsDiv.appendChild(btn);
+                });
+
+                qEl.appendChild(optionsDiv);
                 quizContainer.appendChild(qEl);
             });
-            updateScore();
-        }
-
-        window.checkAnswer = function(qIndex, selected, correct) {
-            const optionsDiv = document.getElementById(`opt-${qIndex}`);
-            if (optionsDiv.classList.contains('answered')) return;
-
-            optionsDiv.classList.add('answered');
-            const options = optionsDiv.getElementsByClassName('option');
             
-            if (selected === correct) {
-                options[selected].classList.add('correct');
-                score++;
-            } else {
-                options[selected].classList.add('incorrect');
-                options[correct].classList.add('correct');
-            }
-
-            // Dim others
-            for (let i = 0; i < options.length; i++) {
-                if (i !== selected && i !== correct) {
-                    options[i].classList.add('dimmed');
-                }
-            }
-
-            answeredCount++;
-            updateScore();
-        };
-
-        function updateScore() {
-            scoreDisplay.textContent = `Score: ${score} / ${questions.length}`;
-            const percent = (answeredCount / questions.length) * 100;
-            progressBar.style.width = `${percent}%`;
+            scoreDisplay.textContent = `Score: 0 / ${questions.length}`;
         }
 
-        renderQuiz();
+        initQuiz();
     </script>
 </body>
 </html>

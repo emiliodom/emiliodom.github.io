@@ -17,523 +17,247 @@
         <!-- Navigation injected by layout.js -->
     </nav>
 
-    <main>
-        <div class="quiz-container">
-            <div class="question">
-                <h3>1. Why use Bedrock over a standard WordPress installation?</h3>
-                <label><input type="radio" name="q1" value="a"> It comes with more themes pre-installed.</label>
-                <label><input type="radio" name="q1" value="b"> It uses Composer for dependency management and separates config from code.</label>
-                <label><input type="radio" name="q1" value="c"> It is faster because it doesn't use PHP.</label>
-            </div>
-
-            <div class="question">
-                <h3>2. In Timber, what is the role of the Context?</h3>
-                <label><input type="radio" name="q2" value="a"> To store global variables passed to every Twig template.</label>
-                <label><input type="radio" name="q2" value="b"> To connect to the database.</label>
-                <label><input type="radio" name="q2" value="c"> To register new post types.</label>
-            </div>
-
-            <div class="question">
-                <h3>3. Which function is used to register a Native Gutenberg Block in PHP?</h3>
-                <label><input type="radio" name="q3" value="a"> `init_block`</label>
-                <label><input type="radio" name="q3" value="b"> `register_block_type`</label>
-                <label><input type="radio" name="q3" value="c"> `wp_enqueue_block`</label>
-            </div>
-
-            <div class="question">
-                <h3>4. When deploying to AWS Fargate, where should user uploads be stored?</h3>
-                <label><input type="radio" name="q4" value="a"> In the container's /var/www/html/wp-content/uploads folder.</label>
-                <label><input type="radio" name="q4" value="b"> In the database.</label>
-                <label><input type="radio" name="q4" value="c"> Offloaded to an S3 bucket because containers are ephemeral.</label>
-            </div>
-
-            <div class="question">
-                <h3>5. What is the benefit of using Redis Object Cache?</h3>
-                <label><input type="radio" name="q5" value="a"> It makes images load faster.</label>
-                <label><input type="radio" name="q5" value="b"> It persists database query results in memory, reducing SQL load.</label>
-                <label><input type="radio" name="q5" value="c"> It replaces the primary database entirely.</label>
-            </div>
-
-            <!-- New Questions Added Below -->
-
-            <div class="question">
-                <h3>6. What is the primary purpose of the `functions.php` file in a theme?</h3>
-                <label><input type="radio" name="q6" value="a"> To style the website.</label>
-                <label><input type="radio" name="q6" value="b"> To add features and functionality to the WordPress site.</label>
-                <label><input type="radio" name="q6" value="c"> To configure the database connection.</label>
-            </div>
-
-            <div class="question">
-                <h3>7. Which function is used to enqueue scripts and styles in WordPress?</h3>
-                <label><input type="radio" name="q7" value="a"> `wp_add_script`</label>
-                <label><input type="radio" name="q7" value="b"> `wp_enqueue_scripts`</label>
-                <label><input type="radio" name="q7" value="c"> `wp_load_assets`</label>
-            </div>
-
-            <div class="question">
-                <h3>8. What is a Child Theme?</h3>
-                <label><input type="radio" name="q8" value="a"> A theme designed for children's websites.</label>
-                <label><input type="radio" name="q8" value="b"> A theme that inherits functionality and styling from a parent theme.</label>
-                <label><input type="radio" name="q8" value="c"> A smaller version of a theme.</label>
-            </div>
-
-            <div class="question">
-                <h3>9. How do you create a custom post type in WordPress?</h3>
-                <label><input type="radio" name="q9" value="a"> Using the `register_post_type` function.</label>
-                <label><input type="radio" name="q9" value="b"> Creating a new table in the database.</label>
-                <label><input type="radio" name="q9" value="c"> Adding a new folder in `wp-content`.</label>
-            </div>
-
-            <div class="question">
-                <h3>10. What is the WordPress Loop?</h3>
-                <label><input type="radio" name="q10" value="a"> A PHP loop used to display posts.</label>
-                <label><input type="radio" name="q10" value="b"> A plugin for creating sliders.</label>
-                <label><input type="radio" name="q10" value="c"> An infinite loop error.</label>
-            </div>
-
-            <div class="question">
-                <h3>11. Which file is the main template file in a WordPress theme?</h3>
-                <label><input type="radio" name="q11" value="a"> `style.css`</label>
-                <label><input type="radio" name="q11" value="b"> `index.php`</label>
-                <label><input type="radio" name="q11" value="c"> `header.php`</label>
-            </div>
-
-            <div class="question">
-                <h3>12. What is the purpose of `wp_head()`?</h3>
-                <label><input type="radio" name="q12" value="a"> To display the site title.</label>
-                <label><input type="radio" name="q12" value="b"> To trigger the `wp_head` action hook, allowing plugins and themes to output code in the `<head>` section.</label>
-                <label><input type="radio" name="q12" value="c"> To load the header template.</label>
-            </div>
-
-            <div class="question">
-                <h3>13. Which constant is used to enable debugging in WordPress?</h3>
-                <label><input type="radio" name="q13" value="a"> `WP_DEBUG`</label>
-                <label><input type="radio" name="q13" value="b"> `ENABLE_DEBUG`</label>
-                <label><input type="radio" name="q13" value="c"> `DEBUG_MODE`</label>
-            </div>
-
-            <div class="question">
-                <h3>14. What is a nonce in WordPress?</h3>
-                <label><input type="radio" name="q14" value="a"> A number used once to protect against CSRF attacks.</label>
-                <label><input type="radio" name="q14" value="b"> A type of user role.</label>
-                <label><input type="radio" name="q14" value="c"> A database table.</label>
-            </div>
-
-            <div class="question">
-                <h3>15. How do you safely sanitize a text field input?</h3>
-                <label><input type="radio" name="q15" value="a"> `sanitize_text_field()`</label>
-                <label><input type="radio" name="q15" value="b"> `clean_text()`</label>
-                <label><input type="radio" name="q15" value="c"> `strip_tags()`</label>
-            </div>
-
-            <div class="question">
-                <h3>16. What is the Transients API used for?</h3>
-                <label><input type="radio" name="q16" value="a"> Storing temporary data in the database with an expiration time.</label>
-                <label><input type="radio" name="q16" value="b"> Managing user sessions.</label>
-                <label><input type="radio" name="q16" value="c"> Handling file uploads.</label>
-            </div>
-
-            <div class="question">
-                <h3>17. Which hook runs after a post is saved?</h3>
-                <label><input type="radio" name="q17" value="a"> `save_post`</label>
-                <label><input type="radio" name="q17" value="b"> `publish_post`</label>
-                <label><input type="radio" name="q17" value="c"> `edit_post`</label>
-            </div>
-
-            <div class="question">
-                <h3>18. What is the difference between `site_url()` and `home_url()`?</h3>
-                <label><input type="radio" name="q18" value="a"> `site_url()` is where WP files are, `home_url()` is the public address.</label>
-                <label><input type="radio" name="q18" value="b"> They are exactly the same.</label>
-                <label><input type="radio" name="q18" value="c"> `home_url()` is for the admin area.</label>
-            </div>
-
-            <div class="question">
-                <h3>19. How do you add a custom menu location?</h3>
-                <label><input type="radio" name="q19" value="a"> `register_nav_menu()`</label>
-                <label><input type="radio" name="q19" value="b"> `add_menu_page()`</label>
-                <label><input type="radio" name="q19" value="c"> `create_menu()`</label>
-            </div>
-
-            <div class="question">
-                <h3>20. What is the correct way to localize a script for translation?</h3>
-                <label><input type="radio" name="q20" value="a"> `wp_localize_script()`</label>
-                <label><input type="radio" name="q20" value="b"> `translate_script()`</label>
-                <label><input type="radio" name="q20" value="c"> `__()`</label>
-            </div>
-
-            <div class="question">
-                <h3>21. Which file handles 404 errors in a theme?</h3>
-                <label><input type="radio" name="q21" value="a"> `error.php`</label>
-                <label><input type="radio" name="q21" value="b"> `404.php`</label>
-                <label><input type="radio" name="q21" value="c"> `not-found.php`</label>
-            </div>
-
-            <div class="question">
-                <h3>22. What is the purpose of `add_theme_support()`?</h3>
-                <label><input type="radio" name="q22" value="a"> To enable features like post thumbnails, custom logo, etc.</label>
-                <label><input type="radio" name="q22" value="b"> To install a theme.</label>
-                <label><input type="radio" name="q22" value="c"> To contact support.</label>
-            </div>
-
-            <div class="question">
-                <h3>23. How do you query posts using custom parameters?</h3>
-                <label><input type="radio" name="q23" value="a"> `WP_Query`</label>
-                <label><input type="radio" name="q23" value="b"> `get_posts_custom()`</label>
-                <label><input type="radio" name="q23" value="c"> `query_posts()` (deprecated)</label>
-            </div>
-
-            <div class="question">
-                <h3>24. Which function outputs the content of a post?</h3>
-                <label><input type="radio" name="q24" value="a"> `the_content()`</label>
-                <label><input type="radio" name="q24" value="b"> `get_the_content()`</label>
-                <label><input type="radio" name="q24" value="c"> `show_content()`</label>
-            </div>
-
-            <div class="question">
-                <h3>25. What is the hierarchy for a single post template?</h3>
-                <label><input type="radio" name="q25" value="a"> `single-{post_type}.php` -> `single.php` -> `singular.php` -> `index.php`</label>
-                <label><input type="radio" name="q25" value="b"> `post.php` -> `index.php`</label>
-                <label><input type="radio" name="q25" value="c"> `page.php` -> `single.php`</label>
-            </div>
-
-            <div class="question">
-                <h3>26. How do you create a shortcode?</h3>
-                <label><input type="radio" name="q26" value="a"> `add_shortcode()`</label>
-                <label><input type="radio" name="q26" value="b"> `register_shortcode()`</label>
-                <label><input type="radio" name="q26" value="c"> `create_shortcode()`</label>
-            </div>
-
-            <div class="question">
-                <h3>27. What is the REST API prefix in WordPress?</h3>
-                <label><input type="radio" name="q27" value="a"> `/wp-json/`</label>
-                <label><input type="radio" name="q27" value="b"> `/api/`</label>
-                <label><input type="radio" name="q27" value="c"> `/rest/`</label>
-            </div>
-
-            <div class="question">
-                <h3>28. How do you check if a user is logged in?</h3>
-                <label><input type="radio" name="q28" value="a"> `is_user_logged_in()`</label>
-                <label><input type="radio" name="q28" value="b"> `check_user()`</label>
-                <label><input type="radio" name="q28" value="c"> `has_user()`</label>
-            </div>
-
-            <div class="question">
-                <h3>29. Which function retrieves a specific option from the database?</h3>
-                <label><input type="radio" name="q29" value="a"> `get_option()`</label>
-                <label><input type="radio" name="q29" value="b"> `read_option()`</label>
-                <label><input type="radio" name="q29" value="c"> `fetch_option()`</label>
-            </div>
-
-            <div class="question">
-                <h3>30. What is the purpose of `wp_reset_postdata()`?</h3>
-                <label><input type="radio" name="q30" value="a"> To restore the global `$post` variable after a custom query loop.</label>
-                <label><input type="radio" name="q30" value="b"> To delete all posts.</label>
-                <label><input type="radio" name="q30" value="c"> To reset the database connection.</label>
-            </div>
-
-            <div class="question">
-                <h3>31. Which hook is used to add a custom column to the posts list table?</h3>
-                <label><input type="radio" name="q31" value="a"> `manage_posts_columns`</label>
-                <label><input type="radio" name="q31" value="b"> `add_post_column`</label>
-                <label><input type="radio" name="q31" value="c"> `edit_columns`</label>
-            </div>
-
-            <div class="question">
-                <h3>32. How do you populate a custom column in the posts list table?</h3>
-                <label><input type="radio" name="q32" value="a"> `manage_posts_custom_column`</label>
-                <label><input type="radio" name="q32" value="b"> `fill_column`</label>
-                <label><input type="radio" name="q32" value="c"> `display_column_data`</label>
-            </div>
-
-            <div class="question">
-                <h3>33. What is the purpose of `register_activation_hook()`?</h3>
-                <label><input type="radio" name="q33" value="a"> To run code when a plugin is activated.</label>
-                <label><input type="radio" name="q33" value="b"> To activate a theme.</label>
-                <label><input type="radio" name="q33" value="c"> To register a new user.</label>
-            </div>
-
-            <div class="question">
-                <h3>34. Which function is used to create a new user programmatically?</h3>
-                <label><input type="radio" name="q34" value="a"> `wp_create_user()` or `wp_insert_user()`</label>
-                <label><input type="radio" name="q34" value="b"> `add_user()`</label>
-                <label><input type="radio" name="q34" value="c"> `new_user()`</label>
-            </div>
-
-            <div class="question">
-                <h3>35. How do you get the ID of the current post in the loop?</h3>
-                <label><input type="radio" name="q35" value="a"> `get_the_ID()`</label>
-                <label><input type="radio" name="q35" value="b"> `the_id()`</label>
-                <label><input type="radio" name="q35" value="c"> `current_post_id()`</label>
-            </div>
-
-            <div class="question">
-                <h3>36. What is the purpose of `wp_footer()`?</h3>
-                <label><input type="radio" name="q36" value="a"> To trigger the `wp_footer` action hook, often used for scripts.</label>
-                <label><input type="radio" name="q36" value="b"> To display the copyright info.</label>
-                <label><input type="radio" name="q36" value="c"> To close the body tag.</label>
-            </div>
-
-            <div class="question">
-                <h3>37. Which capability is required to manage plugins?</h3>
-                <label><input type="radio" name="q37" value="a"> `activate_plugins`</label>
-                <label><input type="radio" name="q37" value="b"> `edit_posts`</label>
-                <label><input type="radio" name="q37" value="c"> `manage_options`</label>
-            </div>
-
-            <div class="question">
-                <h3>38. How do you add a custom widget area (sidebar)?</h3>
-                <label><input type="radio" name="q38" value="a"> `register_sidebar()`</label>
-                <label><input type="radio" name="q38" value="b"> `add_widget_area()`</label>
-                <label><input type="radio" name="q38" value="c"> `create_sidebar()`</label>
-            </div>
-
-            <div class="question">
-                <h3>39. What is the correct way to include a template part?</h3>
-                <label><input type="radio" name="q39" value="a"> `get_template_part()`</label>
-                <label><input type="radio" name="q39" value="b"> `include()`</label>
-                <label><input type="radio" name="q39" value="c"> `require()`</label>
-            </div>
-
-            <div class="question">
-                <h3>40. Which function is used to escape HTML attributes?</h3>
-                <label><input type="radio" name="q40" value="a"> `esc_attr()`</label>
-                <label><input type="radio" name="q40" value="b"> `sanitize_attr()`</label>
-                <label><input type="radio" name="q40" value="c"> `clean_attr()`</label>
-            </div>
-
-            <div class="question">
-                <h3>41. How do you schedule a recurring event (Cron job)?</h3>
-                <label><input type="radio" name="q41" value="a"> `wp_schedule_event()`</label>
-                <label><input type="radio" name="q41" value="b"> `set_cron_job()`</label>
-                <label><input type="radio" name="q41" value="c"> `add_cron()`</label>
-            </div>
-
-            <div class="question">
-                <h3>42. What is the purpose of the `admin_init` hook?</h3>
-                <label><input type="radio" name="q42" value="a"> To register settings and other admin-specific initialization.</label>
-                <label><input type="radio" name="q42" value="b"> To initialize the frontend.</label>
-                <label><input type="radio" name="q42" value="c"> To load the admin dashboard.</label>
-            </div>
-
-            <div class="question">
-                <h3>43. How do you add a custom dashboard widget?</h3>
-                <label><input type="radio" name="q43" value="a"> `wp_add_dashboard_widget()`</label>
-                <label><input type="radio" name="q43" value="b"> `register_dashboard_widget()`</label>
-                <label><input type="radio" name="q43" value="c"> `create_dashboard_widget()`</label>
-            </div>
-
-            <div class="question">
-                <h3>44. Which function retrieves the URL of the active theme's directory?</h3>
-                <label><input type="radio" name="q44" value="a"> `get_template_directory_uri()`</label>
-                <label><input type="radio" name="q44" value="b"> `get_theme_url()`</label>
-                <label><input type="radio" name="q44" value="c"> `theme_directory()`</label>
-            </div>
-
-            <div class="question">
-                <h3>45. What is the purpose of `wp_safe_redirect()`?</h3>
-                <label><input type="radio" name="q45" value="a"> To redirect to a local URL safely, preventing open redirect vulnerabilities.</label>
-                <label><input type="radio" name="q45" value="b"> To redirect to any URL.</label>
-                <label><input type="radio" name="q45" value="c"> To refresh the page.</label>
-            </div>
-
-            <div class="question">
-                <h3>46. How do you remove a hook callback?</h3>
-                <label><input type="radio" name="q46" value="a"> `remove_action()` or `remove_filter()`</label>
-                <label><input type="radio" name="q46" value="b"> `delete_hook()`</label>
-                <label><input type="radio" name="q46" value="c"> `unset_hook()`</label>
-            </div>
-
-            <div class="question">
-                <h3>47. What is the difference between `__construct` and `init` in a plugin class?</h3>
-                <label><input type="radio" name="q47" value="a"> `__construct` runs when the object is instantiated, `init` is a WP hook that runs later.</label>
-                <label><input type="radio" name="q47" value="b"> They are the same.</label>
-                <label><input type="radio" name="q47" value="c"> `init` runs first.</label>
-            </div>
-
-            <div class="question">
-                <h3>48. How do you add a custom meta box to the post editor?</h3>
-                <label><input type="radio" name="q48" value="a"> `add_meta_box()`</label>
-                <label><input type="radio" name="q48" value="b"> `register_meta_box()`</label>
-                <label><input type="radio" name="q48" value="c"> `create_meta_box()`</label>
-            </div>
-
-            <div class="question">
-                <h3>49. Which function is used to save metadata for a post?</h3>
-                <label><input type="radio" name="q49" value="a"> `update_post_meta()`</label>
-                <label><input type="radio" name="q49" value="b"> `save_meta()`</label>
-                <label><input type="radio" name="q49" value="c"> `add_meta()`</label>
-            </div>
-
-            <div class="question">
-                <h3>50. What is the purpose of `wp_verify_nonce()`?</h3>
-                <label><input type="radio" name="q50" value="a"> To verify that a nonce is valid and correct for the action.</label>
-                <label><input type="radio" name="q50" value="b"> To create a nonce.</label>
-                <label><input type="radio" name="q50" value="c"> To delete a nonce.</label>
-            </div>
-
-            <div class="question">
-                <h3>51. How do you register a custom taxonomy?</h3>
-                <label><input type="radio" name="q51" value="a"> `register_taxonomy()`</label>
-                <label><input type="radio" name="q51" value="b"> `add_taxonomy()`</label>
-                <label><input type="radio" name="q51" value="c"> `create_category()`</label>
-            </div>
-
-            <div class="question">
-                <h3>52. What is the purpose of `wp_remote_get()`?</h3>
-                <label><input type="radio" name="q52" value="a"> To perform an HTTP GET request to a remote URL.</label>
-                <label><input type="radio" name="q52" value="b"> To get a file from the server.</label>
-                <label><input type="radio" name="q52" value="c"> To download a plugin.</label>
-            </div>
-
-            <div class="question">
-                <h3>53. Which function is used to create a custom database table?</h3>
-                <label><input type="radio" name="q53" value="a"> `dbDelta()`</label>
-                <label><input type="radio" name="q53" value="b"> `wp_create_table()`</label>
-                <label><input type="radio" name="q53" value="c"> `sql_query()`</label>
-            </div>
-
-            <div class="question">
-                <h3>54. How do you enqueue a script that depends on jQuery?</h3>
-                <label><input type="radio" name="q54" value="a"> Pass `array('jquery')` as the dependency argument in `wp_enqueue_script()`.</label>
-                <label><input type="radio" name="q54" value="b"> Load jQuery manually first.</label>
-                <label><input type="radio" name="q54" value="c"> It is loaded automatically.</label>
-            </div>
-
-            <div class="question">
-                <h3>55. What is the purpose of `is_admin()`?</h3>
-                <label><input type="radio" name="q55" value="a"> To check if the current request is for an administrative interface page.</label>
-                <label><input type="radio" name="q55" value="b"> To check if the current user is an administrator.</label>
-                <label><input type="radio" name="q55" value="c"> To check if the site is in maintenance mode.</label>
-            </div>
-
-            <div class="question">
-                <h3>56. How do you add a custom class to the body tag?</h3>
-                <label><input type="radio" name="q56" value="a"> Use the `body_class` filter.</label>
-                <label><input type="radio" name="q56" value="b"> Edit `header.php` manually.</label>
-                <label><input type="radio" name="q56" value="c"> Use JavaScript.</label>
-            </div>
-
-            <div class="question">
-                <h3>57. What is the purpose of `wp_send_json_success()`?</h3>
-                <label><input type="radio" name="q57" value="a"> To send a JSON response with success status and die.</label>
-                <label><input type="radio" name="q57" value="b"> To return true.</label>
-                <label><input type="radio" name="q57" value="c"> To log a success message.</label>
-            </div>
-
-            <div class="question">
-                <h3>58. Which hook is used to modify the main query before it is executed?</h3>
-                <label><input type="radio" name="q58" value="a"> `pre_get_posts`</label>
-                <label><input type="radio" name="q58" value="b"> `before_query`</label>
-                <label><input type="radio" name="q58" value="c"> `modify_query`</label>
-            </div>
-
-            <div class="question">
-                <h3>59. How do you get the current user's ID?</h3>
-                <label><input type="radio" name="q59" value="a"> `get_current_user_id()`</label>
-                <label><input type="radio" name="q59" value="b"> `current_user_id()`</label>
-                <label><input type="radio" name="q59" value="c"> `user_id()`</label>
-            </div>
-
-            <div class="question">
-                <h3>60. What is the purpose of `register_setting()`?</h3>
-                <label><input type="radio" name="q60" value="a"> To register a setting and its sanitization callback for the Settings API.</label>
-                <label><input type="radio" name="q60" value="b"> To create a settings page.</label>
-                <label><input type="radio" name="q60" value="c"> To save a setting.</label>
-            </div>
-
-            <button onclick="checkQuiz()">Submit Answers</button>
-            <div id="result" style="margin-top: 20px; font-weight: bold;"></div>
+    <main class="quiz-container">
+        <div id="score-panel">
+            <div id="score-display">Score: 0 / 0</div>
+            <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
         </div>
+        <div id="quiz"></div>
     </main>
 
-    <footer>
-        <!-- Footer injected by layout.js -->
-    </footer>
     <script>
-        initLayout();
-        function checkQuiz() {
-            const answers = {
-                q1: 'b',
-                q2: 'a',
-                q3: 'b',
-                q4: 'c',
-                q5: 'b',
-                q6: 'b',
-                q7: 'b',
-                q8: 'b',
-                q9: 'a',
-                q10: 'a',
-                q11: 'b',
-                q12: 'b',
-                q13: 'a',
-                q14: 'a',
-                q15: 'a',
-                q16: 'a',
-                q17: 'a',
-                q18: 'a',
-                q19: 'a',
-                q20: 'a',
-                q21: 'b',
-                q22: 'a',
-                q23: 'a',
-                q24: 'a',
-                q25: 'a',
-                q26: 'a',
-                q27: 'a',
-                q28: 'a',
-                q29: 'a',
-                q30: 'a',
-                q31: 'a',
-                q32: 'a',
-                q33: 'a',
-                q34: 'a',
-                q35: 'a',
-                q36: 'a',
-                q37: 'a',
-                q38: 'a',
-                q39: 'a',
-                q40: 'a',
-                q41: 'a',
-                q42: 'a',
-                q43: 'a',
-                q44: 'a',
-                q45: 'a',
-                q46: 'a',
-                q47: 'a',
-                q48: 'a',
-                q49: 'a',
-                q50: 'a',
-                q51: 'a',
-                q52: 'a',
-                q53: 'a',
-                q54: 'a',
-                q55: 'a',
-                q56: 'a',
-                q57: 'a',
-                q58: 'a',
-                q59: 'a',
-                q60: 'a'
-            };
-            let score = 0;
-            let total = 60;
-            
-            for (let q in answers) {
-                const selected = document.querySelector(`input[name="${q}"]:checked`);
-                if (selected && selected.value === answers[q]) {
-                    score++;
-                }
-            }
-            
-            const resultDiv = document.getElementById('result');
-            resultDiv.textContent = `You scored ${score} out of ${total}.`;
-            if (score === total) {
-                resultDiv.style.color = 'green';
-                resultDiv.textContent += " Excellent work! You are ready for enterprise projects.";
-            } else {
-                resultDiv.style.color = 'red';
-                resultDiv.textContent += " Review the modules and try again.";
+        const questions = [
+            // --- WordPress Core & Architecture (20) ---
+            { q: "Why use Bedrock over a standard WordPress installation?", options: ["It uses Composer for dependency management and separates config from code", "It comes with more themes pre-installed", "It is faster because it doesn't use PHP", "It is a plugin"], answer: 0 },
+            { q: "What is the primary purpose of the `functions.php` file in a theme?", options: ["To add features and functionality to the WordPress site", "To style the website", "To configure the database connection", "To write blog posts"], answer: 0 },
+            { q: "Which function is used to register a Native Gutenberg Block in PHP?", options: ["register_block_type", "init_block", "wp_enqueue_block", "add_block"], answer: 0 },
+            { q: "What is the WordPress Loop?", options: ["A PHP loop used to display posts", "A plugin for creating sliders", "An infinite loop error", "A network loop"], answer: 0 },
+            { q: "Which file is the main template file in a WordPress theme?", options: ["index.php", "style.css", "header.php", "functions.php"], answer: 0 },
+            { q: "What is a Child Theme?", options: ["A theme that inherits functionality and styling from a parent theme", "A theme designed for children's websites", "A smaller version of a theme", "A plugin"], answer: 0 },
+            { q: "How do you create a custom post type in WordPress?", options: ["Using the `register_post_type` function", "Creating a new table in the database", "Adding a new folder in `wp-content`", "Using a plugin only"], answer: 0 },
+            { q: "Which function is used to enqueue scripts and styles in WordPress?", options: ["wp_enqueue_scripts", "wp_add_script", "wp_load_assets", "wp_insert_style"], answer: 0 },
+            { q: "What is the benefit of using Redis Object Cache?", options: ["It persists database query results in memory, reducing SQL load", "It makes images load faster", "It replaces the primary database entirely", "It is a CDN"], answer: 0 },
+            { q: "When deploying to AWS Fargate, where should user uploads be stored?", options: ["Offloaded to an S3 bucket because containers are ephemeral", "In the container's /var/www/html/wp-content/uploads folder", "In the database", "In the code repository"], answer: 0 },
+            { q: "In Timber, what is the role of the Context?", options: ["To store global variables passed to every Twig template", "To connect to the database", "To register new post types", "To log errors"], answer: 0 },
+            { q: "What is a WordPress Hook?", options: ["A way to change or add code without editing core files", "A fishing tool", "A database connection", "A theme feature"], answer: 0 },
+            { q: "What is the difference between an Action and a Filter?", options: ["Actions do something; Filters modify data", "Actions modify data; Filters do something", "They are the same", "Filters are deprecated"], answer: 0 },
+            { q: "What is `wp-config.php` used for?", options: ["Base configuration details for WordPress", "Theme styles", "Plugin settings", "User passwords"], answer: 0 },
+            { q: "What is the REST API in WordPress?", options: ["An interface for applications to interact with your WordPress site", "A plugin", "A theme", "A database"], answer: 0 },
+            { q: "What is a Shortcode?", options: ["A small code in brackets to perform a specific function", "A password", "A URL shortener", "A PHP error"], answer: 0 },
+            { q: "What is the Template Hierarchy?", options: ["The logic WordPress uses to decide which template file to use", "A plugin list", "A user role list", "A database structure"], answer: 0 },
+            { q: "What is a Taxonomy?", options: ["A way to group things together (like categories and tags)", "A tax form", "A user role", "A plugin"], answer: 0 },
+            { q: "What is the `wp_options` table used for?", options: ["Storing site-wide settings and configuration", "Storing posts", "Storing users", "Storing comments"], answer: 0 },
+            { q: "What is a Nonce?", options: ["A 'number used once' to protect against CSRF attacks", "A nonsense word", "A user role", "A plugin"], answer: 0 },
+
+            // --- Advanced Development (20) ---
+            { q: "What is WP-CLI?", options: ["The command-line interface for WordPress", "A plugin", "A theme", "A hosting provider"], answer: 0 },
+            { q: "How do you regenerate thumbnails using WP-CLI?", options: ["wp media regenerate", "wp image resize", "wp thumb regen", "wp media fix"], answer: 0 },
+            { q: "What is the purpose of `add_theme_support()`?", options: ["To enable specific theme features like post thumbnails", "To get help from support", "To add a theme", "To delete a theme"], answer: 0 },
+            { q: "What is a Transient?", options: ["A way to store cached data in the database with an expiration time", "A homeless person", "A permanent data", "A user role"], answer: 0 },
+            { q: "How do you secure a WordPress site?", options: ["Keep core/plugins updated, use strong passwords, limit login attempts", "Delete it", "Make it private", "Use only one plugin"], answer: 0 },
+            { q: "What is the Heartbeat API?", options: ["A simple server polling API for real-time updates", "A health monitor", "A plugin", "A theme"], answer: 0 },
+            { q: "What is `wp_query`?", options: ["A class for fetching posts from the database", "A plugin", "A theme", "A database table"], answer: 0 },
+            { q: "How do you create a custom database table?", options: ["Using `dbDelta()` function", "Using SQL directly in phpMyAdmin", "Using a plugin", "You can't"], answer: 0 },
+            { q: "What is the purpose of `wp_localize_script`?", options: ["To pass PHP data to a JavaScript file", "To translate the site", "To load a script", "To delete a script"], answer: 0 },
+            { q: "What is a Must-Use (MU) Plugin?", options: ["Plugins that are automatically enabled and cannot be disabled by users", "Recommended plugins", "Paid plugins", "Broken plugins"], answer: 0 },
+            { q: "What is the difference between `site_url()` and `home_url()`?", options: ["`site_url` is where WP files are; `home_url` is the address visitors type", "They are the same", "`site_url` is for admin", "`home_url` is for images"], answer: 0 },
+            { q: "What is `wp_cron`?", options: ["WordPress's task scheduling system", "A virus", "A plugin", "A theme"], answer: 0 },
+            { q: "Why might `wp_cron` not run on time?", options: ["It relies on page visits to trigger", "It is broken", "It is too fast", "It is manual"], answer: 0 },
+            { q: "How do you disable the default WP Cron?", options: ["define('DISABLE_WP_CRON', true); in wp-config.php", "Delete the file", "Use a plugin", "Uncheck a box"], answer: 0 },
+            { q: "What is the `wp_postmeta` table?", options: ["Stores metadata for posts (custom fields)", "Stores posts", "Stores users", "Stores comments"], answer: 0 },
+            { q: "How do you get the current user's ID?", options: ["get_current_user_id()", "get_user_id()", "current_user()", "user_id()"], answer: 0 },
+            { q: "What is `the_content` filter?", options: ["A filter applied to post content before display", "A function to show content", "A plugin", "A theme"], answer: 0 },
+            { q: "How do you create a custom widget?", options: ["Extend the `WP_Widget` class", "Use a plugin", "Edit header.php", "Write CSS"], answer: 0 },
+            { q: "What is the Customizer API?", options: ["Allows developers to create controls for customizing theme settings", "A plugin", "A theme", "A user role"], answer: 0 },
+            { q: "What is `get_template_part()`?", options: ["Loads a template part into a template", "Loads a plugin", "Loads a style", "Loads a script"], answer: 0 },
+
+            // --- Security & Performance (20) ---
+            { q: "What is SQL Injection?", options: ["Malicious SQL statements inserted into entry fields for execution", "A database feature", "A plugin", "A theme"], answer: 0 },
+            { q: "How does WordPress prevent SQL Injection?", options: ["Using prepared statements via `$wpdb->prepare()`", "It doesn't", "Using a firewall", "Using a plugin"], answer: 0 },
+            { q: "What is XSS (Cross-Site Scripting)?", options: ["Injecting malicious scripts into trusted websites", "A style sheet", "A plugin", "A theme"], answer: 0 },
+            { q: "How do you prevent XSS in WordPress?", options: ["Sanitize input and escape output", "Use a plugin", "Block all users", "Disable JS"], answer: 0 },
+            { q: "What is `esc_html()` used for?", options: ["Escaping HTML for safe output", "Formatting HTML", "Deleting HTML", "Creating HTML"], answer: 0 },
+            { q: "What is `sanitize_text_field()` used for?", options: ["Cleaning user input", "Formatting text", "Deleting text", "Creating text"], answer: 0 },
+            { q: "What is a CDN?", options: ["Content Delivery Network", "Content Data Node", "Central Data Network", "Computer Data Node"], answer: 0 },
+            { q: "Why use a CDN with WordPress?", options: ["To serve static assets from servers closer to the user", "To backup the database", "To secure the admin", "To write posts"], answer: 0 },
+            { q: "What is Object Caching?", options: ["Storing database query results in memory", "Storing images", "Storing files", "Storing code"], answer: 0 },
+            { q: "What is Page Caching?", options: ["Storing the entire HTML output of a page", "Storing images", "Storing database queries", "Storing code"], answer: 0 },
+            { q: "What is Lazy Loading?", options: ["Loading images only when they enter the viewport", "Loading slowly", "Loading everything at once", "Not loading"], answer: 0 },
+            { q: "How do you enable GZIP compression?", options: ["Via .htaccess or server config", "Via a plugin only", "Via wp-config.php", "Via CSS"], answer: 0 },
+            { q: "What is the purpose of `robots.txt`?", options: ["Instructions for search engine crawlers", "A robot script", "A plugin", "A theme"], answer: 0 },
+            { q: "What is an XML Sitemap?", options: ["A list of URLs for search engines", "A map image", "A plugin", "A theme"], answer: 0 },
+            { q: "What is the difference between HTTP and HTTPS?", options: ["HTTPS is encrypted", "HTTP is faster", "They are the same", "HTTPS is deprecated"], answer: 0 },
+            { q: "How do you force HTTPS in WordPress?", options: ["Update site URLs and use a redirect rule", "Use a plugin only", "Edit CSS", "Edit HTML"], answer: 0 },
+            { q: "What is Two-Factor Authentication (2FA)?", options: ["Requires two forms of identification to log in", "Two passwords", "Two users", "Two plugins"], answer: 0 },
+            { q: "Why limit login attempts?", options: ["To prevent brute force attacks", "To save bandwidth", "To annoy users", "To save space"], answer: 0 },
+            { q: "What is the `wp-admin` folder?", options: ["Contains the dashboard files", "Contains themes", "Contains plugins", "Contains uploads"], answer: 0 },
+            { q: "What is the `wp-includes` folder?", options: ["Contains core WordPress files", "Contains themes", "Contains plugins", "Contains uploads"], answer: 0 },
+
+            // --- WooCommerce & Headless (20) ---
+            { q: "What is WooCommerce?", options: ["An e-commerce plugin for WordPress", "A theme", "A payment gateway", "A hosting provider"], answer: 0 },
+            { q: "What is a Product in WooCommerce?", options: ["A custom post type", "A page", "A post", "A category"], answer: 0 },
+            { q: "What is a Payment Gateway?", options: ["A service that processes credit card payments", "A bank", "A plugin", "A theme"], answer: 0 },
+            { q: "What is Headless WordPress?", options: ["Using WordPress as a backend API only", "WordPress without a head", "WordPress without themes", "WordPress without plugins"], answer: 0 },
+            { q: "Which API is commonly used for Headless WordPress?", options: ["REST API or GraphQL", "SOAP", "XML-RPC", "AJAX"], answer: 0 },
+            { q: "What is WPGraphQL?", options: ["A plugin that provides a GraphQL API for WordPress", "A theme", "A database", "A hosting provider"], answer: 0 },
+            { q: "Why use Headless WordPress?", options: ["Flexibility to use any frontend technology (React, Vue, etc.)", "It is easier", "It is cheaper", "It is older"], answer: 0 },
+            { q: "What is a drawback of Headless WordPress?", options: ["Loss of some native features like the Customizer and some plugins", "It is slower", "It is less secure", "It is harder to install"], answer: 0 },
+            { q: "How do you authenticate with the REST API?", options: ["Using Application Passwords, JWT, or OAuth", "Using username/password in URL", "No authentication needed", "Using cookies only"], answer: 0 },
+            { q: "What is Next.js?", options: ["A React framework often used with Headless WordPress", "A WordPress theme", "A plugin", "A database"], answer: 0 },
+            { q: "What is Static Site Generation (SSG)?", options: ["Generating HTML pages at build time", "Generating pages on request", "Generating pages manually", "Generating pages via plugin"], answer: 0 },
+            { q: "What is Server-Side Rendering (SSR)?", options: ["Generating HTML pages on each request", "Generating pages at build time", "Generating pages manually", "Generating pages via plugin"], answer: 0 },
+            { q: "What is Incremental Static Regeneration (ISR)?", options: ["Updating static pages after build time without a full rebuild", "A plugin", "A theme", "A database"], answer: 0 },
+            { q: "How do you query posts in WPGraphQL?", options: ["query { posts { nodes { title } } }", "SELECT * FROM posts", "get_posts()", "wp_query()"], answer: 0 },
+            { q: "What is a Custom Field?", options: ["Extra data associated with a post", "A standard field", "A plugin", "A theme"], answer: 0 },
+            { q: "What is ACF (Advanced Custom Fields)?", options: ["A popular plugin for managing custom fields", "A theme", "A core feature", "A database"], answer: 0 },
+            { q: "How do you expose ACF fields to the REST API?", options: ["Enable 'Show in REST API' in field group settings", "It is automatic", "Use a plugin", "Write SQL"], answer: 0 },
+            { q: "What is a Webhook?", options: ["A way for an app to provide other applications with real-time information", "A fishing hook", "A plugin", "A theme"], answer: 0 },
+            { q: "How do you trigger a build on Vercel/Netlify from WordPress?", options: ["Using a Webhook on post update", "Manually", "Using a plugin", "You can't"], answer: 0 },
+            { q: "What is the future of WordPress?", options: ["Full Site Editing (FSE) and Headless", "Classic Editor", "PHP 5", "Flash"], answer: 0 },
+
+            // --- Ecosystem & Community (20) ---
+            { q: "What is WordCamp?", options: ["A conference for WordPress users and developers", "A camping trip", "A plugin", "A theme"], answer: 0 },
+            { q: "What is WordPress.org vs WordPress.com?", options: ["Self-hosted software vs Managed hosting service", "They are the same", "Free vs Paid", "Old vs New"], answer: 0 },
+            { q: "What is the GPL license?", options: ["General Public License (Open Source)", "Private License", "Commercial License", "No License"], answer: 0 },
+            { q: "Who created WordPress?", options: ["Matt Mullenweg and Mike Little", "Bill Gates", "Steve Jobs", "Mark Zuckerberg"], answer: 0 },
+            { q: "What year was WordPress released?", options: ["2003", "2000", "2010", "1995"], answer: 0 },
+            { q: "What percentage of the web does WordPress power?", options: ["Over 40%", "10%", "5%", "90%"], answer: 0 },
+            { q: "What is a Theme Framework?", options: ["A code library to facilitate theme development", "A plugin", "A style", "A script"], answer: 0 },
+            { q: "What is Genesis?", options: ["A popular theme framework", "A book", "A plugin", "A database"], answer: 0 },
+            { q: "What is Divi/Elementor?", options: ["Page Builders", "Themes", "Plugins", "Databases"], answer: 0 },
+            { q: "What is a Starter Theme?", options: ["A minimal theme to build upon (e.g., Underscores)", "A full theme", "A plugin", "A child theme"], answer: 0 },
+            { q: "What is `_s` (Underscores)?", options: ["A starter theme maintained by Automattic", "A plugin", "A function", "A variable"], answer: 0 },
+            { q: "What is the WordPress Coding Standards?", options: ["Guidelines for writing consistent code", "Laws", "Suggestions", "Plugins"], answer: 0 },
+            { q: "What is PHPCS?", options: ["PHP CodeSniffer (checks code against standards)", "A plugin", "A theme", "A language"], answer: 0 },
+            { q: "What is Trac?", options: ["The bug tracking system for WordPress core", "A plugin", "A theme", "A database"], answer: 0 },
+            { q: "How can you contribute to WordPress?", options: ["Code, design, translation, support, documentation", "Money only", "You can't", "By using it only"], answer: 0 },
+            { q: "What is the Polyglots team?", options: ["Translates WordPress into different languages", "Writes code", "Designs themes", "Fixes bugs"], answer: 0 },
+            { q: "What is the Plugin Handbook?", options: ["Documentation for plugin developers", "A book", "A plugin", "A theme"], answer: 0 },
+            { q: "What is the Theme Handbook?", options: ["Documentation for theme developers", "A book", "A plugin", "A theme"], answer: 0 },
+            { q: "What is Gutenberg?", options: ["The block editor introduced in WP 5.0", "A book", "A plugin", "A theme"], answer: 0 },
+            { q: "What is Full Site Editing (FSE)?", options: ["Using blocks to edit the entire site (header, footer, etc.)", "Editing posts only", "Editing code only", "Editing database only"], answer: 0 }
+        ];
+
+        // Shuffle function
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
             }
         }
+
+        function initQuiz() {
+            const quizContainer = document.getElementById('quiz');
+            const scoreDisplay = document.getElementById('score-display');
+            const progressBar = document.getElementById('progress');
+            let score = 0;
+            let answeredCount = 0;
+
+            // Shuffle questions
+            shuffleArray(questions);
+
+            questions.forEach((q, index) => {
+                // Create question element
+                const qEl = document.createElement('div');
+                qEl.className = 'question';
+                
+                const title = document.createElement('h3');
+                title.textContent = `${index + 1}. ${q.q}`;
+                qEl.appendChild(title);
+
+                const optionsDiv = document.createElement('div');
+                optionsDiv.className = 'options';
+
+                // Prepare options with original indices to track correct answer
+                let optionsWithIndices = q.options.map((opt, i) => ({ text: opt, originalIndex: i }));
+                
+                // Shuffle options
+                shuffleArray(optionsWithIndices);
+
+                optionsWithIndices.forEach(optObj => {
+                    const btn = document.createElement('div');
+                    btn.className = 'option';
+                    btn.textContent = optObj.text;
+                    
+                    btn.onclick = () => {
+                        if (optionsDiv.classList.contains('answered')) return;
+                        
+                        optionsDiv.classList.add('answered');
+                        answeredCount++;
+                        
+                        // Update progress
+                        const progressPercent = (answeredCount / questions.length) * 100;
+                        progressBar.style.width = `${progressPercent}%`;
+
+                        if (optObj.originalIndex === q.answer) {
+                            score++;
+                            btn.classList.add('correct');
+                        } else {
+                            btn.classList.add('incorrect');
+                            // Highlight correct answer
+                            const correctBtn = Array.from(optionsDiv.children).find(child => child.textContent === q.options[q.answer]);
+                            if (correctBtn) correctBtn.classList.add('correct');
+                        }
+
+                        // Dim other options
+                        Array.from(optionsDiv.children).forEach(child => {
+                            if (child !== btn && !child.classList.contains('correct')) {
+                                child.classList.add('dimmed');
+                            }
+                        });
+
+                        scoreDisplay.textContent = `Score: ${score} / ${questions.length}`;
+                    };
+                    
+                    optionsDiv.appendChild(btn);
+                });
+
+                qEl.appendChild(optionsDiv);
+                quizContainer.appendChild(qEl);
+            });
+            
+            scoreDisplay.textContent = `Score: 0 / ${questions.length}`;
+        }
+
+        document.addEventListener('DOMContentLoaded', initQuiz);
     </script>
+    <style>
+        .quiz-container { max-width: 800px; margin: 0 auto; padding-bottom: 50px; }
+        .question { background: var(--card-bg); padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid var(--card-border); }
+        .question h3 { margin-top: 0; font-size: 1.1em; }
+        .options { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
+        .option { 
+            padding: 12px; 
+            border: 1px solid var(--card-border); 
+            border-radius: 4px; 
+            cursor: pointer; 
+            transition: background 0.2s; 
+            word-break: break-word;
+            white-space: normal;
+            line-height: 1.4;
+        }
+        .option:hover { background: var(--nav-bg); }
+        .options.answered .option { cursor: default; pointer-events: none; }
+        .option.correct { background: #10b981; color: white; border-color: #059669; }
+        .option.incorrect { background: #ef4444; color: white; border-color: #b91c1c; }
+        .option.dimmed { opacity: 0.6; }
+        #score-panel {
+            position: sticky;
+            top: 20px;
+            background: var(--card-bg);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--card-border);
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        #score-display { font-weight: bold; font-size: 1.2em; }
+        .progress-bar { height: 10px; background: #e5e7eb; border-radius: 5px; width: 200px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--link-color); width: 0%; transition: width 0.3s; }
+    </style>
 </body>
 </html>

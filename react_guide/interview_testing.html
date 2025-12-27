@@ -80,6 +80,19 @@ test('login flow', async ({ page }) => {
     </div>
 
     <div class="q-block">
+        <div class="q-text">Q: Mocha vs. Jest/Vitest?</div>
+        <div class="hint">Configuration vs. "Batteries Included".</div>
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer">
+                <p><strong>Mocha:</strong> Flexible but requires manual setup. You need to install separate libraries for assertions (Chai), mocking (Sinon), and coverage (Istanbul). It is often seen in older Node.js projects.</p>
+                <p><strong>Jest / Vitest:</strong> "Batteries Included". They come with assertions (expect), mocking, and coverage built-in. Vitest is the modern choice for Vite projects as it shares the same configuration.</p>
+                <p><strong>Interview Tip:</strong> If asked about Mocha, say: <em>"I am proficient with Vitest/Jest, which share similar syntax (describe/it/expect). I understand Mocha requires external assertion libraries like Chai, but the core testing concepts remain the same."</em></p>
+            </div>
+        </details>
+    </div>
+
+    <div class="q-block">
         <div class="q-text">Q: Why do we prefer `getByRole` over `getByTestId` in React Testing Library?</div>
         <div class="hint">Think about accessibility and how a real user interacts with the page.</div>
         <div class="code-section">

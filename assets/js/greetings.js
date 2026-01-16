@@ -55,7 +55,7 @@ function triggerConfetti() {
             const duration = 3000;
             const end = Date.now() + duration;
 
-            const colors = ['#667eea', '#764ba2', '#f093fb', '#f5576c', '#4facfe', '#00f2fe'];
+            const colors = ["#667eea", "#764ba2", "#f093fb", "#f5576c", "#4facfe", "#00f2fe"];
 
             (function frame() {
                 confetti({
@@ -63,27 +63,27 @@ function triggerConfetti() {
                     angle: 60,
                     spread: 55,
                     origin: { x: 0, y: 0.8 },
-                    colors: colors
+                    colors: colors,
                 });
                 confetti({
                     particleCount: 3,
                     angle: 120,
                     spread: 55,
                     origin: { x: 1, y: 0.8 },
-                    colors: colors
+                    colors: colors,
                 });
 
                 if (Date.now() < end) {
                     requestAnimationFrame(frame);
                 }
-            }());
+            })();
 
             // Big burst in the center
             confetti({
                 particleCount: 100,
                 spread: 70,
                 origin: { y: 0.6 },
-                colors: colors
+                colors: colors,
             });
         }
     } catch (error) {

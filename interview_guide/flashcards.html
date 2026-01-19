@@ -1,0 +1,485 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Interview Flashcards</title>
+  <style>
+    :root {
+      --bg-color: #0f172a;
+      --card-color: rgba(30, 41, 59, 0.8);
+      --text-color: #e2e8f0;
+      --secondary-text: #94a3b8;
+      --accent-color: #38bdf8;
+      --border: rgba(148, 163, 184, 0.18);
+    }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+      background: var(--bg-color);
+      color: var(--text-color);
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+
+    .wrap {
+      width: min(980px, 100%);
+    }
+
+    .top {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: baseline;
+      margin-bottom: 12px;
+    }
+
+    h1 {
+      font-size: 22px;
+      margin: 0;
+    }
+
+    .sub {
+      color: var(--secondary-text);
+      margin: 6px 0 0;
+      line-height: 1.45;
+      font-size: 13px;
+    }
+
+    a {
+      color: var(--accent-color);
+      text-decoration: none;
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: 1fr 200px auto auto;
+      gap: 10px;
+      margin: 14px 0;
+      align-items: center;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: rgba(2, 6, 23, 0.35);
+      color: var(--text-color);
+      outline: none;
+    }
+
+    button {
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: rgba(56, 189, 248, 0.12);
+      color: #bae6fd;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    button:hover {
+      border-color: rgba(56, 189, 248, 0.35);
+    }
+
+    .meta {
+      color: var(--secondary-text);
+      font-size: 13px;
+      margin: 8px 0 14px;
+    }
+
+    .card {
+      user-select: none;
+      background: var(--card-color);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px;
+      min-height: 260px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .pill {
+      display: inline-block;
+      padding: 2px 9px;
+      border-radius: 999px;
+      font-size: 12px;
+      background: rgba(56, 189, 248, 0.14);
+      color: #bae6fd;
+      border: 1px solid rgba(56, 189, 248, 0.22);
+      width: fit-content;
+    }
+
+    .front {
+      font-size: 18px;
+      line-height: 1.35;
+      margin-top: 4px;
+    }
+
+    .back {
+      display: none;
+      color: var(--text-color);
+      line-height: 1.55;
+    }
+
+    .back .label {
+      color: var(--secondary-text);
+      font-size: 12px;
+      margin-top: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .hint {
+      margin-top: 8px;
+      color: var(--secondary-text);
+      font-size: 13px;
+    }
+
+    .card.flipped .back { display: block; }
+    .card.flipped .hint { display: none; }
+
+    .nav {
+      display: flex;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    @media (max-width: 860px) {
+      .controls {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="top">
+      <div>
+        <h1>Flashcards (Hard Concepts + Analogies)</h1>
+        <p class="sub">Click the card to flip. Use these to build intuition fast. Back side includes an analogy + an “easy similarity”.</p>
+      </div>
+      <div>
+        <a href="./index.html">← Back to Interview Questions</a>
+        <span style="color: rgba(148, 163, 184, 0.7);"> | </span>
+        <a href="./code_challenges.html">Code Challenges →</a>
+      </div>
+    </div>
+
+    <div class="controls">
+      <input id="search" placeholder="Search (e.g., cache stampede, nonce, LSP, event loop…)" />
+      <select id="topic"></select>
+      <button id="shuffleBtn" type="button">Shuffle</button>
+      <button id="resetBtn" type="button">Reset</button>
+    </div>
+
+    <div class="meta" id="meta"></div>
+
+    <div class="card" id="card" tabindex="0" role="button" aria-label="Flashcard (click to flip)">
+      <span class="pill" id="pill">Loading…</span>
+      <div class="front" id="front">Loading…</div>
+      <div class="hint">Tip: Try answering out loud before flipping.</div>
+      <div class="back" id="back"></div>
+    </div>
+
+    <div class="nav">
+      <button id="prevBtn" type="button">Prev</button>
+      <button id="nextBtn" type="button">Next</button>
+      <button id="flipBtn" type="button">Flip</button>
+    </div>
+  </div>
+
+  <script>
+    const cards = [
+      {
+        topic: 'Caching',
+        front: 'Object cache vs Transients in WordPress: what’s the real difference when Redis is enabled?',
+        answer: 'With an external object cache, transients often “ride on” the object cache, but transients still carry TTL semantics and a WP API contract. Without external cache, transients fall back to the DB (options table). Object cache is a lower-level key/value store used broadly by WP; transients are a specific feature for expiring cached values.',
+        analogy: 'Object cache = your RAM “clipboard”; transients = labeled sticky notes with an expiration time (and if you don’t have RAM, you store the sticky notes in a filing cabinet (DB)).',
+        similarity: 'Think “Redis key” (object cache) vs “Redis key with TTL and WP conventions” (transient).'
+      },
+      {
+        topic: 'Caching',
+        front: 'What is a cache stampede (race condition) and how do you prevent it?',
+        answer: 'Stampede happens when many requests miss the cache at once and all recompute the expensive value, spiking DB/CPU. Prevent with locking (mutex), “single flight” (one recompute; others wait), stale-while-revalidate, jittered expirations, and prewarming.',
+        analogy: 'A store runs out of bread and 200 people all rush the bakery door at once. Put one person in charge of re-baking while others wait or buy yesterday’s bread briefly.',
+        similarity: 'Same as thundering herd on a DB connection pool.'
+      },
+      {
+        topic: 'WordPress',
+        front: 'Actions vs Filters in WordPress: what’s the difference?',
+        answer: 'Actions are events (“do something now”) and don’t transform data. Filters are transformations: they take a value, modify it, and return it. Both are hooks; filters are actions that return a value.',
+        analogy: 'Action = doorbell (notification). Filter = water filter (input comes in, output comes out changed).',
+        similarity: 'Events vs middleware pipelines.'
+      },
+      {
+        topic: 'WordPress',
+        front: 'Why is `pre_get_posts` preferred over `query_posts`?',
+        answer: '`pre_get_posts` modifies the main query before it runs, without breaking globals and pagination. `query_posts` clobbers the global `$wp_query`, often causes side effects, and is easy to misuse.',
+        analogy: 'pre_get_posts = adjusting the recipe before cooking. query_posts = dumping the cooked meal and starting over in the middle of dinner.',
+        similarity: 'Configuring a request before it’s sent vs mutating shared global state after the fact.'
+      },
+      {
+        topic: 'Security',
+        front: 'CSRF vs XSS: how do you explain the difference in one breath?',
+        answer: 'CSRF tricks a logged-in user’s browser into sending a valid request they didn’t intend. XSS injects attacker-controlled script into your page so it runs in your origin. CSRF = forged request; XSS = running code in your site.',
+        analogy: 'CSRF = someone slips a signed letter into your outbox. XSS = someone gets a microphone on your stage and speaks as you.',
+        similarity: 'CSRF targets “trust in cookies”; XSS targets “trust in rendered HTML/JS”.'
+      },
+      {
+        topic: 'Security',
+        front: 'What does a WordPress nonce actually protect against?',
+        answer: 'A WP nonce is primarily a CSRF mitigation (a per-action token tied to a user/session/time window). It does not replace capability checks; you still must verify permissions.',
+        analogy: 'Nonce = wristband to prove you’re part of this event. Capability check = security guard verifying you’re allowed backstage.',
+        similarity: 'CSRF token + authorization are separate layers.'
+      },
+      {
+        topic: 'Architecture',
+        front: 'Why do Singletons make unit tests harder than Dependency Injection?',
+        answer: 'Singletons create hidden global state and implicit dependencies. Tests can’t easily swap implementations, reset state, or run in parallel. DI makes dependencies explicit and replaceable with mocks/stubs.',
+        analogy: 'Singleton = one shared kitchen for every restaurant in a city. DI = each restaurant brings its own ingredients/tools, or you can swap a tool for a training dummy.',
+        similarity: 'Global variables vs constructor parameters.'
+      },
+      {
+        topic: 'Architecture',
+        front: 'What’s the “real” meaning of Liskov Substitution Principle (LSP)?',
+        answer: 'If code expects a base type, it should work correctly with any subtype without surprises. Subtypes must keep the contract: preconditions can’t be stricter, postconditions can’t be weaker.',
+        analogy: 'If a socket fits a plug, any “compatible plug” must not short-circuit your house.',
+        similarity: 'Don’t make derived classes that break expectations (e.g., throwing “not supported” for core behaviors).'
+      },
+      {
+        topic: 'Architecture',
+        front: 'Interface Segregation Principle (ISP) — why is it practical?',
+        answer: 'Clients shouldn’t depend on methods they don’t use. Many small interfaces reduce mocking pain and prevent “fat” abstractions that force unrelated implementations.',
+        analogy: 'A TV remote shouldn’t force you to also carry a microwave panel.',
+        similarity: 'Prefer small, focused APIs (like small npm packages) over monolith “god interfaces”.'
+      },
+      {
+        topic: 'PHP',
+        front: 'OPcache: what problem does it solve and what it does NOT solve?',
+        answer: 'OPcache caches compiled PHP bytecode, reducing CPU spent parsing/compiling scripts. It does not cache DB results or PHP variables across requests (unless you implement that separately).',
+        analogy: 'OPcache = precompiled meal prep; you still have to fetch ingredients (DB) each time.',
+        similarity: 'JIT/bytecode cache vs application-level caching.'
+      },
+      {
+        topic: 'PHP',
+        front: 'In PHP-FPM, why can a “small” memory leak be catastrophic under load?',
+        answer: 'Even tiny per-request growth multiplied by high RPS and many workers leads to frequent worker recycling, latency spikes, and eventual OOM. In long-running workers, leaks accumulate until restart.',
+        analogy: 'A small drip in a boat is fine for minutes, but over hours it sinks you.',
+        similarity: 'Per-request overhead × traffic = system-wide failure.'
+      },
+      {
+        topic: 'JavaScript',
+        front: 'Event loop: microtasks vs macrotasks in a practical interview explanation?',
+        answer: 'Macrotasks (timers, IO callbacks) are scheduled as “next turns”. Microtasks (Promises) run immediately after the current call stack completes, before the next macrotask. That’s why Promise callbacks can run before `setTimeout(fn, 0)`.',
+        analogy: 'Macrotasks = next customer in line. Microtasks = notes you must resolve before calling the next customer.',
+        similarity: 'Immediate queue vs scheduled queue.'
+      },
+      {
+        topic: 'React',
+        front: 'Why does `useEffect` dependency correctness matter so much?',
+        answer: 'Dependencies define when effects run. Missing deps often cause stale closures (reading old state/props) and hard-to-reproduce bugs. Correct deps + stable callbacks (useCallback) avoid “it works until it doesn’t”.',
+        analogy: 'A smoke alarm that only updates its batteries sometimes is worse than no alarm.',
+        similarity: 'Reactive systems rely on accurate “inputs”.'
+      },
+      {
+        topic: 'React',
+        front: 'State batching: why does calling `setState` twice not always mean two renders?',
+        answer: 'React batches updates (especially in event handlers) to reduce renders. Multiple state updates can be grouped into one render; using functional updates ensures correctness when updates depend on previous state.',
+        analogy: 'Instead of sending two separate invoices, you send one combined invoice at the end of the day.',
+        similarity: 'Debouncing work to reduce overhead.'
+      },
+      {
+        topic: 'Git',
+        front: 'Rebase vs Merge: the most useful mental model?',
+        answer: 'Merge preserves history and creates a merge commit to combine branches. Rebase rewrites your branch to apply commits on top of another base, creating a linear history (but changing commit SHAs). Use rebase for clean feature history; merge for shared/public history.',
+        analogy: 'Merge = stapling two timelines together. Rebase = redrawing your timeline as if you started later.',
+        similarity: 'Appending vs rewriting.'
+      },
+      {
+        topic: 'Testing',
+        front: 'Mock vs Stub vs Fake (the interview-friendly distinction)?',
+        answer: 'Stub returns canned data. Mock verifies interactions (called with X). Fake is a working but simplified implementation (e.g., in-memory repo). Choose the least-powerful tool that proves the behavior.',
+        analogy: 'Stub = a recorded voicemail. Mock = a receptionist that logs who called. Fake = a small pop-up store that actually sells (but isn’t the full chain).',
+        similarity: 'Test doubles spectrum.'
+      },
+      {
+        topic: 'Testing',
+        front: 'Unit vs Integration tests: what do you optimize for?',
+        answer: 'Unit tests optimize speed and pinpoint failures; they mock dependencies and validate small behaviors. Integration tests optimize confidence across boundaries (DB, HTTP, filesystem). Balance: fast unit suite + smaller integration suite for critical paths.',
+        analogy: 'Unit test = checking each Lego piece fits. Integration test = building a mini model and shaking it.',
+        similarity: 'Local correctness vs system correctness.'
+      },
+      {
+        topic: 'Databases',
+        front: 'Why can adding an index make writes slower but reads faster?',
+        answer: 'Indexes speed reads by providing lookup structures, but every write must also update those structures. More indexes = more maintenance during INSERT/UPDATE/DELETE.',
+        analogy: 'A library catalog makes finding books faster, but filing every new book now requires updating multiple catalogs.',
+        similarity: 'Caching trade-off: read optimization usually costs write work.'
+      },
+      {
+        topic: 'Databases',
+        front: 'N+1 query problem: explain it like you would to a junior dev.',
+        answer: 'You do 1 query to fetch a list, then N more queries for details per item. It looks fine locally but collapses at scale. Fix with joins, eager-loading, batching, or caching.',
+        analogy: 'Instead of asking one waiter for all meals, you call the kitchen once per fork.',
+        similarity: 'Chatty network calls vs batched calls.'
+      },
+      {
+        topic: 'Performance',
+        front: 'Why is “cache invalidation” considered hard?',
+        answer: 'Because you must know exactly what data depends on what, and invalidate at the right time and scope. Too broad invalidation destroys cache value; too narrow yields stale data bugs.',
+        analogy: 'Erasing the correct parts of a whiteboard without wiping the entire lecture.',
+        similarity: 'Dependency graphs + time = complexity.'
+      },
+      {
+        topic: 'Architecture',
+        front: 'What’s the difference between “idempotent” and “safe” HTTP methods?',
+        answer: 'Safe means “no state change” (GET, HEAD). Idempotent means repeating the same request has the same effect as doing it once (PUT, DELETE). POST is typically neither.',
+        analogy: 'Safe = looking at a switch. Idempotent = flipping it to ON repeatedly: after the first time nothing changes.',
+        similarity: 'Read-only vs repeatable operations.'
+      },
+      {
+        topic: 'Security',
+        front: 'Why does “escaping output” and “validating input” both matter?',
+        answer: 'Validate input to enforce invariants early (shape/range/type). Escape output to match the sink context (HTML, attribute, JS, URL, SQL). You can’t rely on only one because data can flow to multiple sinks.',
+        analogy: 'Input validation = checking ingredients at the door. Output escaping = plating food appropriately for allergies at the table.',
+        similarity: 'Defense in depth.'
+      },
+      {
+        topic: 'WordPress',
+        front: 'Why can updating post meta every request “bust caches” and cause DB pain?',
+        answer: 'Frequent writes invalidate cache entries, create contention/lock pressure, and prevent hot objects from staying warm. Better: batch counts, store in an in-memory counter + periodic flush, or use async queues.',
+        analogy: 'If you repaint a road sign every second, traffic never flows smoothly.',
+        similarity: 'Write amplification and cache churn.'
+      },
+      {
+        topic: 'Architecture',
+        front: 'What is “eventual consistency” and when is it acceptable?',
+        answer: 'Systems converge to the same state over time, not instantly. It’s acceptable when slight staleness is okay (counters, feeds, caches). It’s risky for money transfers or strict invariants.',
+        analogy: 'Multiple clocks in a building drift but get corrected periodically.',
+        similarity: 'Async replication and delayed propagation.'
+      }
+    ];
+
+    let filtered = [...cards];
+    let index = 0;
+
+    function uniqueTopics() {
+      return ['All', ...Array.from(new Set(cards.map(c => c.topic))).sort()];
+    }
+
+    function shuffle(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+    }
+
+    function applyFilters() {
+      const q = document.getElementById('search').value.trim().toLowerCase();
+      const t = document.getElementById('topic').value;
+
+      filtered = cards.filter(c => {
+        if (t !== 'All' && c.topic !== t) return false;
+        if (!q) return true;
+        const hay = `${c.topic} ${c.front} ${c.answer} ${c.analogy} ${c.similarity}`.toLowerCase();
+        return hay.includes(q);
+      });
+
+      index = 0;
+      render();
+    }
+
+    function render() {
+      const meta = document.getElementById('meta');
+      const pill = document.getElementById('pill');
+      const front = document.getElementById('front');
+      const back = document.getElementById('back');
+      const cardEl = document.getElementById('card');
+
+      if (!filtered.length) {
+        meta.textContent = 'No cards match your filter.';
+        pill.textContent = '—';
+        front.textContent = 'Try a different topic/search.';
+        back.innerHTML = '';
+        cardEl.classList.remove('flipped');
+        return;
+      }
+
+      const c = filtered[index];
+      meta.textContent = `Card ${index + 1} of ${filtered.length} (Total library: ${cards.length})`;
+      pill.textContent = c.topic;
+      front.textContent = c.front;
+      back.innerHTML = `
+        <div><strong>Answer:</strong> ${c.answer}</div>
+        <div class="label">Analogy</div>
+        <div>${c.analogy}</div>
+        <div class="label">Easy Similarity</div>
+        <div>${c.similarity}</div>
+      `;
+      cardEl.classList.remove('flipped');
+    }
+
+    function next() {
+      if (!filtered.length) return;
+      index = (index + 1) % filtered.length;
+      render();
+    }
+
+    function prev() {
+      if (!filtered.length) return;
+      index = (index - 1 + filtered.length) % filtered.length;
+      render();
+    }
+
+    function flip() {
+      document.getElementById('card').classList.toggle('flipped');
+    }
+
+    function reset() {
+      document.getElementById('search').value = '';
+      document.getElementById('topic').value = 'All';
+      filtered = [...cards];
+      index = 0;
+      render();
+    }
+
+    function init() {
+      const topicSel = document.getElementById('topic');
+      topicSel.innerHTML = uniqueTopics().map(t => `<option value="${t}">${t}</option>`).join('');
+
+      document.getElementById('search').addEventListener('input', applyFilters);
+      topicSel.addEventListener('change', applyFilters);
+
+      document.getElementById('shuffleBtn').addEventListener('click', () => {
+        shuffle(filtered);
+        index = 0;
+        render();
+      });
+      document.getElementById('resetBtn').addEventListener('click', reset);
+      document.getElementById('nextBtn').addEventListener('click', next);
+      document.getElementById('prevBtn').addEventListener('click', prev);
+      document.getElementById('flipBtn').addEventListener('click', flip);
+
+      const cardEl = document.getElementById('card');
+      cardEl.addEventListener('click', flip);
+      cardEl.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          flip();
+        }
+        if (e.key === 'ArrowRight') next();
+        if (e.key === 'ArrowLeft') prev();
+      });
+
+      render();
+    }
+
+    init();
+  </script>
+</body>
+</html>

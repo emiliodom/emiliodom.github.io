@@ -1,0 +1,1428 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Code Challenges</title>
+
+  <!-- CodeMirror (indentation, line numbers, syntax highlighting) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/material-darker.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/selection/active-line.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/matchbrackets.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closebrackets.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/javascript/javascript.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/xml/xml.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/css/css.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/htmlmixed/htmlmixed.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/clike/clike.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/php/php.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/shell/shell.min.js"></script>
+
+  <style>
+    :root {
+      --bg: #0b1220;
+      --panel: rgba(255,255,255,0.06);
+      --panel2: rgba(255,255,255,0.08);
+      --text: rgba(255,255,255,0.92);
+      --muted: rgba(255,255,255,0.65);
+      --muted2: rgba(255,255,255,0.5);
+      --border: rgba(255,255,255,0.12);
+      --accent: #38bdf8;
+      --ok: #22c55e;
+      --fail: #ef4444;
+      --warn: #f59e0b;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      background: radial-gradient(900px 420px at 20% 0%, rgba(56,189,248,0.18), transparent 60%),
+                  radial-gradient(900px 420px at 80% 0%, rgba(34,197,94,0.12), transparent 60%),
+                  var(--bg);
+      color: var(--text);
+    }
+
+    a { color: var(--accent); text-decoration: none; }
+
+    .app {
+      display: grid;
+      grid-template-columns: 340px 1fr;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      border-right: 1px solid var(--border);
+      padding: 16px;
+      background: rgba(0,0,0,0.2);
+      backdrop-filter: blur(10px);
+    }
+
+    .brand {
+      font-weight: 900;
+      font-size: 18px;
+      letter-spacing: -0.02em;
+      margin-bottom: 6px;
+    }
+
+    .navlinks {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 10px 0 14px;
+    }
+
+    .navlinks a {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(0,0,0,0.22);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .navlinks a:hover {
+      color: var(--text);
+      border-color: rgba(56,189,248,0.55);
+      box-shadow: 0 0 0 2px rgba(56,189,248,0.10) inset;
+    }
+
+    .sub {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 14px;
+      line-height: 1.35;
+    }
+
+    .filters {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .input {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: rgba(0,0,0,0.25);
+      color: var(--text);
+      outline: none;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .list {
+      display: grid;
+      gap: 10px;
+      max-height: calc(100vh - 180px);
+      overflow: auto;
+      padding-right: 4px;
+    }
+
+    .item {
+      border: 1px solid var(--border);
+      background: var(--panel);
+      border-radius: 14px;
+      padding: 10px 12px;
+      cursor: pointer;
+      transition: transform 0.08s ease, background 0.08s ease, border-color 0.08s ease;
+    }
+
+    .item:hover { transform: translateY(-1px); background: var(--panel2); }
+    .item.active { border-color: rgba(56,189,248,0.6); box-shadow: 0 0 0 2px rgba(56,189,248,0.12) inset; }
+
+    .item-title { font-weight: 800; font-size: 13px; line-height: 1.2; }
+    .item-meta { margin-top: 6px; font-size: 12px; color: var(--muted); display: flex; gap: 8px; flex-wrap: wrap; }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(0,0,0,0.22);
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .main {
+      padding: 16px;
+    }
+
+    .card {
+      border: 1px solid var(--border);
+      background: rgba(0,0,0,0.22);
+      border-radius: 18px;
+      padding: 16px;
+    }
+
+    .top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 12px;
+    }
+
+    .title {
+      font-size: 20px;
+      font-weight: 950;
+      margin: 8px 0 4px;
+      letter-spacing: -0.02em;
+    }
+
+    .kind {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+
+    .btn {
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+      padding: 9px 11px;
+      border-radius: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .btn:hover { background: rgba(255,255,255,0.09); }
+    .btn.primary { border-color: rgba(56,189,248,0.55); box-shadow: 0 0 0 2px rgba(56,189,248,0.10) inset; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    @media (max-width: 980px) {
+      .app { grid-template-columns: 1fr; }
+      .sidebar { border-right: none; border-bottom: 1px solid var(--border); }
+      .grid { grid-template-columns: 1fr; }
+      .list { max-height: 280px; }
+    }
+
+    h2 {
+      margin: 0 0 8px;
+      font-size: 14px;
+      color: var(--muted);
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+    }
+
+    pre {
+      margin: 0;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 12.5px;
+      line-height: 1.4;
+      background: rgba(0,0,0,0.25);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px;
+      color: rgba(255,255,255,0.9);
+    }
+
+    details {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 10px 12px;
+      background: rgba(0,0,0,0.2);
+    }
+
+    summary {
+      cursor: pointer;
+      user-select: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+    }
+
+    .summary-right { color: var(--muted); font-weight: 600; font-size: 12px; }
+
+    .editor-wrap { grid-column: 1 / -1; }
+
+    textarea {
+      width: 100%;
+      min-height: 320px;
+      background: rgba(0,0,0,0.25);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px;
+      color: rgba(255,255,255,0.92);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 12.5px;
+      line-height: 1.4;
+      outline: none;
+      tab-size: 2;
+    }
+
+    .CodeMirror {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      height: auto;
+      min-height: 320px;
+      font-size: 12.5px;
+    }
+
+    .result {
+      grid-column: 1 / -1;
+      border: 1px solid var(--border);
+      background: rgba(0,0,0,0.25);
+      border-radius: 14px;
+      padding: 12px;
+    }
+
+    .line {
+      display: grid;
+      grid-template-columns: 68px 1fr;
+      gap: 10px;
+      padding: 8px 0;
+      border-bottom: 1px dashed rgba(255,255,255,0.10);
+    }
+
+    .line:last-child { border-bottom: none; }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      border-radius: 10px;
+      padding: 4px 8px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.05);
+      text-transform: uppercase;
+      font-size: 11px;
+    }
+    .status.ok { color: var(--ok); border-color: rgba(34,197,94,0.35); }
+    .status.fail { color: var(--fail); border-color: rgba(239,68,68,0.40); }
+    .status.warn { color: var(--warn); border-color: rgba(245,158,11,0.45); }
+
+    .small { color: var(--muted); font-size: 12px; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">Code Challenges</div>
+      <div class="navlinks">
+        <a href="./index.html">← Interview Quiz</a>
+        <a href="./flashcards.html">Flashcards</a>
+        <a href="../index.html">Site Home</a>
+      </div>
+      <div class="sub">
+        Reference → Challenge → Editor → Check → Reveal.
+        <br />JS challenges run real tests in-browser; PHP/WP/Git/CSS/HTML are pattern-checked.
+      </div>
+
+      <div class="filters">
+        <input id="search" class="input" placeholder="Search challenges…" />
+        <div class="row">
+          <select id="topicFilter" class="input"></select>
+          <select id="kindFilter" class="input"></select>
+        </div>
+      </div>
+
+      <div id="challengeList" class="list"></div>
+    </aside>
+
+    <main class="main">
+      <div class="card">
+        <div class="top">
+          <div>
+            <div class="pill" id="topicPill">—</div>
+            <div class="title" id="title">Loading…</div>
+            <div class="kind" id="kind">—</div>
+          </div>
+          <div class="toolbar">
+            <button class="btn" id="checkBtn" type="button">Check Solution</button>
+            <button class="btn" id="revealBtn" type="button">Reveal Solution</button>
+            <button class="btn" id="clearBtn" type="button">Clear Answer</button>
+            <button class="btn" id="hintBtn" type="button">Show Hints</button>
+            <button class="btn" id="starterBtn" type="button">Show Starter</button>
+          </div>
+        </div>
+
+        <div class="grid">
+          <div>
+            <h2>Reference</h2>
+            <pre id="reference"></pre>
+          </div>
+          <div>
+            <h2>Challenge</h2>
+            <pre id="prompt"></pre>
+          </div>
+
+          <div id="hintSection" style="display:none;">
+            <h2>Hints</h2>
+            <details id="hintsDetails">
+              <summary><span>Hints (hidden by default)</span><span class="summary-right">Click to expand</span></summary>
+              <div style="height:10px"></div>
+              <pre id="hints"></pre>
+            </details>
+          </div>
+
+          <div id="starterSection" style="display:none;">
+            <h2>Starter</h2>
+            <details id="starterDetails">
+              <summary><span>Starter code (hidden by default)</span><span class="summary-right">Click to expand</span></summary>
+              <div style="height:10px"></div>
+              <pre id="starter"></pre>
+              <div style="height:10px"></div>
+              <button class="btn primary" id="insertStarterBtn" type="button">Insert Starter Into Editor</button>
+            </details>
+          </div>
+
+          <div class="editor-wrap">
+            <h2>Editor</h2>
+            <textarea id="editor" spellcheck="false" placeholder="Write your solution here. Use 'Show Starter' if you want a scaffold."></textarea>
+          </div>
+
+          <div class="result" id="result">Run “Check Solution” to see pass/fail.</div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // ----------------------
+    // Challenge Bank
+    // ----------------------
+
+    const challenges = [
+      {
+        id: 'wp-add-filter',
+        topic: 'WordPress',
+        kind: 'PHP/WP (pattern checks)',
+        editorMode: 'text/x-php',
+        title: 'Hook: add_filter the_content',
+        reference: `Hooks:
+- add_action: do something
+- add_filter: modify a value and return it
+
+Signature:
+add_filter($tag, $callback, $priority, $accepted_args)`,
+        prompt: `Add a filter on 'the_content' with priority 11.
+
+The callback must append:\n<!-- filtered -->\n
+Pattern-checked.`,
+        hints: [
+          `add_filter('the_content', 'my_filter', 11, 1);`,
+          `function my_filter($content) { return $content . "\\n<!-- filtered -->"; }`,
+        ],
+        starter: `<?php
+// TODO: add_filter with priority=11 and accepted_args=1
+
+// TODO: implement my_filter($content)
+`,
+        solution: `<?php
+add_filter('the_content', 'my_filter', 11, 1);
+
+function my_filter($content) {
+    return $content . "\n<!-- filtered -->";
+}
+`,
+        checks: [
+          { desc: 'Uses add_filter the_content', re: /add_filter\(\s*['\"]the_content['\"]/ },
+          { desc: 'Uses priority 11', re: /add_filter\([^\)]*,\s*11\s*,\s*1\s*\)/ },
+          { desc: 'Returns modified content', re: /return\s+\$content\s*\./ },
+          { desc: 'No TODO markers left', fn: (code) => !/\bTODO\b/i.test(code) },
+        ]
+      },
+
+      {
+        id: 'wp-transient-cache-aside',
+        topic: 'WordPress',
+        kind: 'PHP/WP (pattern checks)',
+        editorMode: 'text/x-php',
+        title: 'Transients: cache-aside get/set',
+        reference: `Transients are key/value caches with expiration.
+
+Cache-aside pattern:
+- try get_transient($key)
+- if miss: compute, set_transient($key, $value, $ttl)
+- return value`,
+        prompt: `Write a function get_stats_cached() that:
+- uses get_transient('my_stats')
+- if empty/false: computes $stats = ['users' => 123] (placeholder)
+- sets transient for 10 minutes
+- returns $stats
+
+Pattern-checked.`,
+        hints: [
+          `if ($cached !== false) return $cached;`,
+          `set_transient('my_stats', $stats, 10 * MINUTE_IN_SECONDS);`,
+        ],
+        starter: `<?php
+function get_stats_cached() {
+    // TODO
+}
+`,
+        solution: `<?php
+function get_stats_cached() {
+    $cached = get_transient('my_stats');
+    if ($cached !== false) {
+        return $cached;
+    }
+
+    $stats = ['users' => 123];
+    set_transient('my_stats', $stats, 10 * MINUTE_IN_SECONDS);
+
+    return $stats;
+}
+`,
+        checks: [
+          { desc: 'Uses get_transient', re: /get_transient\s*\(/ },
+          { desc: 'Uses set_transient', re: /set_transient\s*\(/ },
+          { desc: 'Uses 10 minutes TTL', re: /(10\s*\*\s*MINUTE_IN_SECONDS|600)/ },
+          { desc: 'No TODO markers left', fn: (code) => !/\bTODO\b/i.test(code) },
+        ]
+      },
+
+      {
+        id: 'wp-escape-output',
+        topic: 'WordPress',
+        kind: 'PHP/WP (pattern checks)',
+        editorMode: 'text/x-php',
+        title: 'Escape output: esc_html vs wp_kses_post',
+        reference: `Escape on output based on context:
+- esc_html() for plain text in HTML
+- esc_attr() for attribute values
+- wp_kses_post() when you allow limited HTML`,
+        prompt: `Complete the snippet:
+- $title must be output as plain text in an <h1>
+- $bioHtml may contain limited HTML (allow it safely)
+
+Pattern-checked.`,
+        hints: [
+          `esc_html($title)`,
+          `wp_kses_post($bioHtml)`,
+        ],
+        starter: `<?php
+$title = $_GET['title'] ?? '';
+$bioHtml = $_GET['bio'] ?? '';
+
+?><h1><!-- TODO --></h1>
+<div class="bio"><!-- TODO --></div>
+`,
+        solution: `<?php
+$title = $_GET['title'] ?? '';
+$bioHtml = $_GET['bio'] ?? '';
+
+?><h1><?php echo esc_html($title); ?></h1>
+<div class="bio"><?php echo wp_kses_post($bioHtml); ?></div>
+`,
+        checks: [
+          { desc: 'Uses esc_html', re: /esc_html\s*\(/ },
+          { desc: 'Uses wp_kses_post', re: /wp_kses_post\s*\(/ },
+          { desc: 'No TODO markers left', fn: (code) => !/\bTODO\b/i.test(code) },
+        ]
+      },
+
+      {
+        id: 'wp-nonce-csrf',
+        topic: 'WordPress',
+        kind: 'PHP/WP (pattern checks)',
+        editorMode: 'text/x-php',
+        title: 'Secure POST handler: nonce + capability',
+        reference: `Pattern:
+- wp_verify_nonce / check_admin_referer
+- current_user_can
+- sanitize input
+- redirect or wp_send_json_*`,
+        prompt: `Complete a handler that processes a POST securely.
+
+Requirements:
+- Verify nonce
+- Check capability
+- Sanitize input
+- Redirect and exit
+
+Pattern-checked.`,
+        hints: [
+          `wp_verify_nonce($_POST['_wpnonce'], 'save_widget')`,
+          `current_user_can('manage_options')`,
+          `sanitize_text_field(wp_unslash($_POST['title']))`,
+        ],
+        starter: `<?php
+add_action('admin_post_save_widget', function() {
+    // TODO: verify nonce
+    // TODO: check capability
+    // TODO: sanitize $_POST['title']
+    // TODO: update_option('my_title', $title)
+    // TODO: wp_redirect back
+    // TODO: exit
+});
+`,
+        solution: `<?php
+add_action('admin_post_save_widget', function() {
+    if (!isset($_POST['_wpnonce']) || !wp_verify_nonce($_POST['_wpnonce'], 'save_widget')) {
+        wp_die('Invalid nonce');
+    }
+    if (!current_user_can('manage_options')) {
+        wp_die('Forbidden');
+    }
+    $title = isset($_POST['title']) ? sanitize_text_field(wp_unslash($_POST['title'])) : '';
+    update_option('my_title', $title);
+    wp_redirect(admin_url('options-general.php?page=my-plugin&updated=1'));
+    exit;
+});
+`,
+        checks: [
+          { desc: 'Has nonce verification', re: /(check_admin_referer\s*\(|wp_verify_nonce\s*\()/ },
+          { desc: 'Has capability check', re: /current_user_can\s*\(/ },
+          { desc: 'Sanitizes input', re: /(sanitize_text_field\s*\(|wp_unslash\s*\()/ },
+          { desc: 'Redirects', re: /wp_redirect\s*\(/ },
+          { desc: 'Has exit', re: /\bexit\s*;/ },
+          { desc: 'No TODO markers left', fn: (code) => !/\bTODO\b/i.test(code) },
+        ]
+      },
+
+      {
+        id: 'php-safe-divide',
+        topic: 'PHP',
+        kind: 'PHP (pattern checks)',
+        editorMode: 'text/x-php',
+        title: 'Safe function: guard and return',
+        reference: `Interview pattern:
+- validate inputs early
+- avoid warnings
+- return predictable values`,
+        prompt: `Implement safe_divide($a, $b).
+
+Requirements:
+- If $b is 0, return null
+- Otherwise return $a / $b
+- Use strict comparison (===)
+
+Pattern-checked.`,
+        hints: [
+          `if ($b === 0) return null;`,
+          `return $a / $b;`,
+        ],
+        starter: `<?php
+function safe_divide($a, $b) {
+    // TODO
+}
+`,
+        solution: `<?php
+function safe_divide($a, $b) {
+    if ($b === 0) return null;
+    return $a / $b;
+}
+`,
+        checks: [
+          { desc: 'Has strict zero check', re: /\$b\s*===\s*0/ },
+          { desc: 'Returns null', re: /return\s+null\s*;/ },
+          { desc: 'Returns division', re: /return\s+\$a\s*\/\s*\$b/ },
+          { desc: 'No TODO markers left', fn: (code) => !/\bTODO\b/i.test(code) },
+        ]
+      },
+
+      {
+        id: 'git-bisect',
+        topic: 'Git',
+        kind: 'Git (pattern checks)',
+        editorMode: 'shell',
+        title: 'Find the breaking commit with git bisect',
+        reference: `git bisect finds the first bad commit via binary search.
+
+Typical flow:
+- git bisect start
+- git bisect bad (current)
+- git bisect good <sha>
+- run tests each step and mark good/bad
+- git bisect reset`,
+        prompt: `Write the commands to bisect where:
+- HEAD is bad
+- commit 111aaa is known good
+- at the end, reset bisect
+
+Pattern-checked.`,
+        hints: [
+          `git bisect start`,
+          `git bisect bad`,
+          `git bisect good 111aaa`,
+          `git bisect reset`,
+        ],
+        starter: `# TODO: write git bisect commands
+`,
+        solution: `git bisect start
+git bisect bad
+git bisect good 111aaa
+# ... run tests each step, mark good/bad ...
+git bisect reset
+`,
+        checks: [
+          { desc: 'Starts bisect', re: /git\s+bisect\s+start/ },
+          { desc: 'Marks bad', re: /git\s+bisect\s+bad(\s|$)/ },
+          { desc: 'Marks good 111aaa', re: /git\s+bisect\s+good\s+111aaa/ },
+          { desc: 'Resets bisect', re: /git\s+bisect\s+reset/ },
+          { desc: 'No TODO markers left', fn: (code) => !/\bTODO\b/i.test(code) },
+        ]
+      },
+
+      {
+        id: 'css-specificity',
+        topic: 'CSS',
+        kind: 'CSS (pattern checks)',
+        editorMode: 'css',
+        title: 'Specificity: target links inside .card',
+        reference: `Prefer simple selectors and avoid !important.
+
+Example:
+.card a { color: #38bdf8; }`,
+        prompt: `Write CSS that styles links inside .card only.
+
+Requirements:
+- Select .card a
+- Set color: #38bdf8
+- Do not use !important
+
+Pattern-checked.`,
+        hints: [
+          `.card a { color: #38bdf8; }`,
+        ],
+        starter: `/* TODO */
+`,
+        solution: `.card a { color: #38bdf8; }
+`,
+        checks: [
+          { desc: 'Targets .card a', re: /\.card\s+a\s*\{/ },
+          { desc: 'Sets color #38bdf8', re: /color\s*:\s*#38bdf8/i },
+          { desc: 'Does not use !important', fn: (code) => !/!important/i.test(code) },
+          { desc: 'No TODO markers left', fn: (code) => !/\bTODO\b/i.test(code) },
+        ]
+      },
+
+      {
+        id: 'css-flex-center',
+        topic: 'CSS',
+        kind: 'CSS (pattern checks)',
+        editorMode: 'css',
+        title: 'Flexbox: center a card vertically + horizontally',
+        reference: `Common UI task: center content.
+
+Modern approach:
+- display: flex
+- align-items: center
+- justify-content: center
+- min-height: 100vh`,
+        prompt: `Write CSS for .page so that its child .card is centered.
+
+Requirements:
+- Use display:flex
+- Use align-items:center
+- Use justify-content:center
+- Use min-height:100vh
+
+Pattern-checked.`,
+        hints: [
+          `.page { min-height: 100vh; display:flex; align-items:center; justify-content:center; }`,
+        ],
+        starter: `.page {
+  /* TODO */
+}
+`,
+        solution: `.page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+`,
+        checks: [
+          { desc: 'Uses display:flex', re: /display\s*:\s*flex/i },
+          { desc: 'Uses align-items:center', re: /align-items\s*:\s*center/i },
+          { desc: 'Uses justify-content:center', re: /justify-content\s*:\s*center/i },
+          { desc: 'Uses min-height:100vh', re: /min-height\s*:\s*100vh/i },
+          { desc: 'No TODO markers left', fn: (code) => !/\bTODO\b/i.test(code) },
+        ]
+      },
+
+      {
+        id: 'html-semantic-form',
+        topic: 'HTML',
+        kind: 'HTML (pattern checks)',
+        editorMode: 'htmlmixed',
+        title: 'Semantic HTML: label + input + button',
+        reference: `Semantic forms improve accessibility.
+
+Rules:
+- Use <label for="...">
+- input should have matching id
+- button type should be explicit`,
+        prompt: `Write a tiny form with:
+- a label "Email" connected to an <input type="email">
+- a submit button
+
+Pattern-checked.`,
+        hints: [
+          `<label for="email">Email</label>`,
+          `<input id="email" type="email" />`,
+          `<button type="submit">…</button>`,
+        ],
+        starter: `<!-- TODO -->
+`,
+        solution: `<form>
+  <label for="email">Email</label>
+  <input id="email" name="email" type="email" required />
+  <button type="submit">Submit</button>
+</form>
+`,
+        checks: [
+          { desc: 'Has a label for=email', re: /<label[^>]*for=["']email["'][^>]*>/i },
+          { desc: 'Has input id=email type=email', re: /<input[^>]*id=["']email["'][^>]*type=["']email["']/i },
+          { desc: 'Has submit button', re: /<button[^>]*type=["']submit["'][^>]*>/i },
+          { desc: 'No TODO markers left', fn: (code) => !/\bTODO\b/i.test(code) },
+        ]
+      },
+
+      {
+        id: 'di-inject-dependency',
+        topic: 'Design',
+        kind: 'DI (pattern checks)',
+        editorMode: 'javascript',
+        title: 'Dependency Injection: pass dependencies in',
+        reference: `DI goal: make code testable by passing dependencies.
+
+Instead of:
+  function f() { const c = new Client(); return c.get(); }
+Do:
+  function f(client) { return client.get(); }`,
+        prompt: `Implement fetchUserName(getUserById, id).
+
+Rules:
+- getUserById is injected (a function)
+- return the user's name
+- do NOT create/instantiate anything inside
+
+Pattern-checked.`,
+        hints: [
+          `function fetchUserName(getUserById, id) { const u = getUserById(id); return u.name; }`,
+        ],
+        starter: `function fetchUserName(getUserById, id) {
+  // TODO
+}
+
+exports.fetchUserName = fetchUserName;
+`,
+        solution: `function fetchUserName(getUserById, id) {
+  const user = getUserById(id);
+  return user.name;
+}
+
+exports.fetchUserName = fetchUserName;
+`,
+        checks: [
+          { desc: 'Accepts getUserById and id parameters', re: /function\s+fetchUserName\s*\(\s*getUserById\s*,\s*id\s*\)/ },
+          { desc: 'Calls getUserById', re: /getUserById\s*\(/ },
+          { desc: 'Does not use new', fn: (code) => !/\bnew\b/.test(code) },
+          { desc: 'Exports fetchUserName', re: /exports\.fetchUserName\s*=/ },
+          { desc: 'No TODO markers left', fn: (code) => !/\bTODO\b/i.test(code) },
+        ]
+      },
+
+      {
+        id: 'js-throttle',
+        topic: 'JavaScript',
+        kind: 'JavaScript (runnable tests)',
+        editorMode: 'javascript',
+        title: 'Implement throttle(fn, wait) (leading only)',
+        reference: `Throttle limits how often a function can run.
+
+This version is “leading only”:
+- first call runs immediately
+- calls during the wait window are ignored`,
+        prompt: `Implement throttle(fn, wait).
+
+Rules:
+- Return a function
+- First call runs immediately
+- Ignore calls during the wait window`,
+        hints: [
+          `Use a boolean flag; reset it with setTimeout.`,
+        ],
+        starter: `function throttle(fn, wait) {
+  // TODO
+}
+
+exports.throttle = throttle;
+`,
+        solution: `function throttle(fn, wait) {
+  let inFlight = false;
+  return (...args) => {
+    if (inFlight) return;
+    inFlight = true;
+    fn(...args);
+    setTimeout(() => { inFlight = false; }, wait);
+  };
+}
+
+exports.throttle = throttle;
+`,
+        tests: async ({ throttle }) => {
+          let count = 0;
+          const t = throttle(() => count++, 40);
+          t(); t(); t();
+          await sleep(10);
+          test('runs immediately once', () => expect(count).toBe(1));
+          await sleep(60);
+          t();
+          test('runs again after wait', () => expect(count).toBe(2));
+        }
+      },
+
+      {
+        id: 'js-debounce',
+        topic: 'JavaScript',
+        kind: 'JavaScript (runnable tests)',
+        editorMode: 'javascript',
+        title: 'Implement debounce(fn, wait) + cancel()',
+        reference: `Debounce delays execution until calls stop.
+
+This version:
+- keeps only the last call
+- exposes debounced.cancel() to prevent firing`,
+        prompt: `Implement debounce(fn, wait).
+
+Rules:
+- Return a function
+- Only the last call within the wait window should run
+- Add debounced.cancel() that prevents a pending call`,
+        hints: [
+          `Track a timeout handle; clear/reset it on each call.`,
+          `Store last args and run fn(...args) when timer fires.`,
+        ],
+        starter: `function debounce(fn, wait) {
+  // TODO
+}
+
+exports.debounce = debounce;
+`,
+        solution: `function debounce(fn, wait) {
+  let t = null;
+  let lastArgs = null;
+  const debounced = (...args) => {
+    lastArgs = args;
+    if (t) clearTimeout(t);
+    t = setTimeout(() => {
+      t = null;
+      fn(...lastArgs);
+    }, wait);
+  };
+  debounced.cancel = () => {
+    if (t) clearTimeout(t);
+    t = null;
+  };
+  return debounced;
+}
+
+exports.debounce = debounce;
+`,
+        tests: async ({ debounce }) => {
+          let count = 0;
+          let last = null;
+          const fn = (x) => { count++; last = x; };
+          const d = debounce(fn, 30);
+
+          d(1); d(2); d(3);
+          await sleep(50);
+
+          test('invokes once', () => expect(count).toBe(1));
+          test('uses last args', () => expect(last).toBe(3));
+
+          const d2 = debounce(fn, 30);
+          d2(10);
+          d2.cancel();
+          await sleep(50);
+          test('cancel prevents invocation', () => expect(count).toBe(1));
+        }
+      },
+
+      {
+        id: 'js-immutability-update',
+        topic: 'JavaScript',
+        kind: 'JavaScript (runnable tests)',
+        editorMode: 'javascript',
+        title: 'Immutable update (React-style state update)',
+        reference: `Mutating state is a common bug.
+
+Use immutable updates:
+- spread {...obj}
+- map/filter
+- avoid push/pop on existing arrays`,
+        prompt: `Implement updateUserName(state, id, newName) without mutating.
+
+State shape:
+{ users: [{ id: 1, name: 'A' }, ...] }
+
+Return a NEW state object and NEW users array.`,
+        hints: [
+          `Return { ...state, users: state.users.map(...) }`,
+        ],
+        starter: `function updateUserName(state, id, newName) {
+  // TODO
+}
+
+exports.updateUserName = updateUserName;
+`,
+        solution: `function updateUserName(state, id, newName) {
+  return {
+    ...state,
+    users: state.users.map(u => (u.id === id ? { ...u, name: newName } : u)),
+  };
+}
+
+exports.updateUserName = updateUserName;
+`,
+        tests: ({ updateUserName }) => {
+          const s1 = { users: [{ id: 1, name: 'A' }, { id: 2, name: 'B' }] };
+          const s2 = updateUserName(s1, 2, 'Bee');
+          test('updates the right user', () => expect(s2.users[1].name).toBe('Bee'));
+          test('does not mutate original', () => expect(s1.users[1].name).toBe('B'));
+          test('returns new array', () => expect(s2.users === s1.users).toBe(false));
+        }
+      },
+
+      {
+        id: 'react-reducer-immutability',
+        topic: 'React',
+        kind: 'JavaScript (runnable tests)',
+        editorMode: 'javascript',
+        title: 'Reducer for useReducer (immutability)',
+        reference: `Reducers must be pure and treat state as immutable.`,
+        prompt: `Implement todosReducer(state, action).
+
+State:
+{ todos: string[] }
+
+Actions:
+- { type: 'add', text }
+- { type: 'remove', index }
+
+Rules:
+- Return NEW objects/arrays
+- Unknown action returns state`,
+        hints: [
+          `Add: return { ...state, todos: [...state.todos, action.text] }`,
+          `Remove: filter by index`,
+        ],
+        starter: `function todosReducer(state, action) {
+  // TODO
+}
+
+exports.todosReducer = todosReducer;
+`,
+        solution: `function todosReducer(state, action) {
+  switch (action.type) {
+    case 'add':
+      return { ...state, todos: [...state.todos, action.text] };
+    case 'remove':
+      return { ...state, todos: state.todos.filter((_, i) => i !== action.index) };
+    default:
+      return state;
+  }
+}
+
+exports.todosReducer = todosReducer;
+`,
+        tests: ({ todosReducer }) => {
+          const s1 = { todos: ['a', 'b'] };
+          const s2 = todosReducer(s1, { type: 'add', text: 'c' });
+          test('add appends', () => expect(JSON.stringify(s2.todos)).toBe(JSON.stringify(['a','b','c'])));
+          test('does not mutate original', () => expect(JSON.stringify(s1.todos)).toBe(JSON.stringify(['a','b'])));
+
+          const s3 = todosReducer(s2, { type: 'remove', index: 1 });
+          test('remove deletes index', () => expect(JSON.stringify(s3.todos)).toBe(JSON.stringify(['a','c'])));
+
+          const s4 = todosReducer(s3, { type: 'unknown' });
+          test('unknown returns same state', () => expect(s4).toBe(s3));
+        }
+      },
+    ];
+
+    // ----------------------
+    // Tiny test framework
+    // ----------------------
+
+    function sleep(ms) {
+      return new Promise((resolve) => setTimeout(resolve, ms));
+    }
+
+    function createTestRuntime() {
+      const results = [];
+      function test(name, fn) {
+        try {
+          fn();
+          results.push({ name, ok: true });
+        } catch (e) {
+          results.push({ name, ok: false, error: e && e.message ? e.message : String(e) });
+        }
+      }
+      function expect(received) {
+        return {
+          toBe(expected) {
+            if (received !== expected) throw new Error(`Expected ${JSON.stringify(expected)}, got ${JSON.stringify(received)}`);
+          },
+          toBeCloseTo(expected, epsilon = 1e-9) {
+            if (Math.abs(received - expected) > epsilon) throw new Error(`Expected ~${expected}, got ${received}`);
+          },
+        };
+      }
+      return { test, expect, results };
+    }
+
+    async function runJavaScriptChallenge(challenge, code) {
+      const logs = [];
+      const exportsObj = {};
+      const consoleProxy = {
+        log: (...args) => logs.push(args.map(String).join(' ')),
+        warn: (...args) => logs.push('[warn] ' + args.map(String).join(' ')),
+        error: (...args) => logs.push('[error] ' + args.map(String).join(' ')),
+      };
+
+      const runtime = createTestRuntime();
+
+      try {
+        const fn = new Function('exports', 'console', 'sleep', 'test', 'expect', `"use strict";\n${code}\n;return exports;`);
+        fn(exportsObj, consoleProxy, sleep, runtime.test, runtime.expect);
+      } catch (e) {
+        return {
+          ok: false,
+          testResults: [{ name: 'compile/run', ok: false, error: e && e.message ? e.message : String(e) }],
+          logs,
+        };
+      }
+
+      try {
+        const maybePromise = challenge.tests(exportsObj);
+        if (maybePromise && typeof maybePromise.then === 'function') {
+          await maybePromise;
+        }
+      } catch (e) {
+        runtime.results.push({ name: 'tests', ok: false, error: e && e.message ? e.message : String(e) });
+      }
+
+      return { ok: runtime.results.every(r => r.ok), testResults: runtime.results, logs };
+    }
+
+    function runPatternChecks(challenge, code) {
+      const checks = challenge.checks || [];
+      const lines = checks.map(chk => {
+        try {
+          const ok = chk.re ? chk.re.test(code) : chk.fn ? !!chk.fn(code) : false;
+          return { ok, text: chk.desc };
+        } catch {
+          return { ok: false, text: chk.desc + ' (check error)' };
+        }
+      });
+      return { ok: lines.every(l => l.ok), lines };
+    }
+
+    // ----------------------
+    // UI
+    // ----------------------
+
+    let currentId = challenges[0]?.id;
+    let revealSolution = false;
+    let cm = null;
+
+    function escapeHtml(s) {
+      return String(s)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;');
+    }
+
+    function getChallenge(id) {
+      return challenges.find(c => c.id === id);
+    }
+
+    function storageKey(id) {
+      return `code_challenge_${id}`;
+    }
+
+    function inferMode(ch) {
+      if (ch && ch.editorMode) return ch.editorMode;
+      const kind = String(ch?.kind || '');
+      if (kind.includes('PHP')) return 'text/x-php';
+      if (kind.includes('HTML')) return 'htmlmixed';
+      if (kind.includes('CSS')) return 'css';
+      if (kind.includes('Git')) return 'shell';
+      return 'javascript';
+    }
+
+    function getEditorValue() {
+      return cm ? cm.getValue() : document.getElementById('editor').value;
+    }
+
+    function setEditorValue(v) {
+      if (cm) {
+        cm.setValue(v);
+        cm.refresh();
+      } else {
+        document.getElementById('editor').value = v;
+      }
+    }
+
+    function persist() {
+      const ch = getChallenge(currentId);
+      if (!ch) return;
+      localStorage.setItem(storageKey(ch.id), getEditorValue());
+    }
+
+    function buildFilters() {
+      const topics = ['All Topics', ...Array.from(new Set(challenges.map(c => c.topic))).sort()];
+      const kinds = ['All Kinds', ...Array.from(new Set(challenges.map(c => c.kind))).sort()];
+
+      const topicSel = document.getElementById('topicFilter');
+      const kindSel = document.getElementById('kindFilter');
+
+      topicSel.innerHTML = topics.map(t => `<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`).join('');
+      kindSel.innerHTML = kinds.map(k => `<option value="${escapeHtml(k)}">${escapeHtml(k)}</option>`).join('');
+    }
+
+    function getFilteredChallenges() {
+      const q = (document.getElementById('search').value || '').trim().toLowerCase();
+      const topic = document.getElementById('topicFilter').value;
+      const kind = document.getElementById('kindFilter').value;
+
+      return challenges.filter(c => {
+        if (topic && topic !== 'All Topics' && c.topic !== topic) return false;
+        if (kind && kind !== 'All Kinds' && c.kind !== kind) return false;
+
+        if (!q) return true;
+        const hay = `${c.id} ${c.topic} ${c.kind} ${c.title}`.toLowerCase();
+        return hay.includes(q);
+      });
+    }
+
+    function renderList() {
+      const list = document.getElementById('challengeList');
+      const filtered = getFilteredChallenges();
+      list.innerHTML = '';
+
+      filtered
+        .slice()
+        .sort((a, b) => (a.topic !== b.topic ? a.topic.localeCompare(b.topic) : a.title.localeCompare(b.title)))
+        .forEach(c => {
+          const el = document.createElement('div');
+          el.className = 'item' + (c.id === currentId ? ' active' : '');
+          el.onclick = () => selectChallenge(c.id);
+          el.innerHTML = `
+            <div class="item-title">${escapeHtml(c.title)}</div>
+            <div class="item-meta">
+              <span class="pill">${escapeHtml(c.topic)}</span>
+              <span>${escapeHtml(c.kind)}</span>
+            </div>
+          `;
+          list.appendChild(el);
+        });
+
+      if (!filtered.some(c => c.id === currentId) && filtered.length) {
+        selectChallenge(filtered[0].id);
+      }
+    }
+
+    function renderChallenge() {
+      const ch = getChallenge(currentId);
+      if (!ch) return;
+
+      document.getElementById('topicPill').textContent = ch.topic;
+      document.getElementById('title').textContent = ch.title;
+      document.getElementById('kind').textContent = ch.kind;
+
+      document.getElementById('reference').textContent = ch.reference || '';
+      document.getElementById('prompt').textContent = ch.prompt || '';
+
+      const hasHints = Array.isArray(ch.hints) && ch.hints.length > 0;
+      document.getElementById('hintSection').style.display = hasHints ? 'block' : 'none';
+      if (hasHints) {
+        document.getElementById('hints').textContent = ch.hints.map((h, i) => `${i + 1}. ${h}`).join('\n');
+      }
+      document.getElementById('hintsDetails').open = false;
+
+      const hasStarter = typeof ch.starter === 'string' && ch.starter.trim().length > 0;
+      document.getElementById('starterSection').style.display = hasStarter ? 'block' : 'none';
+      if (hasStarter) {
+        document.getElementById('starter').textContent = ch.starter;
+      }
+      document.getElementById('starterDetails').open = false;
+
+      document.getElementById('revealBtn').textContent = revealSolution ? 'Hide Solution' : 'Reveal Solution';
+
+      const saved = localStorage.getItem(storageKey(ch.id));
+      setEditorValue(saved != null ? saved : '');
+
+      if (cm) {
+        cm.setOption('mode', inferMode(ch));
+        cm.refresh();
+      }
+
+      setResult('Run “Check Solution” to see pass/fail.');
+
+      if (revealSolution) {
+        setResult(`<div class="line"><div class="status warn">note</div><div>Solution (revealed):</div></div><pre>${escapeHtml(ch.solution || '(no solution provided)')}</pre>`);
+      }
+    }
+
+    function selectChallenge(id) {
+      currentId = id;
+      revealSolution = false;
+      renderList();
+      renderChallenge();
+    }
+
+    function setResult(htmlOrText) {
+      const el = document.getElementById('result');
+      if (typeof htmlOrText === 'string' && htmlOrText.includes('<')) {
+        el.innerHTML = htmlOrText;
+      } else {
+        el.textContent = String(htmlOrText);
+      }
+    }
+
+    async function checkSolution() {
+      const ch = getChallenge(currentId);
+      if (!ch) return;
+
+      persist();
+      const code = getEditorValue();
+
+      if (!code.trim()) {
+        setResult(`<div class="line"><div class="status warn">warn</div><div>Your editor is empty. Write a solution (or insert the starter) and try again.</div></div>`);
+        return;
+      }
+
+      if (ch.tests) {
+        document.getElementById('checkBtn').disabled = true;
+        const out = await runJavaScriptChallenge(ch, code);
+        document.getElementById('checkBtn').disabled = false;
+
+        const header = `<div class="line"><div class="status ${out.ok ? 'ok' : 'fail'}">${out.ok ? 'pass' : 'fail'}</div><div>${out.ok ? 'All tests passed.' : 'Some tests failed.'}</div></div>`;
+        const rows = (out.testResults || []).map(r => {
+          const status = r.ok ? 'ok' : 'fail';
+          const extra = r.ok ? '' : `<div class="small">${escapeHtml(r.error || '')}</div>`;
+          return `<div class="line"><div class="status ${status}">${status}</div><div>${escapeHtml(r.name)}${extra}</div></div>`;
+        }).join('');
+
+        const logs = (out.logs && out.logs.length)
+          ? `<div style="margin-top:10px;"><div class="small">Console output:</div><pre>${escapeHtml(out.logs.join('\n'))}</pre></div>`
+          : '';
+
+        setResult(header + rows + logs);
+        return;
+      }
+
+      const out = runPatternChecks(ch, code);
+      const header = `<div class="line"><div class="status ${out.ok ? 'ok' : 'fail'}">${out.ok ? 'pass' : 'fail'}</div><div>${out.ok ? 'All checks passed.' : 'Some checks failed.'}</div></div>`;
+      const rows = (out.lines || []).map(l => `
+        <div class="line">
+          <div class="status ${l.ok ? 'ok' : 'fail'}">${l.ok ? 'ok' : 'fail'}</div>
+          <div>${escapeHtml(l.text)}</div>
+        </div>
+      `).join('');
+      setResult(header + rows);
+    }
+
+    function clearAnswer() {
+      const ch = getChallenge(currentId);
+      if (!ch) return;
+      setEditorValue('');
+      localStorage.removeItem(storageKey(ch.id));
+      setResult('Cleared your answer.');
+    }
+
+    function insertStarter() {
+      const ch = getChallenge(currentId);
+      if (!ch) return;
+      setEditorValue(ch.starter || '');
+      persist();
+      setResult('Inserted starter code into the editor.');
+    }
+
+    function toggleRevealSolution() {
+      revealSolution = !revealSolution;
+      renderChallenge();
+    }
+
+    function toggleHintsPanel() {
+      const d = document.getElementById('hintsDetails');
+      if (d) d.open = !d.open;
+    }
+
+    function toggleStarterPanel() {
+      const d = document.getElementById('starterDetails');
+      if (d) d.open = !d.open;
+    }
+
+    function init() {
+      buildFilters();
+
+      // CodeMirror upgrade
+      try {
+        const textarea = document.getElementById('editor');
+        cm = CodeMirror.fromTextArea(textarea, {
+          theme: 'material-darker',
+          lineNumbers: true,
+          lineWrapping: true,
+          styleActiveLine: true,
+          matchBrackets: true,
+          autoCloseBrackets: true,
+          indentUnit: 2,
+          tabSize: 2,
+          indentWithTabs: false,
+          viewportMargin: Infinity,
+          mode: 'javascript',
+        });
+        cm.on('change', persist);
+      } catch {
+        cm = null;
+        document.getElementById('editor').addEventListener('input', persist);
+      }
+
+      document.getElementById('search').addEventListener('input', renderList);
+      document.getElementById('topicFilter').addEventListener('change', renderList);
+      document.getElementById('kindFilter').addEventListener('change', renderList);
+
+      document.getElementById('checkBtn').addEventListener('click', checkSolution);
+      document.getElementById('revealBtn').addEventListener('click', toggleRevealSolution);
+      document.getElementById('clearBtn').addEventListener('click', clearAnswer);
+      document.getElementById('hintBtn').addEventListener('click', toggleHintsPanel);
+      document.getElementById('starterBtn').addEventListener('click', toggleStarterPanel);
+      document.getElementById('insertStarterBtn').addEventListener('click', insertStarter);
+
+      renderList();
+      renderChallenge();
+    }
+
+    init();
+  </script>
+</body>
+</html>

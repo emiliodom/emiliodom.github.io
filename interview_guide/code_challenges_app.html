@@ -119,7 +119,7 @@
 
     .row {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 1fr 1fr 1fr;
       gap: 10px;
     }
 
@@ -218,6 +218,39 @@
       .sidebar { border-right: none; border-bottom: 1px solid var(--border); }
       .grid { grid-template-columns: 1fr; }
       .list { max-height: 280px; }
+      .row { grid-template-columns: 1fr; }
+    }
+
+    .list details {
+      border-radius: 14px;
+      padding: 8px 10px;
+    }
+
+    .list details summary {
+      font-size: 12px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .group-title {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .count {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(0,0,0,0.22);
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: none;
+      letter-spacing: 0;
     }
 
     h2 {
@@ -343,6 +376,7 @@
         <div class="row">
           <select id="topicFilter" class="input"></select>
           <select id="kindFilter" class="input"></select>
+          <select id="levelFilter" class="input"></select>
         </div>
       </div>
 
@@ -353,7 +387,10 @@
       <div class="card">
         <div class="top">
           <div>
-            <div class="pill" id="topicPill">—</div>
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+              <div class="pill" id="levelPill">—</div>
+              <div class="pill" id="topicPill">—</div>
+            </div>
             <div class="title" id="title">Loading…</div>
             <div class="kind" id="kind">—</div>
           </div>
@@ -412,12 +449,28 @@
     // Challenge Bank
     // ----------------------
 
+    const LEVELS = ['Junior', 'Mid', 'Senior'];
+    const LEVEL_ORDER = { Junior: 1, Mid: 2, Senior: 3 };
+
+    function normalizeLevel(level) {
+      const s = String(level || '').trim();
+      if (!s) return 'Mid';
+      const hit = LEVELS.find(l => l.toLowerCase() === s.toLowerCase());
+      return hit || 'Mid';
+    }
+
+    function levelOrder(level) {
+      return LEVEL_ORDER[normalizeLevel(level)] || 99;
+    }
+
     const challenges = [
       {
         id: 'wp-add-filter',
         topic: 'WordPress',
         kind: 'PHP/WP (pattern checks)',
         editorMode: 'text/x-php',
+        level: 'Mid',
+        tags: ['hooks', 'observer', 'filters'],
         title: 'Hook: add_filter the_content',
         reference: `Hooks:
 - add_action: do something
@@ -458,6 +511,8 @@ function my_filter($content) {
         topic: 'WordPress',
         kind: 'PHP/WP (pattern checks)',
         editorMode: 'text/x-php',
+        level: 'Mid',
+        tags: ['caching', 'transient', 'cache-aside'],
         title: 'Transients: cache-aside get/set',
         reference: `Transients are key/value caches with expiration.
 
@@ -507,6 +562,8 @@ function get_stats_cached() {
         topic: 'WordPress',
         kind: 'PHP/WP (pattern checks)',
         editorMode: 'text/x-php',
+        level: 'Junior',
+        tags: ['security', 'escaping', 'xss'],
         title: 'Escape output: esc_html vs wp_kses_post',
         reference: `Escape on output based on context:
 - esc_html() for plain text in HTML
@@ -547,6 +604,8 @@ $bioHtml = $_GET['bio'] ?? '';
         topic: 'WordPress',
         kind: 'PHP/WP (pattern checks)',
         editorMode: 'text/x-php',
+        level: 'Mid',
+        tags: ['security', 'nonce', 'csrf', 'capabilities'],
         title: 'Secure POST handler: nonce + capability',
         reference: `Pattern:
 - wp_verify_nonce / check_admin_referer
@@ -606,6 +665,8 @@ add_action('admin_post_save_widget', function() {
         topic: 'PHP',
         kind: 'PHP (pattern checks)',
         editorMode: 'text/x-php',
+        level: 'Junior',
+        tags: ['guard clauses', 'defensive coding'],
         title: 'Safe function: guard and return',
         reference: `Interview pattern:
 - validate inputs early
@@ -647,6 +708,8 @@ function safe_divide($a, $b) {
         topic: 'Git',
         kind: 'Git (pattern checks)',
         editorMode: 'shell',
+        level: 'Senior',
+        tags: ['debugging', 'bisect'],
         title: 'Find the breaking commit with git bisect',
         reference: `git bisect finds the first bad commit via binary search.
 
@@ -690,6 +753,8 @@ git bisect reset
         topic: 'CSS',
         kind: 'CSS (pattern checks)',
         editorMode: 'css',
+        level: 'Junior',
+        tags: ['specificity', 'selectors'],
         title: 'Specificity: target links inside .card',
         reference: `Prefer simple selectors and avoid !important.
 
@@ -723,6 +788,8 @@ Pattern-checked.`,
         topic: 'CSS',
         kind: 'CSS (pattern checks)',
         editorMode: 'css',
+        level: 'Junior',
+        tags: ['flexbox', 'layout'],
         title: 'Flexbox: center a card vertically + horizontally',
         reference: `Common UI task: center content.
 
@@ -768,6 +835,8 @@ Pattern-checked.`,
         topic: 'HTML',
         kind: 'HTML (pattern checks)',
         editorMode: 'htmlmixed',
+        level: 'Junior',
+        tags: ['accessibility', 'forms', 'semantics'],
         title: 'Semantic HTML: label + input + button',
         reference: `Semantic forms improve accessibility.
 
@@ -806,6 +875,8 @@ Pattern-checked.`,
         topic: 'Design',
         kind: 'DI (pattern checks)',
         editorMode: 'javascript',
+        level: 'Mid',
+        tags: ['dependency injection', 'interfaces'],
         title: 'Dependency Injection: pass dependencies in',
         reference: `DI goal: make code testable by passing dependencies.
 
@@ -851,6 +922,8 @@ exports.fetchUserName = fetchUserName;
         topic: 'JavaScript',
         kind: 'JavaScript (runnable tests)',
         editorMode: 'javascript',
+        level: 'Mid',
+        tags: ['throttle', 'timers'],
         title: 'Implement throttle(fn, wait) (leading only)',
         reference: `Throttle limits how often a function can run.
 
@@ -901,6 +974,8 @@ exports.throttle = throttle;
         topic: 'JavaScript',
         kind: 'JavaScript (runnable tests)',
         editorMode: 'javascript',
+        level: 'Junior',
+        tags: ['debounce', 'timers'],
         title: 'Implement debounce(fn, wait) + cancel()',
         reference: `Debounce delays execution until calls stop.
 
@@ -968,6 +1043,8 @@ exports.debounce = debounce;
         topic: 'JavaScript',
         kind: 'JavaScript (runnable tests)',
         editorMode: 'javascript',
+        level: 'Mid',
+        tags: ['immutability', 'objects', 'arrays'],
         title: 'Immutable update (React-style state update)',
         reference: `Mutating state is a common bug.
 
@@ -1013,6 +1090,8 @@ exports.updateUserName = updateUserName;
         topic: 'React',
         kind: 'JavaScript (runnable tests)',
         editorMode: 'javascript',
+        level: 'Mid',
+        tags: ['hooks', 'useReducer', 'immutability'],
         title: 'Reducer for useReducer (immutability)',
         reference: `Reducers must be pure and treat state as immutable.`,
         prompt: `Implement todosReducer(state, action).
@@ -1062,6 +1141,830 @@ exports.todosReducer = todosReducer;
           const s4 = todosReducer(s3, { type: 'unknown' });
           test('unknown returns same state', () => expect(s4).toBe(s3));
         }
+      },
+
+      {
+        id: 'php-require-once-include',
+        topic: 'PHP',
+        kind: 'PHP (pattern checks)',
+        editorMode: 'text/x-php',
+        level: 'Junior',
+        tags: ['require_once', 'include'],
+        title: 'include vs require_once: bootstrap and templates',
+        reference: `Rules of thumb:
+- require_once for critical bootstrap files (autoload, config)
+- include for optional templates/partials
+
+If a required file is missing, fail fast.
+If an optional template is missing, you might choose to continue gracefully.`,
+        prompt: `Write a snippet that:
+- require_once 'bootstrap.php'
+- includes an optional 'partials/banner.php'
+
+Pattern-checked.`,
+        hints: [
+          `require_once __DIR__ . '/bootstrap.php';`,
+          `@include __DIR__ . '/partials/banner.php'; // optional`,
+        ],
+        starter: `<?php
+// TODO: require_once bootstrap.php
+
+// TODO: include partials/banner.php (optional)
+`,
+        solution: `<?php
+require_once __DIR__ . '/bootstrap.php';
+
+// optional partial (don’t fatal if missing)
+@include __DIR__ . '/partials/banner.php';
+`,
+        checks: [
+          { desc: 'Uses require_once', re: /\brequire_once\b/ },
+          { desc: 'Requires bootstrap.php', re: /require_once[^\n]*bootstrap\.php/ },
+          { desc: 'Uses include', re: /\binclude\b/ },
+          { desc: 'Includes banner.php', re: /include[^\n]*banner\.php/ },
+          { desc: 'No TODO markers left', fn: (code) => !/\bTODO\b/i.test(code) },
+        ]
+      },
+
+      {
+        id: 'design-solid-cheatsheet',
+        topic: 'Design',
+        kind: 'Design (pattern checks)',
+        editorMode: 'javascript',
+        level: 'Junior',
+        tags: ['solid principles'],
+        title: 'SOLID: write a 5-line cheat sheet',
+        reference: `You should be able to explain SOLID without hand-waving.
+
+Keep it short:
+- S: Single Responsibility Principle
+- O: Open/Closed Principle
+- L: Liskov Substitution Principle
+- I: Interface Segregation Principle
+- D: Dependency Inversion Principle`,
+        prompt: `Write a 5-line SOLID cheat sheet.
+
+Requirements:
+- Exactly one line per letter (S,O,L,I,D)
+- Each line includes the expanded principle name
+
+Pattern-checked.`,
+        hints: [
+          `S - Single Responsibility Principle`,
+          `D - Dependency Inversion Principle`,
+        ],
+        starter: `// TODO: SOLID cheat sheet
+`,
+        solution: `S - Single Responsibility Principle
+O - Open/Closed Principle
+L - Liskov Substitution Principle
+I - Interface Segregation Principle
+D - Dependency Inversion Principle
+`,
+        checks: [
+          { desc: 'Mentions SRP', re: /Single\s+Responsibility\s+Principle/i },
+          { desc: 'Mentions OCP', re: /Open\s*\/?\s*Closed\s+Principle/i },
+          { desc: 'Mentions LSP', re: /Liskov\s+Substitution\s+Principle/i },
+          { desc: 'Mentions ISP', re: /Interface\s+Segregation\s+Principle/i },
+          { desc: 'Mentions DIP', re: /Dependency\s+Inversion\s+Principle/i },
+          { desc: 'No TODO markers left', fn: (code) => !/\bTODO\b/i.test(code) },
+        ]
+      },
+
+      {
+        id: 'wp-object-cache-get-set',
+        topic: 'WordPress',
+        kind: 'PHP/WP (pattern checks)',
+        editorMode: 'text/x-php',
+        level: 'Senior',
+        tags: ['object caching', 'wp_cache_get', 'wp_cache_set'],
+        title: 'Object Cache: wp_cache_get/wp_cache_set (cache-aside)',
+        reference: `The WP Object Cache is separate from transients:
+- wp_cache_get/wp_cache_set store data in the object cache
+- with a persistent object cache (Redis/Memcached), it can persist across requests
+
+Cache-aside:
+- try cache
+- compute on miss
+- store with group + TTL`,
+        prompt: `Implement get_user_flags_cached($userId) that:
+- uses wp_cache_get with key "flags_$userId" and group "my_plugin"
+- if miss: computes $flags = ['beta' => true]
+- stores via wp_cache_set with TTL 300 seconds
+- returns $flags
+
+Pattern-checked.`,
+        hints: [
+          `wp_cache_get($key, 'my_plugin')`,
+          `wp_cache_set($key, $flags, 'my_plugin', 300)`,
+        ],
+        starter: `<?php
+function get_user_flags_cached($userId) {
+    // TODO
+}
+`,
+        solution: `<?php
+function get_user_flags_cached($userId) {
+    $key = 'flags_' . (int) $userId;
+    $cached = wp_cache_get($key, 'my_plugin');
+    if ($cached !== false) {
+        return $cached;
+    }
+
+    $flags = ['beta' => true];
+    wp_cache_set($key, $flags, 'my_plugin', 300);
+    return $flags;
+}
+`,
+        checks: [
+          { desc: 'Uses wp_cache_get', re: /wp_cache_get\s*\(/ },
+          { desc: 'Uses wp_cache_set', re: /wp_cache_set\s*\(/ },
+          { desc: 'Uses group my_plugin', re: /['\"]my_plugin['\"]/ },
+          { desc: 'Uses TTL 300', re: /\b300\b/ },
+          { desc: 'No TODO markers left', fn: (code) => !/\bTODO\b/i.test(code) },
+        ]
+      },
+
+      {
+        id: 'js-memoize',
+        topic: 'JavaScript',
+        kind: 'JavaScript (runnable tests)',
+        editorMode: 'javascript',
+        level: 'Mid',
+        tags: ['caching', 'memoize'],
+        title: 'Caching: implement memoize(fn) (single-arg)',
+        reference: `Memoization caches function results.
+
+For this exercise:
+- only 1 argument
+- use Map
+- cached values returned without calling the original fn again`,
+        prompt: `Implement memoize(fn).
+
+Rules:
+- Return a function
+- Uses a Map cache keyed by the argument
+- Works for numbers and strings`,
+        hints: [
+          `const cache = new Map();`,
+          `if (cache.has(x)) return cache.get(x);`,
+        ],
+        starter: `function memoize(fn) {
+  // TODO
+}
+
+exports.memoize = memoize;
+`,
+        solution: `function memoize(fn) {
+  const cache = new Map();
+  return (x) => {
+    if (cache.has(x)) return cache.get(x);
+    const out = fn(x);
+    cache.set(x, out);
+    return out;
+  };
+}
+
+exports.memoize = memoize;
+`,
+        tests: ({ memoize }) => {
+          let calls = 0;
+          const f = (x) => { calls++; return x * 2; };
+          const m = memoize(f);
+          test('first call computes', () => expect(m(2)).toBe(4));
+          test('second call uses cache', () => expect(m(2)).toBe(4));
+          test('does not call original twice', () => expect(calls).toBe(1));
+          test('different key computes', () => expect(m(3)).toBe(6));
+          test('calls increments for new key', () => expect(calls).toBe(2));
+        }
+      },
+
+      {
+        id: 'js-lru-cache',
+        topic: 'JavaScript',
+        kind: 'JavaScript (runnable tests)',
+        editorMode: 'javascript',
+        level: 'Senior',
+        tags: ['caching', 'lru', 'maps'],
+        title: 'Implement an LRU Cache (capacity eviction)',
+        reference: `LRU keeps the most recently used items.
+
+Common JS approach:
+- Use Map to preserve insertion order
+- On get: refresh key by deleting+setting
+- On put: evict oldest when size > capacity`,
+        prompt: `Implement class LRUCache:
+
+new LRUCache(capacity)
+- get(key) => value or undefined
+- set(key, value)
+
+Rules:
+- capacity >= 1
+- get refreshes recency
+- set refreshes recency and evicts least-recently-used`,
+        hints: [
+          `Map keeps insertion order`,
+          `Oldest key: map.keys().next().value`,
+        ],
+        starter: `class LRUCache {
+  constructor(capacity) {
+    // TODO
+  }
+
+  get(key) {
+    // TODO
+  }
+
+  set(key, value) {
+    // TODO
+  }
+}
+
+exports.LRUCache = LRUCache;
+`,
+        solution: `class LRUCache {
+  constructor(capacity) {
+    this.capacity = capacity;
+    this.map = new Map();
+  }
+
+  get(key) {
+    if (!this.map.has(key)) return undefined;
+    const v = this.map.get(key);
+    this.map.delete(key);
+    this.map.set(key, v);
+    return v;
+  }
+
+  set(key, value) {
+    if (this.map.has(key)) this.map.delete(key);
+    this.map.set(key, value);
+    while (this.map.size > this.capacity) {
+      const oldest = this.map.keys().next().value;
+      this.map.delete(oldest);
+    }
+  }
+}
+
+exports.LRUCache = LRUCache;
+`,
+        tests: ({ LRUCache }) => {
+          const c = new LRUCache(2);
+          c.set('a', 1);
+          c.set('b', 2);
+          test('get returns existing', () => expect(c.get('a')).toBe(1));
+
+          // a is now most recent, b is LRU
+          c.set('c', 3);
+          test('evicts least recently used', () => expect(c.get('b')).toBe(undefined));
+          test('keeps most recent', () => expect(c.get('a')).toBe(1));
+
+          // refresh c
+          test('get refreshes recency', () => expect(c.get('c')).toBe(3));
+          c.set('d', 4);
+          test('evicts correct after refresh', () => expect(c.get('a')).toBe(undefined));
+        }
+      },
+
+      {
+        id: 'js-hooks-observer',
+        topic: 'JavaScript',
+        kind: 'JavaScript (runnable tests)',
+        editorMode: 'javascript',
+        level: 'Mid',
+        tags: ['hooks', 'observer pattern', 'pub/sub'],
+        title: 'Observer pattern: createHook() with subscribe/emit',
+        reference: `This is essentially a tiny pub/sub (observer) implementation.
+
+Requirements:
+- subscribe(fn) returns an unsubscribe function
+- emit(payload) calls current subscribers in insertion order`,
+        prompt: `Implement createHook() that returns:
+- subscribe(fn)
+- emit(payload)
+
+Rules:
+- unsubscribe must remove ONLY that subscriber
+- emitting should not throw if no subscribers`,
+        hints: [
+          `Store subscribers in an array or Set`,
+          `unsubscribe can filter out fn`,
+        ],
+        starter: `function createHook() {
+  // TODO
+}
+
+exports.createHook = createHook;
+`,
+        solution: `function createHook() {
+  const subs = [];
+  return {
+    subscribe(fn) {
+      subs.push(fn);
+      return () => {
+        const idx = subs.indexOf(fn);
+        if (idx >= 0) subs.splice(idx, 1);
+      };
+    },
+    emit(payload) {
+      subs.slice().forEach(fn => fn(payload));
+    },
+  };
+}
+
+exports.createHook = createHook;
+`,
+        tests: ({ createHook }) => {
+          const h = createHook();
+          const seen = [];
+          const off1 = h.subscribe(x => seen.push('a:' + x));
+          const off2 = h.subscribe(x => seen.push('b:' + x));
+          h.emit(1);
+          test('calls subscribers in order', () => expect(seen.join('|')).toBe('a:1|b:1'));
+          off1();
+          h.emit(2);
+          test('unsubscribe removes only one', () => expect(seen.join('|')).toBe('a:1|b:1|b:2'));
+          off2();
+          h.emit(3);
+          test('emit with no subs is safe', () => expect(seen.join('|')).toBe('a:1|b:1|b:2'));
+        }
+      },
+
+      {
+        id: 'js-decorator-logging',
+        topic: 'JavaScript',
+        kind: 'JavaScript (runnable tests)',
+        editorMode: 'javascript',
+        level: 'Senior',
+        tags: ['decorator pattern', 'higher-order functions'],
+        title: 'Decorator: withLogging(fn, logger)',
+        reference: `A decorator wraps an existing function and adds behavior without changing the original.
+
+In JS this is often done with higher-order functions.`,
+        prompt: `Implement withLogging(fn, logger).
+
+Rules:
+- Return a function with same call signature
+- Call logger('start') before fn
+- Call logger('end') after fn
+- Return fn's return value`,
+        hints: [
+          `return (...args) => { ... }`,
+          `const out = fn(...args); return out;`,
+        ],
+        starter: `function withLogging(fn, logger) {
+  // TODO
+}
+
+exports.withLogging = withLogging;
+`,
+        solution: `function withLogging(fn, logger) {
+  return (...args) => {
+    logger('start');
+    const out = fn(...args);
+    logger('end');
+    return out;
+  };
+}
+
+exports.withLogging = withLogging;
+`,
+        tests: ({ withLogging }) => {
+          const logs = [];
+          const logger = (msg) => logs.push(msg);
+          const add = (a, b) => a + b;
+          const wrapped = withLogging(add, logger);
+          test('returns fn result', () => expect(wrapped(2, 3)).toBe(5));
+          test('logs start/end', () => expect(logs.join(',')).toBe('start,end'));
+        }
+      },
+
+      {
+        id: 'js-factory-notifier',
+        topic: 'JavaScript',
+        kind: 'JavaScript (runnable tests)',
+        editorMode: 'javascript',
+        level: 'Mid',
+        tags: ['factory pattern', 'design patterns'],
+        title: 'Factory: createNotifier(type)',
+        reference: `Factory pattern centralizes object creation.
+
+Instead of sprinkling new EmailNotifier/new SmsNotifier everywhere,
+you map a type → implementation.`,
+        prompt: `Implement createNotifier(type).
+
+Rules:
+- type is 'email' or 'sms'
+- Return an object with method notify(msg)
+- For unknown type, throw Error`,
+        hints: [
+          `switch(type) { case 'email': return { notify() {} } }`,
+        ],
+        starter: `function createNotifier(type) {
+  // TODO
+}
+
+exports.createNotifier = createNotifier;
+`,
+        solution: `function createNotifier(type) {
+  switch (type) {
+    case 'email':
+      return { notify: (msg) => 'EMAIL:' + msg };
+    case 'sms':
+      return { notify: (msg) => 'SMS:' + msg };
+    default:
+      throw new Error('Unknown notifier type');
+  }
+}
+
+exports.createNotifier = createNotifier;
+`,
+        tests: ({ createNotifier }) => {
+          test('email notifier', () => expect(createNotifier('email').notify('hi')).toBe('EMAIL:hi'));
+          test('sms notifier', () => expect(createNotifier('sms').notify('hi')).toBe('SMS:hi'));
+          try {
+            createNotifier('push');
+            test('unknown throws', () => { throw new Error('Expected throw'); });
+          } catch {
+            test('unknown throws', () => expect(true).toBe(true));
+          }
+        }
+      },
+
+      {
+        id: 'react-hook-use-previous',
+        topic: 'React',
+        kind: 'React (pattern checks)',
+        editorMode: 'javascript',
+        level: 'Mid',
+        tags: ['hooks', 'useRef', 'useEffect'],
+        title: 'Hooks: implement usePrevious(value)',
+        reference: `usePrevious is a classic interview hook.
+
+Pattern:
+- Keep a ref
+- Update it in useEffect after render
+- Return the ref.current (previous value)`,
+        prompt: `Write a hook usePrevious(value).
+
+Requirements:
+- uses useRef
+- uses useEffect
+- returns the previous value (undefined on first render)
+
+Pattern-checked.`,
+        hints: [
+          `const ref = useRef();`,
+          `useEffect(() => { ref.current = value; }, [value]);`,
+        ],
+        starter: `import { useEffect, useRef } from 'react';
+
+export function usePrevious(value) {
+  // TODO
+}
+`,
+        solution: `import { useEffect, useRef } from 'react';
+
+export function usePrevious(value) {
+  const ref = useRef();
+  const prev = ref.current;
+  useEffect(() => {
+    ref.current = value;
+  }, [value]);
+  return prev;
+}
+`,
+        checks: [
+          { desc: 'Uses useRef', re: /useRef\s*\(/ },
+          { desc: 'Uses useEffect', re: /useEffect\s*\(/ },
+          { desc: 'Writes to ref.current', re: /ref\.current\s*=/ },
+          { desc: 'Returns a value', re: /return\s+/ },
+          { desc: 'No TODO markers left', fn: (code) => !/\bTODO\b/i.test(code) },
+        ]
+      },
+
+      {
+        id: 'html-semantic-page',
+        topic: 'HTML',
+        kind: 'HTML (pattern checks)',
+        editorMode: 'htmlmixed',
+        level: 'Junior',
+        tags: ['semantics', 'accessibility'],
+        title: 'Semantic layout: header/nav/main/footer',
+        reference: `Semantic tags help screen readers and SEO.
+
+Common skeleton:
+<header> <nav> ... </nav> </header>
+<main> ... </main>
+<footer> ... </footer>`,
+        prompt: `Create a minimal semantic page skeleton.
+
+Requirements:
+- Has <header>, <nav>, <main>, <footer>
+- Nav contains a list (<ul><li><a>)
+
+Pattern-checked.`,
+        hints: [
+          `Use <nav aria-label="Primary">`,
+        ],
+        starter: `<!-- TODO: semantic skeleton -->
+`,
+        solution: `<header>
+  <nav aria-label="Primary">
+    <ul>
+      <li><a href="#home">Home</a></li>
+      <li><a href="#about">About</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main id="home">
+  <h1>Title</h1>
+  <p>Content…</p>
+</main>
+
+<footer>
+  <small>© 2026</small>
+</footer>
+`,
+        checks: [
+          { desc: 'Has <header>', re: /<header[\s>]/i },
+          { desc: 'Has <nav>', re: /<nav[\s>]/i },
+          { desc: 'Has <main>', re: /<main[\s>]/i },
+          { desc: 'Has <footer>', re: /<footer[\s>]/i },
+          { desc: 'Nav has a list', re: /<nav[\s\S]*?<ul[\s\S]*?<li[\s\S]*?<a[\s\S]*?<\/a>/i },
+          { desc: 'No TODO markers left', fn: (code) => !/\bTODO\b/i.test(code) },
+        ]
+      },
+
+      {
+        id: 'css-responsive-grid',
+        topic: 'CSS',
+        kind: 'CSS (pattern checks)',
+        editorMode: 'css',
+        level: 'Mid',
+        tags: ['grid', 'responsive'],
+        title: 'Responsive grid: 3 → 1 columns with media query',
+        reference: `A common responsive pattern:
+- desktop: 3 columns
+- mobile: 1 column
+
+Use CSS Grid + @media.`,
+        prompt: `Write CSS for:
+.cards { ... }
+
+Requirements:
+- grid with 3 equal columns by default
+- switches to 1 column at max-width: 700px
+
+Pattern-checked.`,
+        hints: [
+          `grid-template-columns: repeat(3, 1fr);`,
+          `@media (max-width: 700px) { ... }`,
+        ],
+        starter: `.cards {
+  /* TODO */
+}
+
+@media (max-width: 700px) {
+  .cards {
+    /* TODO */
+  }
+}
+`,
+        solution: `.cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 700px) {
+  .cards {
+    grid-template-columns: 1fr;
+  }
+}
+`,
+        checks: [
+          { desc: 'Uses display:grid', re: /display\s*:\s*grid/ },
+          { desc: 'Has 3 columns', re: /grid-template-columns\s*:\s*repeat\(\s*3\s*,\s*1fr\s*\)/ },
+          { desc: 'Has media query at 700px', re: /@media\s*\(\s*max-width\s*:\s*700px\s*\)/ },
+          { desc: 'Mobile is 1 column', re: /@media[\s\S]*grid-template-columns\s*:\s*1fr/ },
+          { desc: 'No TODO markers left', fn: (code) => !/\bTODO\b/i.test(code) },
+        ]
+      },
+
+      {
+        id: 'git-undo-last-commit',
+        topic: 'Git',
+        kind: 'Git (pattern checks)',
+        editorMode: 'shell',
+        level: 'Junior',
+        tags: ['reset', 'revert', 'undo'],
+        title: 'Undo last commit (keep changes)',
+        reference: `Common ways:
+- Undo last commit, keep changes staged: git reset --soft HEAD~1
+- Keep changes unstaged: git reset --mixed HEAD~1
+- If already pushed, prefer revert`,
+        prompt: `Write commands to undo the last commit while keeping the changes in your working tree.
+
+Pattern-checked.`,
+        hints: [
+          `git reset --soft HEAD~1`,
+        ],
+        starter: `# TODO: undo last commit but keep changes
+`,
+        solution: `git reset --soft HEAD~1
+`,
+        checks: [
+          { desc: 'Uses git reset --soft', re: /git\s+reset\s+--soft\s+HEAD~1/ },
+          { desc: 'No TODO markers left', fn: (code) => !/\bTODO\b/i.test(code) },
+        ]
+      },
+
+      {
+        id: 'cron-every-5-min',
+        topic: 'Cron',
+        kind: 'Shell (pattern checks)',
+        editorMode: 'shell',
+        level: 'Junior',
+        tags: ['cron'],
+        title: 'Cron: run a script every 5 minutes',
+        reference: `Crontab format:
+minute hour day month weekday command
+
+Every 5 minutes:
+*/5 * * * * command`,
+        prompt: `Write a crontab line to run:
+/usr/bin/php /var/www/app/artisan schedule:run
+every 5 minutes.
+
+Pattern-checked.`,
+        hints: [
+          `*/5 * * * * /usr/bin/php /var/www/app/artisan schedule:run`,
+        ],
+        starter: `# TODO: crontab entry
+`,
+        solution: `*/5 * * * * /usr/bin/php /var/www/app/artisan schedule:run
+`,
+        checks: [
+          { desc: 'Uses */5 schedule', re: /\*\/5\s+\*\s+\*\s+\*\s+\*/ },
+          { desc: 'Runs php artisan schedule:run', re: /php\s+\/var\/www\/app\/artisan\s+schedule:run/ },
+          { desc: 'No TODO markers left', fn: (code) => !/\bTODO\b/i.test(code) },
+        ]
+      },
+
+      {
+        id: 'wp-cron-schedule-event',
+        topic: 'WordPress',
+        kind: 'PHP/WP (pattern checks)',
+        editorMode: 'text/x-php',
+        level: 'Mid',
+        tags: ['cron', 'wp-cron', 'wp_schedule_event'],
+        title: 'WP-Cron: schedule a daily event + handler',
+        reference: `WP-Cron pattern:
+- if (!wp_next_scheduled('my_hook')) wp_schedule_event(time(), 'daily', 'my_hook')
+- add_action('my_hook', 'my_callback')`,
+        prompt: `Write code that:
+- schedules a daily event on 'my_plugin_daily'
+- registers a handler that logs/does work
+
+Pattern-checked.`,
+        hints: [
+          `wp_next_scheduled`,
+          `wp_schedule_event`,
+          `add_action('my_plugin_daily', ...)`,
+        ],
+        starter: `<?php
+// TODO: schedule daily event for 'my_plugin_daily'
+
+// TODO: add_action handler
+`,
+        solution: `<?php
+if (!wp_next_scheduled('my_plugin_daily')) {
+    wp_schedule_event(time(), 'daily', 'my_plugin_daily');
+}
+
+add_action('my_plugin_daily', function() {
+    // do work
+    error_log('my_plugin_daily ran');
+});
+`,
+        checks: [
+          { desc: 'Checks wp_next_scheduled', re: /wp_next_scheduled\s*\(/ },
+          { desc: 'Schedules event', re: /wp_schedule_event\s*\(/ },
+          { desc: 'Hooks handler with add_action', re: /add_action\(\s*['\"]my_plugin_daily['\"]/ },
+          { desc: 'No TODO markers left', fn: (code) => !/\bTODO\b/i.test(code) },
+        ]
+      },
+
+      {
+        id: 'php-singleton-db',
+        topic: 'PHP',
+        kind: 'PHP (pattern checks)',
+        editorMode: 'text/x-php',
+        level: 'Senior',
+        tags: ['singleton', 'db'],
+        title: 'Singleton: DB connection holder (careful)',
+        reference: `Singleton is sometimes used for DB connections.
+
+In interviews, show you understand tradeoffs:
+- Global state makes testing harder
+- Prefer DI in real apps
+
+But you should still be able to implement it correctly.`,
+        prompt: `Implement a Db singleton class with:
+- private static $instance
+- private constructor
+- public static function instance(): self
+
+Pattern-checked.`,
+        hints: [
+          `if (self::$instance === null) self::$instance = new self();`,
+        ],
+        starter: `<?php
+class Db {
+    // TODO
+}
+`,
+        solution: `<?php
+class Db {
+    private static $instance = null;
+
+    private function __construct() {}
+
+    public static function instance(): self {
+        if (self::$instance === null) {
+            self::$instance = new self();
+        }
+        return self::$instance;
+    }
+}
+`,
+        checks: [
+          { desc: 'Has private static $instance', re: /private\s+static\s+\$instance/ },
+          { desc: 'Has private constructor', re: /private\s+function\s+__construct\s*\(/ },
+          { desc: 'Has instance() factory', re: /public\s+static\s+function\s+instance\s*\(/ },
+          { desc: 'Returns self::$instance', re: /return\s+self::\$instance\s*;/ },
+          { desc: 'No TODO markers left', fn: (code) => !/\bTODO\b/i.test(code) },
+        ]
+      },
+
+      {
+        id: 'unit-testing-edge-cases',
+        topic: 'Unit Testing',
+        kind: 'JavaScript (pattern checks)',
+        editorMode: 'javascript',
+        level: 'Mid',
+        tags: ['unit testing', 'edge cases'],
+        title: 'Unit tests: cover edge cases for isEmail()',
+        reference: `In interviews, demonstrate test thinking:
+- happy path
+- invalid inputs
+- boundary cases
+- weird whitespace/casing
+
+You don't need a real test runner here—just show test cases clearly.`,
+        prompt: `Write pseudo unit tests for function isEmail(s).
+
+Requirements:
+- At least 6 test cases
+- Must include: empty string, missing '@', whitespace, uppercase domain
+- Use any style, but include 'expect' assertions
+
+Pattern-checked.`,
+        hints: [
+          `expect(isEmail('a@b.com')).toBe(true)`,
+          `expect(isEmail('')).toBe(false)`,
+        ],
+        starter: `// TODO: write at least 6 test cases for isEmail(s)
+
+// expect(isEmail('a@b.com')).toBe(true)
+`,
+        solution: `// happy path
+expect(isEmail('a@b.com')).toBe(true);
+
+// empty
+expect(isEmail('')).toBe(false);
+
+// missing @
+expect(isEmail('ab.com')).toBe(false);
+
+// whitespace
+expect(isEmail(' a@b.com ')).toBe(false);
+
+// uppercase domain
+expect(isEmail('a@B.COM')).toBe(true);
+
+// missing domain
+expect(isEmail('a@')).toBe(false);
+`,
+        checks: [
+          { desc: 'Has >= 6 expect assertions', fn: (code) => (code.match(/\bexpect\s*\(/g) || []).length >= 6 },
+          { desc: 'Covers empty string', re: /isEmail\(\s*['\"]\s*['\"]\s*\)/ },
+          { desc: 'Mentions uppercase domain', re: /B\.COM/ },
+          { desc: 'No TODO markers left', fn: (code) => !/\bTODO\b/i.test(code) },
+        ]
       },
     ];
 
@@ -1200,27 +2103,49 @@ exports.todosReducer = todosReducer;
     function buildFilters() {
       const topics = ['All Topics', ...Array.from(new Set(challenges.map(c => c.topic))).sort()];
       const kinds = ['All Kinds', ...Array.from(new Set(challenges.map(c => c.kind))).sort()];
+      const levels = ['All Levels', ...Array.from(new Set(challenges.map(c => normalizeLevel(c.level))))
+        .sort((a, b) => levelOrder(a) - levelOrder(b))];
 
       const topicSel = document.getElementById('topicFilter');
       const kindSel = document.getElementById('kindFilter');
+      const levelSel = document.getElementById('levelFilter');
 
       topicSel.innerHTML = topics.map(t => `<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`).join('');
       kindSel.innerHTML = kinds.map(k => `<option value="${escapeHtml(k)}">${escapeHtml(k)}</option>`).join('');
+      levelSel.innerHTML = levels.map(l => `<option value="${escapeHtml(l)}">${escapeHtml(l)}</option>`).join('');
     }
 
     function getFilteredChallenges() {
       const q = (document.getElementById('search').value || '').trim().toLowerCase();
       const topic = document.getElementById('topicFilter').value;
       const kind = document.getElementById('kindFilter').value;
+      const level = document.getElementById('levelFilter').value;
 
       return challenges.filter(c => {
         if (topic && topic !== 'All Topics' && c.topic !== topic) return false;
         if (kind && kind !== 'All Kinds' && c.kind !== kind) return false;
+        if (level && level !== 'All Levels' && normalizeLevel(c.level) !== level) return false;
 
         if (!q) return true;
-        const hay = `${c.id} ${c.topic} ${c.kind} ${c.title}`.toLowerCase();
+        const tags = Array.isArray(c.tags) ? c.tags.join(' ') : '';
+        const hay = `${c.id} ${normalizeLevel(c.level)} ${c.topic} ${c.kind} ${c.title} ${tags}`.toLowerCase();
         return hay.includes(q);
       });
+    }
+
+    function buildGrouped(filtered) {
+      const map = new Map();
+      filtered.forEach(c => {
+        const lvl = normalizeLevel(c.level);
+        if (!map.has(lvl)) map.set(lvl, new Map());
+        const byTopic = map.get(lvl);
+        const t = c.topic || 'Other';
+        if (!byTopic.has(t)) byTopic.set(t, []);
+        byTopic.get(t).push(c);
+      });
+
+      const levels = Array.from(map.keys()).sort((a, b) => levelOrder(a) - levelOrder(b));
+      return { levels, map };
     }
 
     function renderList() {
@@ -1228,22 +2153,66 @@ exports.todosReducer = todosReducer;
       const filtered = getFilteredChallenges();
       list.innerHTML = '';
 
-      filtered
-        .slice()
-        .sort((a, b) => (a.topic !== b.topic ? a.topic.localeCompare(b.topic) : a.title.localeCompare(b.title)))
-        .forEach(c => {
-          const el = document.createElement('div');
-          el.className = 'item' + (c.id === currentId ? ' active' : '');
-          el.onclick = () => selectChallenge(c.id);
-          el.innerHTML = `
-            <div class="item-title">${escapeHtml(c.title)}</div>
-            <div class="item-meta">
-              <span class="pill">${escapeHtml(c.topic)}</span>
-              <span>${escapeHtml(c.kind)}</span>
-            </div>
-          `;
-          list.appendChild(el);
+      const { levels, map } = buildGrouped(
+        filtered
+          .slice()
+          .sort((a, b) => {
+            const lo = levelOrder(a.level) - levelOrder(b.level);
+            if (lo !== 0) return lo;
+            if (a.topic !== b.topic) return a.topic.localeCompare(b.topic);
+            return a.title.localeCompare(b.title);
+          })
+      );
+
+      const current = getChallenge(currentId);
+      const currentLevel = normalizeLevel(current?.level);
+      const currentTopic = current?.topic;
+
+      levels.forEach(levelName => {
+        const byTopic = map.get(levelName);
+        const levelCount = Array.from(byTopic.values()).reduce((acc, arr) => acc + arr.length, 0);
+
+        const levelDetails = document.createElement('details');
+        levelDetails.open = levelName === currentLevel || levels.length <= 2;
+        const levelSummary = document.createElement('summary');
+        levelSummary.innerHTML = `<span class="group-title">${escapeHtml(levelName)} <span class="count">${levelCount}</span></span>`;
+        levelDetails.appendChild(levelSummary);
+
+        Array.from(byTopic.keys()).sort().forEach(topicName => {
+          const items = byTopic.get(topicName).slice().sort((a, b) => a.title.localeCompare(b.title));
+
+          const topicDetails = document.createElement('details');
+          topicDetails.open = levelName === currentLevel && topicName === currentTopic;
+          const topicSummary = document.createElement('summary');
+          topicSummary.innerHTML = `<span class="group-title">${escapeHtml(topicName)} <span class="count">${items.length}</span></span>`;
+          topicDetails.appendChild(topicSummary);
+
+          const wrap = document.createElement('div');
+          wrap.style.display = 'grid';
+          wrap.style.gap = '10px';
+          wrap.style.marginTop = '10px';
+
+          items.forEach(c => {
+            const el = document.createElement('div');
+            el.className = 'item' + (c.id === currentId ? ' active' : '');
+            el.onclick = () => selectChallenge(c.id);
+            el.innerHTML = `
+              <div class="item-title">${escapeHtml(c.title)}</div>
+              <div class="item-meta">
+                <span class="pill">${escapeHtml(normalizeLevel(c.level))}</span>
+                <span class="pill">${escapeHtml(c.topic)}</span>
+                <span>${escapeHtml(c.kind)}</span>
+              </div>
+            `;
+            wrap.appendChild(el);
+          });
+
+          topicDetails.appendChild(wrap);
+          levelDetails.appendChild(topicDetails);
         });
+
+        list.appendChild(levelDetails);
+      });
 
       if (!filtered.some(c => c.id === currentId) && filtered.length) {
         selectChallenge(filtered[0].id);
@@ -1255,6 +2224,7 @@ exports.todosReducer = todosReducer;
       if (!ch) return;
 
       document.getElementById('topicPill').textContent = ch.topic;
+      document.getElementById('levelPill').textContent = normalizeLevel(ch.level);
       document.getElementById('title').textContent = ch.title;
       document.getElementById('kind').textContent = ch.kind;
 
@@ -1410,6 +2380,7 @@ exports.todosReducer = todosReducer;
       document.getElementById('search').addEventListener('input', renderList);
       document.getElementById('topicFilter').addEventListener('change', renderList);
       document.getElementById('kindFilter').addEventListener('change', renderList);
+      document.getElementById('levelFilter').addEventListener('change', renderList);
 
       document.getElementById('checkBtn').addEventListener('click', checkSolution);
       document.getElementById('revealBtn').addEventListener('click', toggleRevealSolution);

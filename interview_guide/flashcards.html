@@ -4,6 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Interview Flashcards</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css" />
   <style>
     :root {
       --bg-color: #0f172a;
@@ -35,6 +37,7 @@
       gap: 12px;
       align-items: baseline;
       margin-bottom: 12px;
+      flex-wrap: wrap;
     }
 
     h1 {
@@ -103,6 +106,24 @@
       gap: 10px;
     }
 
+    .card-slider {
+      margin-top: 4px;
+    }
+
+    .card-slide {
+      display: grid;
+      gap: 10px;
+      min-height: 190px;
+    }
+
+    /* Fallback (no slick loaded): show one side based on data-side */
+    .card-slider:not(.slick-initialized) .card-slide { display: none; }
+    .card[data-side="front"] .card-slider:not(.slick-initialized) .card-slide.front-slide { display: grid; }
+    .card[data-side="back"] .card-slider:not(.slick-initialized) .card-slide.back-slide { display: grid; }
+
+    /* Make slick slides fill the card nicely */
+    .slick-list, .slick-track { height: 100%; }
+
     .pill {
       display: inline-block;
       padding: 2px 9px;
@@ -121,7 +142,6 @@
     }
 
     .back {
-      display: none;
       color: var(--text-color);
       line-height: 1.55;
     }
@@ -140,13 +160,45 @@
       font-size: 13px;
     }
 
-    .card.flipped .back { display: block; }
-    .card.flipped .hint { display: none; }
-
     .nav {
       display: flex;
       gap: 10px;
       margin-top: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-group {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .nav-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: rgba(2, 6, 23, 0.35);
+      color: var(--text-color);
+      font-weight: 700;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .nav-link:hover {
+      border-color: rgba(56, 189, 248, 0.35);
+    }
+
+    @media (max-width: 540px) {
+      body { padding: 14px; }
+      .card { padding: 14px; }
+      .front { font-size: 16px; }
+      .nav { justify-content: center; }
     }
 
     @media (max-width: 860px) {
@@ -180,30 +232,116 @@
 
     <div class="meta" id="meta"></div>
 
-    <div class="card" id="card" tabindex="0" role="button" aria-label="Flashcard (click to flip)">
+    <div class="card" id="card" data-side="front" tabindex="0" role="button" aria-label="Flashcard (click to flip)">
       <span class="pill" id="pill">Loading…</span>
-      <div class="front" id="front">Loading…</div>
-      <div class="hint">Tip: Try answering out loud before flipping.</div>
-      <div class="back" id="back"></div>
+      <div class="card-slider" id="cardSlider" aria-label="Flashcard sides">
+        <div class="card-slide front-slide">
+          <div class="front" id="front">Loading…</div>
+          <div class="hint" id="hint">Tip: Try answering out loud before flipping.</div>
+        </div>
+        <div class="card-slide back-slide">
+          <div class="back" id="back"></div>
+        </div>
+      </div>
     </div>
 
-    <div class="nav">
-      <button id="prevBtn" type="button">Prev</button>
-      <button id="nextBtn" type="button">Next</button>
-      <button id="flipBtn" type="button">Flip</button>
+    <div class="nav" aria-label="Flashcard navigation">
+      <div class="nav-group">
+        <button id="prevBtn" type="button">Prev</button>
+        <button id="nextBtn" type="button">Next</button>
+        <button id="flipBtn" type="button">Flip</button>
+      </div>
+      <div class="nav-group">
+        <a class="nav-link" href="./index.html">Questions</a>
+        <a class="nav-link" href="./projects.html">Projects</a>
+        <a class="nav-link" href="./code_challenges.html">Challenges</a>
+      </div>
     </div>
   </div>
 
   <script src="./wordpress_dev_flashcards_bank.js"></script>
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
   <script>
-    const bank = window.INTERVIEW_FLASHCARDS_BANK || {};
-    const cards = (bank && Array.isArray(bank.cards)) ? bank.cards : [];
-    const groups = (bank && Array.isArray(bank.groups)) ? bank.groups : [];
-    const totalTopicsCount = new Set(cards.map(c => c.topic)).size;
-
-    if (!cards.length) {
-      console.warn('Flashcards bank did not load. Expected window.INTERVIEW_FLASHCARDS_BANK.cards.');
+    async function loadScript(src) {
+      return new Promise((resolve, reject) => {
+        const s = document.createElement('script');
+        s.src = src;
+        s.async = true;
+        s.onload = () => resolve(true);
+        s.onerror = () => reject(new Error(`Failed to load ${src}`));
+        document.head.appendChild(s);
+      });
     }
+
+    async function ensureFlashcardsBank() {
+      if (window.INTERVIEW_FLASHCARDS_BANK && Array.isArray(window.INTERVIEW_FLASHCARDS_BANK.cards)) return;
+
+      // Fallbacks to handle path/caching issues on GitHub Pages.
+      const candidates = [
+        './wordpress_dev_flashcards_bank.min.js',
+        '/interview_guide/wordpress_dev_flashcards_bank.min.js',
+        './wordpress_dev_flashcards_bank.js',
+        '/interview_guide/wordpress_dev_flashcards_bank.js'
+      ];
+
+      for (const src of candidates) {
+        try {
+          await loadScript(src);
+          if (window.INTERVIEW_FLASHCARDS_BANK && Array.isArray(window.INTERVIEW_FLASHCARDS_BANK.cards)) return;
+        } catch (e) {
+          // keep trying
+        }
+      }
+    }
+
+    function initSlickFlip() {
+      const slider = document.getElementById('cardSlider');
+      if (!slider) return false;
+      if (!(window.jQuery && window.jQuery.fn && typeof window.jQuery.fn.slick === 'function')) return false;
+      const $ = window.jQuery;
+      const $slider = $(slider);
+      if ($slider.hasClass('slick-initialized')) return true;
+
+      $slider.slick({
+        arrows: false,
+        dots: false,
+        infinite: false,
+        swipe: false,
+        draggable: false,
+        adaptiveHeight: true,
+        fade: true,
+        speed: 260,
+        cssEase: 'cubic-bezier(0.2, 0.8, 0.2, 1)'
+      });
+      return true;
+    }
+
+    function setSide(side) {
+      const cardEl = document.getElementById('card');
+      const slider = document.getElementById('cardSlider');
+      if (!cardEl || !slider) return;
+      const next = side === 'back' ? 'back' : 'front';
+      cardEl.dataset.side = next;
+
+      if (window.jQuery && window.jQuery.fn && typeof window.jQuery.fn.slick === 'function') {
+        const $ = window.jQuery;
+        const $slider = $(slider);
+        if ($slider.hasClass('slick-initialized')) {
+          $slider.slick('slickGoTo', next === 'front' ? 0 : 1, true);
+        }
+      }
+    }
+
+    function getSide() {
+      const cardEl = document.getElementById('card');
+      return (cardEl && cardEl.dataset && cardEl.dataset.side) ? cardEl.dataset.side : 'front';
+    }
+
+    let bank = window.INTERVIEW_FLASHCARDS_BANK || {};
+    let cards = (bank && Array.isArray(bank.cards)) ? bank.cards : [];
+    let groups = (bank && Array.isArray(bank.groups)) ? bank.groups : [];
+    let totalTopicsCount = new Set(cards.map(c => c.topic)).size;
 
     let filtered = [...cards];
     let index = 0;
@@ -277,7 +415,7 @@
         pill.textContent = '—';
         front.textContent = 'Try a different topic/search.';
         back.innerHTML = '';
-        cardEl.classList.remove('flipped');
+        setSide('front');
         return;
       }
 
@@ -292,7 +430,7 @@
         <div class="label">Easy Similarity</div>
         <div>${c.similarity}</div>
       `;
-      cardEl.classList.remove('flipped');
+      setSide('front');
     }
 
     function next() {
@@ -308,7 +446,7 @@
     }
 
     function flip() {
-      document.getElementById('card').classList.toggle('flipped');
+      setSide(getSide() === 'front' ? 'back' : 'front');
     }
 
     function reset() {
@@ -321,9 +459,26 @@
       render();
     }
 
-    function init() {
+    async function init() {
+      await ensureFlashcardsBank();
+      bank = window.INTERVIEW_FLASHCARDS_BANK || {};
+      cards = (bank && Array.isArray(bank.cards)) ? bank.cards : [];
+      groups = (bank && Array.isArray(bank.groups)) ? bank.groups : [];
+      totalTopicsCount = new Set(cards.map(c => c.topic)).size;
+      filtered = [...cards];
+
+      if (!cards.length) {
+        console.warn('Flashcards bank did not load. Expected window.INTERVIEW_FLASHCARDS_BANK.cards.');
+        const meta = document.getElementById('meta');
+        if (meta) meta.textContent = 'Flashcards data did not load (bank file missing or blocked).';
+      }
+
       const topicSel = document.getElementById('topic');
       renderTopicOptions();
+
+      // Initialize slick after DOM is ready; fallback works if CDN fails.
+      initSlickFlip();
+      setSide('front');
 
       document.getElementById('search').addEventListener('input', applyFilters);
       document.getElementById('topicSearch').addEventListener('input', () => {

@@ -193,6 +193,8 @@
             margin-top: 30px;
             display: flex;
             justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
             width: 100%;
             max-width: 800px;
         }
@@ -204,6 +206,7 @@
             cursor: pointer;
             font-weight: bold;
             text-transform: uppercase;
+            flex: 1 1 auto;
         }
 
         .btn-next {
@@ -309,6 +312,35 @@
             body { flex-direction: column; overflow: auto; }
             .sidebar { width: 100%; height: auto; max-height: 200px; }
             .main { padding: 20px; }
+            .controls { justify-content: center; }
+            .btn { padding: 10px 12px; font-size: 12px; }
+            .stats { position: static; margin-bottom: 12px; }
+        }
+
+        .assessment-level {
+            margin-top: 10px;
+            padding: 10px;
+            border: 1px solid rgba(148, 163, 184, 0.12);
+            border-radius: 10px;
+            background: rgba(15, 23, 42, 0.35);
+        }
+
+        .assessment-level label {
+            display: block;
+            font-size: 12px;
+            color: var(--secondary-text);
+            margin-bottom: 6px;
+        }
+
+        .assessment-level select {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 10px 12px;
+            border-radius: 10px;
+            border: 1px solid rgba(148, 163, 184, 0.25);
+            background: rgba(15, 23, 42, 0.6);
+            color: var(--text-color);
+            outline: none;
         }
     </style>
 </head>
@@ -320,6 +352,15 @@
         <div class="sidebar-meta" id="topicCounter">Loading…</div>
         <button class="topic-btn active" id="allTopicsBtn" data-topic="All" onclick="setTopic('All')">All Topics</button>
         <button class="topic-btn" id="assessmentBtn" data-topic="Assessment60" onclick="startAssessment()">60Q Assessment</button>
+        <div class="assessment-level">
+            <label for="assessmentLevel">Assessment level</label>
+            <select id="assessmentLevel" onchange="renderSidebar()">
+                <option value="all">All levels</option>
+                <option value="junior">Junior</option>
+                <option value="mid">Mid</option>
+                <option value="senior">Senior</option>
+            </select>
+        </div>
         <a class="topic-btn" href="./code_challenges.html" style="text-decoration:none; display:block; text-align:left;">Code Challenges</a>
         <a class="topic-btn" href="./projects.html" style="text-decoration:none; display:block; text-align:left;">Projects</a>
         <a class="topic-btn" href="./flashcards.html" style="text-decoration:none; display:block; text-align:left;">Flashcards</a>
@@ -495,9 +536,12 @@
 
             const assessBtn = document.getElementById('assessmentBtn');
             if (assessBtn) {
-                const n = Math.min(ASSESSMENT_SIZE, questions.length);
+                const mode = (document.getElementById('assessmentLevel')?.value || 'all').toLowerCase();
+                const pool = getAssessmentPool(mode);
+                const n = Math.min(ASSESSMENT_SIZE, pool.length);
                 assessBtn.dataset.topic = 'Assessment60';
-                assessBtn.innerText = `60Q Assessment (${n})`;
+                const label = mode === 'all' ? '60Q Assessment' : `60Q ${mode.charAt(0).toUpperCase() + mode.slice(1)} Assessment`;
+                assessBtn.innerText = `${label} (${n})`;
             }
 
             // Remove previously-rendered topic buttons (keep header + all button + flashcards link)
@@ -551,8 +595,10 @@
             currentTopic = 'All';
             setActiveSidebarButton('Assessment60');
 
-            const n = Math.min(ASSESSMENT_SIZE, questions.length);
-            currentQuestions = sampleBalancedByTopic(questions, n);
+            const mode = (document.getElementById('assessmentLevel')?.value || 'all').toLowerCase();
+            const pool = getAssessmentPool(mode);
+            const n = Math.min(ASSESSMENT_SIZE, pool.length);
+            currentQuestions = sampleBalancedByTopic(pool, n);
             shuffleArray(currentQuestions);
 
             currentIndex = 0;
@@ -560,6 +606,29 @@
             totalAnswered = 0;
             updateStats();
             loadQuestion();
+        }
+
+        function normalizeLevelKey(value) {
+            if (!value) return '';
+            const s = String(value).trim().toLowerCase();
+            if (!s) return '';
+            if (s.startsWith('jr')) return 'junior';
+            if (s.startsWith('junior')) return 'junior';
+            if (s.startsWith('mid')) return 'mid';
+            if (s.startsWith('intermediate')) return 'mid';
+            if (s.startsWith('sr')) return 'senior';
+            if (s.startsWith('senior')) return 'senior';
+            return s;
+        }
+
+        function getAssessmentPool(mode) {
+            const key = normalizeLevelKey(mode);
+            if (!key || key === 'all') return [...questions];
+
+            return questions.filter(q => {
+                const lvl = normalizeLevelKey(getQuestionLevel(q));
+                return lvl === key;
+            });
         }
 
         function filterQuestions() {

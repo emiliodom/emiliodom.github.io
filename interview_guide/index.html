@@ -45,6 +45,29 @@
             letter-spacing: 1px;
         }
 
+        .topic-search {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 10px 12px;
+            border-radius: 10px;
+            border: 1px solid rgba(148, 163, 184, 0.25);
+            background: rgba(15, 23, 42, 0.6);
+            color: var(--text-color);
+            margin-bottom: 10px;
+            outline: none;
+        }
+
+        .topic-search::placeholder {
+            color: rgba(148, 163, 184, 0.85);
+        }
+
+        .sidebar-meta {
+            font-size: 12px;
+            color: var(--secondary-text);
+            margin-bottom: 14px;
+            line-height: 1.4;
+        }
+
         .topic-btn {
             background: none;
             border: none;
@@ -103,6 +126,27 @@
             margin-bottom: 20px;
             text-transform: uppercase;
             letter-spacing: 1px;
+        }
+
+        .level-badge {
+            display: inline-block;
+            background-color: rgba(34, 197, 94, 0.12);
+            color: var(--success-color);
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.78rem;
+            margin-left: 8px;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .question-summary {
+            margin-top: -10px;
+            margin-bottom: 22px;
+            color: var(--secondary-text);
+            font-size: 0.95rem;
+            line-height: 1.4;
         }
 
         .question-text {
@@ -272,9 +316,12 @@
 
     <div class="sidebar" id="sidebar">
         <h2>Topics</h2>
+        <input id="topicSearch" class="topic-search" type="search" placeholder="Search topics…" oninput="renderSidebar()" aria-label="Search topics" />
+        <div class="sidebar-meta" id="topicCounter">Loading…</div>
         <button class="topic-btn active" id="allTopicsBtn" data-topic="All" onclick="setTopic('All')">All Topics</button>
         <button class="topic-btn" id="assessmentBtn" data-topic="Assessment60" onclick="startAssessment()">60Q Assessment</button>
         <a class="topic-btn" href="./code_challenges.html" style="text-decoration:none; display:block; text-align:left;">Code Challenges</a>
+        <a class="topic-btn" href="./projects.html" style="text-decoration:none; display:block; text-align:left;">Projects</a>
         <a class="topic-btn" href="./flashcards.html" style="text-decoration:none; display:block; text-align:left;">Flashcards</a>
     </div>
 
@@ -284,6 +331,8 @@
 
         <div class="card" id="card">
             <span class="category-badge" id="categoryBadge">Loading...</span>
+            <span class="level-badge" id="levelBadge" style="display:none">Senior</span>
+            <div class="question-summary" id="questionSummary" style="display:none"></div>
             <div class="question-text" id="questionText">Select a topic to start.</div>
             <div class="options-grid" id="optionsGrid">
                 </div>
@@ -292,7 +341,10 @@
 
         <div class="controls">
             <button class="btn" onclick="resetQuiz()">Reset</button>
+            <button class="btn" onclick="toggleTopicIndex()">Topic Index</button>
+            <button class="btn" onclick="toggleChallenges()">Challenges</button>
             <button class="btn" onclick="toggleQuality()">Quality Report</button>
+            <button class="btn" id="compactOptionsBtn" onclick="toggleCompactOptions()">Compact Options: On</button>
             <button class="btn btn-next" id="nextBtn" onclick="nextQuestion()" disabled>Next Question</button>
         </div>
     </div>
@@ -308,2119 +360,47 @@
         </div>
     </div>
 
+    <div class="quality-panel" id="topicIndexPanel" role="dialog" aria-modal="true" aria-label="Topic index">
+        <div class="quality-modal">
+            <div class="quality-header">
+                <h3>Topic Index</h3>
+                <button class="btn" onclick="toggleTopicIndex(false)">Close</button>
+            </div>
+            <div class="quality-meta" id="topicIndexMeta">Loading…</div>
+            <div id="topicIndexContent"></div>
+        </div>
+    </div>
+
+    <div class="quality-panel" id="challengesPanel" role="dialog" aria-modal="true" aria-label="Challenges">
+        <div class="quality-modal">
+            <div class="quality-header">
+                <h3>Challenges</h3>
+                <button class="btn" onclick="toggleChallenges(false)">Close</button>
+            </div>
+            <div class="quality-meta" id="challengesMeta">Loading…</div>
+            <div id="challengesContent"></div>
+        </div>
+    </div>
+
+    <script src="wordpress_dev_bank_normalized.js"></script>
+
     <script>
         // --- DATASET: TARGETING VIRTASANT/QATAR SENIOR PROFILE ---
         // Focus: Scalability, Race Conditions, Architecture, Deep Core, Testing
-        
-        const rawData = [
-            // --- TOPIC: OBJECT CACHING & TRANSIENTS ---
-            {
-                topic: "Caching",
-                q: "In a high-traffic WordPress environment (e.g., Redis enabled), what is the critical difference between `wp_cache_set` and `set_transient`?",
-                options: [
-                    "`set_transient` always writes to the DB options table, `wp_cache_set` is memory only.",
-                    "`wp_cache_set` is for the current request only, `set_transient` is persistent across requests.",
-                    "If an external object cache is enabled, `set_transient` acts as a wrapper for `wp_cache_set`. If not, it writes to the DB.",
-                    "`set_transient` supports expiration, but `wp_cache_set` does not."
-                ],
-                a: 2
-            },
-            {
-                topic: "Caching",
-                q: "You are implementing a view counter for a post on a site with 1M daily hits. Why is updating a post meta value on every page load a bad architectural decision?",
-                options: [
-                    "It fills the post_meta table with duplicate rows.",
-                    "It busts the cache for the entire post object on every read, causing a stampede on the DB.",
-                    "It causes a deadlock in the PHP worker.",
-                    "Post meta cannot handle integers larger than 32-bit."
-                ],
-                a: 1
-            },
-            {
-                topic: "Caching",
-                q: "What is a 'Race Condition' when using `get_transient` and `set_transient` for a heavy calculation?",
-                options: [
-                    "Two processes check the transient, find it empty, both run the heavy calculation, and both write it, wasting resources.",
-                    "The transient expires before it is read.",
-                    "The database locks the options table preventing reads.",
-                    "The object cache runs out of memory."
-                ],
-                a: 0
-            },
-            {
-                topic: "Caching",
-                q: "How does the `wp_suspend_cache_addition()` function impact performance during bulk imports?",
-                options: [
-                    "It stops WordPress from adding new data to the object cache to prevent memory exhaustion.",
-                    "It deletes the current cache to ensure fresh data.",
-                    "It pauses the Redis server connection.",
-                    "It forces all queries to go directly to the database without caching."
-                ],
-                a: 0
-            },
 
-            // --- TOPIC: WORDPRESS HOOKS & CORE ---
-            {
-                topic: "Hooks",
-                q: "You need to modify a query BEFORE it executes, but only for the main blog loop. Which hook is most appropriate?",
-                options: [
-                    "the_content",
-                    "pre_get_posts",
-                    "wp_head",
-                    "query_posts"
-                ],
-                a: 1
-            },
-            {
-                topic: "Hooks",
-                q: "What is the specific risk of using `add_action('init', ...)` to perform a redirect based on `$_POST` data without a nonce check?",
-                options: [
-                    "It causes a White Screen of Death.",
-                    "It is susceptible to CSRF (Cross-Site Request Forgery) attacks.",
-                    "The init hook fires too late for redirects.",
-                    "It will cause an infinite redirect loop."
-                ],
-                a: 1
-            },
-            {
-                topic: "Hooks",
-                q: "Explain 'Priority' in WordPress hooks. If two plugins filter `the_content` with priority 10 and 11, which runs last?",
-                options: [
-                    "Priority 10 runs last.",
-                    "Priority 11 runs last, overwriting or appending to the result of 10.",
-                    "They run simultaneously asynchronously.",
-                    "WordPress executes them in alphabetical order of the function name."
-                ],
-                a: 1
-            },
-            
-            // --- TOPIC: DEPENDENCY INJECTION & PATTERNS ---
-            {
-                topic: "Design Patterns",
-                q: "Why is the Singleton pattern often discouraged in modern testable WordPress development in favor of Dependency Injection?",
-                options: [
-                    "Singletons are slower to execute.",
-                    "Singletons create global state that is difficult to mock/reset during unit tests.",
-                    "WordPress does not support static classes.",
-                    "Singletons cannot use WordPress hooks."
-                ],
-                a: 1
-            },
-            {
-                topic: "Design Patterns",
-                q: "How would you implement Dependency Injection in a WordPress plugin context?",
-                options: [
-                    "Pass dependencies via the `global` keyword.",
-                    "Use a Container (like PHP-DI) to instantiate classes and pass dependencies via the constructor.",
-                    "Use `require_once` inside every method.",
-                    "Rely on `apply_filters` to fetch objects."
-                ],
-                a: 1
-            },
-            {
-                topic: "SOLID",
-                q: "In the context of SOLID, what does the 'O' (Open/Closed) principle suggest for a custom plugin?",
-                options: [
-                    "The code should be open for modification but closed for extension.",
-                    "The code should be open for extension (via hooks/interfaces) but closed for modification.",
-                    "Database connections should be opened and closed immediately.",
-                    "Open source code must be closed to proprietary licenses."
-                ],
-                a: 1
-            },
+        const bank = window.WORDPRESS_DEV_BANK || { questions: [], topics: {}, challenges: [] };
+        const rawData = Array.isArray(bank.questions) ? bank.questions : [];
+        const topicRegistry = bank.topics && typeof bank.topics === 'object' ? bank.topics : {};
+        const challengeBank = Array.isArray(bank.challenges) ? bank.challenges : [];
+        const topicAliases = bank.topicAliases && typeof bank.topicAliases === 'object' ? bank.topicAliases : {};
 
-            // --- TOPIC: PHP & PERFORMANCE ---
-            {
-                topic: "PHP",
-                q: "What is the performance implication of using `include` vs `require_once` inside a loop?",
-                options: [
-                    "They are identical in PHP 7+.",
-                    "`require_once` checks if the file is already loaded, adding overhead on every iteration.",
-                    "`include` is fatal on failure, making it safer.",
-                    "`require_once` caches the file content in RAM."
-                ],
-                a: 1
-            },
-            {
-                topic: "PHP",
-                q: "What does the `yield` keyword do in PHP, and how does it help with large data exports?",
-                options: [
-                    "It pauses the script execution to wait for user input.",
-                    "It creates a Generator, allowing you to iterate over large datasets without loading the whole array into memory.",
-                    "It yields control to the frontend JavaScript.",
-                    "It stops the PHP script to prevent timeouts."
-                ],
-                a: 1
-            },
+        function normalizeTopicName(topic) {
+            const t = topic == null ? '' : String(topic).trim();
+            if (!t) return 'Uncategorized';
+            return topicAliases[t] || t;
+        }
 
-            // --- TOPIC: REACT & JS ---
-            {
-                topic: "React",
-                q: "In React, what is the primary purpose of `useMemo`?",
-                options: [
-                    "To memorize the state of the component.",
-                    "To memoize expensive calculations so they don't re-run on every render unless dependencies change.",
-                    "To cache API calls automatically.",
-                    "To prevent the component from mounting."
-                ],
-                a: 1
-            },
-            {
-                topic: "React",
-                q: "You are building a Gutenberg block. When does `useEffect` cleanup function run?",
-                options: [
-                    "Immediately after the component mounts.",
-                    "Only when the browser window closes.",
-                    "Before the component unmounts or before the effect re-runs due to dependency changes.",
-                    "When the Redux state changes."
-                ],
-                a: 2
-            },
-            {
-                topic: "JavaScript",
-                q: "Explain the 'Event Loop' in JavaScript. What happens if you run a heavy synchronous calculation on the main thread?",
-                options: [
-                    "The calculation runs in the background.",
-                    "It blocks the rendering and user interaction until finished, freezing the UI.",
-                    "It creates a new thread automatically.",
-                    "JavaScript rejects the operation."
-                ],
-                a: 1
-            },
-            {
-                topic: "JavaScript",
-                q: "What is the difference between `==` and `===`?",
-                options: [
-                    "`==` checks value and type, `===` checks only value.",
-                    "`==` checks value with type coercion, `===` checks value and type (strict).",
-                    "`===` is an assignment operator.",
-                    "There is no difference."
-                ],
-                a: 1
-            },
-
-            // --- TOPIC: GIT ---
-            {
-                topic: "Git",
-                q: "You are working on a feature branch and the `main` branch has advanced. You want a linear history. Do you Merge or Rebase?",
-                options: [
-                    "Merge",
-                    "Rebase",
-                    "Cherry-pick",
-                    "Reset"
-                ],
-                a: 1
-            },
-            {
-                topic: "Git",
-                q: "What does `git bisect` do?",
-                options: [
-                    "It cuts the repository size in half.",
-                    "It uses binary search to find the specific commit that introduced a bug.",
-                    "It merges two branches with resolving conflicts automatically.",
-                    "It deletes old branches."
-                ],
-                a: 1
-            },
-
-            // --- TOPIC: UNIT TESTING ---
-            {
-                topic: "Unit Testing",
-                q: "In PHPUnit, what is the difference between a Mock and a Stub?",
-                options: [
-                    "Stubs are for database testing, Mocks are for API testing.",
-                    "A Stub provides canned answers to calls. A Mock expects specific calls (behavior verification).",
-                    "There is no difference.",
-                    "Mocks are used in production, Stubs in development."
-                ],
-                a: 1
-            },
-            {
-                topic: "Unit Testing",
-                q: "How do you test a function that depends on `wp_remote_get` without making an actual HTTP request?",
-                options: [
-                    "You can't, you must test the live API.",
-                    "Use `pre_http_request` filter or a library like WP_Mock to intercept and return a fake response.",
-                    "Comment out the API call.",
-                    "Use a local DNS resolver."
-                ],
-                a: 1
-            },
-
-            // --- TOPIC: CSS/HTML ---
-            {
-                topic: "CSS",
-                q: "What is the 'Specificty' hierarchy in CSS (Low to High)?",
-                options: [
-                    "ID, Class, Tag, Inline",
-                    "Tag, Class, ID, Inline",
-                    "Class, Tag, Inline, ID",
-                    "Inline, ID, Class, Tag"
-                ],
-                a: 1
-            },
-            {
-                topic: "CSS",
-                q: "What does `box-sizing: border-box` do?",
-                options: [
-                    "It adds a border to the box.",
-                    "It calculates width/height including padding and border, preventing layout breakage.",
-                    "It removes the margin.",
-                    "It makes the element a flex container."
-                ],
-                a: 1
-            },
-            
-            // --- ADDED KILLER SENIOR QUESTIONS ---
-            {
-                topic: "Security",
-                q: "Why is `prepare()` essential when using `$wpdb`?",
-                options: [
-                    "It improves query speed.",
-                    "It protects against SQL Injection by escaping inputs.",
-                    "It formats the date correctly.",
-                    "It connects to the database."
-                ],
-                a: 1
-            },
-            {
-                topic: "WordPress Architecture",
-                q: "What is the role of the Hierarchy in the Template Loading process?",
-                options: [
-                    "It determines user roles.",
-                    "It determines which PHP file (single.php, index.php) loads based on the query.",
-                    "It organizes the CSS files.",
-                    "It sorts the database results."
-                ],
-                a: 1
-            },
-            {
-                topic: "React",
-                q: "What is the 'Prop Drilling' problem and how do you solve it?",
-                options: [
-                    "Props breaking the layout. Solve with CSS.",
-                    "Passing data through many layers of components. Solve with Context API or Redux.",
-                    "Props being undefined. Solve with TypeScript.",
-                    "Components rendering too fast."
-                ],
-                a: 1
-            },
-            {
-                topic: "Design Patterns",
-                q: "Explain the Factory Pattern.",
-                options: [
-                    "A class that fixes other classes.",
-                    "A creational pattern that uses a method to create objects without specifying the exact class.",
-                    "A way to organize CSS files.",
-                    "A database optimization technique."
-                ],
-                a: 1
-            },
-            {
-                topic: "PHP",
-                q: "What are Trait conflicts and how do you resolve them?",
-                options: [
-                    "Traits cannot conflict.",
-                    "When two traits have the same method. Resolve using `insteadof` or `as` operators.",
-                    "When a trait is too large.",
-                    "By deleting one trait."
-                ],
-                a: 1
-            },
-            {
-                topic: "WordPress Architecture",
-                q: "What is the difference between `flush_rewrite_rules()` and manual `.htaccess` editing?",
-                options: [
-                    "Manual editing is safer.",
-                    "Flush regenerates the WP rewrite array and updates .htaccess programmatically. It is expensive and should only run on activation.",
-                    "They are the same.",
-                    "Flush deletes the database."
-                ],
-                a: 1
-            },
-             {
-                topic: "WordPress Architecture",
-                q: "When using `WP_Query`, what is the danger of `posts_per_page => -1`?",
-                options: [
-                    "It returns no posts.",
-                    "It can cause memory exhaustion (OOM) by loading thousands of post objects into RAM.",
-                    "It is faster than specifying a number.",
-                    "It breaks the pagination."
-                ],
-                a: 1
-            },
-            {
-                topic: "Hooks",
-                q: "What is the difference between `do_action` and `apply_filters`?",
-                options: [
-                    "`do_action` executes code at a point. `apply_filters` modifies a value and must return it.",
-                    "`do_action` is for styles, `apply_filters` for scripts.",
-                    "`do_action` returns data, `apply_filters` does not.",
-                    "They are aliases for the same function."
-                ],
-                a: 0
-            },
-             {
-                topic: "Hooks",
-                q: "How do you remove an anonymous function (closure) attached to a hook?",
-                options: [
-                    "Simply call remove_action with the closure.",
-                    "You cannot easily remove it unless you stored the closure instance in a variable/property previously.",
-                    "Use `remove_all_actions`.",
-                    "Use the priority number."
-                ],
-                a: 1
-            },
-            {
-                topic: "Caching",
-                q: "What is 'Cache Invalidation' and why is it considered one of the hardest things in CS?",
-                options: [
-                    "Deleting cache files.",
-                    "Knowing exactly when data is stale and must be purged to prevent serving old content without killing performance.",
-                    "Validating HTML.",
-                    "Encrypting the cache."
-                ],
-                a: 1
-            },
-            {
-                topic: "Security",
-                q: "What is a Nonce in WordPress and what attack does it prevent?",
-                options: [
-                    "Number used ONCE. Prevents SQL Injection.",
-                    "Number used ONCE. Prevents CSRF (Cross-Site Request Forgery).",
-                    "A random salt for passwords.",
-                    "A caching key."
-                ],
-                a: 1
-            },
-             {
-                topic: "Unit Testing",
-                q: "What is TDD (Test Driven Development)?",
-                options: [
-                    "Testing after development.",
-                    "Writing the test (which fails) BEFORE writing the code to make it pass.",
-                    "Testing only the database.",
-                    "Testing by the QA team."
-                ],
-                a: 1
-            },
-            {
-                topic: "Git",
-                q: "What is the difference between `git fetch` and `git pull`?",
-                options: [
-                    "They are the same.",
-                    "`fetch` gets changes but doesn't merge. `pull` does `fetch` + `merge`.",
-                    "`pull` uploads files.",
-                    "`fetch` is deprecated."
-                ],
-                a: 1
-            },
-            {
-                topic: "React",
-                q: "What are Higher-Order Components (HOC)?",
-                options: [
-                    "Components at the top of the page.",
-                    "Functions that take a component and return a new component (logic reuse).",
-                    "Components that use Redux.",
-                    "Class components."
-                ],
-                a: 1
-            },
-            {
-                topic: "React",
-                q: "Why should you never call hooks inside loops or conditions?",
-                options: [
-                    "It's a style preference.",
-                    "React relies on the call order of hooks to maintain state consistency between renders.",
-                    "It causes syntax errors.",
-                    "It makes the code slow."
-                ],
-                a: 1
-            },
-            // --- TOPIC: SOLID PRINCIPLES ---
-    {
-        topic: "SOLID",
-        q: "In the context of the Single Responsibility Principle (SRP), why is a 'God Class' (a class that manages everything) problematic for maintenance?",
-        options: [
-            "It uses too much memory.",
-            "It makes the code tightly coupled; changing one feature risks breaking unrelated features.",
-            "It cannot be instantiated.",
-            "It is not supported by PHP 8."
-        ],
-        a: 1
-    },
-    {
-        topic: "SOLID",
-        q: "Explain the Liskov Substitution Principle (LSP) with a practical example.",
-        options: [
-            "A child class must be able to replace a parent class without breaking the application logic.",
-            "You should always substitute interfaces for classes.",
-            "Child classes must have fewer methods than the parent.",
-            "Variables should be named after their type."
-        ],
-        a: 0
-    },
-    {
-        topic: "SOLID",
-        q: "How does Dependency Inversion help when writing Unit Tests?",
-        options: [
-            "It allows you to inject Mock objects instead of real dependencies (like a Database connection).",
-            "It inverts the order of test execution.",
-            "It removes the need for tests entirely.",
-            "It forces you to use static methods."
-        ],
-        a: 0
-    },
-    {
-        topic: "Design Patterns",
-        q: "Which design pattern is best suited for a system that needs to notify multiple users/services when a new Post is published?",
-        options: [
-            "Singleton Pattern",
-            "Observer Pattern",
-            "Factory Pattern",
-            "Decorator Pattern"
-        ],
-        a: 1
-    },
-
-    // --- TOPIC: ADVANCED PHP ---
-    {
-        topic: "PHP",
-        q: "What is the primary difference between an `Interface` and an `Abstract Class` in PHP?",
-        options: [
-            "Abstract classes can have implementation (code) for some methods; Interfaces only define method signatures.",
-            "Interfaces are faster than Abstract classes.",
-            "You can implement multiple Abstract classes but only one Interface.",
-            "Abstract classes are private; Interfaces are public."
-        ],
-        a: 0
-    },
-    {
-        topic: "PHP",
-        q: "What is the purpose of PHP Namespaces (PSR-4)?",
-        options: [
-            "To encrypt the file names.",
-            "To encapsulate items and prevent name collisions between your code and internal PHP/Wordpress classes.",
-            "To organize files by date.",
-            "To replace folders in the file system."
-        ],
-        a: 1
-    },
-    {
-        topic: "PHP",
-        q: "What is Late Static Binding (using `static::` instead of `self::`)?",
-        options: [
-            "A way to bind variables late in the script execution.",
-            "It allows a child class to reference the called class rather than the defining class in inheritance scenarios.",
-            "It is a deprecated feature in PHP 8.",
-            "It prevents static methods from running."
-        ],
-        a: 1
-    },
-    {
-        topic: "PHP",
-        q: "How do Closures (Anonymous functions) handle variable scope from the parent context?",
-        options: [
-            "They automatically inherit all variables.",
-            "You must manually import variables using the `use` keyword.",
-            "They cannot access parent variables.",
-            "They use global variables only."
-        ],
-        a: 1
-    },
-
-    // --- TOPIC: DATABASE & SCALABILITY ---
-    {
-        topic: "Database",
-        q: "You need to search for posts based on a custom meta key. Why is a standard `meta_query` slow on a table with 1 million rows?",
-        options: [
-            "Because `wp_postmeta` is not indexed by default.",
-            "Because the `meta_value` column is not indexed, forcing a full table scan.",
-            "Because WordPress limits query speed.",
-            "Because MySQL cannot handle text searches."
-        ],
-        a: 1
-    },
-    {
-        topic: "Database",
-        q: "When designing a high-scale plugin, when should you create a Custom Table instead of using Custom Post Types?",
-        options: [
-            "Always, Custom Tables are cooler.",
-            "When the data structure is flat, high-volume, and requires complex filtering/sorting that `meta_query` handles poorly.",
-            "When you don't want the data to appear in the admin panel.",
-            "Never, always use CPTs."
-        ],
-        a: 1
-    },
-    {
-        topic: "Database",
-        q: "What is an SQL Injection attack, and how does `$wpdb->prepare` prevent it?",
-        options: [
-            "An attack that deletes the database. `prepare` backs it up.",
-            "Malicious SQL code inserted into inputs. `prepare` escapes special characters to treat input as data, not code.",
-            "Injecting CSS into the database. `prepare` sanitizes HTML.",
-            "Overloading the server with requests."
-        ],
-        a: 1
-    },
-    {
-        topic: "Performance",
-        q: "What is the N+1 Query Problem?",
-        options: [
-            "A math error in PHP.",
-            "When code executes a separate database query for every item in a loop instead of fetching all data in one query.",
-            "Having one too many servers.",
-            "A problem with array indexing."
-        ],
-        a: 1
-    },
-
-    // --- TOPIC: WORDPRESS INTERNALS ---
-    {
-        topic: "WordPress Architecture",
-        q: "What is the difference between `site_url()` and `home_url()`?",
-        options: [
-            "They are exactly the same.",
-            "`site_url` is where the WP core files reside; `home_url` is the address visitors type in the browser.",
-            "`home_url` is for the admin dashboard.",
-            "`site_url` is deprecated."
-        ],
-        a: 1
-    },
-    {
-        topic: "WordPress Architecture",
-        q: "How does the WordPress Heartbeat API affect server load on high-traffic admin dashboards?",
-        options: [
-            "It has no effect.",
-            "It sends frequent AJAX requests (autosave, locking) which can cause high CPU usage if many admins are logged in.",
-            "It improves server speed by keeping the connection alive.",
-            "It only runs on the front end."
-        ],
-        a: 1
-    },
-    {
-        topic: "WordPress Architecture",
-        q: "What is the purpose of the `template_redirect` hook?",
-        options: [
-            "To load the footer template.",
-            "To intercept the request before a template is loaded, ideal for custom redirects or handling API endpoints.",
-            "To redirect 404 pages only.",
-            "To load CSS styles."
-        ],
-        a: 1
-    },
-
-    // --- TOPIC: REACT & GUTENBERG ---
-    {
-        topic: "React",
-        q: "In a Gutenberg block, what is the role of the `save` function?",
-        options: [
-            "To save data to the database via API.",
-            "To define the static HTML markup that gets saved into `post_content` in the database.",
-            "To render the editor UI.",
-            "To auto-save the post."
-        ],
-        a: 1
-    },
-    {
-        topic: "React",
-        q: "What is the difference between `State` and `Props` in React?",
-        options: [
-            "State is internal and mutable; Props are external and immutable (passed down).",
-            "Props are internal; State is external.",
-            "State is for database storage.",
-            "Props are only for CSS."
-        ],
-        a: 0
-    },
-    {
-        topic: "React",
-        q: "Why is mutating state directly (e.g., `this.state.count = 5`) bad practice in React?",
-        options: [
-            "It throws a syntax error.",
-            "It does not trigger a re-render, leaving the UI out of sync with the data.",
-            "It is slower than `setState`.",
-            "It deletes the previous state."
-        ],
-        a: 1
-    },
-    
-    // --- TOPIC: GIT & DEVOPS ---
-    {
-        topic: "Git",
-        q: "What is a 'Merge Conflict'?",
-        options: [
-            "When Git crashes.",
-            "When two branches have changed the same line of code and Git cannot automatically decide which one to keep.",
-            "When a file is too large to merge.",
-            "When you don't have permission to push."
-        ],
-        a: 1
-    },
-    {
-        topic: "Git",
-        q: "What is the purpose of `.gitignore`?",
-        options: [
-            "To ignore errors in the code.",
-            "To specify files (like `node_modules`, `vendor`, `.env`) that should NOT be tracked by version control.",
-            "To delete files from the server.",
-            "To hide files from other users."
-        ],
-        a: 1
-    },
-    // --- TOPIC: SECURITY ---
-    {
-        topic: "Security",
-        q: "What is the difference between Sanitization and Escaping in WordPress?",
-        options: [
-            "Sanitization is for output (display); Escaping is for input (database).",
-            "Sanitization cleans input data BEFORE saving to DB; Escaping cleans output data BEFORE rendering to HTML.",
-            "They are synonyms.",
-            "Sanitization removes viruses; Escaping removes SQL."
-        ],
-        a: 1
-    },
-    {
-        topic: "Security",
-        q: "Which function should you use to safely output a URL inside an `href` attribute?",
-        options: [
-            "`echo $url;`",
-            "`esc_html($url);`",
-            "`esc_url($url);`",
-            "`sanitize_text_field($url);`"
-        ],
-        a: 2
-    },
-    {
-        topic: "Security",
-        q: "Why is allowing SVG uploads in WordPress considered a security risk?",
-        options: [
-            "SVGs are too large in file size.",
-            "SVGs are XML-based and can contain malicious JavaScript (XSS) that executes in the viewer's browser.",
-            "SVGs are not supported by older browsers.",
-            "SVGs cannot be cached."
-        ],
-        a: 1
-    },
-    {
-        topic: "Security",
-        q: "You are building an AJAX endpoint. Besides `check_ajax_referer` (Nonce), what else MUST you check?",
-        options: [
-            "The user's IP address.",
-            "Capabilities: `current_user_can('edit_posts')` (Authorization).",
-            "The browser user agent.",
-            "The time of day."
-        ],
-        a: 1
-    },
-    {
-        topic: "Security",
-        q: "What is the purpose of `wp_kses()`?",
-        options: [
-            "To kill server sessions.",
-            "To strip ALL HTML tags from a string.",
-            "To allow specific, safe HTML tags and attributes while stripping everything else (e.g., allow `<b>` but strip `<script>`).",
-            "To encrypt passwords."
-        ],
-        a: 2
-    },
-
-    // --- TOPIC: UNIT TESTING (ADVANCED) ---
-    {
-        topic: "Unit Testing",
-        q: "What is the difference between `assertEquals` and `assertSame` in PHPUnit?",
-        options: [
-            "`assertEquals` checks value only (`==`); `assertSame` checks value AND type (`===`).",
-            "`assertSame` is deprecated.",
-            "`assertEquals` is stricter.",
-            "They are identical."
-        ],
-        a: 0
-    },
-    {
-        topic: "Unit Testing",
-        q: "Why is it important to use `Mockery` or `WP_Mock` instead of loading the full WordPress environment for *Unit* tests?",
-        options: [
-            "Because Mocks are cooler.",
-            "To ensure tests are fast (milliseconds) and isolated from the database/global state.",
-            "Because WordPress cannot run in CLI.",
-            "To test the database connection."
-        ],
-        a: 1
-    },
-    {
-        topic: "Unit Testing",
-        q: "What is a 'DataProvider' in PHPUnit?",
-        options: [
-            "A database connection string.",
-            "A method that feeds multiple sets of arguments to a single test method, allowing you to test edge cases without code duplication.",
-            "A plugin that provides data.",
-            "A mock object."
-        ],
-        a: 1
-    },
-    {
-        topic: "Unit Testing",
-        q: "When testing a function that relies on `time()`, how do you ensure the test is deterministic (repeatable)?",
-        options: [
-            "Wait for the correct time to run the test.",
-            "Inject a `Clock` interface dependency or namespace-mock the `time()` function so you can control the return value.",
-            "Use `sleep()` in the test.",
-            "Ignore the time component."
-        ],
-        a: 1
-    },
-
-    // --- TOPIC: MODERN JAVASCRIPT (ES6+) ---
-    {
-        topic: "JavaScript",
-        q: "How does an Arrow Function `() => {}` treat the `this` keyword differently than a regular function?",
-        options: [
-            "It defines its own `this`.",
-            "It has no `this`.",
-            "It lexically binds `this`, meaning it inherits `this` from the surrounding code context.",
-            "It always refers to the Window object."
-        ],
-        a: 2
-    },
-    {
-        topic: "JavaScript",
-        q: "What is the output of: `console.log(myVar); var myVar = 5;`?",
-        options: [
-            "5",
-            "ReferenceError",
-            "undefined (due to Hoisting)",
-            "null"
-        ],
-        a: 2
-    },
-    {
-        topic: "JavaScript",
-        q: "What is the output of: `console.log(myLet); let myLet = 5;`?",
-        options: [
-            "undefined",
-            "ReferenceError (Temporal Dead Zone)",
-            "5",
-            "null"
-        ],
-        a: 1
-    },
-    {
-        topic: "JavaScript",
-        q: "Explain Destructuring in JS: `const { name, age } = user;`",
-        options: [
-            "It deletes the name and age properties from user.",
-            "It creates a new object combining name and age.",
-            "It extracts the `name` and `age` properties from the `user` object into standalone variables.",
-            "It checks if name and age exist."
-        ],
-        a: 2
-    },
-    {
-        topic: "JavaScript",
-        q: "What is the benefit of using `Async/Await` over raw Promises?",
-        options: [
-            "It makes the code faster.",
-            "It allows you to write asynchronous code that looks and behaves like synchronous code, improving readability.",
-            "It removes the need for error handling.",
-            "It works in Internet Explorer 6."
-        ],
-        a: 1
-    },
-    {
-        topic: "JavaScript",
-        q: "What does the Spread Operator (`...`) do in this context: `const newArr = [...oldArr, 4, 5];`?",
-        options: [
-            "It adds 4 and 5 to the old array.",
-            "It creates a shallow copy of `oldArr`, expands its elements, and adds 4 and 5 to a new array.",
-            "It calculates the sum of the array.",
-            "It spreads the array into an object."
-        ],
-        a: 1
-    },
-
-    // --- TOPIC: ADVANCED WP/PHP CONCEPTS ---
-    {
-        topic: "WordPress Architecture",
-        q: "What is the 'Transient API' fallback mechanism?",
-        options: [
-            "It falls back to cookies.",
-            "If an Object Cache (Redis/Memcached) is NOT present, it stores data in the `wp_options` table.",
-            "It falls back to a file on disk.",
-            "It returns false immediately."
-        ],
-        a: 1
-    },
-    {
-        topic: "PHP",
-        q: "What is the difference between `==` and `===` in PHP?",
-        options: [
-            "`==` performs type juggling (coercion); `===` checks for strict type and value equality.",
-            "`===` is used for assignment.",
-            "There is no difference.",
-            "`==` is strictly for strings."
-        ],
-        a: 0
-    },
-    {
-        topic: "Design Patterns",
-        q: "What is the 'Facade' pattern?",
-        options: [
-            "A fake database.",
-            "A structural pattern that provides a simplified interface to a complex library, framework, or set of classes.",
-            "A frontend theme framework.",
-            "A way to hide errors."
-        ],
-        a: 1
-    },
-    {
-        topic: "Git",
-        q: "What does `git cherry-pick <commit-hash>` do?",
-        options: [
-            "It deletes a specific commit.",
-            "It applies the changes introduced by a specific commit from one branch onto the current branch.",
-            "It picks a random commit.",
-            "It merges the entire branch."
-        ],
-        a: 1
-    },
-    // --- TOPIC: ADVANCED CSS ---
-    {
-        topic: "CSS",
-        q: "What is the main difference between `display: flex` and `display: grid`?",
-        options: [
-            "Flexbox is one-dimensional (row OR column), Grid is two-dimensional (rows AND columns).",
-            "Flexbox is for mobile, Grid is for desktop.",
-            "Grid is older and slower than Flexbox.",
-            "Flexbox requires JavaScript."
-        ],
-        a: 0
-    },
-    {
-        topic: "CSS",
-        q: "In Flexbox, what does `justify-content: space-between` do?",
-        options: [
-            "It centers all items.",
-            "It pushes the first item to the start, the last to the end, and distributes space evenly between the others.",
-            "It adds equal space around every item including the edges.",
-            "It removes all space between items."
-        ],
-        a: 1
-    },
-    {
-        topic: "CSS",
-        q: "What is a 'Stacking Context' in CSS (related to z-index)?",
-        options: [
-            "A library for stacking cards.",
-            "A condition where an element forms a new layer of content. Child z-indexes are relative to this parent, not the global page.",
-            "It means z-index only works on position: static.",
-            "It creates a 3D effect."
-        ],
-        a: 1
-    },
-    {
-        topic: "CSS",
-        q: "Explain the difference between `grid-template-columns: repeat(auto-fit, minmax(200px, 1fr))` and `auto-fill`.",
-        options: [
-            "They are the same.",
-            "`auto-fit` collapses empty tracks (stretching items to fill space); `auto-fill` keeps empty tracks (preserving column layout even if empty).",
-            "`auto-fit` works on height, `auto-fill` on width.",
-            "`auto-fill` is not supported in Chrome."
-        ],
-        a: 1
-    },
-    {
-        topic: "CSS",
-        q: "What does the `+` selector do? (e.g., `div + p`)",
-        options: [
-            "Selects all paragraphs inside a div.",
-            "Selects the paragraph immediately following a div (adjacent sibling).",
-            "Selects the div and the paragraph.",
-            "Adds a paragraph to the div."
-        ],
-        a: 1
-    },
-
-    // --- TOPIC: ADVANCED REACT ---
-    {
-        topic: "React",
-        q: "When would you choose `useReducer` over `useState`?",
-        options: [
-            "Always, it's faster.",
-            "When state logic is complex, involves multiple sub-values, or the next state depends on the previous one in a complicated way.",
-            "When using Redux.",
-            "When the component is a Class component."
-        ],
-        a: 1
-    },
-    {
-        topic: "React",
-        q: "What is the performance pitfall of using `React.Context` for high-frequency updates (like mouse coordinates)?",
-        options: [
-            "It crashes the browser.",
-            "Every consumer of that Context re-renders on every update, potentially causing lag across the entire app.",
-            "Context cannot handle numbers.",
-            "It requires too much RAM."
-        ],
-        a: 1
-    },
-    {
-        topic: "React",
-        q: "What is a 'Custom Hook'?",
-        options: [
-            "A built-in React function.",
-            "A JavaScript function whose name starts with 'use' and that may call other Hooks, allowing logic reuse across components.",
-            "A hook that connects to WordPress.",
-            "A component class."
-        ],
-        a: 1
-    },
-    {
-        topic: "React",
-        q: "How does `useCallback` help with child component performance?",
-        options: [
-            "It memoizes a function definition so it doesn't change on every render, allowing `React.memo` components to avoid unnecessary re-renders.",
-            "It runs the function in the background.",
-            "It prevents the function from being called.",
-            "It automatically debounces the input."
-        ],
-        a: 0
-    },
-    {
-        topic: "React",
-        q: "What is 'Virtual DOM'?",
-        options: [
-            "A VR version of the website.",
-            "A lightweight copy of the DOM in memory. React compares it with the previous version (diffing) to update only changed elements in the real DOM.",
-            "A database for HTML.",
-            "A plugin for Chrome."
-        ],
-        a: 1
-    },
-
-    // --- TOPIC: REST API & AUTH ---
-    {
-        topic: "REST API",
-        q: "What is the difference between `PUT` and `PATCH` methods?",
-        options: [
-            "PUT creates a file, PATCH deletes it.",
-            "PUT replaces the entire resource; PATCH applies a partial update to the resource.",
-            "PATCH is for fixing bugs.",
-            "There is no difference."
-        ],
-        a: 1
-    },
-    {
-        topic: "REST API",
-        q: "In WordPress REST API, how do you authenticate a request from an external mobile app?",
-        options: [
-            "Use the standard browser cookie.",
-            "Use Application Passwords (Basic Auth) or JWT (JSON Web Tokens).",
-            "Send the admin password in the URL.",
-            "You cannot access API externally."
-        ],
-        a: 1
-    },
-    {
-        topic: "REST API",
-        q: "What does a `401 Unauthorized` status mean vs `403 Forbidden`?",
-        options: [
-            "401 means 'I don't know who you are' (Authentication missing); 403 means 'I know you, but you are not allowed' (Authorization failed).",
-            "401 is a server error; 403 is a client error.",
-            "401 is permanent; 403 is temporary.",
-            "They are the same."
-        ],
-        a: 0
-    },
-    {
-        topic: "REST API",
-        q: "What is CORS (Cross-Origin Resource Sharing)?",
-        options: [
-            "A font style.",
-            "A security feature where the browser blocks requests to a different domain unless the server sends specific headers allowing it.",
-            "A database connection method.",
-            "A type of React component."
-        ],
-        a: 1
-    },
-    {
-        topic: "REST API",
-        q: "If your API response is slow, which HTTP header can help the client cache the response?",
-        options: [
-            "Set-Cookie",
-            "Cache-Control (e.g., max-age=3600)",
-            "X-Frame-Options",
-            "Server-Timing"
-        ],
-        a: 1
-    },
-
-    // --- TOPIC: WEB PERFORMANCE (CORE VITALS) ---
-    {
-        topic: "Performance",
-        q: "What is 'Lazy Loading' images?",
-        options: [
-            "Loading images that are blurry.",
-            "Deferring the loading of images until they are about to scroll into the viewport.",
-            "Loading images in black and white first.",
-            "Blocking images entirely."
-        ],
-        a: 1
-    },
-    {
-        topic: "Performance",
-        q: "What is CLS (Cumulative Layout Shift)?",
-        options: [
-            "A CSS framework.",
-            "A Core Web Vital metric that measures how much elements move around during page load (visual stability).",
-            "A JavaScript error.",
-            "A database shift."
-        ],
-        a: 1
-    },
-    {
-        topic: "Performance",
-        q: "Why is 'Critical CSS' inlined in the `<head>`?",
-        options: [
-            "To save disk space.",
-            "To render the 'Above the Fold' content immediately without waiting for an external stylesheet to download.",
-            "Because external CSS is insecure.",
-            "To hide styles from users."
-        ],
-        a: 1
-    },
-
-    // --- TOPIC: ARCHITECTURE & SCALING ---
-    {
-        topic: "Architecture",
-        q: "What is a 'Headless WordPress' architecture?",
-        options: [
-            "WordPress without an admin panel.",
-            "Using WordPress purely as a backend API (Content Repository) and a separate frontend (e.g., Next.js/React) to render the site.",
-            "Running WordPress without a header.php file.",
-            "A hacked WordPress site."
-        ],
-        a: 1
-    },
-    {
-        topic: "Architecture",
-        q: "What is the role of a Load Balancer?",
-        options: [
-            "To weigh the server rack.",
-            "To distribute incoming network traffic across multiple servers to ensure no single server is overwhelmed.",
-            "To balance CSS colors.",
-            "To compress images."
-        ],
-        a: 1
-    },
-    {
-        topic: "Architecture",
-        q: "What is 'Database Replication' (Master-Slave)?",
-        options: [
-            "Copying the database to a USB drive.",
-            "Writing data to one 'Master' DB and reading data from multiple 'Read Replicas' to scale read-heavy applications.",
-            "Duplicating tables within the same database.",
-            "Backing up the database weekly."
-        ],
-        a: 1
-    },
-    // --- TOPIC: DEVOPS & DOCKER ---
-    {
-        topic: "DevOps",
-        q: "What is the difference between a Docker Image and a Docker Container?",
-        options: [
-            "They are the same thing.",
-            "An Image is a read-only template (the blueprint); a Container is a runnable instance of that image (the house).",
-            "An Image is for local dev; a Container is for production.",
-            "A Container contains the operating system; an Image does not."
-        ],
-        a: 1
-    },
-    {
-        topic: "DevOps",
-        q: "In Docker, what happens to data inside a container when the container is deleted?",
-        options: [
-            "It is saved automatically to the cloud.",
-            "It is lost forever unless stored in a Volume or Bind Mount.",
-            "It moves to the next container.",
-            "It is archived in a zip file."
-        ],
-        a: 1
-    },
-    {
-        topic: "DevOps",
-        q: "What is CI/CD (Continuous Integration/Continuous Deployment)?",
-        options: [
-            "A PHP framework.",
-            "A practice of automating the integration of code changes (testing) and the delivery to production environments.",
-            "Constantly reinstalling the database.",
-            "A project management tool."
-        ],
-        a: 1
-    },
-    {
-        topic: "DevOps",
-        q: "Why is a 'Blue/Green Deployment' strategy safer than a standard deployment?",
-        options: [
-            "It uses better colors.",
-            "It runs two identical environments. You deploy to the idle one (Green), test it, and then switch traffic. If it fails, you switch back instantly.",
-            "It deploys to 50% of users randomly.",
-            "It requires manual file copying."
-        ],
-        a: 1
-    },
-    {
-        topic: "DevOps",
-        q: "What is the primary purpose of a `.env` file?",
-        options: [
-            "To store environment variables (secrets, API keys, DB creds) outside of the codebase so they are NOT committed to Git.",
-            "To list the environment requirements (PHP version).",
-            "To configure the IDE theme.",
-            "To store public documentation."
-        ],
-        a: 0
-    },
-
-    // --- TOPIC: SCALABILITY & INFRASTRUCTURE ---
-    {
-        topic: "Architecture",
-        q: "What is the difference between Vertical Scaling and Horizontal Scaling?",
-        options: [
-            "Vertical = Adding more power (RAM/CPU) to a single server. Horizontal = Adding more servers to the pool.",
-            "Vertical = Adding more servers. Horizontal = Adding more RAM.",
-            "Vertical is for databases; Horizontal is for PHP.",
-            "There is no difference."
-        ],
-        a: 0
-    },
-    {
-        topic: "Architecture",
-        q: "What is a CDN (Content Delivery Network) and why is it essential for global sites?",
-        options: [
-            "A backup service.",
-            "A network of distributed servers that deliver static content (images, CSS, JS) from the server closest to the user, reducing latency.",
-            "A domain name registrar.",
-            "A tool to compress PHP files."
-        ],
-        a: 1
-    },
-    {
-        topic: "Architecture",
-        q: "If your database CPU spikes to 100%, what is the FIRST thing you should check?",
-        options: [
-            "Buy a bigger server immediately.",
-            "Check for Slow Queries (missing indexes or N+1 problems).",
-            "Restart the server.",
-            "Disable the website."
-        ],
-        a: 1
-    },
-
-    // --- TOPIC: LEADERSHIP & SOFT SKILLS (CRITICAL FOR SENIORS) ---
-    {
-        topic: "Leadership",
-        q: "A Junior Developer pushes code that breaks the build. How do you handle it?",
-        options: [
-            "Yell at them in the public Slack channel.",
-            "Fix it yourself and don't tell them.",
-            "Contact them privately, help them understand why it broke, and guide them to fix it themselves (Mentorship).",
-            "Revert their code and ban them from the repo."
-        ],
-        a: 2
-    },
-    {
-        topic: "Leadership",
-        q: "The Product Owner wants a feature that is technically impossible (or very bad for performance). What do you do?",
-        options: [
-            "Say 'No' and refuse to work.",
-            "Do it anyway and let the site crash.",
-            "Explain the technical risks in business terms (cost/performance) and propose an alternative solution that achieves the same goal.",
-            "Complain to the CTO."
-        ],
-        a: 2
-    },
-    {
-        topic: "Leadership",
-        q: "What is 'Technical Debt'?",
-        options: [
-            "Money the company owes for servers.",
-            "The implied cost of additional rework caused by choosing an easy solution now instead of using a better approach that would take longer.",
-            "Bugs in the code.",
-            "Code that is commented out."
-        ],
-        a: 1
-    },
-    {
-        topic: "Leadership",
-        q: "How do you handle a Code Review where you strongly disagree with the author's approach?",
-        options: [
-            "Reject the PR without comment.",
-            "Ask clarifying questions ('Why did you choose X over Y?') and offer suggestions, rather than making demands.",
-            "Rewrite their code in a new commit.",
-            "Approve it to avoid conflict."
-        ],
-        a: 1
-    },
-    {
-        topic: "Leadership",
-        q: "What is the 'Bus Factor' in a team?",
-        options: [
-            "Transportation allowance.",
-            "The risk that if one key person gets hit by a bus (leaves), the project fails because knowledge wasn't shared.",
-            "The speed of the internet connection.",
-            "The number of bugs per sprint."
-        ],
-        a: 1
-    },
-
-    // --- TOPIC: ADVANCED JAVASCRIPT & ASYNC ---
-    {
-        topic: "JavaScript",
-        q: "What is a 'Promise' in JavaScript?",
-        options: [
-            "A guarantee that code will not fail.",
-            "An object representing the eventual completion (or failure) of an asynchronous operation and its resulting value.",
-            "A function that runs immediately.",
-            "A variable that cannot be changed."
-        ],
-        a: 1
-    },
-    {
-        topic: "JavaScript",
-        q: "What is 'Callback Hell' and how do you fix it?",
-        options: [
-            "A heavy metal band.",
-            "Deeply nested callbacks making code unreadable. Fix it using Promises or Async/Await.",
-            "A syntax error in JS.",
-            "Having too many event listeners."
-        ],
-        a: 1
-    },
-    {
-        topic: "JavaScript",
-        q: "What is the difference between `localStorage` and `sessionStorage`?",
-        options: [
-            "`localStorage` persists even after closing the browser; `sessionStorage` is cleared when the page session ends (tab closed).",
-            "`sessionStorage` is more secure.",
-            "`localStorage` stores data on the server.",
-            "They are the same."
-        ],
-        a: 0
-    },
-
-    // --- TOPIC: GIT FLOW & COLLABORATION ---
-    {
-        topic: "Git",
-        q: "What is a 'Pull Request' (PR) or 'Merge Request'?",
-        options: [
-            "A request to download the code.",
-            "A mechanism to notify team members that a feature is ready to be reviewed and merged into the main codebase.",
-            "A command to pull changes from the server.",
-            "A way to delete a branch."
-        ],
-        a: 1
-    },
-    {
-        topic: "Git",
-        q: "Why should you never rewrite history (force push) on a shared public branch?",
-        options: [
-            "It breaks the internet.",
-            "It can delete commits that other team members have based their work on, causing massive synchronization issues for the team.",
-            "Git does not allow it.",
-            "It uses too much bandwidth."
-        ],
-        a: 1
-    },
-    {
-        topic: "Git",
-        q: "What is 'Semantic Versioning' (SemVer e.g., 1.2.3)?",
-        options: [
-            "Random numbers.",
-            "MAJOR (breaking changes). MINOR (new features, backward compatible). PATCH (bug fixes).",
-            "Day.Month.Year",
-            "Project.Module.File"
-        ],
-        a: 1
-    },
-
-    // --- TOPIC: GENERAL ENGINEERING ---
-    {
-        topic: "General",
-        q: "What does DRY stand for?",
-        options: [
-            "Do Repeat Yourself.",
-            "Don't Repeat Yourself (Avoid code duplication).",
-            "Data Recovery Yard.",
-            "Docker Repository YAML."
-        ],
-        a: 1
-    },
-    {
-        topic: "General",
-        q: "What is KISS principle?",
-        options: [
-            "Keep It Super Stylish.",
-            "Keep It Simple, Stupid (Simplicity should be a key goal in design).",
-            "Kernel Integrated System Shell.",
-            "Key Index Search System."
-        ],
-        a: 1
-    },
-    {
-        topic: "General",
-        q: "What is YAGNI?",
-        options: [
-            "You Ain't Gonna Need It (Don't build functionality until you actually need it).",
-            "Yet Another Graphic Network Interface.",
-            "Your API Goes Now Inside.",
-            "Yearly Audit of General Network Infrastructure."
-        ],
-        a: 1
-    },
-    // --- TOPIC: PHP TRICKY QUESTIONS ---
-    {
-        topic: "PHP Tricky",
-        q: "What is the difference between `array_merge($a, $b)` and `$a + $b` when both arrays have the same string keys?",
-        options: [
-            "They behave exactly the same.",
-            "`array_merge` overwrites duplicates with the value from `$b`. The `+` operator keeps the value from `$a` (ignores `$b`).",
-            "`+` adds the values mathematically.",
-            "`array_merge` preserves keys, `+` reindexes them."
-        ],
-        a: 1
-    },
-    {
-        topic: "PHP Tricky",
-        q: "Look at this code: `$a = '1'; $b = &$a; $b = '2$b';` What is the value of `$a`?",
-        options: [
-            "'1'",
-            "'21'",
-            "'2$b'",
-            "'2'"
-        ],
-        a: 1
-    },
-    {
-        topic: "PHP Tricky",
-        q: "What is the 'Reference Linger' problem in a `foreach` loop?",
-        options: [
-            "Foreach is slow.",
-            "If you use `&$value` (reference) and don't `unset($value)` after the loop, changing `$value` later will modify the last element of the array.",
-            "PHP runs out of memory.",
-            "The loop never ends."
-        ],
-        a: 1
-    },
-    {
-        topic: "PHP Tricky",
-        q: "What will `strpos('abcdef', 'a')` return, and why can checking it with `if (strpos(...))` be dangerous?",
-        options: [
-            "It returns `0`. If checked loosely (`==`), PHP treats `0` as `false`, so the condition fails even though 'a' was found.",
-            "It returns `1`.",
-            "It returns `true`.",
-            "It returns `null`."
-        ],
-        a: 0
-    },
-    {
-        topic: "PHP Tricky",
-        q: "What is the output of `echo (int) ( (0.1 + 0.7) * 10 );`?",
-        options: [
-            "8",
-            "7",
-            "7 (Due to floating point precision issues, internal value is 7.9999...)",
-            "0"
-        ],
-        a: 2
-    },
-
-    // --- TOPIC: JAVASCRIPT WEIRDNESS ---
-    {
-        topic: "JS Tricky",
-        q: "What is the result of `0.1 + 0.2 === 0.3` in JavaScript?",
-        options: [
-            "true",
-            "false (Because of floating point math, it equals 0.30000000000000004)",
-            "NaN",
-            "undefined"
-        ],
-        a: 1
-    },
-    {
-        topic: "JS Tricky",
-        q: "What is the output of `typeof null`?",
-        options: [
-            "'null'",
-            "'undefined'",
-            "'object' (This is a famous historical bug in JS)",
-            "'number'"
-        ],
-        a: 2
-    },
-    {
-        topic: "JS Tricky",
-        q: "Explain the 'Closure Trap' inside a loop using `var` vs `let`.",
-        options: [
-            "They are the same.",
-            "`var` has function scope, so async callbacks inside a loop will all see the *final* value of `i`. `let` has block scope, creating a new binding for each iteration.",
-            "`let` is slower.",
-            "`var` cannot be used in loops."
-        ],
-        a: 1
-    },
-    {
-        topic: "JS Tricky",
-        q: "What happens if you access a variable declared with `let` BEFORE its declaration line?",
-        options: [
-            "It returns `undefined`.",
-            "It returns `null`.",
-            "It throws a `ReferenceError` (Temporal Dead Zone).",
-            "It works fine due to hoisting."
-        ],
-        a: 2
-    },
-    {
-        topic: "JS Tricky",
-        q: "What is the result of `[] + []` in the console?",
-        options: [
-            "[]",
-            "\"\" (An empty string)",
-            "0",
-            "NaN"
-        ],
-        a: 1
-    },
-
-    // --- TOPIC: WORDPRESS GOTCHAS ---
-    {
-        topic: "WP Tricky",
-        q: "You use `is_admin()` to check if a user is an Administrator. Is this correct?",
-        options: [
-            "Yes, absolutely.",
-            "No. `is_admin()` checks if the request is for an Admin Page (Dashboard), NOT the user's role. It returns true for any user accessing /wp-admin/ (even AJAX).",
-            "No, it checks if the site is in maintenance mode.",
-            "Yes, but only for Super Admins."
-        ],
-        a: 1
-    },
-    {
-        topic: "WP Tricky",
-        q: "Why must you remove the `save_post` hook inside your own `save_post` callback function before calling `wp_update_post`?",
-        options: [
-            "To save memory.",
-            "To prevent an infinite loop (recursion) where saving the post triggers the save hook again, crashing the server.",
-            "Because WordPress deletes hooks automatically.",
-            "It is not necessary."
-        ],
-        a: 1
-    },
-    {
-        topic: "WP Tricky",
-        q: "What happens if you run a `new WP_Query` inside the `the_content` filter without calling `wp_reset_postdata()`?",
-        options: [
-            "Nothing bad.",
-            "It changes the global `$post` object, breaking the rest of the page (e.g., comments, sidebar, footer) or causing the wrong data to display.",
-            "It deletes the post.",
-            "It returns a 404 error."
-        ],
-        a: 1
-    },
-
-    // --- TOPIC: ALGORITHMS & LOGIC (SENIOR INTERVIEW) ---
-    {
-        topic: "Algorithms",
-        q: "What is Big O Notation?",
-        options: [
-            "A popular PHP framework.",
-            "A mathematical notation to describe the limiting behavior of a function (Time/Space Complexity) as the input size grows.",
-            "A way to measure disk space.",
-            "The version number of the software."
-        ],
-        a: 1
-    },
-    {
-        topic: "Algorithms",
-        q: "Which complexity is WORSE (Slower): O(n) or O(n^2)?",
-        options: [
-            "O(n)",
-            "O(n^2) (Quadratic time - e.g., nested loops).",
-            "They are the same.",
-            "O(1)"
-        ],
-        a: 1
-    },
-    {
-        topic: "Algorithms",
-        q: "When would you choose a Hash Map (Associative Array) over a standard Array for lookups?",
-        options: [
-            "Never.",
-            "When you need O(1) average lookup time by key, instead of O(n) scanning through a list to find a value.",
-            "When you want to sort items.",
-            "When using SQL."
-        ],
-        a: 1
-    },
-    {
-        topic: "Algorithms",
-        q: "What is a 'Race Condition' in a database context?",
-        options: [
-            "When the database is too fast.",
-            "When the system's behavior depends on the sequence or timing of uncontrollable events (e.g., two users buying the last ticket at the exact same millisecond).",
-            "A competition between servers.",
-            "A type of index."
-        ],
-        a: 1
-    },
-
-    // --- TOPIC: REGEX (REGULAR EXPRESSIONS) ---
-    {
-        topic: "Regex",
-        q: "In Regex, what does `^` and `$` represent?",
-        options: [
-            "Capital and Lowercase.",
-            "Start of string and End of string.",
-            "Wildcard characters.",
-            "Escape characters."
-        ],
-        a: 1
-    },
-    {
-        topic: "Regex",
-        q: "Why should you generally NOT use Regex to parse HTML?",
-        options: [
-            "It is too slow.",
-            "HTML is not a regular language (it is nested/recursive). Regex is fragile and can easily break on valid but unexpected HTML structures.",
-            "Regex cannot match tags.",
-            "PHP does not support Regex."
-        ],
-        a: 1
-    },
-    // --- TOPIC: WORDPRESS HOOKS (DEEP DIVE) ---
-    {
-        topic: "WP Hooks",
-        q: "What is the difference between the `init` and `wp_loaded` hooks?",
-        options: [
-            "`init` fires after `wp_loaded`.",
-            "`init` fires after WordPress has finished loading but headers aren't sent yet. `wp_loaded` fires once WP, all plugins, and the theme are fully loaded and instantiated.",
-            "They are aliases for the same hook.",
-            "`wp_loaded` is for frontend only."
-        ],
-        a: 1
-    },
-    {
-        topic: "WP Hooks",
-        q: "Why is `pre_get_posts` dangerous if you don't check `!is_admin() && $query->is_main_query()`?",
-        options: [
-            "It will break the site CSS.",
-            "It alters EVERY query on the site, including the Admin Dashboard post list, menus, and widgets, potentially hiding posts from admins.",
-            "It deletes posts permanently.",
-            "It causes a 404 error."
-        ],
-        a: 1
-    },
-    {
-        topic: "WP Hooks",
-        q: "How do you modify the `WHERE` clause of a WP_Query specifically?",
-        options: [
-            "Use the `posts_where` filter.",
-            "Use `pre_get_posts`.",
-            "Use `query_posts`.",
-            "Edit the core files."
-        ],
-        a: 0
-    },
-    {
-        topic: "WP Hooks",
-        q: "What happens if you add a filter with a priority of `PHP_INT_MAX`?",
-        options: [
-            "It crashes PHP.",
-            "It ensures your function runs last (or very close to last), overriding previous modifications.",
-            "It runs first.",
-            "It is ignored."
-        ],
-        a: 1
-    },
-    {
-        topic: "WP Hooks",
-        q: "Can you trigger a hook recursively? (e.g., calling `do_action('A')` inside a function hooked to `A`)",
-        options: [
-            "Yes, but it causes an infinite loop unless you have a conditional break.",
-            "No, WordPress prevents this automatically.",
-            "Yes, but only in plugins.",
-            "No, PHP forbids it."
-        ],
-        a: 0
-    },
-
-    // --- TOPIC: REACT HOOKS (DEEP DIVE) ---
-    {
-        topic: "React Hooks",
-        q: "What is a 'Stale Closure' in `useEffect`?",
-        options: [
-            "A memory leak.",
-            "When the effect uses a variable from the component scope that has changed, but the effect captured the OLD value because the variable was missing from the dependency array.",
-            "A hook that hasn't run yet.",
-            "A deprecated hook."
-        ],
-        a: 1
-    },
-    {
-        topic: "React Hooks",
-        q: "What is the difference between `useEffect` and `useLayoutEffect`?",
-        options: [
-            "No difference.",
-            "`useEffect` runs asynchronously AFTER paint. `useLayoutEffect` runs synchronously BEFORE paint (blocking visual updates).",
-            "`useLayoutEffect` is for layouts only.",
-            "`useEffect` is faster."
-        ],
-        a: 1
-    },
-    {
-        topic: "React Hooks",
-        q: "Why can't you put a hook inside a regular JavaScript function (not a component/hook)?",
-        options: [
-            "You can.",
-            "Because hooks rely on React's internal call stack/fiber to track state. Regular functions don't share that context.",
-            "Because hooks are private.",
-            "Because of linting rules."
-        ],
-        a: 1
-    },
-    {
-        topic: "React Hooks",
-        q: "In `useReducer`, what is the `dispatch` function used for?",
-        options: [
-            "To delete the state.",
-            "To send an 'Action' object describing what happened, which the reducer function uses to calculate the new state.",
-            "To connect to the API.",
-            "To render the component."
-        ],
-        a: 1
-    },
-
-    // --- TOPIC: THEME.JSON & FULL SITE EDITING (FSE) ---
-    {
-        topic: "Theme.json",
-        q: "What is the primary purpose of `theme.json` in modern WordPress themes?",
-        options: [
-            "To list installed plugins.",
-            "To centralize configuration for styles, settings, and layout constraints for blocks, replacing many `add_theme_support` calls.",
-            "To store translations.",
-            "To replace `functions.php` completely."
-        ],
-        a: 1
-    },
-    {
-        topic: "Theme.json",
-        q: "How does `theme.json` affect CSS Specificity?",
-        options: [
-            "It doesn't.",
-            "WordPress generates CSS classes/vars from `theme.json`. Styles defined here often have lower specificity than custom CSS, but govern the Editor defaults.",
-            "It overrides all `!important` rules.",
-            "It writes inline styles only."
-        ],
-        a: 1
-    },
-    {
-        topic: "Theme.json",
-        q: "What is a 'Block Template Part'?",
-        options: [
-            "A part of the database.",
-            "A reusable chunk of block layout (like a Header or Footer) defined in HTML files inside the `parts` folder.",
-            "A React component.",
-            "A plugin extension."
-        ],
-        a: 1
-    },
-    {
-        topic: "Theme.json",
-        q: "In FSE, how do you lock a block so users cannot move or remove it?",
-        options: [
-            "You cannot.",
-            "Using the `lock` attribute in the block markup (e.g., `\"lock\": {\"move\": true, \"remove\": true}`).",
-            "Using CSS `pointer-events: none`.",
-            "Using a plugin."
-        ],
-        a: 1
-    },
-
-    // --- TOPIC: WORDPRESS CORE & DB ---
-    {
-        topic: "WP Core",
-        q: "Where are WordPress user roles and capabilities stored in the database?",
-        options: [
-            "In the `wp_users` table.",
-            "In the `wp_usermeta` table as a serialized array (key: `wp_capabilities`).",
-            "In `wp_options`.",
-            "In a hardcoded array in PHP."
-        ],
-        a: 1
-    },
-    {
-        topic: "WP Core",
-        q: "What is the WordPress Rewrite API responsible for?",
-        options: [
-            "Rewriting the database.",
-            "Mapping incoming clean URLs (Permalinks) to specific database queries (query vars).",
-            "Editing post content.",
-            "Redirecting 301 errors."
-        ],
-        a: 1
-    },
-    {
-        topic: "WP Core",
-        q: "What is a 'Cron Job' in WordPress (`wp-cron.php`) and how does it differ from a system Cron?",
-        options: [
-            "It is the same as Linux Cron.",
-            "It is a 'Pseudo-Cron' that only triggers when a visitor loads a page. It is not 100% reliable for exact timing without traffic.",
-            "It runs on the user's computer.",
-            "It is a virus."
-        ],
-        a: 1
-    },
-    {
-        topic: "WP Core",
-        q: "Why is `global $post` sometimes unavailable in a shortcode?",
-        options: [
-            "Shortcodes never have access to globals.",
-            "If the shortcode is used outside the main loop or inside another query, the global `$post` might not be set up correctly.",
-            "It is a bug in WordPress.",
-            "Shortcodes run on the server, posts are on the client."
-        ],
-        a: 1
-    },
-
-    // --- TOPIC: UNIT TESTING (SPECIFIC MOCKING) ---
-    {
-        topic: "Unit Testing",
-        q: "When testing a plugin that calls `update_option`, why do we mock it instead of letting it run?",
-        options: [
-            "To save hard drive space.",
-            "To avoid writing to a real database (speed & isolation) and to verify ONLY that the function *attempted* to call `update_option` with the correct arguments.",
-            "Because `update_option` doesn't exist in CLI.",
-            "To make the test pass even if the code is wrong."
-        ],
-        a: 1
-    },
-    {
-        topic: "Unit Testing",
-        q: "What does the `tearDown()` method do in PHPUnit?",
-        options: [
-            "It destroys the server.",
-            "It runs after every test method to clean up (e.g., closing DB connections, resetting globals) so the next test starts fresh.",
-            "It runs before the test.",
-            "It logs errors."
-        ],
-        a: 1
-    },
-    {
-        topic: "Unit Testing",
-        q: "What is 'Code Coverage'?",
-        options: [
-            "The number of lines of code in the project.",
-            "A metric showing what percentage of your source code is executed when the test suite runs.",
-            "The documentation quality.",
-            "The number of comments."
-        ],
-        a: 1
-    },
-
-    // --- TOPIC: CACHING & PERFORMANCE ---
-    {
-        topic: "Caching",
-        q: "What is 'Fragment Caching'?",
-        options: [
-            "Caching broken files.",
-            "Caching only a specific part of a page (e.g., a heavy widget or menu) rather than the entire HTML page.",
-            "Caching database fragments.",
-            "A browser feature."
-        ],
-        a: 1
-    },
-    {
-        topic: "Caching",
-        q: "What is 'Cache Stampede' (or Dog-piling)?",
-        options: [
-            "When the cache is too full.",
-            "When a popular cache item expires and multiple processes rush to regenerate it simultaneously, spiking server load.",
-            "When cache deletes itself.",
-            "A Redis error."
-        ],
-        a: 1
-    },
-    {
-        topic: "Caching",
-        q: "Why is `autoload=yes` in `wp_options` a performance killer for large sites?",
-        options: [
-            "It isn't.",
-            "Because ALL autoloaded options are fetched on EVERY page load. If plugins store huge JSON data there, it consumes massive RAM on every request.",
-            "It makes the database read-only.",
-            "It disables caching."
-        ],
-        a: 1
-    },
-
-    // --- TOPIC: DOCKER ---
-    {
-        topic: "Docker",
-        q: "What is `docker-compose.yml` used for?",
-        options: [
-            "To write documentation.",
-            "To define and run multi-container applications (e.g., WordPress + MySQL + PHPMyAdmin) with a single command.",
-            "To compile PHP code.",
-            "To upload files to FTP."
-        ],
-        a: 1
-    },
-    {
-        topic: "Docker",
-        q: "Explain 'Bind Mount' vs 'Volume' in Docker.",
-        options: [
-            "Bind Mounts point to a specific path on the Host machine (great for dev code syncing). Volumes are managed by Docker (better for DB persistence).",
-            "They are the same.",
-            "Volumes are slower.",
-            "Bind Mounts are deleted on restart."
-        ],
-        a: 0
-    },
-    {
-        topic: "Docker",
-        q: "How do containers in the same Docker Compose network communicate?",
-        options: [
-            "By IP address only.",
-            "By Service Name (DNS). e.g., WordPress connects to `db` (host) instead of `localhost`.",
-            "They cannot communicate.",
-            "Via USB."
-        ],
-        a: 1
-    },
-    // --- TOPIC: PHP 8 FEATURES ---
-    {
-        topic: "PHP 8",
-        q: "What is the 'JIT Compiler' (Just-In-Time) introduced in PHP 8?",
-        options: [
-            "A tool to compile CSS.",
-            "A feature that compiles parts of PHP bytecode into native machine code at runtime, significantly boosting performance for CPU-intensive tasks.",
-            "A new JavaScript engine.",
-            "It removes the need for Opcache."
-        ],
-        a: 1
-    },
-    {
-        topic: "PHP 8",
-        q: "How do PHP 8 'Attributes' (Annotations) differ from old PHPDoc comments?",
-        options: [
-            "They are the same.",
-            "Attributes are structured, machine-readable metadata (native syntax `#[Attribute]`) that can be accessed via Reflection, whereas PHPDoc is just text comments.",
-            "Attributes are slower.",
-            "Attributes only work for database columns."
-        ],
-        a: 1
-    },
-    {
-        topic: "PHP 8",
-        q: "What does the 'Nullsafe Operator' (`?->`) do? e.g., `$user?->getAddress()?->country`",
-        options: [
-            "It throws an error if null.",
-            "It short-circuits: if any part of the chain is null, it returns null immediately instead of throwing a 'Call to member function on null' error.",
-            "It converts null to zero.",
-            "It forces the value to be not null."
-        ],
-        a: 1
-    },
-    {
-        topic: "PHP 8",
-        q: "What is a 'Union Type' in PHP 8?",
-        options: [
-            "Connecting two databases.",
-            "Defining that a variable can be one of multiple types. e.g., `function foo(int|float $number)`.",
-            "Merging two arrays.",
-            "A type of CSS selector."
-        ],
-        a: 1
-    },
-    {
-        topic: "PHP 8",
-        q: "Explain the `match` expression vs `switch`.",
-        options: [
-            "`match` is strict comparison (`===`), returns a value, and doesn't need `break`. `switch` is loose (`==`) and creates side effects.",
-            "`match` is for strings only.",
-            "`switch` is deprecated in PHP 8.",
-            "They are identical."
-        ],
-        a: 0
-    },
-
-    // --- TOPIC: PHP-FPM & SERVER EXTENSIONS ---
-    {
-        topic: "PHP-FPM",
-        q: "In PHP-FPM configuration, what is the trade-off of using `pm = static` vs `pm = dynamic`?",
-        options: [
-            "Static is slower but saves RAM.",
-            "Static consumes consistent RAM (processes always alive) but offers faster response (no spawn time). Dynamic saves RAM but has latency when spawning new processes under load.",
-            "Dynamic is always better.",
-            "Static prevents caching."
-        ],
-        a: 1
-    },
-    {
-        topic: "PHP Extensions",
-        q: "What is `Opcache` and why is it mandatory for production?",
-        options: [
-            "It caches database queries.",
-            "It stores pre-compiled script bytecode in shared memory, removing the need for PHP to load and parse scripts on every request.",
-            "It optimizes images.",
-            "It is a debugger."
-        ],
-        a: 1
-    },
-    {
-        topic: "PHP Extensions",
-        q: "Which PHP extension is typically required for high-performance image processing in WordPress (manipulating uploads)?",
-        options: [
-            "GD or Imagick",
-            "PDO",
-            "cURL",
-            "MBString"
-        ],
-        a: 0
-    },
-    {
-        topic: "Server",
-        q: "What is a 'Worker Limit' (max_children) in PHP-FPM and what happens if it's too low?",
-        options: [
-            "It limits the number of child themes.",
-            "It limits concurrent requests. If reached, new requests queue up (latency) or timeout (504 Gateway Timeout).",
-            "It limits the database connections.",
-            "It creates child processes."
-        ],
-        a: 1
-    },
-
-    // --- TOPIC: ADVANCED OBJECT CACHING ---
-    {
-        topic: "Object Cache",
-        q: "If you use `wp_cache_set($key, $data, 'my_group')`, is this data persistent?",
-        options: [
-            "Yes, always.",
-            "Only if a Persistent Object Cache plugin (Redis/Memcached) is active. Otherwise, it only lasts for the current page load.",
-            "No, never.",
-            "Only for logged-in users."
-        ],
-        a: 1
-    },
-    {
-        topic: "Object Cache",
-        q: "What is the difference between `wp_cache_add` and `wp_cache_set`?",
-        options: [
-            "They are synonyms.",
-            "`add` only writes if the key does NOT exist (fails if it does). `set` writes regardless (overwrites).",
-            "`add` adds numbers, `set` sets strings.",
-            "`set` is faster."
-        ],
-        a: 1
-    },
-    {
-        topic: "Object Cache",
-        q: "Why is it important to group cache keys (e.g., `wp_cache_set($id, $val, 'my_plugin')`)?",
-        options: [
-            "To make the database look pretty.",
-            "It allows you to flush (delete) all cache items in that specific group `wp_cache_delete_group` without clearing the entire site's cache.",
-            "It is required by PHP.",
-            "It encrypts the data."
-        ],
-        a: 1
-    },
-
-    // --- TOPIC: DESIGN PATTERNS & DI (EXPANDED) ---
-    {
-        topic: "Dependency Injection",
-        q: "Scenario: You have a class `UserManager` that sends emails. Instead of `new Mailer()` inside it, you pass `$mailer` in the constructor. This is...",
-        options: [
-            "Singleton Pattern.",
-            "Dependency Injection.",
-            "Factory Pattern.",
-            "Lazy Loading."
-        ],
-        a: 1
-    },
-    {
-        topic: "Design Patterns",
-        q: "The 'Adapter Pattern' is useful when...",
-        options: [
-            "You need to connect two incompatible interfaces (e.g., making a new payment gateway look like an old one so your code doesn't break).",
-            "You want to create only one instance of a class.",
-            "You want to loop through an array.",
-            "You want to listen for events."
-        ],
-        a: 0
-    },
-    {
-        topic: "Design Patterns",
-        q: "WordPress Hooks (`add_action`, `do_action`) are an implementation of which pattern?",
-        options: [
-            "MVC",
-            "Observer Pattern (Publish/Subscribe)",
-            "Active Record",
-            "Prototype"
-        ],
-        a: 1
-    },
-
-    // --- TOPIC: RAPID FIRE (TRUE/FALSE STYLE) ---
-    {
-        topic: "Rapid Fire",
-        q: "True or False: `require_once` stops the script execution if the file is missing.",
-        options: ["True", "False"],
-        a: 0
-    },
-    {
-        topic: "Rapid Fire",
-        q: "True or False: In PHP, keys in an associative array are case-sensitive.",
-        options: ["True", "False"],
-        a: 0
-    },
-    {
-        topic: "Rapid Fire",
-        q: "True or False: You can have multiple `<h1>` tags on a page according to HTML5 standards (though typically not recommended for SEO).",
-        options: ["True", "False"],
-        a: 0
-    },
-    {
-        topic: "Rapid Fire",
-        q: "True or False: React state updates are always synchronous.",
-        options: ["True", "False (They are often asynchronous/batched)"],
-        a: 1
-    },
-    {
-        topic: "Rapid Fire",
-        q: "True or False: A `transient` with an expiration of 0 seconds never expires.",
-        options: ["True", "False"],
-        a: 1,
-        explain: "This is a trick: in WP options, 0 often means 'no expiration', but for transients you should treat 0 as 'don’t use transients for permanence' (behavior/assumptions vary). Prefer an option for permanent storage, or set a real TTL for transients."
-    },
-    {
-        topic: "Rapid Fire",
-        q: "Can you define a constant in PHP using `const` inside an `if` block?",
-        options: [
-            "Yes",
-            "No, `const` is compile-time. Use `define()` for runtime definitions."
-        ],
-        a: 1
-    },
-    {
-        topic: "Rapid Fire",
-        q: "Does `empty('0')` return true or false in PHP?",
-        options: ["True", "False"],
-        a: 0
-    }
-
-        ];
-
-        // --- DUPLICATE/AUGMENT DATA TO SIMULATE SCALE IF NEEDED ---
-        // For a real app, you would add more distinct questions here. 
-        // I will duplicate the logic to ensure the "shuffle" feels robust for the demo.
-        let questions = [...rawData]; 
+        let questions = rawData.map(q => ({ ...q, topic: normalizeTopicName(q.topic) }));
         
         // --- APP STATE ---
         let currentTopic = 'All';
@@ -2431,8 +411,51 @@
         let quizMode = 'topic'; // 'topic' | 'assessment'
         const ASSESSMENT_SIZE = 60;
 
+        let compactOptions = true;
+        let topicIndexQuery = '';
+
+        function truncateText(s, maxChars) {
+            const t = String(s || '').replace(/\s+/g, ' ').trim();
+            if (!maxChars || t.length <= maxChars) return t;
+            return t.slice(0, Math.max(0, maxChars - 1)).trimEnd() + '…';
+        }
+
+        function updateCompactOptionsButton() {
+            const btn = document.getElementById('compactOptionsBtn');
+            if (!btn) return;
+            btn.textContent = compactOptions ? 'Compact Options: On' : 'Compact Options: Off';
+        }
+
+        function toggleCompactOptions(force) {
+            const next = typeof force === 'boolean' ? force : !compactOptions;
+            compactOptions = next;
+            updateCompactOptionsButton();
+            try {
+                localStorage.setItem('quiz_compactOptions', compactOptions ? '1' : '0');
+            } catch (e) {
+                // ignore
+            }
+            loadQuestion();
+        }
+
         // --- INITIALIZATION ---
         function init() {
+            // Preferences
+            try {
+                const saved = localStorage.getItem('quiz_compactOptions');
+                if (saved === '0' || saved === '1') compactOptions = saved === '1';
+            } catch (e) {
+                // ignore
+            }
+            updateCompactOptionsButton();
+
+            // If the external bank didn't load, fail loudly but gracefully.
+            if (!questions.length) {
+                document.getElementById('categoryBadge').innerText = 'No Data';
+                document.getElementById('questionText').innerText = 'Question bank not loaded. Check that interview_guide/wordpress_dev_bank_normalized.js is accessible and has no JS errors.';
+                const optionsDiv = document.getElementById('optionsGrid');
+                if (optionsDiv) optionsDiv.innerHTML = '';
+            }
             renderSidebar();
             filterQuestions();
             updateStats();
@@ -2458,6 +481,11 @@
             const topics = getTopics();
             const counts = getTopicCounts();
 
+            const query = (document.getElementById('topicSearch')?.value || '').trim().toLowerCase();
+            const filteredTopics = query
+                ? topics.filter(t => String(t).toLowerCase().includes(query))
+                : topics;
+
             // Update the static "All Topics" button label to include total count
             const allBtn = document.getElementById('allTopicsBtn');
             if (allBtn) {
@@ -2475,7 +503,7 @@
             // Remove previously-rendered topic buttons (keep header + all button + flashcards link)
             sidebar.querySelectorAll('button.topic-btn[data-dynamic="true"]').forEach(el => el.remove());
             
-            topics.forEach(t => {
+            filteredTopics.forEach(t => {
                 const btn = document.createElement('button');
                 btn.className = 'topic-btn';
                 btn.dataset.dynamic = 'true';
@@ -2485,6 +513,15 @@
                 btn.onclick = () => setTopic(t);
                 sidebar.appendChild(btn);
             });
+
+            const counter = document.getElementById('topicCounter');
+            if (counter) {
+                const topicCountLabel = query ? `${filteredTopics.length}/${topics.length}` : String(topics.length);
+                const poolCount = quizMode === 'assessment'
+                    ? currentQuestions.length
+                    : (currentTopic === 'All' ? questions.length : (counts.get(currentTopic) || currentQuestions.length));
+                counter.textContent = `Topics: ${topicCountLabel} • Bank: ${questions.length} • Pool: ${poolCount}`;
+            }
         }
 
         function setTopic(topic) {
@@ -2563,6 +600,32 @@
             // Render Text
             document.getElementById('categoryBadge').innerText = qData.topic;
             document.getElementById('questionText').innerText = qData.q;
+
+            // Summary + seniority (helps scan the bank and review coverage)
+            const levelBadge = document.getElementById('levelBadge');
+            const questionSummary = document.getElementById('questionSummary');
+            const level = getQuestionLevel(qData);
+            const summary = getQuestionSummary(qData);
+
+            if (levelBadge) {
+                if (level) {
+                    levelBadge.style.display = 'inline-block';
+                    levelBadge.innerText = String(level);
+                } else {
+                    levelBadge.style.display = 'none';
+                    levelBadge.innerText = '';
+                }
+            }
+
+            if (questionSummary) {
+                if (summary) {
+                    questionSummary.style.display = 'block';
+                    questionSummary.innerText = summary;
+                } else {
+                    questionSummary.style.display = 'none';
+                    questionSummary.innerText = '';
+                }
+            }
             
             // Shuffle and Render Options
             const optionsDiv = document.getElementById('optionsGrid');
@@ -2575,7 +638,9 @@
             optionsWithIndices.forEach(optObj => {
                 const btn = document.createElement('button');
                 btn.className = 'option-btn';
-                btn.innerText = optObj.text;
+                const full = String(optObj.text ?? '');
+                btn.innerText = compactOptions ? truncateText(full, 90) : full;
+                btn.title = full;
                 btn.dataset.originalIndex = String(optObj.originalIndex);
                 btn.onclick = () => checkAnswer(btn, optObj.originalIndex, qData.a);
                 optionsDiv.appendChild(btn);
@@ -2584,6 +649,193 @@
             // Update Progress
             const pct = (currentIndex / currentQuestions.length) * 100;
             progressBar.style.width = `${pct}%`;
+        }
+
+        // --- BANK ENRICHMENT HELPERS ---
+        function normalizeLevel(value) {
+            if (!value) return '';
+            const s = String(value).trim();
+            if (!s) return '';
+            return s;
+        }
+
+        function deriveSummaryFromQuestion(text) {
+            if (!text) return '';
+            const q = String(text)
+                .replace(/`/g, '')
+                .replace(/\s+/g, ' ')
+                .trim();
+            if (!q) return '';
+
+            // Prefer a short clause before a question mark/colon.
+            const cut = q.split(/[?\:]/)[0].trim();
+            const words = cut.split(' ').slice(0, 14).join(' ');
+            return words.length < cut.length ? `${words}…` : words;
+        }
+
+        function getQuestionSummary(qData) {
+            if (!qData) return '';
+            if (qData.summary) return String(qData.summary);
+            return deriveSummaryFromQuestion(qData.q);
+        }
+
+        function getQuestionLevel(qData) {
+            if (!qData) return '';
+            const direct = normalizeLevel(qData.level || qData.seniority);
+            if (direct) return direct;
+            const topic = qData.topic || 'Uncategorized';
+            const reg = topicRegistry && topicRegistry[topic] ? topicRegistry[topic] : null;
+            if (reg && reg.defaultLevel) return normalizeLevel(reg.defaultLevel);
+            return '';
+        }
+
+        // --- TOPIC INDEX + CHALLENGES ---
+        function toggleTopicIndex(force) {
+            const panel = document.getElementById('topicIndexPanel');
+            if (!panel) return;
+            const show = typeof force === 'boolean' ? force : !panel.classList.contains('visible');
+            panel.classList.toggle('visible', show);
+            if (show) renderTopicIndex();
+        }
+
+        function toggleChallenges(force) {
+            const panel = document.getElementById('challengesPanel');
+            if (!panel) return;
+            const show = typeof force === 'boolean' ? force : !panel.classList.contains('visible');
+            panel.classList.toggle('visible', show);
+            if (show) renderChallenges();
+        }
+
+        function renderTopicIndex() {
+            const meta = document.getElementById('topicIndexMeta');
+            const root = document.getElementById('topicIndexContent');
+            if (!meta || !root) return;
+
+            const counts = getTopicCounts();
+            const topics = getTopics();
+            root.innerHTML = '';
+
+            const searchWrap = document.createElement('div');
+            searchWrap.style.marginBottom = '10px';
+            const input = document.createElement('input');
+            input.type = 'search';
+            input.placeholder = 'Search topics…';
+            input.value = topicIndexQuery;
+            input.className = 'topic-search';
+            input.style.marginBottom = '0';
+            input.setAttribute('aria-label', 'Search topics in index');
+            searchWrap.appendChild(input);
+            root.appendChild(searchWrap);
+
+            const list = document.createElement('div');
+            list.style.display = 'grid';
+            list.style.gridTemplateColumns = '1fr';
+            list.style.gap = '10px';
+
+            function renderRows() {
+                list.innerHTML = '';
+                const q = topicIndexQuery.trim().toLowerCase();
+                const filtered = q ? topics.filter(t => String(t).toLowerCase().includes(q)) : topics;
+                meta.textContent = `${filtered.length}${q ? `/${topics.length}` : ''} topics • ${questions.length} questions`;
+
+                filtered.forEach(t => {
+                const row = document.createElement('div');
+                row.style.border = '1px solid rgba(148, 163, 184, 0.18)';
+                row.style.borderRadius = '12px';
+                row.style.padding = '12px';
+                row.style.background = 'rgba(30, 41, 59, 0.4)';
+
+                const count = counts.get(t) || 0;
+                const reg = topicRegistry && topicRegistry[t] ? topicRegistry[t] : null;
+                const summary = reg && reg.summary ? reg.summary : '';
+                const lvl = reg && reg.defaultLevel ? reg.defaultLevel : '';
+
+                row.innerHTML = `
+                    <div style="display:flex;justify-content:space-between;gap:12px;align-items:baseline;">
+                      <div style="font-weight:700;color:#f1f5f9;">${escapeHtml(t)}</div>
+                      <div style="color:#94a3b8;white-space:nowrap;">${count}Q${lvl ? ' • ' + escapeHtml(String(lvl)) : ''}</div>
+                    </div>
+                    <div style="margin-top:6px;color:#94a3b8;line-height:1.5;">${summary ? escapeHtml(summary) : '<span style="opacity:0.7">(add a topic summary in wordpress_dev_bank_normalized.js)</span>'}</div>
+                    <div style="margin-top:10px;">
+                      <button class="btn" style="background:#38bdf8;color:#0f172a" onclick="setTopic('${escapeAttr(t)}'); toggleTopicIndex(false);">Open Topic</button>
+                    </div>
+                `;
+                list.appendChild(row);
+                                });
+                        }
+
+                        input.oninput = () => {
+                                topicIndexQuery = input.value;
+                                renderRows();
+                        };
+
+                        renderRows();
+
+            root.appendChild(list);
+        }
+
+        function renderChallenges() {
+            const meta = document.getElementById('challengesMeta');
+            const root = document.getElementById('challengesContent');
+            if (!meta || !root) return;
+
+            meta.textContent = `${challengeBank.length} challenges`;
+            root.innerHTML = '';
+
+            if (!challengeBank.length) {
+                root.textContent = 'No challenges found in the bank.';
+                return;
+            }
+
+            const wrap = document.createElement('div');
+            wrap.style.display = 'grid';
+            wrap.style.gridTemplateColumns = '1fr';
+            wrap.style.gap = '12px';
+
+            challengeBank.forEach(ch => {
+                const card = document.createElement('div');
+                card.style.border = '1px solid rgba(148, 163, 184, 0.18)';
+                card.style.borderRadius = '12px';
+                card.style.padding = '14px';
+                card.style.background = 'rgba(30, 41, 59, 0.4)';
+
+                const title = escapeHtml(ch.title || 'Challenge');
+                const seniority = escapeHtml(ch.seniority || '');
+                const timebox = escapeHtml(ch.timebox || '');
+                const summary = escapeHtml(ch.summary || '');
+                const prompt = escapeHtml(ch.prompt || '');
+                const deliverables = Array.isArray(ch.deliverables) ? ch.deliverables.map(d => `<li>${escapeHtml(String(d))}</li>`).join('') : '';
+                const evaluation = Array.isArray(ch.evaluation) ? ch.evaluation.map(e => `<li>${escapeHtml(String(e))}</li>`).join('') : '';
+
+                card.innerHTML = `
+                  <div style="display:flex;justify-content:space-between;gap:12px;align-items:baseline;">
+                    <div style="font-weight:800;color:#f1f5f9;">${title}</div>
+                    <div style="color:#94a3b8;white-space:nowrap;">${[seniority, timebox].filter(Boolean).join(' • ')}</div>
+                  </div>
+                  ${summary ? `<div style="margin-top:8px;color:#94a3b8;line-height:1.5;">${summary}</div>` : ''}
+                  ${prompt ? `<div style="margin-top:10px;color:#f1f5f9;line-height:1.55;"><strong>Prompt:</strong> ${prompt}</div>` : ''}
+                  ${deliverables ? `<div style="margin-top:10px;color:#f1f5f9;"><strong>Deliverables</strong><ul style="margin:6px 0 0 18px;color:#94a3b8;">${deliverables}</ul></div>` : ''}
+                  ${evaluation ? `<div style="margin-top:10px;color:#f1f5f9;"><strong>Evaluation</strong><ul style="margin:6px 0 0 18px;color:#94a3b8;">${evaluation}</ul></div>` : ''}
+                `;
+
+                wrap.appendChild(card);
+            });
+
+            root.appendChild(wrap);
+        }
+
+        function escapeHtml(s) {
+            return String(s)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function escapeAttr(s) {
+            // Same escaping as HTML, plus newlines.
+            return escapeHtml(s).replace(/\n/g, ' ');
         }
 
         function checkAnswer(selectedBtn, selectedIndex, correctIndex) {
@@ -2829,7 +1081,13 @@
         }
 
         function updateStats() {
-            document.getElementById('stats').innerText = `Score: ${score} / ${totalAnswered}`;
+            const topicLabel = quizMode === 'assessment'
+                ? `Assessment (${Math.min(ASSESSMENT_SIZE, questions.length)})`
+                : currentTopic;
+            const poolSize = currentQuestions.length;
+            document.getElementById('stats').innerText = `Score: ${score} / ${totalAnswered} • Topic: ${topicLabel} • Pool: ${poolSize} • Bank: ${questions.length}`;
+            // Keep sidebar counters current (pool size changes during assessment/topic selection).
+            try { renderSidebar(); } catch (e) { /* ignore */ }
         }
 
         // --- UTILS ---

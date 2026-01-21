@@ -1,0 +1,542 @@
+/* eslint-disable */
+(function () {
+    const bank = {
+        meta: {
+            title: "Interview Flashcards Bank",
+            generatedFrom: "interview_guide/flashcards.html",
+            schemaVersion: 1,
+            generatedAt: "2026-01-20",
+        },
+        groups: [
+            {
+                id: "role-fit-ntara",
+                label: "Role Fit (Ntara)",
+                topics: [
+                    "Consulting",
+                    "Integrations",
+                    "Accessibility",
+                    "Debugging",
+                    "DevOps",
+                    "Performance",
+                    "Security",
+                    "WordPress",
+                    "Gutenberg",
+                    "Architecture",
+                ],
+            },
+        ],
+        cards: [
+            {
+                topic: "Caching",
+                front: "Object cache vs Transients in WordPress: what’s the real difference when Redis is enabled?",
+                answer: "With an external object cache, transients often “ride on” the object cache, but transients still carry TTL semantics and a WP API contract. Without external cache, transients fall back to the DB (options table). Object cache is a lower-level key/value store used broadly by WP; transients are a specific feature for expiring cached values.",
+                analogy:
+                    "Object cache = your RAM “clipboard”; transients = labeled sticky notes with an expiration time (and if you don’t have RAM, you store the sticky notes in a filing cabinet (DB)).",
+                similarity: "Think “Redis key” (object cache) vs “Redis key with TTL and WP conventions” (transient).",
+            },
+            {
+                topic: "Caching",
+                front: "What is a cache stampede (race condition) and how do you prevent it?",
+                answer: "Stampede happens when many requests miss the cache at once and all recompute the expensive value, spiking DB/CPU. Prevent with locking (mutex), “single flight” (one recompute; others wait), stale-while-revalidate, jittered expirations, and prewarming.",
+                analogy:
+                    "A store runs out of bread and 200 people all rush the bakery door at once. Put one person in charge of re-baking while others wait or buy yesterday’s bread briefly.",
+                similarity: "Same as thundering herd on a DB connection pool.",
+            },
+            {
+                topic: "WordPress",
+                front: "Actions vs Filters in WordPress: what’s the difference?",
+                answer: "Actions are events (“do something now”) and don’t transform data. Filters are transformations: they take a value, modify it, and return it. Both are hooks; filters are actions that return a value.",
+                analogy:
+                    "Action = doorbell (notification). Filter = water filter (input comes in, output comes out changed).",
+                similarity: "Events vs middleware pipelines.",
+            },
+            {
+                topic: "WordPress",
+                front: "Why is `pre_get_posts` preferred over `query_posts`?",
+                answer: "`pre_get_posts` modifies the main query before it runs, without breaking globals and pagination. `query_posts` clobbers the global `$wp_query`, often causes side effects, and is easy to misuse.",
+                analogy:
+                    "pre_get_posts = adjusting the recipe before cooking. query_posts = dumping the cooked meal and starting over in the middle of dinner.",
+                similarity: "Configuring a request before it’s sent vs mutating shared global state after the fact.",
+            },
+            {
+                topic: "Security",
+                front: "CSRF vs XSS: how do you explain the difference in one breath?",
+                answer: "CSRF tricks a logged-in user’s browser into sending a valid request they didn’t intend. XSS injects attacker-controlled script into your page so it runs in your origin. CSRF = forged request; XSS = running code in your site.",
+                analogy:
+                    "CSRF = someone slips a signed letter into your outbox. XSS = someone gets a microphone on your stage and speaks as you.",
+                similarity: "CSRF targets “trust in cookies”; XSS targets “trust in rendered HTML/JS”.",
+            },
+            {
+                topic: "Security",
+                front: "What does a WordPress nonce actually protect against?",
+                answer: "A WP nonce is primarily a CSRF mitigation (a per-action token tied to a user/session/time window). It does not replace capability checks; you still must verify permissions.",
+                analogy:
+                    "Nonce = wristband to prove you’re part of this event. Capability check = security guard verifying you’re allowed backstage.",
+                similarity: "CSRF token + authorization are separate layers.",
+            },
+            {
+                topic: "Architecture",
+                front: "Why do Singletons make unit tests harder than Dependency Injection?",
+                answer: "Singletons create hidden global state and implicit dependencies. Tests can’t easily swap implementations, reset state, or run in parallel. DI makes dependencies explicit and replaceable with mocks/stubs.",
+                analogy:
+                    "Singleton = one shared kitchen for every restaurant in a city. DI = each restaurant brings its own ingredients/tools, or you can swap a tool for a training dummy.",
+                similarity: "Global variables vs constructor parameters.",
+            },
+            {
+                topic: "Architecture",
+                front: "What’s the “real” meaning of Liskov Substitution Principle (LSP)?",
+                answer: "If code expects a base type, it should work correctly with any subtype without surprises. Subtypes must keep the contract: preconditions can’t be stricter, postconditions can’t be weaker.",
+                analogy: "If a socket fits a plug, any “compatible plug” must not short-circuit your house.",
+                similarity:
+                    "Don’t make derived classes that break expectations (e.g., throwing “not supported” for core behaviors).",
+            },
+            {
+                topic: "Architecture",
+                front: "Interface Segregation Principle (ISP) — why is it practical?",
+                answer: "Clients shouldn’t depend on methods they don’t use. Many small interfaces reduce mocking pain and prevent “fat” abstractions that force unrelated implementations.",
+                analogy: "A TV remote shouldn’t force you to also carry a microwave panel.",
+                similarity: "Prefer small, focused APIs (like small npm packages) over monolith “god interfaces”.",
+            },
+            {
+                topic: "PHP",
+                front: "OPcache: what problem does it solve and what it does NOT solve?",
+                answer: "OPcache caches compiled PHP bytecode, reducing CPU spent parsing/compiling scripts. It does not cache DB results or PHP variables across requests (unless you implement that separately).",
+                analogy: "OPcache = precompiled meal prep; you still have to fetch ingredients (DB) each time.",
+                similarity: "JIT/bytecode cache vs application-level caching.",
+            },
+            {
+                topic: "PHP",
+                front: "In PHP-FPM, why can a “small” memory leak be catastrophic under load?",
+                answer: "Even tiny per-request growth multiplied by high RPS and many workers leads to frequent worker recycling, latency spikes, and eventual OOM. In long-running workers, leaks accumulate until restart.",
+                analogy: "A small drip in a boat is fine for minutes, but over hours it sinks you.",
+                similarity: "Per-request overhead × traffic = system-wide failure.",
+            },
+            {
+                topic: "JavaScript",
+                front: "Event loop: microtasks vs macrotasks in a practical interview explanation?",
+                answer: "Macrotasks (timers, IO callbacks) are scheduled as “next turns”. Microtasks (Promises) run immediately after the current call stack completes, before the next macrotask. That’s why Promise callbacks can run before `setTimeout(fn, 0)`.",
+                analogy:
+                    "Macrotasks = next customer in line. Microtasks = notes you must resolve before calling the next customer.",
+                similarity: "Immediate queue vs scheduled queue.",
+            },
+            {
+                topic: "React",
+                front: "Why does `useEffect` dependency correctness matter so much?",
+                answer: "Dependencies define when effects run. Missing deps often cause stale closures (reading old state/props) and hard-to-reproduce bugs. Correct deps + stable callbacks (useCallback) avoid “it works until it doesn’t”.",
+                analogy: "A smoke alarm that only updates its batteries sometimes is worse than no alarm.",
+                similarity: "Reactive systems rely on accurate “inputs”.",
+            },
+            {
+                topic: "React",
+                front: "State batching: why does calling `setState` twice not always mean two renders?",
+                answer: "React batches updates (especially in event handlers) to reduce renders. Multiple state updates can be grouped into one render; using functional updates ensures correctness when updates depend on previous state.",
+                analogy:
+                    "Instead of sending two separate invoices, you send one combined invoice at the end of the day.",
+                similarity: "Debouncing work to reduce overhead.",
+            },
+            {
+                topic: "Git",
+                front: "Rebase vs Merge: the most useful mental model?",
+                answer: "Merge preserves history and creates a merge commit to combine branches. Rebase rewrites your branch to apply commits on top of another base, creating a linear history (but changing commit SHAs). Use rebase for clean feature history; merge for shared/public history.",
+                analogy:
+                    "Merge = stapling two timelines together. Rebase = redrawing your timeline as if you started later.",
+                similarity: "Appending vs rewriting.",
+            },
+            {
+                topic: "Testing",
+                front: "Mock vs Stub vs Fake (the interview-friendly distinction)?",
+                answer: "Stub returns canned data. Mock verifies interactions (called with X). Fake is a working but simplified implementation (e.g., in-memory repo). Choose the least-powerful tool that proves the behavior.",
+                analogy:
+                    "Stub = a recorded voicemail. Mock = a receptionist that logs who called. Fake = a small pop-up store that actually sells (but isn’t the full chain).",
+                similarity: "Test doubles spectrum.",
+            },
+            {
+                topic: "Testing",
+                front: "Unit vs Integration tests: what do you optimize for?",
+                answer: "Unit tests optimize speed and pinpoint failures; they mock dependencies and validate small behaviors. Integration tests optimize confidence across boundaries (DB, HTTP, filesystem). Balance: fast unit suite + smaller integration suite for critical paths.",
+                analogy:
+                    "Unit test = checking each Lego piece fits. Integration test = building a mini model and shaking it.",
+                similarity: "Local correctness vs system correctness.",
+            },
+            {
+                topic: "Databases",
+                front: "Why can adding an index make writes slower but reads faster?",
+                answer: "Indexes speed reads by providing lookup structures, but every write must also update those structures. More indexes = more maintenance during INSERT/UPDATE/DELETE.",
+                analogy:
+                    "A library catalog makes finding books faster, but filing every new book now requires updating multiple catalogs.",
+                similarity: "Caching trade-off: read optimization usually costs write work.",
+            },
+            {
+                topic: "Databases",
+                front: "N+1 query problem: explain it like you would to a junior dev.",
+                answer: "You do 1 query to fetch a list, then N more queries for details per item. It looks fine locally but collapses at scale. Fix with joins, eager-loading, batching, or caching.",
+                analogy: "Instead of asking one waiter for all meals, you call the kitchen once per fork.",
+                similarity: "Chatty network calls vs batched calls.",
+            },
+            {
+                topic: "Performance",
+                front: "Why is “cache invalidation” considered hard?",
+                answer: "Because you must know exactly what data depends on what, and invalidate at the right time and scope. Too broad invalidation destroys cache value; too narrow yields stale data bugs.",
+                analogy: "Erasing the correct parts of a whiteboard without wiping the entire lecture.",
+                similarity: "Dependency graphs + time = complexity.",
+            },
+            {
+                topic: "Architecture",
+                front: "What’s the difference between “idempotent” and “safe” HTTP methods?",
+                answer: "Safe means “no state change” (GET, HEAD). Idempotent means repeating the same request has the same effect as doing it once (PUT, DELETE). POST is typically neither.",
+                analogy:
+                    "Safe = looking at a switch. Idempotent = flipping it to ON repeatedly: after the first time nothing changes.",
+                similarity: "Read-only vs repeatable operations.",
+            },
+            {
+                topic: "Security",
+                front: "Why does “escaping output” and “validating input” both matter?",
+                answer: "Validate input to enforce invariants early (shape/range/type). Escape output to match the sink context (HTML, attribute, JS, URL, SQL). You can’t rely on only one because data can flow to multiple sinks.",
+                analogy:
+                    "Input validation = checking ingredients at the door. Output escaping = plating food appropriately for allergies at the table.",
+                similarity: "Defense in depth.",
+            },
+            {
+                topic: "WordPress",
+                front: "Why can updating post meta every request “bust caches” and cause DB pain?",
+                answer: "Frequent writes invalidate cache entries, create contention/lock pressure, and prevent hot objects from staying warm. Better: batch counts, store in an in-memory counter + periodic flush, or use async queues.",
+                analogy: "If you repaint a road sign every second, traffic never flows smoothly.",
+                similarity: "Write amplification and cache churn.",
+            },
+            {
+                topic: "Architecture",
+                front: "What is “eventual consistency” and when is it acceptable?",
+                answer: "Systems converge to the same state over time, not instantly. It’s acceptable when slight staleness is okay (counters, feeds, caches). It’s risky for money transfers or strict invariants.",
+                analogy: "Multiple clocks in a building drift but get corrected periodically.",
+                similarity: "Async replication and delayed propagation.",
+            },
+
+            // Added: WordPress/Ntara-focused cards
+            {
+                topic: "WordPress",
+                front: "The `options` table: what is `autoload` and why can it melt your TTFB?",
+                answer: "Autoloaded options are loaded on every request (via `wp_load_alloptions`). If you store large blobs (page builder data, huge arrays) with autoload=yes, you inflate every request’s memory and DB time. Fix by setting autoload=no for non-critical options, splitting data, or moving to custom tables/object cache.",
+                analogy:
+                    "Autoload = carrying your entire toolbox to every meeting “just in case”. Eventually you spend more time dragging the toolbox than doing work.",
+                similarity: "Loading a massive config at process start for every request.",
+            },
+            {
+                topic: "WordPress",
+                front: "WP-Cron: what is it really, and why does it cause weird timing bugs?",
+                answer: "WP-Cron is “pseudo-cron”: it runs when a user hits the site (traffic-driven). Low traffic means delayed tasks; high traffic can trigger concurrent runs. For reliability, disable WP-Cron and run real cron to call `wp-cron.php`, plus add locking/backoff for heavy jobs.",
+                analogy: "It’s like a mailroom that only processes packages when someone walks in the door.",
+                similarity: "Event-driven job runner without guaranteed scheduling.",
+            },
+            {
+                topic: "Security",
+                front: "Capability checks vs nonces: what’s the safe order and why?",
+                answer: "Do both. First validate nonce (request intent / CSRF), then validate capability (authorization). Also validate/sanitize input and escape output. Nonce alone doesn’t mean the user is allowed; capability alone doesn’t stop CSRF.",
+                analogy: "Nonce = “this ticket is real”. Capability = “this person can enter VIP”. You need both.",
+                similarity: "CSRF token + authorization middleware.",
+            },
+            {
+                topic: "Security",
+                front: "Sanitize vs escape in WordPress: how do you decide what function to use?",
+                answer: "Sanitize on input/storage to enforce shape (e.g., `sanitize_text_field`, `intval`, `sanitize_email`). Escape on output for the context: HTML (`esc_html`), attribute (`esc_attr`), URL (`esc_url`), JS (`wp_json_encode` + safe embedding). Don’t “sanitize for HTML” and then output into JS.",
+                analogy: "Sanitize = washing vegetables. Escape = serving them on the right plate for the right guest.",
+                similarity: "Input validation vs output encoding.",
+            },
+            {
+                topic: "Gutenberg",
+                front: "Dynamic vs static blocks: when do you use `render_callback`?",
+                answer: "Static blocks serialize HTML into `post_content` (good for portability, fast render). Dynamic blocks store attributes and render on request via `render_callback` (good for personalized, frequently changing, or complex server-side output). Use dynamic when you need fresh data or PHP rendering; otherwise static often wins for caching and simplicity.",
+                analogy:
+                    "Static = pre-baked bread on the shelf. Dynamic = made-to-order sandwich assembled at checkout.",
+                similarity: "SSR components vs pre-rendered HTML.",
+            },
+            {
+                topic: "Gutenberg",
+                front: "Block patterns vs reusable blocks vs template parts: what’s the “senior” distinction?",
+                answer: "Patterns are starting layouts (instantiated into content). Reusable blocks are saved as entities and reused across pages (changes can propagate). Template parts live in theme templates (site editor) and define structural layout. Pick based on “should updates propagate automatically?” and “is it content or layout?”",
+                analogy:
+                    "Pattern = a cookie cutter. Reusable block = a shared paragraph you edit once. Template part = the building’s blueprint.",
+                similarity: "Scaffold vs shared component vs layout template.",
+            },
+            {
+                topic: "Integrations",
+                front: "Webhooks vs polling: which is better for CRM sync and why?",
+                answer: "Webhooks are push-based and near-real-time, but require verification, retries, idempotency, and handling out-of-order deliveries. Polling is simpler but adds load/latency and can miss edge cases. For CRM sync, webhooks + a queue + idempotency keys is typically the “grown-up” approach.",
+                analogy:
+                    "Webhook = the bank texts you when money moves. Polling = you check your balance every minute.",
+                similarity: "Event-driven integration vs scheduled batch jobs.",
+            },
+            {
+                topic: "Integrations",
+                front: "Idempotency: how do you avoid duplicate leads when the CRM retries requests?",
+                answer: "Use an idempotency key (e.g., form submission UUID) stored server-side. On receipt, check if processed; if yes return success without re-processing. Also design writes as upserts keyed by external ID and log correlation IDs end-to-end.",
+                analogy: "A bouncer stamps your hand so you can re-enter without buying another ticket.",
+                similarity: "Exactly-once effects built on at-least-once delivery.",
+            },
+            {
+                topic: "Performance",
+                front: "Full-page cache vs object cache: when does each matter most?",
+                answer: "Full-page cache wins when responses can be shared across users (anonymous traffic). Object cache wins when pages are personalized but you can cache expensive fragments (queries, computed structures). They complement each other; don’t expect object cache alone to save a fully uncached theme with heavy PHP work.",
+                analogy:
+                    "Full-page cache = serving pre-printed flyers. Object cache = keeping frequently used paragraphs in a drawer to assemble custom letters faster.",
+                similarity: "CDN edge cache vs application memoization.",
+            },
+            {
+                topic: "Performance",
+                front: "Largest Contentful Paint (LCP): what are the most common WordPress causes?",
+                answer: "Slow TTFB (uncached PHP/DB), render-blocking CSS/JS, huge hero images without proper sizes, late-loading fonts, and heavy above-the-fold blocks. Fix with caching, critical CSS, defer/async, responsive images, font preloading, and reducing above-the-fold complexity.",
+                analogy: "LCP is “how long until the main dish hits the table,” not how long until the menu arrives.",
+                similarity: "Perceived performance vs backend throughput.",
+            },
+            {
+                topic: "Architecture",
+                front: "Custom tables vs post meta: when is post meta the wrong tool?",
+                answer: "Post meta is flexible but can be slow for complex querying and high write volume (meta queries, joins, indexes). Use custom tables when you need relational queries, reporting, high-frequency writes, or strict schema and indexes. Still keep a minimal WP-facing meta for admin/search UX if needed.",
+                analogy:
+                    "Post meta = sticky notes on a folder. Custom tables = a spreadsheet/database built for querying.",
+                similarity: "Schema-less key/value vs relational model.",
+            },
+            {
+                topic: "DevOps",
+                front: "Why do you avoid editing WordPress directly on production?",
+                answer: "You lose reproducibility and auditability; changes aren’t tracked, rollbacks are hard, and you risk partial deployments. Use version control, CI/CD, environment parity, and migrations/feature flags.",
+                analogy: "Hotfixing prod is like changing airplane parts mid-flight without documenting it.",
+                similarity: "Immutable infrastructure vs manual server changes.",
+            },
+            {
+                topic: "Consulting",
+                front: "Discovery: what 5 questions do you ask before estimating a WordPress integration?",
+                answer: "What is the source of truth? What data model and volume? What auth method and rate limits? What SLAs/retry semantics? What environments and release cadence? Also: who owns failures and what monitoring exists?",
+                analogy: "Before building a bridge, you ask about traffic, soil, weather, and budget.",
+                similarity: "Requirements gathering before architecture.",
+            },
+            {
+                topic: "Consulting",
+                front: "How do you communicate trade-offs without sounding indecisive?",
+                answer: "Present options with a recommendation. Tie trade-offs to business outcomes (cost, timeline, risk). Make assumptions explicit, list unknowns, and propose a validation step (spike/prototype) to reduce uncertainty.",
+                analogy: "A doctor explains treatments and recommends one based on goals and risks.",
+                similarity: "Decision record (ADR) thinking.",
+            },
+            {
+                topic: "Accessibility",
+                front: "Accessibility “quick wins” in WordPress themes: what do you check first?",
+                answer: "Keyboard navigation/focus states, semantic headings/landmarks, form labels, color contrast, skip links, and image alt text. Also check for ARIA misuse and ensure interactive elements are real buttons/links.",
+                analogy: "Accessibility is adding ramps and clear signs, not just repainting the walls.",
+                similarity: "Usability constraints like performance budgets.",
+            },
+            {
+                topic: "Debugging",
+                front: "When a WP page is slow, what’s your first 3-step triage?",
+                answer: "1) Separate TTFB vs frontend (network waterfall). 2) Check caching headers and whether the request is bypassing cache. 3) Profile server-side: slow queries, PHP time, external calls. Only then optimize code/assets.",
+                analogy:
+                    "Before replacing parts, figure out whether the noise is from the engine, brakes, or suspension.",
+                similarity: "Isolate variables before optimization.",
+            },
+            {
+                topic: "WooCommerce",
+                front: "Why is WooCommerce “object cache + sessions” a frequent pain point?",
+                answer: "Woo relies on sessions, carts, and personalized fragments; full-page caching is harder. You need correct cache varies (cookies), fragment caching, and careful invalidation. Misconfigured object cache or persistent sessions can cause stale carts or wrong pricing.",
+                analogy:
+                    "Caching a shopping cart is like caching someone’s personal shopping basket at the store entrance — it must follow the right person.",
+                similarity: "Personalized pages + caching = hard mode.",
+            },
+            {
+                topic: "Headless",
+                front: "Headless WordPress: what do you gain and what do you lose?",
+                answer: "Gain: frontend freedom, performance patterns, multi-channel delivery. Lose: plugin compatibility, preview/editor cohesion, and often more complexity (auth, caching, SEO, previews). The “senior” move is to choose headless only when the requirements justify the complexity.",
+                analogy: "Headless is building a custom showroom while keeping the factory backend.",
+                similarity: "Decoupled services vs monolith convenience.",
+            },
+            {
+                topic: "CSS",
+                front: "Flexbox vs Grid: what’s the most useful distinction?",
+                answer: "Flexbox is one-dimensional layout (row OR column). Grid is two-dimensional (rows AND columns) and can place items in both directions. Use Grid for page/layout structure; use Flexbox for components and linear alignment.",
+                analogy: "Flexbox = arranging items on a shelf. Grid = arranging items on a chessboard.",
+                similarity: "1D flow layout vs 2D layout system.",
+            },
+            {
+                topic: "CSS",
+                front: "In Flexbox, `justify-content` vs `align-items`?",
+                answer: "`justify-content` aligns items along the main axis. `align-items` aligns items along the cross axis. The axis depends on `flex-direction`.",
+                analogy: "Main axis = hallway direction; cross axis = side-to-side.",
+                similarity: "Primary vs secondary axis alignment.",
+            },
+            {
+                topic: "CSS",
+                front: "Why does `box-sizing: border-box` reduce layout bugs?",
+                answer: "It makes declared width/height include padding and border, so rendered size stays consistent. Without it, padding/border add to the width and can cause overflow and misalignment.",
+                analogy: "Border-box is “total size budget includes packaging”.",
+                similarity: "Budgeting inclusive vs exclusive costs.",
+            },
+            {
+                topic: "CSS",
+                front: "Specificity: what’s the mental model?",
+                answer: "Inline styles beat IDs; IDs beat classes/attributes/pseudo-classes; those beat elements/pseudo-elements. When specificity ties, later rules win. Seniors keep specificity low to avoid escalation.",
+                analogy: "Specificity is rank; source order is tie-breaker.",
+                similarity: "Priority rules + stable ordering.",
+            },
+            {
+                topic: "CSS",
+                front: "Stacking context: why does `z-index` “not work” sometimes?",
+                answer: "Because `z-index` is scoped to a stacking context. Properties like `transform`, `opacity < 1`, and `filter` can create new stacking contexts that isolate children from the global z-order.",
+                analogy: "A stacking context is a new “mini-layer universe”.",
+                similarity: "Nested scopes that limit global ordering.",
+            },
+            {
+                topic: "CSS",
+                front: "Grid `auto-fit` vs `auto-fill` with `minmax()`?",
+                answer: "`auto-fit` collapses empty tracks so items stretch to fill space. `auto-fill` keeps the tracks even if empty, preserving the column structure.",
+                analogy: "Auto-fit removes empty chairs; auto-fill keeps seats reserved.",
+                similarity: "Collapsing vs reserving capacity.",
+            },
+            {
+                topic: "CSS",
+                front: "Container queries: what problem do they solve?",
+                answer: "They let a component adapt to its container size rather than the viewport, making components reusable and removing global breakpoint coupling.",
+                analogy: "Ask “how big is my box?” not “how big is the screen?”",
+                similarity: "Component-local responsiveness vs page-level responsiveness.",
+            },
+            {
+                topic: "CSS",
+                front: "`position: sticky`: what are common gotchas?",
+                answer: "Sticky needs an inset (`top`/`bottom`) and only works within its scroll container. An ancestor with `overflow` can change the scroll container and break expectations.",
+                analogy: "Sticky works inside its room.",
+                similarity: "Behavior depends on container boundaries.",
+            },
+            {
+                topic: "CSS",
+                front: "Logical properties (e.g., `margin-inline`) — why do seniors care?",
+                answer: "They make layouts writing-mode aware (LTR/RTL) without duplicating styles. `margin-inline-start` adapts automatically when direction changes.",
+                analogy: "Don’t hardcode “left/right” in a multi-direction world.",
+                similarity: "Internationalization-friendly abstractions.",
+            },
+            {
+                topic: "CSS",
+                front: "Accessibility: why use `prefers-reduced-motion`?",
+                answer: "Some users are motion-sensitive. Respecting reduced motion preferences improves accessibility and reduces discomfort while keeping UX functional.",
+                analogy: "Offer stairs and an elevator — don’t force one path.",
+                similarity: "User-preference-driven UX.",
+            },
+            {
+                topic: "WordPress",
+                front: "Template hierarchy: what’s the “senior” takeaway?",
+                answer: "WP chooses templates based on the query (e.g., `single-{post_type}.php` → `single.php` → `index.php`). The senior move is to rely on hierarchy + hooks and avoid routing logic inside templates.",
+                analogy: "It’s a fallback chain: specific to generic.",
+                similarity: "Route matching with fallbacks.",
+            },
+            {
+                topic: "WordPress",
+                front: "Why enqueue scripts/styles instead of printing tags in templates?",
+                answer: "Enqueueing centralizes dependency ordering, avoids duplicates, supports conditional loading, and plays nicely with caching and plugins. Printing tags is brittle and hard to control.",
+                analogy: "Enqueueing is using a package manager; printing tags is copying DLLs manually.",
+                similarity: "Dependency graph vs ad-hoc includes.",
+            },
+            {
+                topic: "WordPress",
+                front: "REST API: why does `permission_callback` matter?",
+                answer: "It enforces authorization for an endpoint. Without it, you can accidentally expose data or actions publicly. Nonces can help for cookie-auth flows, but permission checks are still required.",
+                analogy: "A route without permissions is an unlocked door.",
+                similarity: "Authz middleware on API routes.",
+            },
+            {
+                topic: "WordPress",
+                front: "Autoloaded options: what’s the operational risk?",
+                answer: "Autoloaded options are loaded on many requests. Large values bloat memory and increase DB time on every page view. Keep autoload small and move big data elsewhere.",
+                analogy: "Carrying every tool to every job “just in case”.",
+                similarity: "Loading a massive config on every request.",
+            },
+            {
+                topic: "WordPress",
+                front: "When do you choose custom tables over post meta?",
+                answer: "When you need complex querying/reporting at scale or high-frequency writes. Post meta is flexible but can become slow with heavy joins and meta queries.",
+                analogy: "Sticky notes vs a structured spreadsheet designed for queries.",
+                similarity: "Key/value store vs relational model.",
+            },
+            {
+                topic: "Security",
+                front: "Capabilities vs nonces: why do you need both?",
+                answer: "Nonces defend against CSRF (intent). Capability checks defend authorization (permission). Use both, plus validation/sanitization and proper escaping.",
+                analogy: "Nonce = valid ticket. Capability = allowed backstage.",
+                similarity: "CSRF token + authz middleware.",
+            },
+            {
+                topic: "Security",
+                front: "`esc_html` vs `wp_kses_post`: when do you choose which?",
+                answer: "`esc_html` outputs plain text (no HTML). `wp_kses_post` allows a safe subset of HTML tags/attributes. Use `wp_kses_post` only when you intentionally accept rich text.",
+                analogy: "Esc_html is text-only. Kses is approved markup only.",
+                similarity: "Strict encoding vs allowlist sanitization.",
+            },
+            {
+                topic: "Security",
+                front: "What does `$wpdb->prepare()` actually prevent?",
+                answer: "SQL injection by parameterizing inputs. It does not replace capability checks or business validation; it just ensures user input can’t break query structure.",
+                analogy: "Prepare is a safe mold; inputs can’t reshape the mold.",
+                similarity: "Parameterized queries vs string concatenation.",
+            },
+            {
+                topic: "Security",
+                front: "SSRF risk: why is `wp_remote_get($_GET['url'])` dangerous?",
+                answer: "It can let attackers make your server request internal resources (metadata endpoints, admin panels). Use allowlists, restrict protocols/hosts, and set strict timeouts.",
+                analogy: "You become a courier delivering packages to any address an attacker writes down.",
+                similarity: "Server-side request proxy abuse.",
+            },
+            {
+                topic: "Security",
+                front: "File uploads: what’s the “senior” checklist?",
+                answer: "Check capabilities, validate file type/size, store safely, use WP APIs (`wp_handle_upload`), and never trust filenames or client-provided MIME types.",
+                analogy: "Don’t accept sealed boxes without inspection.",
+                similarity: "Defense in depth for untrusted input.",
+            },
+            {
+                topic: "Performance",
+                front: "TTFB vs LCP: what’s the useful difference?",
+                answer: "TTFB is server latency to first byte. LCP is user-visible: when the main content appears. Fixing TTFB helps LCP, but LCP can still be poor due to render-blocking assets and large images.",
+                analogy: "TTFB is “kitchen starts cooking”. LCP is “main dish hits the table”.",
+                similarity: "Backend latency vs perceived performance.",
+            },
+            {
+                topic: "Performance",
+                front: "What’s the “senior” workflow for optimizing a slow WP page?",
+                answer: "Measure first (waterfall + server timing), confirm caching behavior, then profile PHP/DB and external calls. Only after you identify bottlenecks do you optimize or refactor.",
+                analogy: "Diagnose before prescribing.",
+                similarity: "Observability-driven optimization.",
+            },
+            {
+                topic: "Performance",
+                front: "Why is heavy third-party JS a Core Web Vitals risk?",
+                answer: "It can block the main thread, delay rendering, and increase INP/TBT. Seniors defer/partition scripts, load conditionally, and agree on measurable budgets with stakeholders.",
+                analogy: "Too many cooks in a small kitchen slows dinner.",
+                similarity: "Shared resource contention.",
+            },
+            {
+                topic: "Performance",
+                front: "Images: what are the biggest easy wins on modern sites?",
+                answer: "Use responsive images (`srcset`/`sizes`), modern formats, correct dimensions, lazy-load below the fold, and avoid shipping huge hero images without optimization.",
+                analogy: "Don’t ship a poster when a postcard will do.",
+                similarity: "Right-sizing payloads to actual needs.",
+            },
+            {
+                topic: "Performance",
+                front: "Critical CSS: what’s the point?",
+                answer: "Inline only the CSS needed for above-the-fold so the first render happens sooner; load the rest asynchronously to reduce render-blocking.",
+                analogy: "Put essentials in your pocket; pack the rest in luggage.",
+                similarity: "Fast-path vs slow-path loading.",
+            },
+            {
+                topic: "Performance",
+                front: "Object cache: when is it a big win?",
+                answer: "When pages can’t be fully cached (personalization), but you can cache expensive fragments like queries, computed structures, and API responses with sane invalidation.",
+                analogy: "You can’t pre-print custom letters, but you can pre-write common paragraphs.",
+                similarity: "Memoization of expensive sub-work.",
+            },
+            {
+                topic: "Performance",
+                front: "Queues and async jobs: why do seniors reach for them?",
+                answer: "They remove heavy work from the request path, reduce tail latency under load, and allow retries/backoff. They also make integrations more reliable.",
+                analogy: "Don’t cook a banquet while a customer waits at the counter.",
+                similarity: "Async background processing vs synchronous blocking.",
+            },
+        ],
+    };
+
+    window.INTERVIEW_FLASHCARDS_BANK = bank;
+})();

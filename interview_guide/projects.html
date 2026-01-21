@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Proposed Projects (WordPress + React/Gutenberg)</title>
+  <style>
+    :root {
+      --bg-color: #0f172a;
+      --card-color: rgba(30, 41, 59, 0.8);
+      --text-color: #e2e8f0;
+      --secondary-text: #94a3b8;
+      --accent-color: #38bdf8;
+      --border: rgba(148, 163, 184, 0.18);
+      --success: rgba(34, 197, 94, 0.14);
+      --warning: rgba(250, 204, 21, 0.14);
+    }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+      background: var(--bg-color);
+      color: var(--text-color);
+      min-height: 100vh;
+      padding: 24px;
+    }
+
+    a { color: var(--accent-color); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .wrap {
+      width: min(1060px, 100%);
+      margin: 0 auto;
+    }
+
+    .top {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+
+    h1 {
+      font-size: 22px;
+      margin: 0;
+    }
+
+    .sub {
+      color: var(--secondary-text);
+      margin: 6px 0 0;
+      line-height: 1.5;
+      font-size: 13px;
+      max-width: 74ch;
+    }
+
+    .nav {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(2, 6, 23, 0.35);
+      color: var(--text-color);
+      font-weight: 600;
+      font-size: 13px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 14px;
+      margin-top: 14px;
+    }
+
+    .card {
+      background: var(--card-color);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .card h2 {
+      font-size: 16px;
+      margin: 0;
+      line-height: 1.25;
+    }
+
+    .meta {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+      color: var(--secondary-text);
+      font-size: 12px;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 9px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(56, 189, 248, 0.14);
+      color: #bae6fd;
+      width: fit-content;
+    }
+
+    .tag.green { background: var(--success); color: #bbf7d0; border-color: rgba(34, 197, 94, 0.25); }
+    .tag.yellow { background: var(--warning); color: #fde68a; border-color: rgba(250, 204, 21, 0.25); }
+
+    ul {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--secondary-text);
+      line-height: 1.5;
+      font-size: 13px;
+    }
+
+    .hint {
+      margin-top: 12px;
+      color: var(--secondary-text);
+      font-size: 13px;
+      line-height: 1.5;
+      border: 1px solid var(--border);
+      background: rgba(2, 6, 23, 0.25);
+      border-radius: 14px;
+      padding: 14px;
+    }
+
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+      font-size: 0.95em;
+      background: rgba(2, 6, 23, 0.35);
+      border: 1px solid rgba(148, 163, 184, 0.18);
+      padding: 1px 6px;
+      border-radius: 8px;
+      color: #e2e8f0;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="top">
+      <div>
+        <h1>Proposed Projects: WordPress + React/Gutenberg Blocks</h1>
+        <p class="sub">
+          Use these as portfolio projects, interview take-homes, or “talk tracks.” Each is scoped so you can ship a strong MVP,
+          then iterate with performance, accessibility, testing, and editor UX.
+        </p>
+      </div>
+      <div class="nav" aria-label="Interview guide navigation">
+        <a class="pill" href="./index.html">← Questions</a>
+        <a class="pill" href="./flashcards.html">Flashcards</a>
+        <a class="pill" href="./code_challenges.html">Code Challenges</a>
+      </div>
+    </div>
+
+    <div class="grid">
+      <section class="card">
+        <h2>1) Block Library: “Marketing Sections”</h2>
+        <div class="meta">
+          <span class="tag">Gutenberg</span>
+          <span class="tag">React</span>
+          <span class="tag yellow">Great for agencies</span>
+        </div>
+        <ul>
+          <li>Create 6–10 reusable blocks: Hero, Features, Testimonials, FAQ, Pricing, CTA.</li>
+          <li>Design tokens via <code>theme.json</code> (colors/typography/spacing).</li>
+          <li>Block controls: alignments, presets, responsive toggles, “stack on mobile”.</li>
+          <li>Accessibility: keyboard-friendly controls + correct headings/landmarks.</li>
+          <li>Deliverables: npm build + WP plugin + demo site with patterns.</li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <h2>2) Dynamic Block: “Related Content” (Query + Caching)</h2>
+        <div class="meta">
+          <span class="tag">Dynamic block</span>
+          <span class="tag">PHP</span>
+          <span class="tag green">Performance</span>
+        </div>
+        <ul>
+          <li>Block renders server-side (PHP) using <code>render_callback</code>.</li>
+          <li>Editor uses React to preview and configure (taxonomy, limit, sort).</li>
+          <li>Cache rendered output with transients; invalidate on post/tax changes.</li>
+          <li>Explain tradeoffs: transient keys, object cache support, TTL strategy.</li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <h2>3) Headless WP + React Frontend (Next.js or Vite)</h2>
+        <div class="meta">
+          <span class="tag">WP REST</span>
+          <span class="tag">React</span>
+          <span class="tag yellow">Architecture</span>
+        </div>
+        <ul>
+          <li>WP exposes content via REST (or WPGraphQL if you prefer).</li>
+          <li>Frontend renders pages, handles routing, and caches responses.</li>
+          <li>Auth: preview drafts using application passwords or JWT.</li>
+          <li>Deploy: static ISR-like strategy or server render; document decisions.</li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <h2>4) “Form Builder” Block: Validations + Anti-Spam</h2>
+        <div class="meta">
+          <span class="tag">Gutenberg</span>
+          <span class="tag">Security</span>
+          <span class="tag green">Real-world</span>
+        </div>
+        <ul>
+          <li>Build a block that outputs a form with configurable fields.</li>
+          <li>Server handler: nonce verification + sanitize/validate + rate limiting.</li>
+          <li>Add honeypot + time-based checks; optionally reCAPTCHA.</li>
+          <li>Store submissions as CPT; export CSV; basic admin UI.</li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <h2>5) Editorial Workflow: “Review & Publish” Tools</h2>
+        <div class="meta">
+          <span class="tag">WP Admin</span>
+          <span class="tag">UX</span>
+          <span class="tag">Testing</span>
+        </div>
+        <ul>
+          <li>Custom status flow or checklist: Draft → Review → Approved.</li>
+          <li>Block-level validation: prevent publish if required blocks missing.</li>
+          <li>Notifications: emails/Slack webhook when status changes.</li>
+          <li>Add automated checks: broken links, missing alt text, heading order.</li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <h2>6) “Media Optimizer” Plugin: Images + LCP</h2>
+        <div class="meta">
+          <span class="tag">Performance</span>
+          <span class="tag">Core Web Vitals</span>
+          <span class="tag green">Senior talking points</span>
+        </div>
+        <ul>
+          <li>Detect oversized hero images and generate optimized sizes.</li>
+          <li>Improve LCP: preload critical images + font strategy.</li>
+          <li>Lazy-load non-critical images; ensure layout stability.</li>
+          <li>Measure: Lighthouse before/after + explain why changes help.</li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <h2>7) Block + Integration: “CRM Signup”</h2>
+        <div class="meta">
+          <span class="tag">REST</span>
+          <span class="tag">Integrations</span>
+          <span class="tag yellow">Agency work</span>
+        </div>
+        <ul>
+          <li>Gutenberg block renders signup form with segment/tag controls.</li>
+          <li>Server proxy endpoint to CRM (HubSpot/Mailchimp/etc).</li>
+          <li>Secure secrets: keep tokens server-side; rotate; log failures safely.</li>
+          <li>Observability: structured logs + admin retry queue (optional).</li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <h2>8) Multisite “Tenant Theme” Starter</h2>
+        <div class="meta">
+          <span class="tag">Multisite</span>
+          <span class="tag">theme.json</span>
+          <span class="tag green">Scalability</span>
+        </div>
+        <ul>
+          <li>Multisite with per-site branding tokens (colors/logo) stored as options.</li>
+          <li>Shared block patterns; per-tenant overrides via <code>theme.json</code> filters.</li>
+          <li>Hardening: disable risky file edits, restrict capabilities, audit plugin list.</li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <h2>9) “Docs Site” Theme: MD → WP Blocks</h2>
+        <div class="meta">
+          <span class="tag">Content</span>
+          <span class="tag">Parsing</span>
+          <span class="tag">Editor UX</span>
+        </div>
+        <ul>
+          <li>Import Markdown docs and convert into block markup.</li>
+          <li>Shortcodes to blocks migration helpers.</li>
+          <li>Syntax highlighting + copy buttons + anchor links.</li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <h2>10) Testing Pack: Blocks + PHP + E2E</h2>
+        <div class="meta">
+          <span class="tag">Testing</span>
+          <span class="tag">Playwright/Cypress</span>
+          <span class="tag green">Senior signal</span>
+        </div>
+        <ul>
+          <li>Unit tests for PHP helpers; integration tests for REST endpoints.</li>
+          <li>E2E: create post, insert block, publish, validate frontend output.</li>
+          <li>Explain CI: run tests on PR, cache dependencies, artifacts for screenshots.</li>
+        </ul>
+      </section>
+    </div>
+
+    <div class="hint">
+      <strong>How to present these in interviews:</strong>
+      <ul>
+        <li>Show the repo structure: plugin folder, build tooling, and why you chose it.</li>
+        <li>Explain tradeoffs: dynamic vs static blocks, caching and invalidation, editor UX constraints.</li>
+        <li>Call out accessibility, performance metrics, and security controls (nonces, capability checks).</li>
+        <li>Have 2–3 “failure stories” ready: what broke and how you debugged it.</li>
+      </ul>
+    </div>
+  </div>
+</body>
+</html>

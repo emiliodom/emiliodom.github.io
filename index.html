@@ -128,10 +128,33 @@
           const r = await fetch('/assets/data/link_cards.json');
           const data = await r.json();
           const container = document.getElementById('links-container');
+          const prepSection = document.getElementById('prep-links-section');
+          const prepContainer = document.getElementById('prep-links-container');
+          const prepLinks = [];
+
+          function isPrepLink(item){
+            const href = item && typeof item.href === 'string' ? item.href : '';
+            // Treat internal guides/prep sections as "prep" even if marked external in JSON.
+            return /^\/(react|nextjs|laravel|moodle|devops|interview|python|wordpress)_guide\b/i.test(href);
+          }
           
           // Render categorized links
           if(data.categories){
             data.categories.forEach(category => {
+              const nonPrepLinks = Array.isArray(category.links)
+                ? category.links.filter(item => !isPrepLink(item))
+                : [];
+
+              const categoryPrepLinks = Array.isArray(category.links)
+                ? category.links.filter(item => isPrepLink(item))
+                : [];
+
+              // Stash prep links for footer rendering.
+              categoryPrepLinks.forEach(item => prepLinks.push({ ...item, _category: category.name }));
+
+              // If this category only contained prep links, skip the header/body here.
+              if(nonPrepLinks.length === 0) return;
+
               // Category header
               const categoryHeader = document.createElement('div');
               categoryHeader.className = 'category-header';
@@ -142,7 +165,7 @@
               container.appendChild(categoryHeader);
               
               // Category links
-              category.links.forEach(item => {
+              nonPrepLinks.forEach(item => {
                 const a = document.createElement('a');
                 a.className = 'link-card';
                 a.href = item.href;
@@ -237,6 +260,28 @@
               a.appendChild(arrow);
               container.appendChild(a);
             });
+          }
+
+          // Render prep links in the footer so the homepage stays cleaner above-the-fold.
+          if(prepContainer && prepSection && prepLinks.length){
+            prepLinks
+              .sort((a,b) => String(a.title||'').localeCompare(String(b.title||'')))
+              .forEach(item => {
+                const p = document.createElement('p');
+                const a = document.createElement('a');
+                a.href = item.href;
+                // Keep prior behavior: these links were marked external in JSON.
+                if(item.external) { a.target = '_blank'; a.rel = 'noopener noreferrer'; }
+                a.textContent = item.title;
+                p.appendChild(a);
+                if(item.description){
+                  const span = document.createElement('span');
+                  span.textContent = ` — ${item.description}`;
+                  p.appendChild(span);
+                }
+                prepContainer.appendChild(p);
+              });
+            prepSection.style.display = 'block';
           }
         }catch(e){ console.warn('Could not load link cards', e); }
       })();
@@ -420,6 +465,11 @@
         <h3>Contact</h3>
         <p><a href="tel:+50256142468">📞 +502 56142468</a></p>
         <p><a href="mailto:emiliodom@gmail.com">✉️ emiliodom@gmail.com</a></p>
+      </div>
+      <div class="footer-section" id="prep-links-section" style="display:none;">
+        <h3>Preparation</h3>
+        <p style="margin-top:-4px;">Guides & interview prep</p>
+        <div id="prep-links-container"></div>
       </div>
     </div>
     <p class="footer-credits">Licensed under MIT License • Created with the help of GitHub Copilot</p>

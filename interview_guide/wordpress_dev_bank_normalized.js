@@ -8,7 +8,7 @@
   "meta": {
     "title": "WordPress Developer Interview Bank",
     "generatedFrom": "interview_guide/index.html",
-    "generatedAt": "2026-01-20T19:11:25.979Z",
+    "generatedAt": "2026-01-21T03:54:21.076Z",
     "schemaVersion": 1
   },
   "topics": {

@@ -15,9 +15,16 @@ function initGlobalNav() {
     // Prevent duplicate initialization
     if (document.querySelector(".site-nav")) return;
 
+    const footerMount = document.getElementById("global-nav-footer");
+    const preferFooter =
+        document.body &&
+        document.body.dataset &&
+        document.body.dataset.globalNavLocation === "footer";
+    const mountInFooter = Boolean(preferFooter && footerMount);
+
     // Try to find the site header, or fall back to generic header
     const header = document.querySelector("header.site-header") || document.querySelector("header");
-    if (!header) return;
+    if (!mountInFooter && !header) return;
 
     const nav = document.createElement("nav");
     nav.className = "site-nav";
@@ -45,6 +52,12 @@ function initGlobalNav() {
 
         nav.appendChild(a);
     });
+
+    if (mountInFooter) {
+        nav.classList.add("site-nav--footer");
+        footerMount.appendChild(nav);
+        return;
+    }
 
     // Insert after header
     header.parentNode.insertBefore(nav, header.nextSibling);

@@ -235,6 +235,51 @@ body {
     }
 }
 
+/* Global Navigation (Footer Mount) */
+#site-footer .site-nav.site-nav--footer {
+    position: static;
+    top: auto;
+    z-index: auto;
+    margin: 8px 0 0;
+    padding: 0;
+    background: transparent;
+    border-bottom: none;
+    backdrop-filter: none;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+#site-footer .site-nav.site-nav--footer a {
+    padding: 8px 12px;
+    border-radius: 999px;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    background: rgba(0, 0, 0, 0.02);
+    font-size: 0.9rem;
+    font-weight: 700;
+}
+
+#site-footer .site-nav.site-nav--footer a:hover {
+    background: rgba(0, 0, 0, 0.05);
+    transform: translateY(-1px);
+}
+
+#site-footer .site-nav.site-nav--footer a.active {
+    background: var(--accent-1);
+    color: #fff;
+    border-color: rgba(0, 0, 0, 0);
+    box-shadow: 0 8px 18px rgba(102, 126, 234, 0.22);
+}
+
+.theme-dark #site-footer .site-nav.site-nav--footer a {
+    border-color: rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.theme-dark #site-footer .site-nav.site-nav--footer a:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
 /* Make header and main use full width on tablets and mobile */
 @media (max-width: 1024px) {
     .site-header {
